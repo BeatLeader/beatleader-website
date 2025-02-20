@@ -37,7 +37,7 @@
 	import {capitalize} from '../utils/js';
 	import {substituteVarsUrl} from '../utils/format';
 	import RankedTimer from '../components/Common/RankedTimer.svelte';
-	import {Ranked_Const, Unranked_Const} from './../utils/beatleader/consts';
+	import {Ranked_Const, Unranked_Const} from '../utils/beatleader/consts';
 	import {MetaTags} from 'svelte-meta-tags';
 	import {BL_API_MAPS_URL, CURRENT_URL} from '../network/queues/beatleader/api-queue';
 	import BackToTop from '../components/Common/BackToTop.svelte';
@@ -99,6 +99,8 @@
 			filters.stars_from = filters.stars_to;
 			filters.stars_to = tmp;
 		}
+
+		console.log(filters);
 
 		if (!filters?.sortBy?.length) filters.sortBy = 'timestamp';
 		if (!filters?.order?.length) filters.order = 'desc';
@@ -242,7 +244,7 @@
 
 		mapsList = result;
 		fetchJson(
-			substituteVarsUrl(BL_API_MAPS_URL, {page, count: itemsPerPage, type, ...filters}, true, true),
+			substituteVarsUrl(BL_API_MAPS_URL, {page, count: itemsPerPage, ...filters, type}, true, true),
 			{...options, credentials: 'include'},
 			priority
 		).then(document => {
@@ -299,30 +301,29 @@
 	function changePageAndFilters(newPage, newFilters, replace, setUrl = true) {
 		currentFilters = newFilters;
 
+		sortValue = currentFilters.sortBy;
+		orderValue = currentFilters.order;
+		dateRangeValue = currentFilters.date_range;
+
 		sortValues = sortValues1.map(v => {
 			let result = {...v};
-			if (result.id == currentFilters.sortBy) {
-				result.iconFa = `fa fa-long-arrow-alt-${currentFilters.order === 'asc' ? 'up' : 'down'}`;
-				sortValue = result;
-			}
-
-			if (result.id == 'timestamp') {
-				switch (currentType) {
+			if (result.value == 'timestamp') {
+				switch (currentFilters.type) {
 					case 'ranked':
-						result.label = 'Rank date';
+						result.name = 'Rank date';
 						result.title = 'Sort by the date map become ranked';
 						break;
 					case 'qualified':
-						result.label = 'Qualification date';
+						result.name = 'Qualification date';
 						result.title = 'Sort by the map qualification date';
 						break;
 					case 'nominated':
-						result.label = 'Nomination date';
+						result.name = 'Nomination date';
 						result.title = 'Sort by the map nomination date';
 						break;
 
 					default:
-						result.label = 'Upload date';
+						result.name = 'Upload date';
 						result.title = 'Sort by the map upload date';
 						break;
 				}
@@ -330,6 +331,20 @@
 
 			return result;
 		});
+
+		switch (currentFilters.type) {
+			case 'ranked':
+				dateRangeOptions = [...dateRangeOptions1, {value: 'ranked', name: 'Map ranking', icon: 'fa-star'}];
+				break;
+			case 'qualified':
+				dateRangeOptions = [...dateRangeOptions1, {value: 'qualification', name: 'Map qualification', icon: 'fa-vote-yea'}];
+				break;
+			case 'nominated':
+				dateRangeOptions = [...dateRangeOptions1, {value: 'nomination', name: 'Map nomination', icon: 'fa-cheak-circle'}];
+				break;
+			default:
+				dateRangeOptions = dateRangeOptions1;
+		}
 
 		newPage = parseInt(newPage, 10);
 		if (isNaN(newPage)) newPage = 1;
@@ -375,6 +390,8 @@
 				window.history.pushState({}, '', url);
 			}
 		}
+
+		console.log(currentType);
 
 		fetchMaps(currentPage, currentType, {...currentFilters});
 	}
@@ -537,7 +554,7 @@
 
 		currentFilters.sortBy = event.detail.value;
 
-		currentPage = 1;
+		resetCache();
 
 		navigateToCurrentPageAndFilters();
 	}
@@ -553,7 +570,7 @@
 
 		currentFilters.order = event.detail.value;
 
-		currentPage = 1;
+		resetCache();
 
 		navigateToCurrentPageAndFilters();
 	}
@@ -572,7 +589,7 @@
 
 		currentFilters.date_range = event.detail.value;
 
-		currentPage = 1;
+		resetCache();
 
 		navigateToCurrentPageAndFilters();
 	}
@@ -584,13 +601,21 @@
 
 		currentFilters = currentFilters;
 
-		currentPage = 1;
+		resetCache();
 
 		navigateToCurrentPageAndFilters();
 	}
 
 	function onMappersChange(event) {
 		currentFilters.mappers = event.detail.join(',');
+
+		resetCache();
+
+		navigateToCurrentPageAndFilters();
+	}
+
+	function onPlaylistIdsChange(event) {
+		currentFilters.playlistIds = event.detail.join(',');
 
 		resetCache();
 
@@ -767,7 +792,7 @@
 
 <section class="align-content">
 	<article class="page-content" transition:fade|global>
-		<section class="filter">
+		<section class="filter tab-container">
 			<TabSwitcher values={typeFilterOptions} value={typeFilterOptions.find(o => o.key === currentType)} on:change={onTypeChanged} />
 			{#if $account.id}
 				<TabSwitcher
@@ -777,17 +802,14 @@
 			{/if}
 		</section>
 		<ContentBox cls="maps-box" bind:box={boxEl}>
-			<div class="sorting-options">
-				<Select bind:value={sortValue} on:change={onSortChange} fontSize="0.8" options={sortValues} />
-				<Select bind:value={orderValue} on:change={onOrderChange} fontSize="0.8" options={orderValues} />
-			</div>
 			{#if displayMaps?.length}
+				<div class="top-container"></div>
 				<div class="songs-container">
 					<div class="songs-list">
 						<div class="songs" bind:this={scrollContainer}>
 							<div class="top-anchor" bind:this={topAnchor}></div>
 							{#each displayMaps as song, idx (song.index)}
-								<MapCard {idx} {song} {starsKey} />
+								<MapCard {idx} {song} {starsKey} sortBy={currentFilters.sortBy} />
 							{/each}
 							<div class="bottom-anchor" bind:this={bottomAnchor}></div>
 						</div>
@@ -813,6 +835,14 @@
 	</article>
 
 	<aside>
+		<ContentBox>
+			<h2 class="title is-5">Sorting</h2>
+
+			<div class="sorting-options">
+				<Select bind:value={sortValue} on:change={onSortChange} fontSize="0.8" options={sortValues} />
+				<Select bind:value={orderValue} on:change={onOrderChange} fontSize="0.8" options={orderValues} />
+			</div>
+		</ContentBox>
 		<ContentBox>
 			<h2 class="title is-5">Filters</h2>
 
@@ -1114,6 +1144,7 @@
 						<Select
 							bind:value={currentFilters.difficulty}
 							on:change={onDifficultyChanged}
+							fontSize="0.8"
 							options={difficultyFilterOptions}
 							nullPlaceholder={difficultyNullPlaceholder}
 							nameSelector={x => x.label}
@@ -1124,6 +1155,7 @@
 						<Select
 							bind:value={currentFilters.mode}
 							on:change={onModeChanged}
+							fontSize="0.8"
 							options={modeFilterOptions}
 							nullPlaceholder={modeNullPlaceholder}
 							nameSelector={x => x.label}
@@ -1212,27 +1244,26 @@
 	}
 
 	.page-content {
-		max-width: 75em;
+		max-width: 70em;
 		width: 100%;
 		height: 100%;
 	}
 
-	.filter {
-		margin: 0 0.7em;
+	.tab-container {
 		display: flex;
 		justify-content: space-between;
+	}
+
+	.filter {
+		margin: 0 0.7em;
+
+		flex: 1;
 	}
 
 	.sorting-options {
 		display: flex;
 		gap: 0.5em;
-		justify-content: center;
 		position: relative;
-		backdrop-filter: blur(6px);
-		background-color: #00000094;
-		z-index: 6;
-		padding: 0.5em;
-		margin: -1em;
 	}
 
 	article {
@@ -1314,8 +1345,8 @@
 	.songs-container {
 		display: flex;
 		height: calc(100% + 2.7em);
-		margin-top: -2.7em;
-		margin-bottom: -3.8em;
+		margin-top: -1em;
+		margin-bottom: -3.7em;
 	}
 
 	.pager-container {
@@ -1326,6 +1357,16 @@
 		z-index: 6;
 		margin: 0 -1em;
 		padding: 0.2em 1em;
+		height: 3em;
+	}
+
+	.top-container {
+		position: relative;
+		height: 1.6em;
+		backdrop-filter: blur(6px);
+		background-color: #00000094;
+		z-index: 6;
+		margin: -1em;
 	}
 
 	:global(.pager-container .pagination) {
@@ -1441,6 +1482,24 @@
 
 	:global(.playlist-button) {
 		height: 1.6em;
+	}
+
+	.time-presets {
+		display: flex;
+		gap: 0.5em;
+		margin-top: 0.4em;
+	}
+
+	:global(.time-presets .button) {
+		height: 2em;
+		padding: 0.4em;
+	}
+
+	.date-range-container {
+		display: flex;
+		gap: 0.4em;
+		align-items: center;
+		margin-bottom: 0.5em;
 	}
 
 	.remove-type {

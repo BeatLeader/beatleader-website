@@ -5,16 +5,17 @@
 	import Value from '../../Common/Value.svelte';
 	import Badge from '../../Common/Badge.svelte';
 	import Icons from '../../Song/Icons.svelte';
-	import {formatDiffStatus, DifficultyStatus, wrapBLStatus} from '../../../utils/beatleader/format';
+	import {formatDiffStatus, DifficultyStatus, wrapBLStatus, getSongSortingValue} from '../../../utils/beatleader/format';
 	import {configStore} from '../../../stores/config';
 	import HashDisplay from '../../Common/HashDisplay.svelte';
-	import SongStatus from '../../Leaderboard/SongStatus.svelte';
+	import SongStatus from './SongStatus.svelte';
 	import MapperList from '../../Leaderboard/MapperList.svelte';
 	import LeaderboardStats from '../../Leaderboard/LeaderboardStats.svelte';
 	import ModesList from './ModesList.svelte';
 	import SongPlayer from './SongPlayer.svelte';
 
 	export let song;
+	export let sortBy = 'stars';
 	export let idx = 0;
 	export let ratings = null;
 
@@ -25,8 +26,9 @@
 		dispatch('group-changed');
 	}
 
-	let leaderboard = null;
+	let status = null;
 	let isHovered = false;
+
 	let mapCardElement;
 	let mapCardWrapper;
 	let mapCardRect;
@@ -34,11 +36,23 @@
 	let bottomContainer;
 	let bottomContainerHeight = 0;
 
-	function selectMostRepresentitiveDiff(song) {
-		leaderboard = song.difficulties[0];
+	function calculateStatus(song) {
+		for (const status of [
+			DifficultyStatus.ranked,
+			DifficultyStatus.qualified,
+			DifficultyStatus.nominated,
+			DifficultyStatus.inevent,
+			DifficultyStatus.ost,
+		]) {
+			if (song.difficulties.find(difficulty => difficulty.status == status)) {
+				return status;
+			}
+		}
+
+		return song.difficulties[0].status;
 	}
 
-	$: song?.difficulties && selectMostRepresentitiveDiff(song);
+	$: song?.difficulties && (status = calculateStatus(song));
 	let cinematicsCanvas;
 	let rootcinematicsCanvas;
 
@@ -65,14 +79,12 @@
 
 	function updateHeaderContainerHeight(headerContainer) {
 		headerContainerHeight = headerContainer?.getBoundingClientRect().height ?? 0;
-		console.log(headerContainerHeight);
 	}
 
 	$: headerContainer && updateHeaderContainerHeight(headerContainer);
 
 	$: hash = song?.hash;
 	$: name = song?.name;
-	$: diffInfo = leaderboard?.diffInfo;
 
 	let hoverTimeout;
 	let dummyElement;
@@ -93,7 +105,7 @@
 				}
 
 				setTimeout(() => {
-					bottomContainerHeight = (bottomContainer?.getBoundingClientRect().height ?? 0) + 3;
+					bottomContainerHeight = bottomContainer?.getBoundingClientRect().height ?? 0;
 				}, 50);
 			} else {
 				// Remove dummy element when not hovering
@@ -157,6 +169,7 @@
 		updateMaskImage();
 	}
 
+	$: sortValue = getSongSortingValue(song, null, sortBy);
 	$: if (isHovered) {
 		setTimeout(() => {
 			if (modesListContainer) {
@@ -171,6 +184,7 @@
 {#if song}
 	<div
 		class="map-card-wrapper"
+		class:transparent={song.transparent}
 		bind:this={mapCardWrapper}
 		tabindex="-1"
 		role="button"
@@ -195,13 +209,14 @@
 					style={coverUrl
 						? `background: url(${coverUrl}); background-repeat: no-repeat; background-size: cover; background-position: center;`
 						: ''}>
+					<div class="sort-value-background" class:is-hovered={sortValue && isHovered}></div>
 				</div>
 
 				<div class="main-container">
 					<div class="header-container" bind:this={headerContainer}>
 						<div class="header-top-part">
 							<h1 class="title is-4">
-								<span class="name {name.length > 40 ? 'name-long' : 'name-short'}" title="Song name">{name} </span>
+								<span class="name" title="Song name">{name} </span>
 								{#if $configStore?.leaderboardPreferences?.showSubtitleInHeader && song.subName}
 									<span class="subname">{song.subName}</span>
 								{/if}
@@ -209,62 +224,60 @@
 
 							<div class="title-container">
 								<span class="author" title="Song author name">{song.author}</span>
-
-								{#if leaderboard}
-									{#if $configStore?.leaderboardPreferences?.showHashInHeader}
-										<HashDisplay {song} />
-									{/if}
-								{/if}
 							</div>
 						</div>
 
-						<div class="song-statuses">
-							<MapperList {song} maxHeight="2.2em" fontSize="0.9em" />
-							{#if leaderboard && leaderboard.status != DifficultyStatus.unranked}
-								<SongStatus songStatus={wrapBLStatus(leaderboard.status)} />
-							{/if}
-							{#if song.externalStatuses}
-								{#each song.externalStatuses as songStatus}
-									<SongStatus {songStatus} />
-								{/each}
-							{/if}
+						<div class="mapper-and-statuses">
+							<MapperList {song} maxHeight={isHovered ? '4.5em' : '2.2em'} fontSize="0.9em" />
+							<div class="song-statuses" class:is-hovered={isHovered}>
+								{#if status && status != DifficultyStatus.unranked && status != DifficultyStatus.unrankable}
+									<SongStatus songStatus={wrapBLStatus(status)} />
+								{/if}
+								{#if song.externalStatuses}
+									{#each song.externalStatuses as songStatus}
+										<SongStatus {songStatus} />
+									{/each}
+								{/if}
+							</div>
 						</div>
 					</div>
 				</div>
-				{#if leaderboard}
-					<div class="icons-container">
-						<Icons {song} {diffInfo} />
-					</div>
-				{/if}
+				<div class="icons-container">
+					<Icons {song} />
+				</div>
 			</div>
 			<div class="bottom-container-background" class:is-hovered={isHovered} style="height: {bottomContainerHeight}px;"></div>
 			<div
 				class="bottom-container"
+				class:has-sort-value={!!sortValue}
 				class:is-hovered={isHovered}
 				bind:this={bottomContainer}
-				style="margin-top: -{headerContainerHeight < 150 ? 2.8 : 0}em;">
-				<div class="placeholder"></div>
+				style="margin-top: -{headerContainerHeight < 150 ? 2.6 : 0}em;">
+				<div class="placeholder">
+					{#if sortValue}
+						<div class="sort-value">
+							{sortValue}
+						</div>
+					{/if}
+				</div>
+
 				{#if isHovered}
 					<div class="song-player">
 						<SongPlayer {song} />
 					</div>
 				{/if}
-				{#if leaderboard}
-					<div class="modes-list-container" class:is-hovered={isHovered} bind:this={modesListContainer}>
-						<ModesList {song} {isHovered} />
-					</div>
-				{/if}
+				<div class="modes-list-container" class:is-hovered={isHovered} bind:this={modesListContainer}>
+					<ModesList {song} {isHovered} {sortValue} {sortBy} />
+				</div>
 			</div>
 		</div>
 	</div>
 
-	{#if leaderboard}
-		<div class="buttons-container mobile-only">
-			<div class="icons-container">
-				<Icons {song} {diffInfo} />
-			</div>
+	<div class="buttons-container mobile-only">
+		<div class="icons-container">
+			<Icons {song} />
 		</div>
-	{/if}
+	</div>
 {/if}
 
 <style>
@@ -273,6 +286,11 @@
 		width: 32em;
 		margin-bottom: 1.2em;
 		overflow: visible;
+	}
+
+	.map-card-wrapper.transparent {
+		opacity: 0;
+		pointer-events: none;
 	}
 
 	.map-card {
@@ -333,6 +351,11 @@
 		border-radius: 0 0 12px 12px;
 		transition: all 0.3s ease-in-out;
 	}
+
+	.bottom-container.has-sort-value {
+		z-index: 2;
+	}
+
 	.bottom-container.is-hovered {
 		background-color: transparent;
 	}
@@ -349,6 +372,26 @@
 		left: 0;
 		width: 100%;
 		background-color: black;
+	}
+
+	.sort-value {
+		z-index: 2;
+		font-weight: 600;
+	}
+
+	.sort-value-background {
+		height: 32px;
+		position: absolute;
+		display: block;
+		bottom: 0;
+		background-color: transparent;
+		width: 100%;
+		border-radius: 0 0 8px 8px;
+		transition: all 0.3s ease-in-out;
+	}
+
+	.sort-value-background.is-hovered {
+		background-color: #0000004f;
 	}
 
 	.modes-list-container {
@@ -426,9 +469,19 @@
 
 	.header h1 span.name {
 		color: #ffffffcc !important;
+		display: -webkit-box;
+		box-orient: vertical;
+		line-clamp: 2;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 2;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: normal;
+		word-break: break-word;
 	}
 
 	.map-cover {
+		position: relative;
 		width: 11em;
 		aspect-ratio: 1;
 		border-radius: 8px;
@@ -437,25 +490,37 @@
 
 	.placeholder {
 		width: 11.9em;
-		height: 2em;
-	}
-
-	.name-long {
-		font-size: 0.8em;
-	}
-
-	.name-short {
-		font-size: 1em;
+		height: 1.8em;
+		display: flex;
+		justify-content: center;
 	}
 
 	.subname {
 		color: #ffffff93;
 		font-size: 0.8em;
+		display: -webkit-box;
+		box-orient: vertical;
+		line-clamp: 2;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 2;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: normal;
+		word-break: break-word;
 	}
 
 	.author {
 		color: #ffffffa3;
 		font-size: 1em;
+		display: -webkit-box;
+		box-orient: vertical;
+		line-clamp: 2;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 2;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: normal;
+		word-break: break-word;
 	}
 
 	.diff-status {
@@ -484,6 +549,7 @@
 		flex-direction: column;
 		gap: 0.2em;
 		height: fit-content;
+		mask-image: linear-gradient(180deg, white 0%, white 8em, transparent);
 	}
 
 	.header-top-part {
@@ -504,11 +570,21 @@
 		grid-gap: 0.2em;
 	}
 
+	.mapper-and-statuses {
+		display: flex;
+		flex-direction: column;
+		gap: 0.4em;
+	}
+
 	.song-statuses {
 		color: #ffffffab;
 		display: flex;
-		gap: 0.25em;
+		gap: 0.2em;
 		flex-wrap: wrap;
+	}
+
+	.song-statuses.is-hovered {
+		display: none;
 	}
 
 	.cinematics {
@@ -688,16 +764,8 @@
 			margin-bottom: 0;
 		}
 
-		.name-long {
-			font-size: 0.8em;
-		}
-
 		.song-statuses {
 			flex-wrap: wrap;
-		}
-
-		.name-short {
-			font-size: 0.9em;
 		}
 
 		.author {

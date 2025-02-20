@@ -1,8 +1,21 @@
 <script>
-	import {diffColors, difficultyDescriptions, modeDescriptions} from '../../../utils/beatleader/format';
+	import {
+		diffColors,
+		difficultyDescriptions,
+		DifficultyStatus,
+		getSongSortingValue,
+		modeDescriptions,
+		wrapBLStatus,
+		sortingValueIsSongOnly,
+	} from '../../../utils/beatleader/format';
+	import Icons from '../../Song/Icons.svelte';
+	import SongStatus from './SongStatus.svelte';
 
 	export let song;
 	export let isHovered;
+
+	export let sortValue;
+	export let sortBy;
 
 	let modes;
 
@@ -33,6 +46,7 @@
 	}
 
 	$: song?.difficulties && groupDiffs(song);
+	$: songOnly = sortingValueIsSongOnly(sortBy);
 </script>
 
 {#if modes?.length}
@@ -40,26 +54,44 @@
 		{#each modes as mode}
 			<div class="mode-container" class:isHovered>
 				<div class="mode-icon-name" class:isHovered>
-					<i class="mode-icon {mode.description.icon}" />
+					<i class="mode-icon {mode.description.icon}" class:isHovered />
 					{#if isHovered}
 						<span class="mode-name">{mode.modeName}</span>
 					{/if}
 				</div>
 				<div class="diffs-container" class:isHovered>
 					{#each mode.diffs as diff, idx}
+						{@const diffSortValue = getSongSortingValue(song, diff, sortBy)}
 						<div class="diff-container" class:isHovered>
 							{#if isHovered}
 								<span class="diff-name">{diff.difficultyName}</span>
 							{/if}
 							<div
 								class="diff-orb"
+								class:isHovered
 								style="background-color: {diff.color}; margin-right: {!isHovered && idx == mode.diffs.length - 1 && !diff.stars
 									? '0.3em'
 									: '0'};">
+								{#if !isHovered && diff.myScore}
+									<div class="my-score"></div>
+								{/if}
 								{#if diff.stars}
-									<span>{diff.stars.toFixed(1)}</span><span>★</span>
+									<span>{diff.stars.toFixed(isHovered ? 2 : 1)}</span><span>★</span>
 								{/if}
 							</div>
+							{#if isHovered}
+								<div class="tail-container">
+									<div class="status-container">
+										{#if diff.status && diff.status != DifficultyStatus.unranked && diff.status != DifficultyStatus.unrankable}
+											<SongStatus songStatus={wrapBLStatus(diff.status)} />
+										{/if}
+										{#if !songOnly}
+											<span class="sort-value">{diffSortValue}</span>
+										{/if}
+									</div>
+									<Icons {song} diffInfo={diff.diffInfo} icons={['playlist']} />
+								</div>
+							{/if}
 						</div>
 					{/each}
 				</div>
@@ -89,7 +121,7 @@
 	.mode-container {
 		border-radius: 12px;
 		background-color: #00000069;
-		padding: 0.2em 0.2em 0.2em 0.4em;
+		padding: 0.15em 0.2em 0.15em 0.4em;
 		display: flex;
 		gap: 0.2em;
 		align-items: center;
@@ -100,6 +132,7 @@
 		display: flex;
 		flex-direction: column;
 		align-items: baseline;
+		padding: 0.2em 0.2em 0.2em 0.4em;
 	}
 
 	.mode-icon-name.isHovered {
@@ -116,8 +149,9 @@
 
 	.diff-container.isHovered {
 		display: grid;
-		grid-template-columns: 6em 3em auto;
+		grid-template-columns: 6em 3.5em auto;
 		gap: 0.2em;
+		align-items: center;
 	}
 
 	.diffs-container {
@@ -128,23 +162,50 @@
 
 	.diffs-container.isHovered {
 		flex-direction: column;
+		width: 100%;
+	}
+
+	.status-container {
+		display: flex;
+		gap: 0.2em;
+		align-items: center;
 	}
 
 	.mode-icon {
+		width: 1.2em;
+		height: 1.2em;
+		display: block;
+	}
+
+	.mode-icon.isHovered {
 		width: 1.4em;
 		height: 1.4em;
-		display: block;
 	}
 
 	.diff-orb {
 		color: white;
 		font-weight: 600;
-		padding: 0.25em 0.3em 0.2em 0.4em;
-		font-size: 0.8em;
-		border-radius: 0.7em;
+
+		padding: 0.15em 0.3em 0.18em 0.4em;
+		font-size: 0.7em;
+		border-radius: 0.8em;
+
 		display: flex;
 		align-items: center;
 		gap: 0.1em;
 		min-height: 1.6em;
+	}
+
+	.diff-orb.isHovered {
+		padding: 0.25em 0.3em 0.2em 0.4em;
+		font-size: 0.8em;
+		border-radius: 0.7em;
+	}
+
+	.tail-container {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: 0.2em;
 	}
 </style>
