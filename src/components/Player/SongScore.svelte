@@ -190,7 +190,7 @@
 							{service}
 							{playerId}
 							icons={selectedIcons}
-							replayLink={score.id ? null : score.replay}
+							replayLink={score.replay.includes('otherreplays') ? score.replay : null}
 							on:score-pinned={onScorePinned} />
 					{/if}
 				</div>
@@ -204,7 +204,7 @@
 						{twitchUrl}
 						{diffInfo}
 						scoreId={score.id}
-						replayLink={score.id ? null : score.replay}
+						replayLink={score.replay.includes('otherreplays') ? score.replay : null}
 						icons={selectedIcons}
 						{serviceIcon}
 						noPin={!isPlayerScore}
@@ -217,7 +217,7 @@
 						{twitchUrl}
 						{diffInfo}
 						scoreId={score.id}
-						replayLink={score.id ? null : score.replay}
+						replayLink={score.replay.includes('otherreplays') ? score.replay : null}
 						icons={selectedIcons}
 						{serviceIcon}
 						noPin={!isPlayerScore}
