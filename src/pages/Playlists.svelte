@@ -17,7 +17,7 @@
 
 	let itemsPerPage = 5;
 	let page = 0;
-	let itemsPerPageValues = [5, 10, 15];
+	let itemsPerPageValues = [5, 10, 20, 50];
 	let selectedIndex = null;
 
 	let playlistsEl = null;
@@ -86,7 +86,7 @@
 	$: document.body.scrollIntoView({behavior: 'smooth'});
 	$: totalItems = $playlists.length;
 	$: updatePage(parseInt(index, 10), $playlists.length);
-	$: initPlaylistList($playlists, totalItems, itemsPerPage, page);
+	$: itemsPerPage && initPlaylistList($playlists, totalItems, itemsPerPage, page);
 
 	$: metaTitle = `Playlists / ${ssrConfig.name}`;
 	$: description = `

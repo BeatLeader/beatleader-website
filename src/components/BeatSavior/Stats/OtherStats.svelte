@@ -5,6 +5,7 @@
 	import {configStore} from '../../../stores/config';
 	import Value from '../../Common/Value.svelte';
 	import Badge from '../../Common/Badge.svelte';
+	import Duration from '../../Song/Duration.svelte';
 
 	export let beatSavior = null;
 	export let name = null;
@@ -38,11 +39,11 @@
 
 	$: jumpDistance = beatSavior ? beatSavior.songJumpDistance : null;
 	$: totalMistakes = stats ? stats.miss + stats.wallHit + stats.bombHit : null;
-	$: leftBadCuts = isAverage ? stats?.leftBadCuts ?? null : opt(beatSavior, 'trackers.hitTracker.leftBadCuts', null);
-	$: leftMissedNotes = isAverage ? stats?.leftMiss ?? null : opt(beatSavior, 'trackers.hitTracker.leftMiss', null);
+	$: leftBadCuts = isAverage ? (stats?.leftBadCuts ?? null) : opt(beatSavior, 'trackers.hitTracker.leftBadCuts', null);
+	$: leftMissedNotes = isAverage ? (stats?.leftMiss ?? null) : opt(beatSavior, 'trackers.hitTracker.leftMiss', null);
 	$: leftMiss = (leftBadCuts || 0) + (leftMissedNotes || 0);
-	$: rightBadCuts = isAverage ? stats?.rightBadCuts ?? null : opt(beatSavior, 'trackers.hitTracker.rightBadCuts', null);
-	$: rightMissedNotes = isAverage ? stats?.rightMiss ?? null : opt(beatSavior, 'trackers.hitTracker.rightMiss', null);
+	$: rightBadCuts = isAverage ? (stats?.rightBadCuts ?? null) : opt(beatSavior, 'trackers.hitTracker.rightBadCuts', null);
+	$: rightMissedNotes = isAverage ? (stats?.rightMiss ?? null) : opt(beatSavior, 'trackers.hitTracker.rightMiss', null);
 	$: rightMiss = (rightBadCuts || 0) + (rightMissedNotes || 0);
 
 	$: compareToStats = compareTo ? compareTo.stats : null;
@@ -67,7 +68,8 @@
 		{#if !stats.won}
 			<Badge color="red" bgColor="var(--dimmed)" fluid={true} onlyLabel={true}>
 				<svelte:fragment slot="label">
-					FAIL {#if failedAt} AT {failedAt}{/if}
+					FAIL {#if failedAt}
+						AT {failedAt}{/if}
 				</svelte:fragment>
 			</Badge>
 		{/if}
@@ -225,6 +227,14 @@
 					prevWithSign={false} />
 			</svelte:fragment>
 		</Badge>
+
+		{#if stats.pauseDuration > 0}
+			<Badge label="Paused for" color="white" bgColor="var(--dimmed)" fluid={true}>
+				<svelte:fragment slot="value">
+					<Duration value={stats.pauseDuration} />
+				</svelte:fragment>
+			</Badge>
+		{/if}
 
 		{#if stats?.fcAcc && !fc}
 			<Badge label="FC accuracy" color="white" bgColor="var(--dimmed)" fluid={true}>

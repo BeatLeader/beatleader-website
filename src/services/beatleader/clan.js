@@ -5,7 +5,7 @@ import {PRIORITY} from '../../network/queues/http-queue';
 import {CLANS_PER_PAGE} from '../../utils/beatleader/consts';
 import {MINUTE, SECOND} from '../../utils/date';
 import createAccountStore from '../../stores/beatleader/account';
-import { processLeaderboard } from '../../network/queues/beatleader/api-queue';
+import {processLeaderboard} from '../../network/clients/beatleader/leaderboard/utils/process';
 
 let service = null;
 export default () => {
@@ -48,15 +48,12 @@ export default () => {
 
 		response.body.data.forEach(element => {
 			if (!element.leaderboard.diffInfo) {
-				element.leaderboard = processLeaderboard(element.leaderboard.id, page, {body: element.leaderboard}).leaderboard;
+				element.leaderboard = processLeaderboard(element.leaderboard).leaderboard;
 			}
-			
 		});
 
-		
-
 		return response.body;
-	}
+	};
 
 	const create = async (clan, priority = PRIORITY.FG_HIGH, signal = null) => {
 		if (!clan?.name || !clan.tag || !clan.color || !clan?.icon) throw new Error('Fill in all required fields');

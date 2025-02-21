@@ -86,6 +86,8 @@
 
 		.views {
 			border-radius: 0;
+			margin-left: -0.8em;
+			margin-right: -0.8em;
 		}
 	}
 </style>

@@ -17,7 +17,7 @@
 		name = clan?.name ?? '';
 		tag = clan?.tag;
 		color = clan?.color ?? '#ff0000';
-		iconUrl = clan?.icon ?? 'https://cdn.assets.beatleader.xyz/NTG.png';
+		iconUrl = clan?.icon ?? 'https://cdn.assets.beatleader.com/NTG.png';
 		description = clan?.description ?? '';
 		playersCount = clan?.playersCount ?? 0;
 

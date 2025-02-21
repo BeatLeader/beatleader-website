@@ -119,12 +119,12 @@
 	let battleRoyaleDraftList = [];
 
 	function startBattleRoyale() {
-		let link = `https://royale.beatleader.xyz/?links=${battleRoyaleDraftList.join(',')}&noRoyale=true`;
+		let link = `https://royale.beatleader.com/?links=${battleRoyaleDraftList.join(',')}&noRoyale=true`;
 		window.open(link, '_blank');
 	}
 
 	function startAnalysis() {
-		let link = `https://analyzer.beatleader.xyz/?link=${battleRoyaleDraftList[0]}&link2=${battleRoyaleDraftList[1]}`;
+		let link = `https://analyzer.beatleader.com/?link=${battleRoyaleDraftList[0]}&link2=${battleRoyaleDraftList[1]}`;
 		window.open(link, '_blank');
 	}
 

@@ -10,8 +10,10 @@ import css from 'rollup-plugin-css-only';
 import svg from 'rollup-plugin-svg';
 import less from 'rollup-plugin-less';
 import {execa} from 'execa';
+import {readFileSync, writeFileSync} from 'fs';
 
 const production = !process.env.ROLLUP_WATCH;
+const buildTimestamp = Date.now();
 
 // const buildVersion = execSync('git rev-parse --short HEAD').toString();
 fs.writeFileSync(
@@ -20,6 +22,7 @@ fs.writeFileSync(
 		JSON.stringify({
 			buildDate: new Date().toISOString().substr(0, 19).replace('T', ' ') + ' UTC',
 			buildVersion: '',
+			buildTimestamp: buildTimestamp,
 		})
 );
 
@@ -44,6 +47,43 @@ function serve() {
 	};
 }
 
+function copyAndRenameBulma() {
+	return {
+		name: 'copy-bulma',
+		writeBundle() {
+			// Ensure assets directory exists
+			if (!fs.existsSync('public/assets')) {
+				fs.mkdirSync('public/assets', {recursive: true});
+			}
+
+			const source = 'public/assets/ss-bulma.css';
+			const dest = `public/assets/ss-bulma.${buildTimestamp}.css`;
+
+			// Copy the file with new timestamp name
+			fs.copyFileSync(source, dest);
+
+			// Clean up old versions
+			const files = fs.readdirSync('public/assets');
+			files.forEach(file => {
+				if (file.match(/ss-bulma\.\d+\.css/) && !file.includes(buildTimestamp)) {
+					fs.unlinkSync(`public/assets/${file}`);
+				}
+			});
+		},
+	};
+}
+
+function processHtml() {
+	return {
+		name: 'process-html',
+		writeBundle() {
+			const html = readFileSync('public/index.template.html', 'utf8');
+			const processed = html.replace(/BUILD_TIMESTAMP/g, buildTimestamp);
+			writeFileSync('public/index.html', processed);
+		},
+	};
+}
+
 export default [
 	{
 		input: 'src/main.js',
@@ -51,7 +91,7 @@ export default [
 			sourcemap: true,
 			format: 'iife',
 			name: 'app',
-			file: 'public/build/bundle.js',
+			file: `public/build/bundle.${buildTimestamp}.js`,
 		},
 		plugins: [
 			{
@@ -81,6 +121,7 @@ export default [
 			},
 			replace({
 				'process.env.NODE_ENV': JSON.stringify(production ? 'production' : 'development'),
+				BUILD_TIMESTAMP: buildTimestamp,
 				preventAssignment: true,
 			}),
 			less({
@@ -103,7 +144,7 @@ export default [
 			}),
 			// we'll extract any component CSS out into
 			// a separate file - better for performance
-			css({output: 'bundle.css'}),
+			css({output: `bundle.${buildTimestamp}.css`}),
 
 			svg(),
 
@@ -130,6 +171,29 @@ export default [
 			// If we're building for production (npm run build
 			// instead of npm run dev), minify
 			production && terser(),
+
+			copyAndRenameBulma(),
+			processHtml(),
+
+			{
+				name: 'clean-old-assets',
+				buildStart() {
+					// Create directories if they don't exist
+					['public/build', 'public/build/themes'].forEach(dir => {
+						if (!fs.existsSync(dir)) {
+							fs.mkdirSync(dir, {recursive: true});
+						}
+					});
+
+					// Clean up old files
+					const files = fs.readdirSync('public/build');
+					files.forEach(file => {
+						if (file.match(/bundle\.\d+\.(js|css)/) && !file.includes(buildTimestamp)) {
+							fs.unlinkSync(`public/build/${file}`);
+						}
+					});
+				},
+			},
 		],
 		watch: {
 			clearScreen: false,

@@ -207,7 +207,7 @@
 
 	header {
 		display: flex;
-		align-items: center;
+		align-items: flex-start;
 		grid-gap: 0.5em;
 		font-size: 0.875em;
 	}

@@ -47,7 +47,7 @@
 </script>
 
 <div class="request-container">
-	<div class="id-and-alias">
+	<div class="id-and-alias" style={player?.playerInfo?.pp < 100 ? 'opacity: 0.5;' : ''}>
 		<span><b>/u/{request.value}</b></span>
 		<div class="timeset">
 			<span style="color: {getTimeStringColor(request?.timeset)}; ">

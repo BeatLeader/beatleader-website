@@ -9,6 +9,7 @@
 	import Event from '../components/Event/Event.svelte';
 	import {MetaTags} from 'svelte-meta-tags';
 	import {CURRENT_URL} from '../network/queues/beatleader/api-queue';
+	import BuildingBlocks from '../components/Event/BuildingBlocks.svelte';
 
 	export let page = 1;
 	export let location;
@@ -111,7 +112,21 @@
 			{#if eventsPage?.length}
 				<div class="events">
 					{#each eventsPage as event, idx (event.id)}
-						{#if event.id == 62}
+						{#if event.id == 63}
+							<a
+								href={`/event/building-blocks-2024`}
+								on:click={e => {
+									navigate(`/event/building-blocks-2024`);
+									e.preventDefault();
+								}}
+								class="event-box"
+								class:finished={Date.now() / 1000 > 1738699200}
+								in:fade|global={{delay: idx * 10}}>
+								<ContentBox>
+									<BuildingBlocks />
+								</ContentBox>
+							</a>
+						{:else if event.id == 62}
 							<a
 								href={`/event/project-tree`}
 								on:click={e => {

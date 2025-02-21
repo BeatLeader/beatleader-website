@@ -14,10 +14,10 @@
 
 <ContentBox {cls}>
 	{#if title}
-		<span class="box-headline">Follow us on <a href="https://bsky.app/profile/beatleader.xyz">BlueSky</a> to receive updates!</span>
+		<span class="box-headline">Follow us on <a href="https://bsky.app/profile/beatleader.com">BlueSky</a> to receive updates!</span>
 	{/if}
 	<div class="darkened-background" bind:this={scrollContainer}>
-		<bsky-embed username="beatleader.xyz" limit="5" load-more="true"> </bsky-embed>
+		<bsky-embed username="beatleader.com" limit="5" load-more="true"> </bsky-embed>
 	</div>
 	<Svrollbar viewport={scrollContainer} />
 </ContentBox>

@@ -12,12 +12,12 @@ export default () => {
 
 	const fetchClanRankingPage = async (leaderboardId, page = 1, priority = PRIORITY.FG_LOW, signal = null, force = false) =>
 		resolvePromiseOrWaitForPending(`apiClient/leaderboard/clanRanking/${leaderboardId}/${page}`, () =>
-			clanRankingApiClient.get({leaderboardId, page, signal, priority, cacheTtl: force ? null : MINUTE})
+			clanRankingApiClient.getProcessed({leaderboardId, page, signal, priority, cacheTtl: force ? null : MINUTE})
 		);
 
 	const fetchClanRankingScores = async (leaderboardId, clanRankingId, page = 1, priority = PRIORITY.FG_LOW, signal = null, force = false) =>
-		resolvePromiseOrWaitForPending(`apiClient/leaderboard/clanRanking/${leaderboardId}/${clanRankingId}/${page}`, () =>
-		clanRankingScoresApiClient.get({leaderboardId, clanRankingId, page, signal, priority, cacheTtl: force ? null : MINUTE})
+		resolvePromiseOrWaitForPending(`apiClient/leaderboard/clanRankingScores/${leaderboardId}/${clanRankingId}/${page}`, () =>
+			clanRankingScoresApiClient.getProcessed({leaderboardId, clanRankingId, page, signal, priority, cacheTtl: force ? null : MINUTE})
 		);
 
 	const destroyService = () => {

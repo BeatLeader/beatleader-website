@@ -193,6 +193,37 @@
 				addButton.onclick = () => editor.runCommand('open-fonts');
 
 				typographySection.appendChild(addButton);
+				setTimeout(() => {
+					if (CKEDITOR) {
+						CKEDITOR.dtd.$editable.span = 1;
+						CKEDITOR.dtd.$editable.a = 1;
+						CKEDITOR.dtd.$editable.strong = 1;
+						CKEDITOR.dtd.$editable.b = 1;
+						CKEDITOR.dtd.$editable.i = 1;
+						CKEDITOR.dtd.$editable.li = 1;
+						CKEDITOR.dtd.$editable.ol = 1;
+						CKEDITOR.dtd.$editable.ul = 1;
+						CKEDITOR.dtd.$editable.small = 1;
+						CKEDITOR.dtd.$editable.sup = 1;
+						CKEDITOR.dtd.$editable.sub = 1;
+						CKEDITOR.dtd.$editable.p = 1;
+						CKEDITOR.dtd.$editable.h1 = 1;
+						CKEDITOR.dtd.$editable.h2 = 1;
+						CKEDITOR.dtd.$editable.h3 = 1;
+						CKEDITOR.dtd.$editable.h4 = 1;
+						CKEDITOR.dtd.$editable.h5 = 1;
+						CKEDITOR.dtd.$editable.h6 = 1;
+						CKEDITOR.dtd.$editable.blockquote = 1;
+						CKEDITOR.dtd.$editable.hr = 1;
+						CKEDITOR.dtd.$editable.br = 1;
+						CKEDITOR.dtd.$editable.a = 1;
+						CKEDITOR.dtd.$editable.s = 1;
+						CKEDITOR.dtd.$editable.b = 1;
+						CKEDITOR.dtd.$editable.u = 1;
+						CKEDITOR.dtd.$editable.i = 1;
+						CKEDITOR.dtd.$editable.em = 1;
+					}
+				}, 200);
 			});
 		},
 	];
@@ -776,6 +807,10 @@
 
 	:global(.sp-container.gjs-two-color) {
 		left: 60% !important;
+	}
+
+	:global(.cke_inner) {
+		width: 28em !important;
 	}
 
 	@media screen and (max-width: 767px) {

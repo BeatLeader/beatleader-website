@@ -214,7 +214,7 @@
 
 	$: isAdmin = $account?.player?.role?.includes('admin');
 	$: profileAppearance = playerData?.profileSettings?.profileAppearance;
-	$: cover = !$editModel?.avatarOverlayEdit && (playerData?.profileSettings?.profileCover ?? $editModel?.data?.profileCover);
+	$: cover = !$editModel?.avatarOverlayEdit && ($editModel ? $editModel?.data?.profileCover : playerData?.profileSettings?.profileCover);
 	$: rolesShown = anyRolesShown(profileAppearance);
 
 	$: if (startEditing) onEnableEditModel();
@@ -230,13 +230,11 @@
 		});
 	const changeCover = async e => {
 		$editModel.data.profileCover = URL.createObjectURL(e.target.files[0]);
-		playerData.profileSettings.profileCover = $editModel.data.profileCover;
 		$editModel.data.profileCoverData = await readFile(e.target.files[0])?.catch(_ => _);
 	};
 	const resetCover = async e => {
 		$editModel.data.profileCover = '/assets/defaultcover.jpg';
 		$editModel.data.profileCoverData = null;
-		playerData.profileSettings.profileCover = null;
 	};
 
 	function handleBeforeUnload(event) {
@@ -245,6 +243,8 @@
 			event.returnValue = ''; // Required for Chrome
 		}
 	}
+
+	let zIndex = 0;
 
 	$: cover && drawCinematics(cinematicsCanvas, cover);
 
@@ -263,7 +263,7 @@
 {/if}
 
 <AvatarOverlayEditor bind:editModel={$editModel} {roles} />
-<ContentBox cls="profile-box {cover ? 'profile-container' : ''} {modalShown ? 'inner-modal' : ''}" zIndex="4">
+<ContentBox cls="profile-box {cover ? 'profile-container' : ''} {modalShown ? 'inner-modal' : ''}" zIndex={`${zIndex}`}>
 	{#if cover}
 		<div class="cinematics">
 			<div class="cinematics-canvas">
@@ -289,10 +289,10 @@
 		</div>
 	{/if}
 	<AvatarOverlay withCover={cover} data={$editModel?.data ?? playerData?.profileSettings} />
-	<div style="margin: 0; padding: 0;">
+	<div class="share-buttons-container" style="margin: 0; padding: 0;">
 		<Button type="text" title="Share profile link" iconFa="fas fa-share-from-square" cls="shareButton" on:click={copyUrl} />
 	</div>
-	<div style="margin: 0; padding: 0;">
+	<div class="share-buttons-container" style="margin: 0; padding: 0;">
 		{#if screenshoting}
 			<div class="screenshotSpinner"><Spinner /></div>
 		{:else}
@@ -362,6 +362,7 @@
 				{roles}
 				profileAppearance={playerData?.profileSettings?.profileAppearance ?? null}
 				bind:editModel={$editModel}
+				bind:zIndex
 				on:edit-model-enable={onEnableEditModel}
 				on:modal-shown={() => (modalShown = true)}
 				on:modal-hidden={() => (modalShown = false)} />
@@ -521,9 +522,9 @@
 		position: absolute;
 		top: 0;
 		transform: scale(1.1) translateZ(0);
-		width: 100%;
+		width: 110%;
 		z-index: -1;
-		height: 100%;
+		height: 110%;
 	}
 
 	:global(.shareButton) {
@@ -574,6 +575,12 @@
 		width: 10em;
 	}
 
+	@media screen and (max-width: 1750px) {
+		.cinematics-canvas {
+			width: 100%;
+		}
+	}
+
 	@media screen and (max-width: 767px) {
 		.player-general-info {
 			flex-direction: column;
@@ -588,6 +595,11 @@
 
 		.followers-and-socials {
 			justify-content: space-evenly;
+			margin-left: 0;
+			margin-left: -0.8em;
+			margin-right: -0.8em;
+			padding: 0 0.8em;
+			border-radius: 0;
 		}
 
 		.cover-image {
@@ -600,10 +612,6 @@
 
 		:global(.profile-box) {
 			border-radius: 0 !important;
-		}
-
-		.followers-and-socials {
-			border-radius: 0;
 		}
 	}
 </style>

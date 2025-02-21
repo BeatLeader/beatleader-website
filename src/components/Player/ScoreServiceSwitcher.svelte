@@ -439,12 +439,12 @@
 											defaultValue: serviceParams?.filters?.requirements ? parseInt(serviceParams?.filters?.requirements) : null,
 											values: [
 												{id: null, name: 'All'},
+												{id: requirementsMap.vivify, name: 'Vivify'},
 												{id: requirementsMap.noodles, name: 'Noodle Extensions'},
 												{id: requirementsMap.chroma, name: 'Chroma'},
 												{id: requirementsMap.V3, name: 'V3'},
 												{id: requirementsMap.cinema, name: 'Cinema'},
 												{id: requirementsMap.mappingExtensions, name: 'Mapping Extensions'},
-												{id: requirementsMap.optionalProperties, name: 'Optional Properties'},
 												{id: requirementsMap.vnjs, name: 'VNJS'},
 											],
 										},

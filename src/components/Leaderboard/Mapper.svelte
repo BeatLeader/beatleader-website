@@ -21,7 +21,7 @@
 		class="mapper-container"
 		bind:this={referenceElement}
 		on:click|preventDefault={() => navigateToPlayer(mapper.playerId)}
-		style="background-color: {mapper.curator ? '#00bc8c' : mapper.verifiedMapper ? '#7646af' : '#444'};">
+		style="background-color: {mapper.verifiedMapper ? '#7646af' : '#444'};">
 		<img loading="lazy" class="mapper-avatar" src={mapper.avatar} />
 		<span>{mapper.name}</span>
 	</a>
@@ -31,7 +31,7 @@
 		</div>
 	</Popover>
 {:else}
-	<div class="mapper-container" style="background-color: {mapper.curator ? '#00bc8c' : mapper.verifiedMapper ? '#7646af' : '#444'};">
+	<div class="mapper-container" style="background-color: {mapper.verifiedMapper ? '#7646af' : '#444'};">
 		{#if mapper.authorName}
 			<i class="fa-solid fa-circle-info map-name-info" title="Missing collaborators were detected. This is the map author name." />
 		{:else}

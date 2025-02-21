@@ -68,6 +68,8 @@ export const DEFAULT_CONFIG = {
 		ccWinterHighlights24: true,
 		followersBecomingPublic: true,
 		beastiesNominationsBanner: true,
+
+		playlistOption: 'selected',
 	},
 	scorePreferences: {
 		badgeRows: 2,
@@ -110,6 +112,7 @@ export const DEFAULT_CONFIG = {
 		showStatsInHeader: false,
 		showHashInHeader: false,
 		showGraphOption: true,
+		showAccGraph: false,
 		showClanCaptureInHeader: true,
 		showClanCaptureInList: true,
 		alwaysShowAuthorHint: false,
@@ -210,6 +213,9 @@ export const DEFAULT_CONFIG = {
 		passPp: false,
 		accPp: false,
 		techPp: false,
+	},
+	playlist: {
+		itemsPerPage: 5,
 	},
 	locale: DEFAULT_LOCALE,
 	selectedPlaylist: {},

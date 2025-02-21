@@ -64,6 +64,10 @@
 	$: coverUrl = song?.fullImageUrl ?? song?.imageUrl ?? (hash ? `${BS_CDN}/${encodeURIComponent(hash.toLowerCase())}.jpg` : null);
 	$: leaderboardCaptor = leaderboard?.topClan;
 
+	$: explicity = song?.explicity;
+	$: isBlurred = true;
+	$: shouldBlur = explicity && (explicity & (1 << 1)) !== 0;
+
 	$: drawCinematics(cinematicsCanvas, coverUrl);
 
 	$: name = song?.name;
@@ -77,11 +81,16 @@
 				<canvas bind:this={cinematicsCanvas} style="position: absolute; width: 100%; height: 100%; opacity: 0" />
 			</div>
 		</div>
-		<div
-			class="map-cover"
-			style={coverUrl
-				? `background: url(${coverUrl}); background-repeat: no-repeat; background-size: cover; background-position: center;`
-				: ''}>
+		<div class="cover-container">
+			<div
+				class="map-cover"
+				style={`${
+					coverUrl
+						? `background: url(${coverUrl}${shouldBlur && !isBlurred ? '?original=true' : ''}); background-repeat: no-repeat; background-size: cover; background-position: center;`
+						: ''
+				} ${shouldBlur ? 'cursor: pointer;' : ''}`}
+				on:click={() => (isBlurred = !isBlurred)}>
+			</div>
 		</div>
 
 		<div class="main-container">
@@ -282,11 +291,17 @@
 		color: #ffffffcc !important;
 	}
 
-	.map-cover {
+	.cover-container {
 		width: 16em;
 		aspect-ratio: 1;
 		border-radius: 8px;
 		z-index: 1;
+		overflow: hidden;
+	}
+
+	.map-cover {
+		width: 100%;
+		height: 100%;
 	}
 
 	.name-long {
@@ -377,9 +392,9 @@
 		position: absolute;
 		top: 0;
 		transform: scale(1.1) translateZ(0);
-		width: 100%;
+		width: 110%;
 		z-index: -1;
-		height: 100%;
+		height: 110%;
 	}
 
 	.status-and-type {
@@ -478,6 +493,12 @@
 		height: 1.8em;
 	}
 
+	@media screen and (max-width: 1275px) {
+		.cinematics-canvas {
+			width: 100%;
+		}
+	}
+
 	@media screen and (max-width: 1024px) {
 		header {
 			margin-inline: 0;
@@ -555,7 +576,7 @@
 			font-size: 1em;
 		}
 
-		.map-cover {
+		.cover-container {
 			width: 11em;
 		}
 

@@ -89,6 +89,8 @@ export default (
 				// swallow AbortError
 			}
 
+			console.log(err);
+
 			setError(onError ? onError(err) : err);
 		} finally {
 			if (abortController === pendingAbortController) {

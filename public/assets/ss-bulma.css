@@ -735,7 +735,8 @@ body,
 button,
 input,
 select,
-textarea {
+textarea,
+#overlay-wrapper {
 	font-family:
 		BlinkMacSystemFont,
 		-apple-system,

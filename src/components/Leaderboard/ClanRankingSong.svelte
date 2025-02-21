@@ -153,14 +153,24 @@
 			<div class="up-to-tablet icons">
 				<Icons layoutType="large" {song} {diffInfo} icons={selectedIcons} noPin={true} />
 			</div>
-			<div class="mobile-only icons">
+			<div class="mobile-only rank-mobile">
 				<span class="rank">
 					<ScoreRank rank={cr.rank} />
 				</span>
 
 				<span class="timeset">
-					<FormattedDate date={cr.lastUpdateTimeNumber} />
+					<FormattedDate date={cr.lastUpdateTime} />
 				</span>
+
+				<div class="capture-status">
+					<LeaderboardDisplayCaptureStatus
+						clan={cr?.clan}
+						clanRankingContested={!cr?.clan}
+						leaderboardId={cr?.leaderboardId}
+						withTitle={false} />
+				</div>
+			</div>
+			<div class="mobile-only icons">
 				<Icons layoutType="flat" {song} {diffInfo} icons={selectedIcons} noPin={true} />
 			</div>
 		{/if}
@@ -307,6 +317,10 @@
 		padding-bottom: 0.5rem;
 	}
 
+	.rank-mobile.mobile-only {
+		display: none;
+	}
+
 	.main.beat-savior .timeset {
 		width: auto;
 	}
@@ -425,6 +439,16 @@
 			gap: 1em;
 		}
 
+		.rank-mobile.mobile-only {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			align-self: center;
+			padding-bottom: 1em;
+			gap: 0.5em;
+			margin-top: -1em;
+		}
+
 		.player {
 			text-align: center;
 		}
@@ -434,6 +458,11 @@
 
 		.player-score .rank {
 			margin-right: -1.5em;
+			margin-top: unset !important;
+		}
+
+		.capture-status {
+			margin-bottom: unset !important;
 		}
 	}
 	.pp {

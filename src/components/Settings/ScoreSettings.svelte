@@ -23,6 +23,7 @@
 	const DEFAULT_WEB_PLAYER = 'beatleader';
 	const DEFAULT_TIME_FORMAT = 'relative';
 	const DEFAULT_LINK_OPTION = 'thistab';
+	const DEFAULT_PLAYLIST_OPTION = 'selected';
 
 	const scoreComparisonMethods = [
 		{name: 'No comparison', value: 'none'},
@@ -201,6 +202,11 @@
 		{name: 'New tab', value: 'newtab'},
 	];
 
+	const playlistOptions = [
+		{name: 'Selected playlist', value: DEFAULT_PLAYLIST_OPTION},
+		{name: 'Playlist picker popup', value: 'picker'},
+	];
+
 	let currentLocale = DEFAULT_LOCALE;
 	let currentScoreBadges = null;
 	let currentScoreBadgeSelected = null;
@@ -215,6 +221,7 @@
 	let currentTimeFormat = DEFAULT_TIME_FORMAT;
 	let currentShowHmd = true;
 	let currentShowTriangle = true;
+	let currentPlaylistOption = DEFAULT_PLAYLIST_OPTION;
 
 	const scoreDetailsKeyDescription = {
 		showMapInfo: 'Map info',
@@ -242,6 +249,8 @@
 			currentTimeFormat = config?.scorePreferences?.dateFormat ?? DEFAULT_TIME_FORMAT;
 		if (config?.scorePreferences?.showHmd != currentShowHmd) currentShowHmd = config?.scorePreferences?.showHmd ?? true;
 		if (config?.scorePreferences?.showTriangle != currentShowTriangle) currentShowTriangle = config?.scorePreferences?.showTriangle ?? true;
+		if (config?.preferences?.playlistOption != currentPlaylistOption)
+			currentPlaylistOption = config?.preferences?.playlistOption ?? DEFAULT_PLAYLIST_OPTION;
 		if (stringify(config?.scoreBadges) !== stringify(currentScoreBadges)) {
 			currentScoreBadges = deepClone(Object.values(config?.scoreBadges) ?? DEFAULT_CONFIG.scoreBadges);
 			currentScoreBadgeSelected = null;
@@ -351,6 +360,7 @@
 	$: configStore.settempsetting('scorePreferences', 'badgeRows', currentBadgeLayout);
 	$: configStore.settempsetting('scoreComparison', 'badgeRows', currentComparisonBadgeLayout);
 	$: configStore.settempsetting('scoreBadges', null, currentScoreBadges);
+	$: configStore.settempsetting('preferences', 'playlistOption', currentPlaylistOption);
 
 	$: scoreDetailsPreferences = $configStore.scoreDetailsPreferences ?? {};
 	$: visibleScoreIcons = $configStore.visibleScoreIcons;
@@ -502,6 +512,10 @@
 		<section class="option">
 			<label title="How to show time for the score">Date Format</label>
 			<Select bind:value={currentTimeFormat} options={timeFormats} />
+		</section>
+		<section class="option">
+			<label title="How add to playlists buttons will work">Playlists</label>
+			<Select bind:value={currentPlaylistOption} options={playlistOptions} />
 		</section>
 	</div>
 </div>

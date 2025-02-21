@@ -22,6 +22,7 @@ export default () => {
 			case 'global':
 			case 'clans':
 			case 'graph':
+			case 'accgraph':
 				return await leaderboardService.fetchLeaderboardPage(leaderboardId, page, filters, priority, signal, force);
 			case 'clanranking':
 				return await clanRankingService.fetchClanRankingPage(leaderboardId, page, priority, signal, force);

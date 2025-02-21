@@ -46,7 +46,7 @@
 		</span>
 
 		<i
-			class={`fa filter-btn ${!filterOpen ? filter?.props?.iconFa ?? '' : ''}`}
+			class={`fa filter-btn ${!filterOpen ? (filter?.props?.iconFa ?? '') : ''}`}
 			class:fa-times={filterOpen}
 			title={filterOpen ? 'Click to close and clear filter' : $editModel ? 'Click to toggle' : filter?.props?.title}
 			on:click={onButtonClick} />
@@ -58,7 +58,7 @@
 		display: inline-block;
 		position: relative;
 		width: 1.75em;
-		height: calc(1em + 0.5em + 2px + 2px);
+		min-height: calc(1em + 0.5em + 2px + 2px);
 		overflow: hidden;
 		transition: all 300ms ease-out;
 		margin-right: 0.25em;
@@ -74,7 +74,7 @@
 	}
 
 	.filter > .filter-component {
-		position: absolute;
+		position: relative;
 		left: 0;
 		bottom: 0;
 		width: calc(100% - 1.4em);

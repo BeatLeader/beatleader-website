@@ -7,7 +7,7 @@
 
 	const dispatch = createEventDispatcher();
 
-	$: iconUrl = item?.icon ?? 'https://cdn.assets.beatleader.xyz/NTG.png';
+	$: iconUrl = item?.icon ?? 'https://cdn.assets.beatleader.com/NTG.png';
 	$: name = item?.name ?? '';
 	$: description = item?.description ?? '';
 	$: tag = item?.tag ?? '';

@@ -15,6 +15,7 @@
 	export let country = false;
 	export let friends = false;
 	export let isLoading = true;
+	export let frosted = false;
 
 	let miniRanking = null;
 
@@ -58,7 +59,7 @@
 		{#if isLoading}
 			<Spinner />
 		{:else if miniRanking}
-			<div class="players darkened-background">
+			<div class="players darkened-background {frosted ? 'frosted' : ''}">
 				{#each miniRanking as player}
 					<div class="rank">
 						<Value value={country ? player.countryRank : player.rank} zero="" digits={0} prefix="#" />

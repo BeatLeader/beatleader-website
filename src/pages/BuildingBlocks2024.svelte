@@ -3,9 +3,31 @@
 	import {MetaTags} from 'svelte-meta-tags';
 	import ssrConfig from '../ssr-config';
 	import DiscordInvite from '../components/Clans/DiscordInvite.svelte';
+	import Button from '../components/Common/Button.svelte';
+	import {dateFromUnix, formatDateRelative} from '../utils/date';
 
-	let description = 'Upcoming mapping contest with a prize pool and chance to get directly into ranked!';
+	export let location;
+
+	let description = 'Ongoing mapping contest with a prize pool and chance to get directly into ranked!';
 	let image = '/assets/buildingblockslogo.png';
+
+	// Smooth scroll function
+	function scrollToElement(id) {
+		const element = document.getElementById(id);
+		if (element) {
+			element.scrollIntoView({behavior: 'smooth'});
+		}
+	}
+
+	// Handle hash changes
+	function handleHash(location) {
+		const hash = location.hash.slice(1);
+		if (hash) {
+			setTimeout(() => scrollToElement(hash), 0);
+		}
+	}
+
+	$: handleHash(location);
 </script>
 
 <section class="align-content">
@@ -18,7 +40,7 @@
 			</div>
 		</ContentBox>
 
-		<ContentBox cls="bb-box">
+		<ContentBox cls="bb-box" id="info">
 			<h2>INFO</h2>
 			<div class="darkened-background">
 				<p>
@@ -29,14 +51,22 @@
 				<p>
 					<strong>2 groups with 3 winners each</strong> will be chosen/revealed based on points they receive from judges + a community vote
 				</p>
-				<p>Submissions are open to all mappers, new and experienced</p>
-				<br />
-				<p>
-					<strong>Map pool is planned to be revealed in DECEMBER!</strong> Stay tuned and check the info to prepare while you are waiting.
-				</p>
+
+				{#if Date.now() < dateFromUnix(1738699200)}
+					<p>Submissions are open to all mappers, new and experienced</p>
+					<br />
+					<p>
+						<strong>Song pool is <a href="#song-pool">revealed!</a></strong> Pick your song and start mapping! Map submissions are
+						<a href="#submissions">open</a>
+						until
+						<strong>February 4th</strong>
+					</p>
+				{:else}
+					<p>Submissions are closed!</p>
+				{/if}
 			</div>
 		</ContentBox>
-		<div class="video-and-invite">
+		<div class="video-and-invite" id="invite">
 			<ContentBox cls="bb-box bb-video-box">
 				<div style="display: flex; width: 100%; height: 100%; border-radius: 8px; overflow:hidden; justify-content: center;">
 					<iframe
@@ -56,7 +86,7 @@
 			</ContentBox>
 		</div>
 
-		<ContentBox cls="darkened-background bb-box">
+		<ContentBox cls="darkened-background bb-box" id="process">
 			<h2>PROCESS</h2>
 			<div class="darkened-background">
 				<p>
@@ -113,7 +143,168 @@
 			</div>
 		</ContentBox>
 
-		<ContentBox cls="bb-box">
+		<ContentBox cls="darkened-background bb-box" id="song-pool">
+			<h2>SONG POOL</h2>
+			<div class="darkened-background map-pool-container">
+				<div class="map-entry">
+					<iframe
+						src="https://www.youtube.com/embed/h0JrFYBqgEU"
+						title="Midnight Mission - Midnight Grand Orchestra"
+						frameborder="0"
+						allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+						allowfullscreen></iframe>
+				</div>
+
+				<div class="map-entry">
+					<iframe
+						src="https://www.youtube.com/embed/L5inD4XWz4U"
+						title="EVERYBODY DO THE FLOP - LilDeuceDeuce"
+						frameborder="0"
+						allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+						allowfullscreen></iframe>
+				</div>
+
+				<div class="map-entry">
+					<iframe
+						src="https://www.youtube.com/embed/JbKQUd9eQrg"
+						title="Letting Go - Yonetro"
+						frameborder="0"
+						allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+						allowfullscreen></iframe>
+				</div>
+
+				<div class="map-entry">
+					<iframe
+						src="https://www.youtube.com/embed/rf80EhRZzk4"
+						title="Farewell To Reality - ReeK"
+						frameborder="0"
+						allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+						allowfullscreen></iframe>
+				</div>
+
+				<div class="map-entry">
+					<iframe
+						src="https://www.youtube.com/embed/gcfqTk60fkE"
+						title="Bad Apple!! feat.nomico (Camellia's 'Bad Psy!!' Remix) - Alstroemeria Records"
+						frameborder="0"
+						allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+						allowfullscreen></iframe>
+				</div>
+
+				<div class="map-entry">
+					<iframe
+						src="https://www.youtube.com/embed/h5hMNF3kDm0"
+						title="Tic! Tac! Toe! - TAK x Corbin"
+						frameborder="0"
+						allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+						allowfullscreen></iframe>
+				</div>
+
+				<div class="map-entry">
+					<iframe
+						src="https://www.youtube.com/embed/oA0CpI0vCK4"
+						title="mumei - Nanashi Mumei"
+						frameborder="0"
+						allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+						allowfullscreen></iframe>
+				</div>
+
+				<div class="map-entry">
+					<iframe
+						src="https://www.youtube.com/embed/jIMfrJd78jw"
+						title="For Me - Throttle"
+						frameborder="0"
+						allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+						allowfullscreen></iframe>
+				</div>
+
+				<div class="map-entry">
+					<iframe
+						src="https://www.youtube.com/embed/2_RWikU2hsM"
+						title="Infinity - Sefa, D-Block & S-te-Fan"
+						frameborder="0"
+						allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+						allowfullscreen></iframe>
+				</div>
+
+				<div class="map-entry">
+					<iframe
+						src="https://www.youtube.com/embed/19y8YTbvri8"
+						title="Mesmerizer - 32ki (feat. Hatsune Miku＆Kasane Teto)"
+						frameborder="0"
+						allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+						allowfullscreen></iframe>
+				</div>
+
+				<div class="map-entry">
+					<iframe
+						src="https://www.youtube.com/embed/5GMKOCqorRg"
+						title="Scars - Within Destruction"
+						frameborder="0"
+						allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+						allowfullscreen></iframe>
+				</div>
+
+				<div class="map-entry">
+					<iframe
+						src="https://www.youtube.com/embed/5BmUrlQZDok"
+						title="TRAFIK! - Käärijä & Joost"
+						frameborder="0"
+						allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+						allowfullscreen></iframe>
+				</div>
+
+				<div class="map-entry">
+					<iframe
+						src="https://www.youtube.com/embed/G1Fdtdmb47s"
+						title="DELETE IT ALL - MUST DIE! ft. Ducky"
+						frameborder="0"
+						allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+						allowfullscreen></iframe>
+				</div>
+
+				<div class="map-entry">
+					<iframe
+						src="https://www.youtube.com/embed/XFIb61aVols"
+						title="bleachers - templuv"
+						frameborder="0"
+						allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+						allowfullscreen></iframe>
+				</div>
+
+				<div class="map-entry">
+					<iframe
+						src="https://www.youtube.com/embed/2zawZImla2U"
+						title="No Weapon Formed Shall Prosper - Eidola"
+						frameborder="0"
+						allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+						allowfullscreen></iframe>
+				</div>
+			</div>
+		</ContentBox>
+
+		<ContentBox cls="bb-box" id="submissions">
+			<h2>SUBMISSIONS</h2>
+			<div class="darkened-background submissions-container">
+				{#if Date.now() < dateFromUnix(1738699200)}
+					<div class="submission-container">
+						<Button
+							type="submit"
+							url="https://forms.gle/7PkMdHhZR6c7EEnK9"
+							onlyurl={true}
+							label="SUBMIT YOUR MAP"
+							iconFa="fas fa-paper-plane" />
+					</div>
+					<p>
+						Submissions will close <strong>{formatDateRelative(dateFromUnix(1738699200))}</strong>!
+					</p>
+				{:else}
+					<p>Submissions are closed!</p>
+				{/if}
+			</div>
+		</ContentBox>
+
+		<ContentBox cls="bb-box" id="prizes">
 			<h2>Normal map group prizes</h2>
 			<div class="darkened-background">
 				<ul>
@@ -191,6 +382,7 @@
 	:global(.bb-box) {
 		border-radius: 12px !important;
 		padding: 0.5em !important;
+		scroll-margin-top: 2em;
 	}
 
 	:global(.bb-video-box) {
@@ -259,6 +451,40 @@
 
 	:global(#discordData #buttonText) {
 		margin: auto !important;
+	}
+
+	.map-pool-container {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 1em;
+		padding: 0;
+		padding-top: 1em;
+		padding-bottom: 1em;
+		justify-content: center;
+	}
+
+	.map-entry {
+		width: 30em;
+		border-radius: 8px;
+		overflow: hidden;
+		height: 16em;
+	}
+
+	.map-entry iframe {
+		width: 100%;
+		height: 100%;
+	}
+
+	.submissions-container {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+
+	.submission-container {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
 	}
 
 	@media screen and (max-width: 1275px) {

@@ -13,9 +13,6 @@
 
 	let initialized = false;
 
-	let localFrom = getLocalDateFromJsDate(dateFrom);
-	let localTo = getLocalDateFromJsDate(dateTo);
-
 	function onChanged(localFrom, localTo) {
 		if (!initialized) {
 			initialized = true;
@@ -23,11 +20,16 @@
 			return;
 		}
 
-		let dateFrom = localFrom ? DateTime.fromISO(localFrom).toJSDate() : null;
-		let dateTo = localTo ? DateTime.fromISO(localTo).toJSDate() : null;
+		let newDateFrom = localFrom ? DateTime.fromISO(localFrom).toJSDate() : null;
+		let newDateTo = localTo ? DateTime.fromISO(localTo).toJSDate() : null;
 
-		dispatch('change', {from: dateFrom, to: dateTo});
+		if (newDateFrom !== dateFrom || newDateTo !== dateTo) {
+			dispatch('change', {from: newDateFrom, to: newDateTo});
+		}
 	}
+
+	$: localFrom = getLocalDateFromJsDate(dateFrom);
+	$: localTo = getLocalDateFromJsDate(dateTo);
 
 	$: onChanged(localFrom, localTo);
 </script>

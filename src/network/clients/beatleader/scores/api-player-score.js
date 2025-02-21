@@ -1,14 +1,10 @@
 import queue from '../../../queues/queues';
 import createClient from '../../generic';
-import {processLeaderboardScore as processLegacyLeaderboardScore} from '../../../queues/beatleader/api-queue';
 import {processLeaderboardScore} from '../leaderboard/utils/process';
 
 const process = response => {
 	try {
-		const legacyProcessed = processLegacyLeaderboardScore(response);
-		if (!legacyProcessed) return null;
-
-		return processLeaderboardScore(legacyProcessed);
+		return processLeaderboardScore(response);
 	} catch (err) {
 		console.error(err);
 		return null;

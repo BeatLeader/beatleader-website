@@ -3,7 +3,7 @@
 	import zoomPlugin from 'chartjs-plugin-zoom';
 	// import chartTrendline from 'chartjs-plugin-trendline';
 
-	import {formatNumber, roundToPrecision} from '../../../utils/format';
+	import {formatNumber, GLOBAL_LEADERBOARD_TYPE, roundToPrecision} from '../../../utils/format';
 	import {formatDate, formatDateRelative, getTimeStringColor} from '../../../utils/date';
 	import Spinner from '../../Common/Spinner.svelte';
 	import {configStore} from '../../../stores/config';
@@ -13,6 +13,7 @@
 	export let leaderboardId = null;
 	export let sortBy = null;
 	export let order = null;
+	export let leaderboard = null;
 
 	export let currentPlayerId = null;
 
@@ -48,13 +49,27 @@
 		return null;
 	}
 
-	let availableXKeys = ['playerRank', 'date', 'pp', 'acc', 'pauses', 'rank', 'maxStreak', 'mistakes', 'weight', 'weightedPp'].map(id => {
+	let availableXKeys = ['playerRank'].map(id => {
 		return {id, name: sortByToAxisName(id)};
 	});
 	let currentXKey = availableXKeys[0];
 
 	let leaderboardScores = null;
 	let isLoading = false;
+
+	function updateAvailableXKeys(leaderboard) {
+		if (leaderboard.difficultyBl.status == 3) {
+			availableXKeys = ['playerRank', 'date', 'pp', 'acc', 'pauses', 'rank', 'maxStreak', 'mistakes', 'weight', 'weightedPp'].map(id => {
+				return {id, name: sortByToAxisName(id)};
+			});
+		} else {
+			availableXKeys = ['playerRank', 'date', 'acc', 'pauses', 'rank', 'maxStreak', 'mistakes'].map(id => {
+				return {id, name: sortByToAxisName(id)};
+			});
+		}
+
+		currentXKey = availableXKeys[0];
+	}
 
 	function valueFromSortBy(score, sortBy) {
 		if (!score) return null;
@@ -296,7 +311,7 @@
 			},
 			scales: {
 				x: {
-					type: xkey == 'date' ? 'date' : 'logarithmic',
+					type: xkey == 'date' ? 'time' : 'logarithmic',
 					title: {
 						display: true,
 						text: '',
@@ -361,7 +376,7 @@
 
 		try {
 			isLoading = true;
-			fetch(`${BL_API_URL}leaderboard/${leaderboardId}/scoregraph`)
+			fetch(`${BL_API_URL}leaderboard/${leaderboardId}/scoregraph?leaderboardContext=${GLOBAL_LEADERBOARD_TYPE}`)
 				.then(d => d.json())
 				.then(g => {
 					leaderboardScores = g
@@ -379,6 +394,7 @@
 	}
 
 	$: fetchScores(leaderboardId);
+	$: updateAvailableXKeys(leaderboard);
 
 	$: height = $configStore.preferences.graphHeight;
 	$: currentPlayerId && chart && chart.update();

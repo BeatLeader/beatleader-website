@@ -92,7 +92,7 @@
 				<h3 class="big-description audiowide">Let's create something awesome together!</h3>
 
 				<div class="downloadButtons">
-					<a class="pc-download-button" href="https://api.beatleader.xyz/swagger/index.html" target="_blank" rel="noreferrer">
+					<a class="pc-download-button" href="https://api.beatleader.com/swagger/index.html" target="_blank" rel="noreferrer">
 						<Button iconFa="fas fa-box-open" label="API" />
 					</a>
 					<a class="quest-download-button" href="https://github.com/BeatLeader" target="_blank" rel="noreferrer">
@@ -100,7 +100,7 @@
 					</a>
 					<a
 						class="quest-download-button"
-						href="https://api.beatleader.xyz/grafana/public-dashboards/24a088907eb24c599da93cf110686b43?orgId=1&refresh=10s"
+						href="https://api.beatleader.com/grafana/public-dashboards/24a088907eb24c599da93cf110686b43?orgId=1&refresh=10s"
 						target="_blank"
 						rel="noreferrer">
 						<Button iconFa="fas fa-chart-line" label="Grafana" />

@@ -36,7 +36,7 @@ export let replayBlock = (editor, options) => {
 			changeMapId() {
 				var newId = this.get('scoreId');
 				this.set({scoreId: newId});
-				this.addAttributes({src: `https://replay.beatleader.xyz/?scoreId=${newId}`});
+				this.addAttributes({src: `https://replay.beatleader.com/?scoreId=${newId}`});
 			},
 		},
 	});
@@ -70,7 +70,7 @@ export let replayBlock = (editor, options) => {
 			type: 'replay',
 			style: {border: 'none', width: '300px', height: '185px', 'border-radius': '8px'},
 			attributes: {
-				src: 'https://replay.beatleader.xyz/?scoreId=1',
+				src: 'https://replay.beatleader.com/?scoreId=1',
 				'bl-type': 'replay',
 			},
 		},

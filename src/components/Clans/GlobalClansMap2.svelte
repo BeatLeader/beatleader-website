@@ -1,7 +1,7 @@
 <script>
 	import * as d3 from 'd3';
 	import {navigate} from 'svelte-routing';
-	import { isTouchDevice } from '../../utils/is-touch';
+	import {isTouchDevice} from '../../utils/is-touch';
 
 	export let leaderboardId;
 	export let clanTag;
@@ -25,7 +25,7 @@
 	var clans = [];
 
 	function fetchClanData() {
-		fetch('https://cdn.assets.beatleader.xyz/global-map-file.json')
+		fetch('https://cdn.assets.beatleader.com/global-map-file.json')
 			.then(d => d.json())
 			.then(data => {
 				clansData = data;
@@ -41,7 +41,7 @@
 		context = canvas.getContext('2d');
 
 		if (leaderboardId || clanTag) {
-			fetch('https://cdn.assets.beatleader.xyz/clansmap-globalcache.json')
+			fetch('https://cdn.assets.beatleader.com/clansmap-globalcache.json')
 				.then(r => r.json())
 				.then(cache => {
 					processData(cache);

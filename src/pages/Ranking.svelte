@@ -414,7 +414,7 @@
 	<article class="page-content" transition:fade|global>
 		<!-- <ContentBox cls="event-banner" on:click={() => navigate('/event/49')}>
 			<div class="event-container">
-				<img alt="Event banner" class="event-image" src="https://cdn.assets.beatleader.xyz/75058-event.png" />
+				<img alt="Event banner" class="event-image" src="https://cdn.assets.beatleader.com/75058-event.png" />
 				<div class="event-text-container">
 					<span class="event-title">Ranked weeks #87-91!</span>
 					<span class="event-text">Check out what was ranked in April and compete for a badge.</span>
@@ -516,7 +516,7 @@
 									{:else if param?.type === 'countries'}
 										<Countries countries={param.value} on:change={param.onChange} />
 									{:else if param?.type === 'headsets'}
-										<Headsets headsets={param.value} on:change={param.onChange} />
+										<Headsets value={param.value} on:change={param.onChange} />
 									{:else if param?.type === 'slider'}
 										<RangeSlider
 											range

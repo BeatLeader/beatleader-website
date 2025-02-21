@@ -37,7 +37,7 @@
 	}
 
 	function cleanLinkOfCors(link) {
-		link = link.replace('https://cdn.assets.beatleader.xyz/', '/cors/cdn-assets-bl/');
+		link = link.replace('https://cdn.assets.beatleader.com/', '/cors/cdn-assets-bl/');
 		link = link.replace('https://cdn.beatsaver.com/', '/cors/cdnbeatsaver/');
 		return link;
 	}
@@ -66,7 +66,7 @@
 	$: drawCinematics(cinematicsCanvas, imageUrl);
 	$: if (buttons.length > 3) buttons = buttons.slice(0, 3);
 	$: forcedColor ? (dominantColor = forcedColor) : retrieveBackgroundColor(imageUrl);
-	$: hoverTitle = active && targetUrl ? 'Go to ' + linkName ?? targetUrl : null;
+	$: hoverTitle = active && targetUrl ? ('Go to ' + linkName ?? targetUrl) : null;
 </script>
 
 <a href={targetUrl} on:click|preventDefault class="grid-item" class:active title={hoverTitle}>

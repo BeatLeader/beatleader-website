@@ -2,7 +2,7 @@ import {writable} from 'svelte/store';
 import keyValueRepository from '../db/repository/key-value';
 import {configStore} from './config';
 import {BL_API_URL} from '../network/queues/beatleader/api-queue';
-import {substituteVars} from '../utils/format';
+import {substituteVarsUrl} from '../utils/format';
 import deepEqual from 'deep-equal';
 
 const STORE_PLAYLISTS_KEY = 'playlists';
@@ -134,7 +134,7 @@ export default () => {
 
 		var remote = await fetch(
 			BL_API_URL +
-				`user/playlist?id=${playlist.customData?.id ?? ''}&shared=${shared !== undefined ? shared : playlist.customData?.shared ?? false}`,
+				`user/playlist?id=${playlist.customData?.id ?? ''}&shared=${shared !== undefined ? shared : (playlist.customData?.shared ?? false)}`,
 			{
 				credentials: 'include',
 				method: 'POST',
@@ -290,9 +290,9 @@ export default () => {
 			filters.order = 'desc';
 		}
 
-		let url = substituteVars(
+		let url = substituteVarsUrl(
 			BL_API_URL +
-				'playlist/generate?count=${count}&type=${type}&search=${search}&title=${playlistTitle}&stars_from=${stars_from}&stars_to=${stars_to}&accrating_from=${accrating_from}&accrating_to=${accrating_to}&passrating_from=${passrating_from}&passrating_to=${passrating_to}&techrating_from=${techrating_from}&techrating_to=${techrating_to}&date_from=${date_from}&date_to=${date_to}&sortBy=${sortBy}&order=${order}&mytype=${mytype}&mode=${mode}&difficulty=${difficulty}&count=${count}&mapType=${mapType}&allTypes=${allTypes}&duplicate_diffs=${duplicateDiffs}&mapRequirements=${mapRequirements}&songStatus=${songStatus}&allRequirements=${allRequirements}',
+				'playlist/generate?count=${count}&type=${type}&search=${search}&title=${playlistTitle}&stars_from=${stars_from}&stars_to=${stars_to}&accrating_from=${accrating_from}&accrating_to=${accrating_to}&passrating_from=${passrating_from}&passrating_to=${passrating_to}&techrating_from=${techrating_from}&techrating_to=${techrating_to}&date_from=${date_from}&date_to=${date_to}&date_range=${date_range}&sortBy=${sortBy}&order=${order}&mytype=${mytype}&mode=${mode}&difficulty=${difficulty}&count=${count}&mapType=${mapType}&allTypes=${allTypes}&duplicate_diffs=${duplicateDiffs}&mapRequirements=${mapRequirements}&songStatus=${songStatus}&allRequirements=${allRequirements}&playlistIds=${playlistIds}',
 			{count, ...filters},
 			true,
 			true
@@ -326,10 +326,42 @@ export default () => {
 			filters.order = 'desc';
 		}
 
-		let url = substituteVars(
+		let url = substituteVarsUrl(
 			BL_API_URL +
 				'playlist/scores/generate?playerId=${playerId}&count=${count}&sortBy=${sortBy}&order=${order}&search=${search}&diff=${diff}&type=${songType}&hmd=${hmd}&modifiers=${modifiers}&stars_from=${starsFrom}&stars_to=${starsTo}&eventId=${eventId}&allTypes=${allTypes}&duplicate_diffs=${duplicateDiffs}',
 			{count, playerId, order: filters.order, sortBy: filters.sort, duplicateDiffs: filters.duplicateDiffs, ...filters.filters},
+			true,
+			true
+		);
+
+		fetch(url, {
+			credentials: 'include',
+		})
+			.then(response => response.json())
+			.then(async playlist => {
+				if (!playlist.playlistTitle || !playlist.songs) {
+					return;
+				}
+
+				let playlists = await get();
+				if (playlists[0]?.oneclick) {
+					playlists.splice(1, 0, playlist);
+				} else {
+					playlists.unshift(playlist);
+				}
+
+				await set(playlists, true);
+				await select(playlist);
+
+				callback();
+			});
+	};
+
+	const generateClanPlaylist = (ppLimit, clanId, sortBy, playedStatus, duplicateDiffs, callback) => {
+		let url = substituteVarsUrl(
+			BL_API_URL +
+				'playlist/clan/generate?clanId=${clanId}&ppLimit=${ppLimit}&duplicate_diffs=${duplicateDiffs}&sortBy=${sortBy}&playedStatus=${playedStatus}',
+			{clanId, ppLimit, sortBy, playedStatus, duplicateDiffs},
 			true,
 			true
 		);
@@ -522,6 +554,7 @@ export default () => {
 		share,
 		generatePlaylist,
 		generatePlayerPlaylist,
+		generateClanPlaylist,
 		updateIcon,
 		updateTitle,
 		updateDescription,

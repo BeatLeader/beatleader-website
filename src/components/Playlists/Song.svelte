@@ -8,6 +8,7 @@
 	import SongScoreCompact from '../Leaderboards/SongScoreCompact.svelte';
 	import {processScore} from '../../network/clients/beatleader/scores/utils/processScore';
 	import {getDiffNameColor} from '../../utils/beatleader/format';
+	import {createEventDispatcher} from 'svelte';
 
 	export let song;
 	export let store;
@@ -16,6 +17,7 @@
 	export let localPlaylistId;
 
 	let leaderboardsService = createLeaderboardsService();
+	const dispatch = createEventDispatcher();
 
 	let songInfo;
 	let leaderboards;
@@ -88,10 +90,62 @@
 
 <div class="container row-${idx}">
 	{#if songInfo}
-		<img loading="lazy" class="cover" src={coverUrl} alt="" />
-		<div style="display: grid; padding-left: 1em">
-			<a href={leaderboardUrl} class="name" on:click|preventDefault={() => navigate(leaderboardUrl)}>{songInfo.name}</a>
-			<div class="author">{songInfo.mapper}</div>
+		<div class="cover-container">
+			<img loading="lazy" class="cover" src={coverUrl} alt="" />
+			{#if canModify}
+				<div class="button-container mobile-only">
+					<Button
+						cls="delistSong"
+						iconFa="fas fa-arrow-up"
+						title="Move up in the list"
+						noMargin={true}
+						on:click={() => dispatch('move-up')} />
+					<Button
+						cls="delistSong"
+						iconFa="fas fa-arrow-down"
+						title="Move down in the list"
+						noMargin={true}
+						on:click={() => dispatch('move-down')} />
+					<Button
+						cls="delistSong"
+						iconFa="fas fa-list-ul"
+						title="Remove from the {$store[localPlaylistId]?.playlistTitle}"
+						noMargin={true}
+						type="danger"
+						on:click={store.remove(hash, localPlaylistId)} />
+				</div>
+			{/if}
+		</div>
+		<div class="song-container">
+			<div class="row-container">
+				<div class="name-container">
+					<a href={leaderboardUrl} class="name" on:click|preventDefault={() => navigate(leaderboardUrl)}>{songInfo.name}</a>
+					<div class="author">{songInfo.mapper}</div>
+				</div>
+				{#if canModify}
+					<div class="button-container desktop-only">
+						<Button
+							cls="delistSong"
+							iconFa="fas fa-arrow-up"
+							title="Move up in the list"
+							noMargin={true}
+							on:click={() => dispatch('move-up')} />
+						<Button
+							cls="delistSong"
+							iconFa="fas fa-arrow-down"
+							title="Move down in the list"
+							noMargin={true}
+							on:click={() => dispatch('move-down')} />
+						<Button
+							cls="delistSong"
+							iconFa="fas fa-list-ul"
+							title="Remove from the {$store[localPlaylistId]?.playlistTitle}"
+							noMargin={true}
+							type="danger"
+							on:click={store.remove(hash, localPlaylistId)} />
+					</div>
+				{/if}
+			</div>
 			<div class="difficulties">
 				{#each leaderboards as leaderboard, songId}
 					<div
@@ -133,15 +187,6 @@
 			<Spinner />
 		</div>
 	{/if}
-	{#if canModify}
-		<Button
-			cls="delistSong"
-			iconFa="fas fa-list-ul"
-			title="Remove from the {$store[localPlaylistId]?.playlistTitle}"
-			noMargin={true}
-			type="danger"
-			on:click={store.remove(hash, localPlaylistId)} />
-	{/if}
 </div>
 
 <style>
@@ -159,10 +204,23 @@
 		flex-wrap: wrap;
 	}
 
+	.song-container {
+		display: flex;
+		padding-left: 1em;
+		flex-direction: column;
+		flex: 1;
+	}
+
 	.cover {
 		width: 6em;
 		height: 6em;
 		border-radius: 0.5em;
+	}
+
+	.row-container {
+		display: flex;
+		justify-content: space-between;
+		flex: 1;
 	}
 
 	.difficulty-with-score {
@@ -175,14 +233,27 @@
 		display: contents;
 	}
 
+	.mobile-only {
+		display: none;
+	}
+
 	:global(.delistSong) {
-		position: absolute !important;
-		right: 0.8em;
 		border-radius: 0.5em !important;
 	}
 
 	:global(.difficulties .diff) {
 		padding-right: 0.2em;
 		padding-left: 0.3em;
+	}
+
+	@media (max-width: 768px) {
+		.mobile-only {
+			display: flex;
+			gap: 0.2em;
+		}
+
+		.desktop-only {
+			display: none;
+		}
 	}
 </style>

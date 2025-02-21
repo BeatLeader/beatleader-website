@@ -9,7 +9,7 @@
 	import Confirmation from '../Common/Confirmation.svelte';
 	import Select from 'svelte-select';
 	import Badge from '../Common/Badge.svelte';
-	import {substituteVars} from '../../utils/format';
+	import {substituteVarsUrl} from '../../utils/format';
 	import {BL_API_URL} from '../../network/queues/beatleader/api-queue';
 	import SecretResetDialog from './SecretResetDialog.svelte';
 	import {getNotificationsContext} from 'svelte-notifications';
@@ -98,7 +98,7 @@
 	}
 
 	const createApp = async (name, clientId, selectedScopes, redirectUrls, iconData) => {
-		let url = substituteVars(
+		let url = substituteVarsUrl(
 			BL_API_URL + 'developer/app?name=${name}&clientId=${clientId}&scopes=${scopes}&redirectUrls=${redirectUrls}',
 			{name, clientId, scopes: selectedScopes.join(','), redirectUrls},
 			true,
@@ -117,7 +117,7 @@
 	};
 
 	const updateApp = async (name, clientId, selectedScopes, redirectUrls, iconData) => {
-		let url = substituteVars(
+		let url = substituteVarsUrl(
 			BL_API_URL + 'developer/app/${clientId}?name=${name}&scopes=${scopes}&redirectUrls=${redirectUrls}',
 			{name, clientId, scopes: selectedScopes.join(','), redirectUrls},
 			true,

@@ -111,7 +111,7 @@
 	}
 
 	function cleanLinkOfCors(link) {
-		link = link.replace('https://cdn.assets.beatleader.xyz/', '/cors/cdn-assets-bl/');
+		link = link.replace('https://cdn.assets.beatleader.com/', '/cors/cdn-assets-bl/');
 		link = link.replace('https://cdn.beatsaver.com/', '/cors/cdnbeatsaver/');
 		return link;
 	}
@@ -491,7 +491,7 @@
 
 				<div class="bottom-container" transition:fly={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 400}}>
 					<img class="bottom-icon" src="/assets/favicon.svg" />
-					<span>beatleader.xyz/replayed</span>
+					<span>beatleader.com/replayed</span>
 				</div>
 			</div>
 		{/if}

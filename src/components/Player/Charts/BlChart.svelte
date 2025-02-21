@@ -25,6 +25,18 @@
 	let lastHistoryHash = null;
 	let activityHistory = null;
 
+	let timeout = null;
+
+	let markers = [
+		{
+			time: 1737763200,
+			color: '#777777',
+			label: 'PPv3.5 reweight',
+			link: 'https://beatleader.wiki/en/ranking/update3-5',
+			marker: 'R',
+		},
+	];
+
 	const calcHistoryHash = statsHistory => stringify(statsHistory);
 
 	async function setupChart(hash, canvas, statsHistory, height) {
@@ -370,6 +382,34 @@
 					},
 					configStore,
 				},
+				plugins: [
+					{
+						id: 'markers',
+						afterDraw: chart => {
+							const ctx = chart.ctx;
+							const xAxis = chart.scales.x;
+							const yAxis = chart.scales.y;
+
+							markers.forEach(marker => {
+								const x = xAxis.getPixelForValue(marker.time * 1000);
+
+								// Draw vertical line
+								ctx.beginPath();
+								ctx.strokeStyle = marker.color;
+								ctx.lineWidth = 2;
+								ctx.moveTo(x, yAxis.top);
+								ctx.lineTo(x, yAxis.top + yAxis.height);
+								ctx.stroke();
+
+								// Draw marker letter
+								ctx.font = '15px Arial';
+								ctx.fillStyle = marker.color;
+								ctx.textAlign = 'center';
+								ctx.fillText(marker.marker, x, yAxis.top - 8);
+							});
+						},
+					},
+				],
 			});
 		} else {
 			chart.data = {datasets};
@@ -392,6 +432,89 @@
 		canvas.addEventListener('mouseout', function (e) {
 			document.body.style.cursor = 'default';
 		});
+
+		clearTimeout(timeout);
+		timeout = setTimeout(() => {
+			// Draw markers
+			const ctx = chart.ctx;
+			const xAxisScale = chart.scales.x;
+			const yAxisScale = chart.scales.y;
+
+			markers.forEach(marker => {
+				const x = xAxisScale.getPixelForValue(marker.time * 1000);
+
+				const hitArea = {
+					x: x - 10,
+					y: yAxisScale.top - 20,
+					width: 20,
+					height: yAxisScale.height + 20,
+				};
+
+				canvas.addEventListener('mousemove', e => {
+					const rect = canvas.getBoundingClientRect();
+					const mouseX = e.clientX - rect.left;
+					const mouseY = e.clientY - rect.top;
+
+					chart.draw();
+
+					if (mouseX >= hitArea.x && mouseX <= hitArea.x + hitArea.width && mouseY >= hitArea.y && mouseY <= hitArea.y + hitArea.height) {
+						ctx.beginPath();
+						ctx.strokeStyle = '#999999';
+						ctx.lineWidth = 2;
+						ctx.moveTo(x, yAxisScale.top);
+						ctx.lineTo(x, yAxisScale.top + yAxisScale.height);
+						ctx.stroke();
+
+						const textMetrics = ctx.measureText(marker.marker);
+						const padding = 3;
+						const rectWidth = textMetrics.width + padding * 2;
+						const rectHeight = 20;
+						const rectX = x - rectWidth / 2;
+						const rectY = yAxisScale.top - rectHeight;
+
+						ctx.beginPath();
+						ctx.roundRect(rectX, rectY, rectWidth, rectHeight, 4);
+						ctx.strokeStyle = marker.color + '80';
+						ctx.lineWidth = 1;
+						ctx.stroke();
+
+						const tooltipPadding = 6;
+						const tooltipHeight = 24;
+						const tooltipText = marker.label;
+						ctx.font = '14px Arial';
+						const tooltipWidth = ctx.measureText(tooltipText).width + tooltipPadding * 2;
+
+						const tooltipX = x - tooltipWidth / 2;
+						const tooltipY = mouseY - tooltipHeight - 10;
+
+						ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+						ctx.fillRect(tooltipX, tooltipY, tooltipWidth, tooltipHeight);
+
+						// Draw tooltip text
+						ctx.fillStyle = '#fff';
+						ctx.textAlign = 'center';
+						ctx.textBaseline = 'middle';
+						ctx.fillText(tooltipText, tooltipX + tooltipWidth / 2, tooltipY + tooltipHeight / 2);
+
+						document.body.style.cursor = 'pointer';
+					}
+				});
+
+				canvas.addEventListener('click', e => {
+					const rect = canvas.getBoundingClientRect();
+					const mouseX = e.clientX - rect.left;
+					const mouseY = e.clientY - rect.top;
+
+					console.log(mouseX, mouseY);
+
+					if (mouseX >= hitArea.x && mouseX <= hitArea.x + hitArea.width && mouseY >= hitArea.y && mouseY <= hitArea.y + hitArea.height) {
+						if (marker.link) {
+							window.open(marker.link, '_blank');
+						}
+					}
+				});
+			});
+		}, 1000);
 
 		onLegendClick(null, null, chart.legend, true);
 	}

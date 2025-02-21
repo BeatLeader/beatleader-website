@@ -1,6 +1,7 @@
 <script>
 	import {BL_API_URL, BL_RENDERER_API_URL} from '../../../network/queues/beatleader/api-queue';
 	import {dateFromUnix, formatDate, formatDateCustom} from '../../../utils/date';
+	import {GLOBAL_LEADERBOARD_TYPE} from '../../../utils/format';
 	import createAccountStore from '../../../stores/beatleader/account';
 	import Value from '../../Common/Value.svelte';
 	import {createEventDispatcher} from 'svelte';
@@ -81,10 +82,10 @@
 	};
 	$: corner3 = {x: 50, y: (86.6 - gypL / 2) * (1 - normalizedPassPp)};
 
-	const formatter = new Intl.DateTimeFormat('en', {year: 'numeric', month: 'long'});
+	const formatter = new Intl.DateTimeFormat('en-US', {year: 'numeric', month: 'long', timeZone: 'UTC'});
 
 	function fetchHistory(playerId) {
-		fetch(`${BL_API_URL}player/${playerId}/history/triangle`, {credentials: 'include'})
+		fetch(`${BL_API_URL}player/${playerId}/history/triangle?leaderboardContext=${GLOBAL_LEADERBOARD_TYPE}`, {credentials: 'include'})
 			.then(d => d.json())
 			.then(h => {
 				history = h.sort((a, b) => a.timestamp - b.timestamp);

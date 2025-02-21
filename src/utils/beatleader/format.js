@@ -279,6 +279,12 @@ export const HMDs = {
 		color: '',
 		priority: 14,
 	},
+	72: {
+		name: 'Varjo XR-3',
+		icon: 'varjo.svg',
+		color: '',
+		priority: 14,
+	},
 	54: {
 		name: 'Vaporeon',
 		icon: 'unknown.svg',
@@ -386,6 +392,8 @@ export function getControllerForEnum(controller) {
 			return 'Steam Deck';
 		case 78:
 			return 'Etee';
+		case 81:
+			return 'PlayStation Sense';
 	}
 
 	return '';
@@ -1037,9 +1045,17 @@ export const requirementsMap = {
 	V3: 1 << 5,
 	optionalProperties: 1 << 6,
 	vnjs: 1 << 7,
+	vivify: 1 << 8,
 };
 
 export const requirementsDescription = {
+	vivify: {
+		title: 'Map requires Vivify mod (new modcharts)',
+		name: 'Vivify',
+		icon: 'fas fa-mountain-city',
+		color: '#ffd43b',
+		textColor: 'black',
+	},
 	chroma: {
 		title: 'Map uses Chroma mod (rich visual effects)',
 		name: 'Chroma',
@@ -1073,13 +1089,6 @@ export const requirementsDescription = {
 		name: 'V3 Notes',
 		icon: 'v3-icon',
 		color: 'purple',
-		textColor: 'white',
-	},
-	optionalProperties: {
-		title: 'v3.3 Map with optional properties for elements. May not work on Quest',
-		name: 'Optional Properties',
-		icon: 'fas fa-file',
-		color: 'grey',
 		textColor: 'white',
 	},
 	vnjs: {

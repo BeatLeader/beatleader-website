@@ -20,7 +20,7 @@
 			props: {
 				title: 'The 2024 Beasties Premiere',
 				body: '',
-				imageUrl: 'assets/Discover/2024_beasties_times.png',
+				imageUrl: '/assets/Discover/2024_beasties_times.png',
 				targetUrl: 'https://www.youtube.com/@BeatSaberMods',
 				linkName: 'YouTube',
 				forcedColor: 'rgba(0, 0, 0, 0)',
@@ -29,23 +29,23 @@
 		{
 			component: CarouselCard,
 			props: {
-				title: 'Extra Sensory 2 Release Date',
+				title: 'Extra Sensory 2 Mods and Maps are out!',
 				body: '',
 				imageUrl: '/assets/Discover/extra_sensory_thumbnail_2.webp',
-				targetUrl: 'https://www.youtube.com/watch?v=ilXgDkORxl4',
-				linkName: 'YouTube',
+				targetUrl: 'https://exsii.totalbs.dev/',
+				linkName: 'Extra Sensory 2',
 				forcedColor: 'rgb(23 27 46)',
 			},
 		},
 		{
 			component: CarouselCard,
 			props: {
-				title: 'Cube Community Summer Highlights',
+				title: 'Cube Community Fall Highlights',
 				body: '',
-				imageUrl: '/assets/Discover/cc-summer-highlights.jpg',
-				targetUrl: 'https://youtu.be/QjkEkZTn9y0',
+				imageUrl: '/assets/Discover/cc-fall-highlights.jpg',
+				targetUrl: 'https://youtu.be/xtsXijKAHcs',
 				linkName: 'YouTube',
-				forcedColor: 'rgb(199, 133, 32)',
+				forcedColor: 'rgb(56, 154, 133)',
 			},
 		},
 		{
@@ -94,7 +94,7 @@
 			component: CarouselCard,
 			props: {
 				title: 'Building Blocks 2024',
-				body: 'Upcoming mapping contest with a prize pool and chance to get directly into ranked!',
+				body: 'Ongoing mapping contest with a prize pool and chance to get directly into ranked!',
 				imageUrl: '/assets/Discover/buildingblocks.png',
 				targetUrl: '/event/building-blocks-2024',
 				forcedColor: 'rgb(24 3 29 / 75%)',
@@ -126,6 +126,24 @@
 		// 		],
 		// 	},
 		// },
+		{
+			component: CarouselCard,
+			props: {
+				title: 'Beat Saber Canadian Tournament 2025',
+				body: 'The Canadian Beat Saber Tournament is a CANADIAN ONLY double elimination tournament, featuring 2 divisions. Sign Ups are open!',
+				imageUrl: '/assets/Discover/beatsabercanada2025.png',
+				targetUrl: 'https://beatkhana.com/tournaments/CBST2025/general',
+				forcedColor: 'rgb(255, 99, 99)',
+				linkName: 'Official Website',
+				buttons: [
+					{
+						text: 'Sign Up',
+						type: 'primary',
+						url: 'https://beatkhana.com/tournaments/CBST2025/general',
+					},
+				],
+			},
+		},
 		{
 			component: CarouselCard,
 			props: {

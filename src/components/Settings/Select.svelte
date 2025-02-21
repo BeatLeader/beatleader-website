@@ -81,6 +81,8 @@
 	}
 
 	onDestroy(() => {
+		var overlay = document.getElementById('overlay-wrapper');
+		if (overlay) overlay.remove();
 		window.removeEventListener('resize', onResize);
 	});
 </script>
@@ -121,7 +123,7 @@
 						<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
 						<div tabindex="0" class="dropdown-item" style="font-size: {menuFontSize}em" on:click={selectOption(item)}>
 							{#if item.icon}
-								<i class="fa {item.icon}" style="margin-right: {fontPadding}em" />
+								<i class="fa {item.icon} dropdown-item-icon" style="margin-right: {fontPadding}em" />
 							{/if}
 							{nameSelector(item).trim()}
 						</div>
@@ -157,5 +159,10 @@
 		color: white;
 		white-space: nowrap;
 		min-width: fit-content;
+	}
+
+	.dropdown-item-icon {
+		width: 1.2em;
+		text-align: center;
 	}
 </style>

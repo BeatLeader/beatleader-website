@@ -26,6 +26,7 @@
 
 {#if overlayUrl}
 	<span
+		class="avatar-overlay-container"
 		style={`
 			--hue: ${data?.hue ?? 0}deg;
 			--saturation: ${data?.saturation ?? 1};

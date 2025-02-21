@@ -13,9 +13,10 @@ export const processScore = s => {
 		mapper: levelAuthorName,
 		duration,
 		coverImage,
+		explicity,
 		bpm,
 	} = s?.leaderboard?.song ?? {};
-	const song = {hash, name, subName, authorName, id: songId, levelAuthorName, duration, coverImage, bpm};
+	const song = {hash, name, subName, authorName, id: songId, levelAuthorName, duration, coverImage, explicity, bpm};
 
 	const {id: leaderboardId} = s?.leaderboard ?? {};
 

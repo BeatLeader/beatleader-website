@@ -5,7 +5,7 @@
 	import HeadsetPickerMultiItem from '../Common/PickerMultiItem.svelte';
 	import HeadsetPickerItem from '../Common/PickerItem.svelte';
 
-	export let headsets = [];
+	export let value = [];
 
 	const dispatch = createEventDispatcher();
 
@@ -18,14 +18,14 @@
 		dispatch('change', e?.detail?.map(i => i.value)?.filter(v => v?.length) ?? []);
 	}
 	const itemFilter = (label, filterText) => label.toLowerCase().includes(filterText.toLowerCase());
-	$: value = items.filter(i => (headsets ?? []).includes(i.value));
+	$: currentItems = items.filter(i => (value ?? []).includes(i.value));
 </script>
 
 <section
 	style=" --clearSelectTop: 8px; --multiItemBG: var(--selected); --multiClearBG: var(--selected); --listBackground:
 var(--background); --inputColor: var(--textColor); --multiSelectPadding: 2px 35px 2px 4px">
 	<Select
-		{value}
+		value={currentItems}
 		{items}
 		{itemFilter}
 		Item={HeadsetPickerItem}
@@ -34,7 +34,9 @@ var(--background); --inputColor: var(--textColor); --multiSelectPadding: 2px 35p
 		isSearchable={true}
 		isMulti={true}
 		placeholderAlwaysShow={true}
-		on:select={onSelect}
+		on:select={e => {
+			onSelect(e);
+		}}
 		on:clear />
 </section>
 

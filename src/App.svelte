@@ -300,8 +300,8 @@
 					<Route path="/event/project-tree">
 						<ProjectTree />
 					</Route>
-					<Route path="/event/building-blocks-2024">
-						<BuildingBlocks2024 />
+					<Route path="/event/building-blocks-2024" let:location>
+						<BuildingBlocks2024 {location} />
 					</Route>
 					<Route path="/event/:eventId/*page" let:params let:location>
 						<EventPage eventId={params.eventId} page={params.page} {location} />
