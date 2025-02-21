@@ -32,7 +32,7 @@
 	let finishClansData;
 
 	function fetchClanData(startTimeset) {
-		fetch(`https://cdn.assets.beatleader.xyz/global-map-file-${startTimeset}.json`)
+		fetch(`https://cdn.assets.beatleader.com/global-map-file-${startTimeset}.json`)
 			.then(d => d.json())
 			.then(data => {
 				clansData = data;
@@ -40,12 +40,12 @@
 	}
 
 	function getFinishData(finishTimeset) {
-		fetch(`https://cdn.assets.beatleader.xyz/global-map-file-${finishTimeset}.json`)
+		fetch(`https://cdn.assets.beatleader.com/global-map-file-${finishTimeset}.json`)
 			.then(d => d.json())
 			.then(data => {
 				// Store the finish timeset data for later use in the transition
 				finishClansData = data;
-				fetch(`https://cdn.assets.beatleader.xyz/clansmap-globalcache-${finishTimeset}.json`)
+				fetch(`https://cdn.assets.beatleader.com/clansmap-globalcache-${finishTimeset}.json`)
 					.then(r => r.json())
 					.then(update => {
 						transitionCache = update;
@@ -62,7 +62,7 @@
 		canvas = d3.select('#clan-map-container').append('canvas').attr('width', width).attr('height', height).node();
 		context = canvas.getContext('2d');
 
-		fetch(`https://cdn.assets.beatleader.xyz/clansmap-globalcache-${startTimeset}.json`)
+		fetch(`https://cdn.assets.beatleader.com/clansmap-globalcache-${startTimeset}.json`)
 			.then(r => r.json())
 			.then(cache => {
 				processData(cache);
@@ -148,8 +148,8 @@
 
 			circles.push({
 				id: map.leaderboardId,
-				x: cache ? cache.circles[map.leaderboardId]?.x ?? 0 : topClan.x,
-				y: cache ? cache.circles[map.leaderboardId]?.y ?? 0 : topClan.y,
+				x: cache ? (cache.circles[map.leaderboardId]?.x ?? 0) : topClan.x,
+				y: cache ? (cache.circles[map.leaderboardId]?.y ?? 0) : topClan.y,
 				r: map.stars,
 				color: map.tie
 					? 'rgba(128, 128, 128, 1)'

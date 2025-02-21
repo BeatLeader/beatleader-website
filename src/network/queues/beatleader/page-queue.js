@@ -2,7 +2,7 @@ import {default as createQueue, PRIORITY} from '../http-queue';
 import {BL_API_URL} from './api-queue';
 import {substituteVarsUrl} from '../../../utils/format';
 
-export const BL_ASSETS_CDN = 'https://cdn.assets.beatleader.xyz';
+export const BL_ASSETS_CDN = 'https://cdn.assets.beatleader.com';
 export const BS_CDN = 'https://eu.cdn.beatsaver.com';
 const RANKEDS_URL = BL_API_URL + 'maps?ranked=true&page=${page}';
 

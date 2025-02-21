@@ -139,7 +139,7 @@
 	function updateFields(playlist) {
 		title = playlist?.title ?? '';
 		link = playlist?.playlistLink ?? '';
-		iconUrl = playlist?.cover ?? 'https://cdn.assets.beatleader.xyz/NTG.png';
+		iconUrl = playlist?.cover ?? 'https://cdn.assets.beatleader.com/NTG.png';
 		description = playlist?.description ?? '';
 	}
 
@@ -188,7 +188,7 @@
 					<section class="info">
 						<textarea
 							type="text"
-							placeholder="BeatLeader, BeatSaver or HitBloq playlist page link. Example: https://beatleader.xyz/playlist/72345"
+							placeholder="BeatLeader, BeatSaver or HitBloq playlist page link. Example: https://beatleader.com/playlist/72345"
 							bind:value={link}
 							disabled={!!pendingText} />
 					</section>

@@ -280,7 +280,7 @@
 
 			<span class="globalmap-header">Today's changes on global map</span>
 			<a class="globalmap" href="/clansmap">
-				<img class="clansmap-image" src="https://cdn.assets.beatleader.xyz/clansmap-change-daily-latest.gif" />
+				<img class="clansmap-image" src="https://cdn.assets.beatleader.com/clansmap-change-daily-latest.gif" />
 			</a>
 		</ContentBox>
 	</aside>

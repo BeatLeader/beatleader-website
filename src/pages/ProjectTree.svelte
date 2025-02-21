@@ -129,12 +129,12 @@
 											{#if day.score}
 												<img
 													title="Decorate your tree in the mods!"
-													src={`https://cdn.assets.beatleader.xyz/project_tree_ornament_${day.bundleId}_preview_unblured.png`}
+													src={`https://cdn.assets.beatleader.com/project_tree_ornament_${day.bundleId}_preview_unblured.png`}
 													alt={day.song.name} />
 											{:else}
 												<img
 													title="Pass this map to get ornament!"
-													src={`https://cdn.assets.beatleader.xyz/project_tree_ornament_${day.bundleId}_preview.png`}
+													src={`https://cdn.assets.beatleader.com/project_tree_ornament_${day.bundleId}_preview.png`}
 													alt={day.song.name} />
 											{/if}
 										</div>
@@ -248,7 +248,7 @@
 								<div class="ornament">
 									<img
 										class="ornament-icon"
-										src={`https://cdn.assets.beatleader.xyz/project_tree_ornament_${ornament.bundleId}_preview_unblured.png`}
+										src={`https://cdn.assets.beatleader.com/project_tree_ornament_${ornament.bundleId}_preview_unblured.png`}
 										alt={`${index + 1} ornament`} />
 									<p>{ornament.description}</p>
 								</div>

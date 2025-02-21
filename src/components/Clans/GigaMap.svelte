@@ -30,7 +30,7 @@
 	var clans = [];
 
 	function fetchData() {
-		fetch(`https://cdn.assets.beatleader.xyz/gigalistfile${topCount}.json`)
+		fetch(`https://cdn.assets.beatleader.com/gigalistfile${topCount}.json`)
 			.then(r => r.json())
 			.then(cache => {
 				maps = cache.Maps;
@@ -296,11 +296,11 @@
 			const lineWidth = 2.5 / currentScale;
 			const radius = circle.animatedRadius + lineWidth * 0.4;
 			if (radius > 0) {
-			context.beginPath();
-			context.arc(circle.x, circle.y, radius, 0, 2 * Math.PI);
-			context.lineWidth = lineWidth;
-			context.strokeStyle = `rgba(255, 255, 255, ${circle.alpha})`;
-			context.stroke();
+				context.beginPath();
+				context.arc(circle.x, circle.y, radius, 0, 2 * Math.PI);
+				context.lineWidth = lineWidth;
+				context.strokeStyle = `rgba(255, 255, 255, ${circle.alpha})`;
+				context.stroke();
 			}
 		}
 	}
@@ -345,16 +345,16 @@
 					linkedMap.image.src = linkedMap.coverImageUrl;
 				} else {
 					// Draw a line between the map and the clan
-					drawCoverImage(circlesMap[link.id], hoverRadius * 0.7 / currentScale);
+					drawCoverImage(circlesMap[link.id], (hoverRadius * 0.7) / currentScale);
 				}
 			});
 		}
 
 		if (circle.animatedRadius > 0) {
-		context.beginPath();
-		context.arc(circle.x, circle.y, circle.animatedRadius, 0, 2 * Math.PI);
-		context.fillStyle = circle.hovered ? circle.hoverColor : circle.color;
-		context.fill();
+			context.beginPath();
+			context.arc(circle.x, circle.y, circle.animatedRadius, 0, 2 * Math.PI);
+			context.fillStyle = circle.hovered ? circle.hoverColor : circle.color;
+			context.fill();
 		}
 
 		if ((circle.hovered || (circle.player && currentScale > 0.2)) && circle.coverImageUrl && !circle.image) {
@@ -366,7 +366,7 @@
 		if ((circle.hovered || (circle.player && currentScale > 0.2)) && circle.image) {
 			drawCoverImage(circle);
 		}
-		
+
 		if (circle.hovered) {
 			const fontSize = circle.animatedRadius / 2;
 
@@ -386,7 +386,7 @@
 	function drawCoverImage(mapData, radiusOverride) {
 		const radius = (radiusOverride ?? mapData.animatedRadius) * 0.9; // 90% of animated radius
 		if (radius <= 0) return;
-		
+
 		context.save();
 		context.beginPath();
 		context.arc(mapData.x, mapData.y, radius, 0, Math.PI * 2, true);
@@ -394,8 +394,8 @@
 		context.clip();
 
 		if (mapData.image && mapData.image.complete && mapData.image.naturalWidth !== 0) {
-		// Draw the image centered in the circle
-		context.drawImage(mapData.image, mapData.x - radius, mapData.y - radius, radius * 2, radius * 2);
+			// Draw the image centered in the circle
+			context.drawImage(mapData.image, mapData.x - radius, mapData.y - radius, radius * 2, radius * 2);
 		}
 
 		context.restore(); // Restore the context to draw other elements
@@ -600,13 +600,13 @@
 
 	let searchList = [];
 	function performSearch(term) {
-		searchList = circles.filter(c => c.name.toLowerCase().includes(term.toLowerCase())).slice(0, 10)
+		searchList = circles.filter(c => c.name.toLowerCase().includes(term.toLowerCase())).slice(0, 10);
 	}
 
 	$: !fetched && fetchData();
 	$: !canvas && newWidth && newHeight && fetched && init(newWidth, newHeight);
 	$: canvas && updateCanvasSize(newWidth, newHeight);
-	
+
 	$: search && circles && performSearch(search);
 </script>
 
@@ -617,11 +617,11 @@
 	<input type="text" bind:value={search} placeholder="Player or map name..." />
 </div>
 {#if searchList.length}
-<div class="search-list">
-{#each searchList as comp}
-	<button on:click={() => animateZoomMap(comp)}>{comp.name} - {comp.subname}</button>
-{/each}
-</div>
+	<div class="search-list">
+		{#each searchList as comp}
+			<button on:click={() => animateZoomMap(comp)}>{comp.name} - {comp.subname}</button>
+		{/each}
+	</div>
 {/if}
 
 <style>
@@ -645,10 +645,10 @@
 
 	.search-list {
 		position: absolute;
-    top: 7em;
-    display: flex;
-    left: 1.2em;
-    flex-direction: column;
-    gap: 0.3em;
+		top: 7em;
+		display: flex;
+		left: 1.2em;
+		flex-direction: column;
+		gap: 0.3em;
 	}
 </style>

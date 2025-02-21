@@ -625,14 +625,14 @@
 	let battleRoyaleDraftList = [];
 
 	function startBattleRoyale() {
-		let link = `https://royale.beatleader.xyz/?hash=${hash}&difficulty=${capitalize(diffInfo.diff)}&players=${battleRoyaleDraftList
+		let link = `https://royale.beatleader.com/?hash=${hash}&difficulty=${capitalize(diffInfo.diff)}&players=${battleRoyaleDraftList
 			.map(br => br.playerId)
 			.join(',')}`;
 		window.open(link, '_blank');
 	}
 
 	function startAnalysis() {
-		let link = `https://analyzer.beatleader.xyz/?scoreId=${battleRoyaleDraftList[0].scoreId}&scoreId2=${battleRoyaleDraftList[1].scoreId}`;
+		let link = `https://analyzer.beatleader.com/?scoreId=${battleRoyaleDraftList[0].scoreId}&scoreId2=${battleRoyaleDraftList[1].scoreId}`;
 		window.open(link, '_blank');
 	}
 

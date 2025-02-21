@@ -51,7 +51,7 @@ export const BL_RENDERER_API_URL = (() => {
 		return 'https://render.beatleader.com/';
 	}
 })();
-export const BL_SOCKET_URL = 'wss://sockets.api.beatleader.xyz/';
+export const BL_SOCKET_URL = 'wss://sockets.api.beatleader.com/';
 export const STEAM_API_URL = '/cors/steamapi';
 export const STEAM_KEY = 'B0A7AF33E804D0ABBDE43BA9DD5DAB48';
 
@@ -73,7 +73,7 @@ export const BL_API_FRIENDS_SCORES_URL =
 export const BL_API_ALL_SCORES_URL =
 	BL_API_URL +
 	'scores/all?leaderboardContext=${leaderboardContext}&page=${page}&sortBy=${sort}&order=${order}&search=${search}&mapRequirements=${mapRequirements}&date_from=${date_from}&date_to=${date_to}&diff=${diff}&mode=${mode}&type=${type}&mapType=${mapType}&allTypes=${allTypes}&hmd=${hmd}&stars_from=${stars_from}&stars_to=${stars_to}&accrating_from=${accrating_from}&accrating_to=${accrating_to}&passrating_from=${passrating_from}&passrating_to=${passrating_to}&techrating_from=${techrating_from}&techrating_to=${techrating_to}&count=${count}&modifiers=${modifiers}&mappers=${mappers}&players=${players}';
-export const BL_API_SCORE_STATS_URL = 'https://cdn.scorestats.beatleader.xyz/${scoreId}.json';
+export const BL_API_SCORE_STATS_URL = 'https://cdn.scorestats.beatleader.com/${scoreId}.json';
 export const BL_API_SCORE_PIN_URL =
 	BL_API_URL +
 	'score/${scoreId}/pin?pin=${pin}&leaderboardContext=${leaderboardContext}&link=${link}&description=${description}&priority=${priority}';

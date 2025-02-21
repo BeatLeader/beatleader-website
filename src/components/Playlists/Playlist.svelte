@@ -443,7 +443,7 @@
 							{:else}
 								<Button
 									cls="one-click"
-									url="bsplaylist://playlist/https://api.beatleader.xyz/playlist/{playlistId}"
+									url="bsplaylist://playlist/https://api.beatleader.com/playlist/{playlistId}"
 									noMargin={true}
 									animated={true}
 									type="green"
