@@ -61,7 +61,6 @@
 	import ClanRankingScore from '../components/Leaderboard/ClanRankingScore.svelte';
 	import CountryFilter from '../components/Player/ScoreFilters/CountryFilter.svelte';
 	import PredictedAccGraph from '../components/Leaderboard/PredictedAccGraph.svelte';
-	import HashDisplay from '../components/Common/HashDisplay.svelte';
 	import FeaturedPlaylist from '../components/Leaderboard/FeaturedPlaylist.svelte';
 	import ScoresAccGraph from '../components/Leaderboard/ScoresAccGraph.svelte';
 	import MapScoresChart from '../components/Leaderboard/Charts/MapScoresChart.svelte';
@@ -69,6 +68,7 @@
 	import {isPatron} from '../components/Player/Overlay/overlay';
 	import Headsets from '../components/Ranking/Headsets.svelte';
 	import LeaderboardAsideBox from '../components/Leaderboard/LeaderboardAsideBox.svelte';
+	import LeaderboardDevMenu from '../components/Leaderboard/LeaderboardDevMenu.svelte';
 
 	export let leaderboardId;
 	export let type = 'global';
@@ -1190,7 +1190,7 @@
 							{/if}
 							<PredictedAccGraph {leaderboard} />
 							{#if !$configStore?.leaderboardPreferences?.showHashInHeader}
-								<HashDisplay {song} />
+								<LeaderboardDevMenu {leaderboard} {song} />
 							{/if}
 
 							{#if iconsInInfo}
@@ -1363,8 +1363,6 @@
 		align-content: center;
 		justify-content: space-evenly;
 		flex-direction: column;
-		padding: 1em;
-		border-radius: 8px;
 	}
 
 	.scores-grid {

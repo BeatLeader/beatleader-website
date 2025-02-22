@@ -89,7 +89,8 @@
 	.stats {
 		display: flex;
 		flex-wrap: wrap;
-		justify-content: space-evenly;
+		justify-content: space-between;
 		column-gap: 1em;
+		padding: 0.5em;
 	}
 </style>

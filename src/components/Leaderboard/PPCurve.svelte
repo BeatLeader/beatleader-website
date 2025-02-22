@@ -299,8 +299,14 @@
 		{#each modifiersArr as modifier}
 			<label
 				title={`${userDescriptionForModifier(modifier.name)}: ${formatNumber(modifier.value * 100, 0, true)}%`}
-				class:disabled={excludedModifiers.includes(modifier.name)}>
-				<input type="checkbox" bind:group={selectedModifiers} value={modifier} disabled={excludedModifiers.includes(modifier.name)} />
+				class:selected={selectedModifiers.includes(modifier)}
+				class:disabled={excludedModifiers.includes(modifier.name)}
+				on:click={() => {
+					if (excludedModifiers.includes(modifier.name)) return;
+					selectedModifiers = selectedModifiers.includes(modifier)
+						? selectedModifiers.filter(m => m !== modifier)
+						: [...selectedModifiers, modifier];
+				}}>
 				{modifier.name}
 			</label>
 		{/each}
@@ -347,18 +353,30 @@
 
 	.modifiers > * {
 		display: inline-block;
-		width: 3.4em;
+		width: 2.8em;
 	}
 
 	.modifiers label {
-		transition: color 300ms;
+		transition:
+			color 300ms,
+			background-color 300ms;
 		background-color: #4e4e4e;
 		border-radius: 0.3em;
 		padding: 0.2em 0.3em;
+		cursor: pointer;
+	}
+
+	.modifiers label.selected {
+		background-color: #6e6e6e;
 	}
 
 	.modifiers label.disabled {
 		color: var(--faded) !important;
-		background-color: var(--faded-bg);
+		background-color: #212121;
+		cursor: default;
+	}
+
+	.acc-range {
+		margin-top: 1rem;
 	}
 </style>

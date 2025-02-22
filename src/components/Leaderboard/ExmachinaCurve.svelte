@@ -142,8 +142,8 @@
 	$: loading = false;
 </script>
 
-<article>
-	<span>Predicted accability (avg {average.toFixed(2)}%):</span>
+<article class="graph-container">
+	<span class="graph-title">Predicted Accability (avg {average.toFixed(2)}%)</span>
 	<section class="accuracy-chart" style="--height: {height}">
 		<canvas class="chartjs" bind:this={canvas} />
 	</section>
@@ -153,33 +153,54 @@
 		</div>
 	{/if}
 
-	<span>At speed:</span>
-	<RangeSlider
-		min={0.5}
-		max={2}
-		step={0.05}
-		values={[speed]}
-		float
-		hoverable
-		pips
-		pipstep={10}
-		all="label"
-		suffix="x"
-		on:change={event => {
-			speed = event.detail.values[0];
-			start = new Date().getTime();
-			loading = true;
-			setTimeout(() => {
-				if (new Date().getTime() - start > 799) {
-					dispatch('speed-changed', speed);
-					loading = false;
-				}
-			}, 800);
-		}} />
+	<div class="speed-slider">
+		<RangeSlider
+			min={0.5}
+			max={2}
+			step={0.05}
+			values={[speed]}
+			float
+			hoverable
+			pips
+			pipstep={10}
+			all="label"
+			suffix="x"
+			on:change={event => {
+				speed = event.detail.values[0];
+				start = new Date().getTime();
+				loading = true;
+				setTimeout(() => {
+					if (new Date().getTime() - start > 799) {
+						dispatch('speed-changed', speed);
+						loading = false;
+					}
+				}, 800);
+			}} />
+	</div>
 </article>
 
 <style>
+	.graph-container {
+		display: flex;
+		flex-direction: column;
+		flex-wrap: nowrap;
+		align-items: center;
+		gap: 0.3em;
+	}
+
+	.graph-title {
+		font-size: 1.2rem;
+		color: white;
+	}
+
+	.speed-slider {
+		width: 100%;
+	}
 	.spinner-container {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
 	}
 
 	.accuracy-chart {
