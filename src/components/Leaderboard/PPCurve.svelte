@@ -338,18 +338,27 @@
 	.modifiers {
 		margin-top: 1rem;
 		text-align: center;
+		display: flex;
+		flex-wrap: wrap;
+		align-content: center;
+		justify-content: center;
+		gap: 0.75em;
 	}
 
 	.modifiers > * {
 		display: inline-block;
-		margin-right: 0.75rem;
+		width: 3.4em;
 	}
 
 	.modifiers label {
 		transition: color 300ms;
+		background-color: #4e4e4e;
+		border-radius: 0.3em;
+		padding: 0.2em 0.3em;
 	}
 
 	.modifiers label.disabled {
 		color: var(--faded) !important;
+		background-color: var(--faded-bg);
 	}
 </style>

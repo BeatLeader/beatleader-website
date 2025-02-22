@@ -1211,25 +1211,22 @@
 
 			{#if showCurve && leaderboard?.stats?.stars}
 				<LeaderboardAsideBox opened={curveShown} title="PP Curve" faicon="fas fa-bezier-curve" boolname="curveShown">
-					<h2 class="title is-5" style="text-align: center;">
-						PP curve (<span
+					<h2 class="title is-5 pp-curve-toggles">
+						<span
 							on:click={() => curveboolflip('passPp')}
 							title="Click to show Pass PP curve"
 							class={$configStore?.ppCurve?.passPp ? 'higlighted-pp' : 'inactive-pp'}
-							><Value value={modifiedPass} prevValue={leaderboard?.stats?.passRating ?? 0} inline="true" prefix="Pass " suffix="★" /></span
-						>,
+							><Value value={modifiedPass} prevValue={leaderboard?.stats?.passRating ?? 0} inline="true" prefix="Pass " suffix="★" /></span>
 						<span
 							on:click={() => curveboolflip('accPp')}
 							title="Click to show Acc PP curve"
 							class={$configStore?.ppCurve?.accPp ? 'higlighted-pp' : 'inactive-pp'}
-							><Value value={modifiedAcc} prevValue={leaderboard?.stats?.accRating ?? 0} inline="true" prefix="Acc " suffix="★" /></span
-						>,
+							><Value value={modifiedAcc} prevValue={leaderboard?.stats?.accRating ?? 0} inline="true" prefix="Acc " suffix="★" /></span>
 						<span
 							on:click={() => curveboolflip('techPp')}
 							title="Click to show Tech PP curve"
 							class={$configStore?.ppCurve?.techPp ? 'higlighted-pp' : 'inactive-pp'}
-							><Value value={modifiedTech} prevValue={leaderboard?.stats?.techRating ?? 0} inline="true" prefix="Tech " suffix="★" /></span
-						>)
+							><Value value={modifiedTech} prevValue={leaderboard?.stats?.techRating ?? 0} inline="true" prefix="Tech " suffix="★" /></span>
 					</h2>
 					<PpCurve
 						passRating={leaderboard?.stats?.passRating}
@@ -1498,6 +1495,16 @@
 		justify-content: center;
 		align-items: center;
 		padding: 0.3em;
+	}
+
+	.pp-curve-toggles {
+		text-align: center;
+		margin: 0.5em 0;
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: center;
+		gap: 0.4em;
 	}
 
 	@media screen and (max-width: 1275px) {
