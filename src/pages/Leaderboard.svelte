@@ -1186,10 +1186,10 @@
 					boolname="leaderboardStatsShown">
 					{#if leaderboard?.stats}
 						<div class="stats-with-icons">
+							<PredictedAccGraph {leaderboard} {selectedModifiers} />
 							{#if !$configStore?.leaderboardPreferences?.showStatsInHeader}
 								<LeaderboardStats {leaderboard} />
 							{/if}
-							<PredictedAccGraph {leaderboard} {selectedModifiers} />
 							{#if $configStore?.leaderboardPreferences?.showDevMenu}
 								<LeaderboardDevMenu {leaderboard} {song} />
 							{/if}

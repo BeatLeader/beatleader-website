@@ -39,7 +39,9 @@
 				in:receive={{key: 'button'}}
 				out:send={{key: 'button'}}>
 				<div class="left">
-					<i class={faicon} />
+					<div class="icon-container">
+						<i class={faicon} />
+					</div>
 					<span>{title}</span>
 				</div>
 
@@ -53,7 +55,9 @@
 				in:receive={{key: 'button'}}
 				out:send={{key: 'button'}}>
 				<div class="left">
-					<i class={faicon} />
+					<div class="icon-container">
+						<i class={faicon} />
+					</div>
 					<span>{title}</span>
 				</div>
 
@@ -115,5 +119,13 @@
 	.darkened-background {
 		padding: 0.7em;
 		border-radius: 0.5em;
+	}
+
+	.icon-container {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 1.2em;
+		height: 1.2em;
 	}
 </style>
