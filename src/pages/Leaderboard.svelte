@@ -181,6 +181,7 @@
 	let modifiedAcc = null;
 	let modifiedTech = null;
 	let modifiedStars = null;
+	let selectedModifiers = [];
 
 	function initRatings(leaderboard) {
 		modifiedPass = leaderboard?.stats?.passRating;
@@ -1188,7 +1189,7 @@
 							{#if !$configStore?.leaderboardPreferences?.showStatsInHeader}
 								<LeaderboardStats {leaderboard} />
 							{/if}
-							<PredictedAccGraph {leaderboard} />
+							<PredictedAccGraph {leaderboard} {selectedModifiers} />
 							{#if $configStore?.leaderboardPreferences?.showDevMenu}
 								<LeaderboardDevMenu {leaderboard} {song} />
 							{/if}
@@ -1212,21 +1213,31 @@
 			{#if showCurve && leaderboard?.stats?.stars}
 				<LeaderboardAsideBox opened={curveShown} title="PP Curve" faicon="fas fa-bezier-curve" boolname="curveShown">
 					<h2 class="title is-5 pp-curve-toggles">
-						<span
-							on:click={() => curveboolflip('passPp')}
-							title="Click to show Pass PP curve"
-							class={$configStore?.ppCurve?.passPp ? 'higlighted-pp' : 'inactive-pp'}
-							><Value value={modifiedPass} prevValue={leaderboard?.stats?.passRating ?? 0} inline="true" prefix="Pass " suffix="★" /></span>
-						<span
-							on:click={() => curveboolflip('accPp')}
-							title="Click to show Acc PP curve"
-							class={$configStore?.ppCurve?.accPp ? 'higlighted-pp' : 'inactive-pp'}
-							><Value value={modifiedAcc} prevValue={leaderboard?.stats?.accRating ?? 0} inline="true" prefix="Acc " suffix="★" /></span>
-						<span
-							on:click={() => curveboolflip('techPp')}
-							title="Click to show Tech PP curve"
-							class={$configStore?.ppCurve?.techPp ? 'higlighted-pp' : 'inactive-pp'}
-							><Value value={modifiedTech} prevValue={leaderboard?.stats?.techRating ?? 0} inline="true" prefix="Tech " suffix="★" /></span>
+						<div class="pp-curve-toggle">
+							<span class="pp-curve-toggle-label">Pass:</span>
+							<span
+								on:click={() => curveboolflip('passPp')}
+								title="Click to show Pass PP curve"
+								class={$configStore?.ppCurve?.passPp ? 'higlighted-pp' : 'inactive-pp'}>
+								<Value value={modifiedPass} prevValue={leaderboard?.stats?.passRating ?? 0} inline="true" suffix="★" />
+							</span>
+						</div>
+						<div class="pp-curve-toggle">
+							<span class="pp-curve-toggle-label">Acc:</span>
+							<span
+								on:click={() => curveboolflip('accPp')}
+								title="Click to show Acc PP curve"
+								class={$configStore?.ppCurve?.accPp ? 'higlighted-pp' : 'inactive-pp'}>
+								<Value value={modifiedAcc} prevValue={leaderboard?.stats?.accRating ?? 0} inline="true" suffix="★" /></span>
+						</div>
+						<div class="pp-curve-toggle">
+							<span class="pp-curve-toggle-label">Tech:</span>
+							<span
+								on:click={() => curveboolflip('techPp')}
+								title="Click to show Tech PP curve"
+								class={$configStore?.ppCurve?.techPp ? 'higlighted-pp' : 'inactive-pp'}>
+								<Value value={modifiedTech} prevValue={leaderboard?.stats?.techRating ?? 0} inline="true" suffix="★" /></span>
+						</div>
 					</h2>
 					<PpCurve
 						passRating={leaderboard?.stats?.passRating}
@@ -1240,6 +1251,7 @@
 							modifiedAcc = e?.detail?.accRating ?? 0;
 							modifiedTech = e?.detail?.techRating ?? 0;
 							modifiedStars = e?.detail?.stars ?? null;
+							selectedModifiers = e?.detail?.selectedModifiers ?? [];
 						}} />
 				</LeaderboardAsideBox>
 			{/if}
@@ -1506,6 +1518,16 @@
 		gap: 0.4em;
 	}
 
+	.pp-curve-toggle {
+		display: flex;
+		align-items: center;
+		gap: 0.2em;
+	}
+
+	.pp-curve-toggle-label {
+		font-weight: normal;
+	}
+
 	@media screen and (max-width: 1275px) {
 		.align-content {
 			flex-direction: column;
@@ -1515,6 +1537,21 @@
 		aside {
 			width: 100%;
 			max-width: 65em;
+		}
+	}
+
+	@media screen and (max-width: 1275px) and (min-width: 927px) {
+		aside {
+			column-count: 2;
+			column-gap: 1em;
+			padding: 0 1em;
+		}
+
+		aside :global(.content-box) {
+			width: 100%;
+			margin: 0 0 1em 0;
+			break-inside: avoid;
+			display: inline-block;
 		}
 	}
 

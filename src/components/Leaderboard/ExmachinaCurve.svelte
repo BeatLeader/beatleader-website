@@ -10,6 +10,7 @@
 	export let notes;
 	export let height = '12em';
 	export let speed;
+	export let selectedModifiers;
 
 	const dispatch = createEventDispatcher();
 
@@ -52,6 +53,7 @@
 		if (!canvas || !chartData || !Object.keys(chartData).length) return;
 
 		const accColor = theme && theme.alternate ? theme.alternate : '#72a8ff';
+		const gridColor = '#2a2a2a';
 
 		var data = processChartData(chartData, 200, 0.02, 3);
 
@@ -114,6 +116,9 @@
 								autoSkipPadding: 4,
 								color: 'white',
 							},
+							grid: {
+								color: gridColor,
+							},
 						},
 						y: {
 							min: minMaxCounter.minValue,
@@ -123,6 +128,9 @@
 									return val + '%';
 								},
 								color: 'white',
+							},
+							grid: {
+								color: gridColor,
 							},
 						},
 					},
@@ -143,7 +151,15 @@
 </script>
 
 <article class="graph-container">
-	<span class="graph-title">Predicted Accability (avg {average.toFixed(2)}%)</span>
+	<div class="graph-title">
+		<span>Predicted Accability:</span>
+		<span class="predicted-accability">{average.toFixed(2)}%</span>
+		{#if selectedModifiers?.length}
+			<div class="modifiers-container" title="Speed: {speed}x">
+				<span>({selectedModifiers.map(m => m.name).join(', ')})</span>
+			</div>
+		{/if}
+	</div>
 	<section class="accuracy-chart" style="--height: {height}">
 		<canvas class="chartjs" bind:this={canvas} />
 	</section>
@@ -152,31 +168,6 @@
 			<Spinner />
 		</div>
 	{/if}
-
-	<div class="speed-slider">
-		<RangeSlider
-			min={0.5}
-			max={2}
-			step={0.05}
-			values={[speed]}
-			float
-			hoverable
-			pips
-			pipstep={10}
-			all="label"
-			suffix="x"
-			on:change={event => {
-				speed = event.detail.values[0];
-				start = new Date().getTime();
-				loading = true;
-				setTimeout(() => {
-					if (new Date().getTime() - start > 799) {
-						dispatch('speed-changed', speed);
-						loading = false;
-					}
-				}, 800);
-			}} />
-	</div>
 </article>
 
 <style>
@@ -189,8 +180,19 @@
 	}
 
 	.graph-title {
-		font-size: 1.2rem;
+		font-size: 1.25rem;
 		color: white;
+		display: inline-flex;
+		gap: 0.4em;
+	}
+
+	.modifiers-container {
+		color: white;
+		font-weight: bold;
+	}
+
+	.predicted-accability {
+		font-weight: bold;
 	}
 
 	.speed-slider {

@@ -184,7 +184,10 @@
 		<div class="progress-bar">
 			<div class="progress" style="width: {successRate * 100}%"></div>
 		</div>
-		<div class="rate">{formatNumber(successRate * 100, 1)}% Success Rate</div>
+		<div class="rate">
+			<span class="rate-text">Success Rate:</span>
+			<span class="rate-value">{formatNumber(successRate * 100, 1)}%</span>
+		</div>
 	</div>
 
 	<div class="attempts" class:hidden={isChartHovered}>
@@ -244,8 +247,16 @@
 	}
 
 	.rate {
-		font-size: 1.2rem;
+		font-size: 1.25rem;
 		color: white;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.4em;
+	}
+
+	.rate-value {
+		font-weight: bold;
 	}
 
 	.attempts {

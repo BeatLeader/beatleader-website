@@ -287,6 +287,7 @@
 		accRating: modifiedAccRating,
 		techRating: modifiedTechRating,
 		stars: modifiedStars,
+		selectedModifiers,
 	});
 </script>
 
