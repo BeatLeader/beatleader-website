@@ -30,7 +30,7 @@
 
 	let canvas = null;
 	let chart = null;
-	let height = '300px';
+	let height = '19em';
 	let isChartHovered = false;
 
 	function formatTime(seconds) {
@@ -176,7 +176,7 @@
 	$: fetchData(leaderboardId);
 
 	$: setupChart(canvas, failurePoints, isChartHovered);
-	$: height = isChartHovered ? '332px' : '300px';
+	$: height = isChartHovered ? '21em' : '19em';
 </script>
 
 <div class="stats">

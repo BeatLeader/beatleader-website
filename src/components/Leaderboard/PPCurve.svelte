@@ -367,7 +367,7 @@
 	}
 
 	.modifiers label.selected {
-		background-color: #6e6e6e;
+		background-color: #838383;
 	}
 
 	.modifiers label.disabled {
