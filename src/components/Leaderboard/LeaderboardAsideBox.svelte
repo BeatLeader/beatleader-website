@@ -38,7 +38,11 @@
 				title="Show {title}"
 				in:receive={{key: 'button'}}
 				out:send={{key: 'button'}}>
-				<i class={faicon} />
+				<div class="left">
+					<i class={faicon} />
+					<span>{title}</span>
+				</div>
+
 				<i class="fas fa-chevron-down" />
 			</span>
 		{:else}
@@ -48,9 +52,12 @@
 				title="Hide {title}"
 				in:receive={{key: 'button'}}
 				out:send={{key: 'button'}}>
+				<div class="left">
+					<i class={faicon} />
+					<span>{title}</span>
+				</div>
+
 				<i class="fas fa-chevron-up" />
-				<i class={faicon} />
-				<span>{title}</span>
 			</span>
 		{/if}
 	</div>
@@ -74,15 +81,23 @@
 	.box-toggle-section {
 		display: grid;
 		grid-template-areas: 'button'; /* Single grid area */
-		justify-items: center;
+		justify-items: stretch;
 		min-width: max-content;
 		gap: 0.25em;
+		padding: 0 0.25em;
 	}
 
 	.reveal-button {
 		grid-area: button; /* Assign to the same grid area */
 		align-self: end;
 		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 0.5em;
+	}
+
+	.reveal-button .left {
 		display: flex;
 		align-items: center;
 		gap: 0.5em;

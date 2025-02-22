@@ -1258,6 +1258,7 @@
 	}
 
 	aside {
+		width: 100%;
 		max-width: 27em;
 	}
 
