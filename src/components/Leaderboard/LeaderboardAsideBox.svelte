@@ -93,6 +93,7 @@
 		align-items: center;
 		gap: 0.25em;
 		margin-top: 0.25em;
+		width: 27em;
 	}
 
 	.darkened-background {
