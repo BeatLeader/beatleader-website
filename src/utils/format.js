@@ -4,7 +4,12 @@ var lcount = 2;
 if (window.location.host.includes('localhost')) {
 	lcount = 1;
 }
-if (window.location.host.includes('netlify.app') || window.location.host.includes('stage') || window.location.host.includes('test')) {
+if (
+	window.location.host.includes('netlify.app') ||
+	window.location.host.includes('stage') ||
+	window.location.host.includes('test') ||
+	window.location.host.includes('preview')
+) {
 	lcount = 3;
 }
 if (parseInt(location.host.split('.')[location.host.split('.').length - 1])) {
