@@ -109,7 +109,7 @@
 		background-color: var(--foreground);
 		border-radius: 0.3em;
 		padding: 0.25em;
-		margin: 0.5em 0;
+		margin-top: 0.5em;
 	}
 
 	.box-toggle-section {

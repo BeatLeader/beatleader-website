@@ -111,6 +111,7 @@ export const DEFAULT_CONFIG = {
 
 		showStatsInHeader: false,
 		showHashInHeader: false,
+		showDevMenu: false,
 		showGraphOption: true,
 		showAccGraph: false,
 		showClanCaptureInHeader: true,

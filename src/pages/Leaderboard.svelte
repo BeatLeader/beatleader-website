@@ -1189,7 +1189,7 @@
 								<LeaderboardStats {leaderboard} />
 							{/if}
 							<PredictedAccGraph {leaderboard} />
-							{#if !$configStore?.leaderboardPreferences?.showHashInHeader}
+							{#if $configStore?.leaderboardPreferences?.showDevMenu}
 								<LeaderboardDevMenu {leaderboard} {song} />
 							{/if}
 
