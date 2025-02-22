@@ -39,7 +39,7 @@
 				in:receive={{key: 'button'}}
 				out:send={{key: 'button'}}>
 				<i class={faicon} />
-				<i class="fas fa-chevron-right" />
+				<i class="fas fa-chevron-down" />
 			</span>
 		{:else}
 			<span
@@ -48,7 +48,7 @@
 				title="Hide {title}"
 				in:receive={{key: 'button'}}
 				out:send={{key: 'button'}}>
-				<i class="fas fa-chevron-left" />
+				<i class="fas fa-chevron-up" />
 				<i class={faicon} />
 				<span>{title}</span>
 			</span>
@@ -93,7 +93,8 @@
 		align-items: center;
 		gap: 0.25em;
 		margin-top: 0.25em;
-		width: 27em;
+		width: 100%;
+		min-width: clamp(0px, 26em, 90vw);
 	}
 
 	.darkened-background {
