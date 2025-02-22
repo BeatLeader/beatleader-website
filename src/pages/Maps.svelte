@@ -18,6 +18,17 @@
 		{
 			component: CarouselCard,
 			props: {
+				title: 'The 2024 Beasties Premiere',
+				body: '',
+				imageUrl: '/assets/Discover/2024_beasties_times.png',
+				targetUrl: 'https://www.youtube.com/@BeatSaberMods',
+				linkName: 'YouTube',
+				forcedColor: 'rgba(0, 0, 0, 0)',
+			},
+		},
+		{
+			component: CarouselCard,
+			props: {
 				title: 'Extra Sensory 2 Mods and Maps are out!',
 				body: '',
 				imageUrl: '/assets/Discover/extra_sensory_thumbnail_2.webp',
