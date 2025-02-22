@@ -117,7 +117,7 @@
 				},
 				plugins: {
 					legend: {
-						display: isChartHovered,
+						display: false,
 						position: 'top',
 						labels: {
 							color: 'white',
@@ -176,9 +176,10 @@
 	$: fetchData(leaderboardId);
 
 	$: setupChart(canvas, failurePoints, isChartHovered);
+	$: height = isChartHovered ? '332px' : '300px';
 </script>
 
-<div class="stats" class:hidden={isChartHovered}>
+<div class="stats">
 	<div class="success-rate">
 		<div class="progress-bar">
 			<div class="progress" style="width: {successRate * 100}%"></div>
@@ -186,7 +187,7 @@
 		<div class="rate">{formatNumber(successRate * 100, 1)}% Success Rate</div>
 	</div>
 
-	<div class="attempts">
+	<div class="attempts" class:hidden={isChartHovered}>
 		<div class="count">{formatNumber(count, 0)}</div>
 		<div class="label">attempts</div>
 	</div>
@@ -204,7 +205,9 @@
 		<div class="spinner-container">Error: {error}</div>
 	{/if}
 </section>
-<div class="period" class:hidden={isChartHovered}>{formatNumber(todayCount, 0)} today, {formatNumber(weekCount, 0)} this week</div>
+{#if !isChartHovered}
+	<div class="period">{formatNumber(todayCount, 0)} today, {formatNumber(weekCount, 0)} this week</div>
+{/if}
 
 <style>
 	.stats {
@@ -212,6 +215,7 @@
 		margin-bottom: 2rem;
 		position: relative;
 		z-index: 1;
+		pointer-events: none;
 	}
 
 	.success-rate {
@@ -270,7 +274,7 @@
 		position: relative;
 		margin: 1rem auto 0 auto;
 		height: var(--height, 300px);
-		margin-top: calc(var(--height, 300px) / -1.9);
+		margin-top: -9.5em;
 	}
 
 	canvas {
