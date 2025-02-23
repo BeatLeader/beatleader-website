@@ -30,7 +30,7 @@
 
 	let canvas = null;
 	let chart = null;
-	let height = '300px';
+	let height = '19em';
 	let isChartHovered = false;
 
 	function formatTime(seconds) {
@@ -117,7 +117,7 @@
 				},
 				plugins: {
 					legend: {
-						display: isChartHovered,
+						display: false,
 						position: 'top',
 						labels: {
 							color: 'white',
@@ -176,17 +176,21 @@
 	$: fetchData(leaderboardId);
 
 	$: setupChart(canvas, failurePoints, isChartHovered);
+	$: height = isChartHovered ? '21em' : '19em';
 </script>
 
-<div class="stats" class:hidden={isChartHovered}>
+<div class="stats">
 	<div class="success-rate">
 		<div class="progress-bar">
 			<div class="progress" style="width: {successRate * 100}%"></div>
 		</div>
-		<div class="rate">{formatNumber(successRate * 100, 1)}% Success Rate</div>
+		<div class="rate">
+			<span class="rate-text">Success Rate:</span>
+			<span class="rate-value">{formatNumber(successRate * 100, 1)}%</span>
+		</div>
 	</div>
 
-	<div class="attempts">
+	<div class="attempts" class:hidden={isChartHovered}>
 		<div class="count">{formatNumber(count, 0)}</div>
 		<div class="label">attempts</div>
 	</div>
@@ -204,7 +208,9 @@
 		<div class="spinner-container">Error: {error}</div>
 	{/if}
 </section>
-<div class="period" class:hidden={isChartHovered}>{formatNumber(todayCount, 0)} today, {formatNumber(weekCount, 0)} this week</div>
+{#if !isChartHovered}
+	<div class="period">{formatNumber(todayCount, 0)} today, {formatNumber(weekCount, 0)} this week</div>
+{/if}
 
 <style>
 	.stats {
@@ -212,6 +218,7 @@
 		margin-bottom: 2rem;
 		position: relative;
 		z-index: 1;
+		pointer-events: none;
 	}
 
 	.success-rate {
@@ -240,8 +247,16 @@
 	}
 
 	.rate {
-		font-size: 1.2rem;
+		font-size: 1.25rem;
 		color: white;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.4em;
+	}
+
+	.rate-value {
+		font-weight: bold;
 	}
 
 	.attempts {
@@ -270,7 +285,7 @@
 		position: relative;
 		margin: 1rem auto 0 auto;
 		height: var(--height, 300px);
-		margin-top: calc(var(--height, 300px) / -1.9);
+		margin-top: -9.5em;
 	}
 
 	canvas {

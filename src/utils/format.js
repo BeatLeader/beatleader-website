@@ -7,6 +7,9 @@ if (window.location.host.includes('localhost')) {
 if (window.location.host.includes('netlify.app') || window.location.host.includes('stage') || window.location.host.includes('test')) {
 	lcount = 3;
 }
+if (window.location.host.includes('preview')) {
+	lcount = 4;
+}
 if (parseInt(location.host.split('.')[location.host.split('.').length - 1])) {
 	lcount = 4;
 }

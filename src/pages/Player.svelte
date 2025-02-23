@@ -336,7 +336,7 @@
 				</ContentBox>
 			{/if}
 			{#if achievements?.length && $configStore.profileParts.achievements}
-				<ContentBox>
+				<ContentBox cls="player-cards-box frosted">
 					<Achievements {achievements} />
 				</ContentBox>
 			{/if}

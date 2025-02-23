@@ -303,6 +303,7 @@
 	$: showSubtitle = $configStore?.leaderboardPreferences?.showSubtitleInHeader ?? false;
 	$: showStats = $configStore?.leaderboardPreferences?.showStatsInHeader ?? false;
 	$: showHash = $configStore?.leaderboardPreferences?.showHashInHeader ?? false;
+	$: showDevMenu = $configStore?.leaderboardPreferences?.showDevMenu ?? false;
 	$: showGraph = $configStore?.leaderboardPreferences?.showGraphOption ?? false;
 	$: showAccGraph = $configStore?.leaderboardPreferences?.showAccGraph ?? false;
 	$: alwaysShowAuthorHint = $configStore?.leaderboardPreferences?.alwaysShowAuthorHint ?? false;
@@ -421,6 +422,14 @@
 							fontSize={12}
 							design="slider"
 							on:click={() => configStore.settempsetting('leaderboardPreferences', 'showHashInHeader', !showHash)} />
+					</div>
+					<div title="Show dev menu">
+						<Switch
+							value={showDevMenu}
+							label="Show dev menu"
+							fontSize={12}
+							design="slider"
+							on:click={() => configStore.settempsetting('leaderboardPreferences', 'showDevMenu', !showDevMenu)} />
 					</div>
 					<div title="Show scores weight graph on ranked maps in the tab options">
 						<Switch
