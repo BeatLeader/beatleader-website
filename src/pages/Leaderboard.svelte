@@ -1204,9 +1204,7 @@
 
 			{#if showAttempts}
 				<LeaderboardAsideBox opened={attemptsShown} title="Attempts" faicon="fas fa-chart-simple" boolname="attemptsShown">
-					{#if leaderboard?.stats?.stars}
-						<AttemptsGraph leaderboardId={currentLeaderboardId} />
-					{/if}
+					<AttemptsGraph leaderboardId={currentLeaderboardId} />
 				</LeaderboardAsideBox>
 			{/if}
 
