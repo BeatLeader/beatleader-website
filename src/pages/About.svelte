@@ -228,6 +228,10 @@ ${BL_API_URL}players?leaderboardContext=general&page=${page}&count=100&role=supp
 			<div class="member">
 				<img src="https://cdn.assets.beatleader.com/76561199001767132R45.png" alt="ViSi" /><a href="/u/visi">ViSi</a>
 			</div>
+			<div class="member">
+				<img src="https://avatars.akamai.steamstatic.com/2b9951e8e6a9bdcaa6799f6b1a0bc2ba1e95387d_full.jpg" alt="Zana" /><a
+					href="/u/76561198272028078">Zana</a>
+			</div>
 		</section>
 
 		{#if supporters.length}
@@ -362,10 +366,6 @@ ${BL_API_URL}players?leaderboardContext=general&page=${page}&count=100&role=supp
 			<div class="member">
 				<img src="https://cdn.assets.beatleader.com/76561198960449289.png" alt="Aquaflee" /><a
 					href="https://www.beatleader.com/u/76561198960449289">Aquaflee</a>
-			</div>
-			<div class="member">
-				<img src="https://avatars.akamai.steamstatic.com/2b9951e8e6a9bdcaa6799f6b1a0bc2ba1e95387d_full.jpg" alt="Zana" /><a
-					href="https://www.beatleader.com/u/76561198272028078">Zana</a>
 			</div>
 			<div class="member">
 				<img src="https://avatars.akamai.steamstatic.com/1ae4cec7a3ffd6f9952d5495d9c79f7cdc154e12_full.jpg" alt="Kansas" /><a
