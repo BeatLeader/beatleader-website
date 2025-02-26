@@ -23,6 +23,7 @@
 	export let twitchUrl = null;
 	export let icons = false;
 	export let scoreId = null;
+	export let attempt = false;
 	export let replayLink = null;
 	export let mapCheck = false;
 	export let serviceIcon = null;
@@ -221,7 +222,7 @@
 					})} />
 		{/if}
 		{#if !noPin && shownIcons.includes('pin')}
-			<PinIcon {scoreId} on:score-pinned />
+			<PinIcon {scoreId} {attempt} on:score-pinned />
 		{/if}
 		{#if songKey && songKey.length && shownIcons.includes('playlist')}
 			{#if $configStore?.preferences?.playlistOption == 'selected'}

@@ -52,3 +52,9 @@ export function colorForEndType(type, opacity = 1) {
 			return `rgba(128, 128, 128, ${opacity})`; // default to gray if type is unknown
 	}
 }
+
+export function timeToLabel(time, prefix) {
+	const minutes = Math.floor(time / 60);
+	const seconds = Math.floor(time % 60);
+	return prefix + ' ' + minutes + ':' + seconds.toString().padStart(2, '0');
+}

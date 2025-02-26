@@ -72,6 +72,7 @@
 					{twitchUrl}
 					{diffInfo}
 					scoreId={score.id}
+					attempt={service == 'attempts'}
 					{replayLink}
 					{icons}
 					{serviceIcon}

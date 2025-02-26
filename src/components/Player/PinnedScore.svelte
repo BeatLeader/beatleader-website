@@ -4,6 +4,8 @@
 	import createAccountStore from '../../stores/beatleader/account';
 	import pinApiClient from '../../network/clients/beatleader/scores/api-pin';
 	import {SsrHttpClientError} from '../../network/errors';
+	import {colorForEndType, titleForEndType, timeToLabel} from '../../utils/attempts';
+
 	import SongScore from './SongScore.svelte';
 	import Button from '../Common/Button.svelte';
 	import Spinner from '../Common/Spinner.svelte';
@@ -41,7 +43,7 @@
 			const scoreId = songScore.score.id;
 			const pinPriority = songScore?.score?.metadata?.priority ?? 1;
 
-			const response = await pinApiClient.update({scoreId, pin, description, link, pinPriority});
+			const response = await pinApiClient.update({scoreId, attempt: songScore.score.endType > 0, pin, description, link, pinPriority});
 			const data = await response.json();
 
 			songScore.score.metadata = data;
@@ -167,6 +169,30 @@
 					</span>
 				{/if}
 
+				{#if songScore.score.endType > 0}
+					<h3 class="pin-description" title="Attempt number on this map">
+						Attempt #{songScore.score.attemptsCount}
+					</h3>
+					{#if songScore.score.endType}
+						<h3
+							class="pin-description"
+							title="Attempt end type"
+							style={songScore.score.endType ? `background-color: ${colorForEndType(songScore.score.endType, 0.2)}` : ''}>
+							{titleForEndType(songScore.score.endType)}
+						</h3>
+					{/if}
+					{#if songScore.score.endType > 1}
+						{#if songScore.score.startTime}
+							<h3 class="pin-description" title="Attempt start time">
+								{timeToLabel(songScore.score.startTime, 'from')}
+							</h3>
+						{/if}
+						<h3 class="pin-description" title="Attempt finish time">
+							{timeToLabel(songScore.score.time, 'at')}
+						</h3>
+					{/if}
+				{/if}
+
 				{#if editable || songScore.score?.metadata?.description}
 					<h3
 						class="pin-description"
@@ -193,7 +219,7 @@
 		<SongScore
 			{playerId}
 			{songScore}
-			service="beatleader"
+			service={songScore.score.endType > 0 ? 'beatsavior' : 'beatleader'}
 			icons={['bs', 'replay', 'pin', 'pin-service']}
 			{fixedBrowserTitle}
 			replayCounter={false} />

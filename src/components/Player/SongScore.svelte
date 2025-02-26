@@ -11,7 +11,7 @@
 	import Icons from '../Song/Icons.svelte';
 	import PlayerPerformance from './PlayerPerformance.svelte';
 	import PlayerNameWithFlag from '../Common/PlayerNameWithFlag.svelte';
-	import {colorForEndType, titleForEndType} from '../../utils/attempts';
+	import {colorForEndType, titleForEndType, timeToLabel} from '../../utils/attempts';
 
 	export let playerId = null;
 	export let songScore = null;
@@ -75,12 +75,6 @@
 		} else {
 			return options.fn(node, {duration: 0, delay: 0, easing: () => 0});
 		}
-	}
-
-	function timeToLabel(time, prefix) {
-		const minutes = Math.floor(time / 60);
-		const seconds = Math.floor(time % 60);
-		return prefix + ' ' + minutes + ':' + seconds.toString().padStart(2, '0');
 	}
 
 	let showAnyDetails = true;
@@ -204,6 +198,7 @@
 						{twitchUrl}
 						{diffInfo}
 						scoreId={score.id}
+						attempt={service == 'attempts'}
 						replayLink={score.replay?.includes('otherreplays') ? score.replay : null}
 						icons={selectedIcons}
 						{serviceIcon}
@@ -217,6 +212,7 @@
 						{twitchUrl}
 						{diffInfo}
 						scoreId={score.id}
+						attempt={service == 'attempts'}
 						replayLink={score.replay?.includes('otherreplays') ? score.replay : null}
 						icons={selectedIcons}
 						{serviceIcon}

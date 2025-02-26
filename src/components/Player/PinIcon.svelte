@@ -8,7 +8,7 @@
 	import {createEventDispatcher} from 'svelte';
 
 	export let scoreId;
-
+	export let attempt = false;
 	const {addNotification} = getNotificationsContext();
 	const dispatch = createEventDispatcher();
 
@@ -22,7 +22,7 @@
 			isLoading = true;
 
 			if (isPinned) {
-				await pinApiClient.unpin(scoreId);
+				await pinApiClient.unpin(scoreId, attempt);
 
 				addNotification({
 					text: 'Score unpinned.',
@@ -40,7 +40,7 @@
 							return s;
 						}) ?? [];
 			} else {
-				const response = await pinApiClient.pin(scoreId);
+				const response = await pinApiClient.pin(scoreId, attempt);
 				const metadata = await response.json();
 
 				addNotification({
@@ -70,7 +70,7 @@
 		}
 	}
 
-	$: pinnedScoreIds = $account?.id ? $pinnedScoresStore[$account.id]?.map(s => s?.score?.id)?.filter(scoreId => scoreId) ?? [] : [];
+	$: pinnedScoreIds = $account?.id ? ($pinnedScoresStore[$account.id]?.map(s => s?.score?.id)?.filter(scoreId => scoreId) ?? []) : [];
 	$: isPinned = pinnedScoreIds.includes(scoreId);
 </script>
 

@@ -76,7 +76,7 @@ export const BL_API_ALL_SCORES_URL =
 export const BL_API_SCORE_STATS_URL = 'https://cdn.scorestats.beatleader.com/${scoreId}.json';
 export const BL_API_SCORE_PIN_URL =
 	BL_API_URL +
-	'score/${scoreId}/pin?pin=${pin}&leaderboardContext=${leaderboardContext}&link=${link}&description=${description}&priority=${priority}';
+	'score/${scoreId}/pin?pin=${pin}&attempt=${attempt}&leaderboardContext=${leaderboardContext}&link=${link}&description=${description}&priority=${priority}';
 export const BL_API_LEADERBOARD_STATS_URL = BL_API_URL + 'leaderboard/statistic/${leaderboardId}';
 export const BL_API_PLAYER_SCORE_URL = BL_API_URL + 'score/${playerId}/${hash}/${diff}/${type}?leaderboardContext=${leaderboardContext}';
 export const BL_API_SCORES_HISTOGRAM_URL =
@@ -471,6 +471,7 @@ export default (options = {}) => {
 
 	const pinScore = async (
 		scoreId,
+		attempt = false,
 		pin = true,
 		description = null,
 		link = null,
@@ -480,7 +481,12 @@ export default (options = {}) => {
 		options = {}
 	) =>
 		fetchUrl(
-			substituteVarsUrl(BL_API_SCORE_PIN_URL, {scoreId, pin, description, link, service, priority: pinPriority}, true, 'null-only'),
+			substituteVarsUrl(
+				BL_API_SCORE_PIN_URL,
+				{scoreId, attempt, pin, description, link, service, priority: pinPriority},
+				true,
+				'null-only'
+			),
 			{
 				body: null,
 				...options,

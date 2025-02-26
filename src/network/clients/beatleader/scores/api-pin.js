@@ -2,6 +2,7 @@ import queue, {getResponseBody} from '../../../queues/queues';
 
 const update = async ({
 	scoreId,
+	attempt = false,
 	pin = true,
 	description = null,
 	link = null,
@@ -11,13 +12,23 @@ const update = async ({
 	fullResponse = true,
 	...queueOptions
 } = {}) => {
-	const response = await queue.BEATLEADER_API.pinScore(scoreId, pin, description, link, service, pinPriority, priority, queueOptions);
+	const response = await queue.BEATLEADER_API.pinScore(
+		scoreId,
+		attempt,
+		pin,
+		description,
+		link,
+		service,
+		pinPriority,
+		priority,
+		queueOptions
+	);
 
 	return fullResponse ? response : getResponseBody(response);
 };
 
-const pin = async (scoreId, pinPriority = 1) => update({scoreId, pin: true, pinPriority});
-const unpin = async scoreId => update({scoreId, pin: false});
+const pin = async (scoreId, attempt = false, pinPriority = 1) => update({scoreId, attempt, pin: true, pinPriority});
+const unpin = async (scoreId, attempt = false) => update({scoreId, attempt, pin: false});
 
 const client = {
 	update,
