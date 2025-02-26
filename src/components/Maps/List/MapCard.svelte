@@ -272,12 +272,6 @@
 			</div>
 		</div>
 	</div>
-
-	<div class="buttons-container mobile-only">
-		<div class="icons-container">
-			<Icons {song} />
-		</div>
-	</div>
 {/if}
 
 <style>
@@ -409,7 +403,7 @@
 		width: 100%;
 	}
 
-	:global(.icons-container .buttons-container.flat) {
+	:global(.map-card-wrapper .icons-container .buttons-container.flat) {
 		flex-direction: column;
 	}
 
@@ -710,11 +704,16 @@
 	}
 
 	@media screen and (max-width: 767px) {
+		.map-card-wrapper {
+			width: 100%;
+			margin-bottom: 0.2em;
+		}
+
 		.header {
 			margin-inline: 0;
-			max-width: 100vw;
 			padding: 0.4em 0.4em 0.15em 0.4em;
 			gap: 0.5em;
+			width: 100%;
 		}
 
 		.desktop-only {
@@ -747,7 +746,7 @@
 		}
 
 		.header-container {
-			min-height: 11.2em;
+			min-height: unset;
 			gap: 0.3em;
 		}
 
@@ -773,15 +772,16 @@
 		}
 
 		.map-cover {
-			width: 11em;
+			width: 7.4em;
+		}
+
+		.placeholder {
+			display: none;
 		}
 
 		.icons-container {
-			transform: scale(1);
-		}
-
-		.version-selector-container {
-			transform: scale(1);
+			transform: scale(0.95);
+			margin-top: -0.2em;
 		}
 
 		:global(.leaderboard-header-box) {

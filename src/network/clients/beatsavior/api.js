@@ -21,9 +21,9 @@ const process = response => {
 				playerID: playerId,
 				songDataType: type,
 				songID: hash,
-				songMapper: levelAuthorName,
+				songMapper: mapper,
 				songName: name,
-				songArtist: authorName,
+				songArtist: author,
 				songDifficultyRank: difficulty,
 				songDifficulty: diff,
 				songJumpDistance: songJumpDistance,
@@ -56,7 +56,7 @@ const process = response => {
 
 			if (!playerId || !playerId.length || !hash || !hash.length || !diff || !diff.length || !score) return null;
 
-			const song = {hash, name, subName: '', authorName, levelAuthorName};
+			const song = {hash, name, subName: '', author, mapper};
 			const leaderboard = {
 				leaderboardId,
 				difficulty,

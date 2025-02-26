@@ -72,6 +72,10 @@ export const DEFAULT_CONFIG = {
 		beastiesNominationsBanner: true,
 
 		playlistOption: 'selected',
+
+		mapsFiltersOpen: true,
+		mapsSortingOpen: true,
+		mapsPlaylistOpen: false,
 	},
 	scorePreferences: {
 		badgeRows: 2,

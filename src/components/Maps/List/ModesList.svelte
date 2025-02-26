@@ -7,8 +7,10 @@
 		modeDescriptions,
 		wrapBLStatus,
 		sortingValueIsSongOnly,
+		badgesDef,
 	} from '../../../utils/beatleader/format';
 	import Icons from '../../Song/Icons.svelte';
+	import SongScoreCompact from './SongScoreCompact.svelte';
 	import SongStatus from './SongStatus.svelte';
 
 	export let song;
@@ -73,7 +75,12 @@
 									? '0.3em'
 									: '0'};">
 								{#if !isHovered && diff.myScore}
-									<div class="my-score"></div>
+									<div
+										class="my-score"
+										style="background-color: {badgesDef.find(
+											b => (!b.max || diff.myScore.accuracy * 100 <= b.max) && (!b.min || diff.myScore.accuracy * 100 > b.min)
+										).color}; border: solid {diff.myScore.fullCombo ? 'yellow' : 'white'} 2px;">
+									</div>
 								{/if}
 								{#if diff.stars}
 									<span>{diff.stars.toFixed(isHovered ? 2 : 1)}</span><span>★</span>
@@ -89,7 +96,10 @@
 											<span class="sort-value">{diffSortValue}</span>
 										{/if}
 									</div>
-									<Icons {song} diffInfo={diff.diffInfo} icons={['playlist']} />
+									<div class="score-and-icons">
+										<SongScoreCompact score={diff.myScore} />
+										<Icons {song} diffInfo={diff.diffInfo} icons={['playlist']} />
+									</div>
 								</div>
 							{/if}
 						</div>
@@ -200,6 +210,19 @@
 		padding: 0.25em 0.3em 0.2em 0.4em;
 		font-size: 0.8em;
 		border-radius: 0.7em;
+	}
+
+	.my-score {
+		width: 1em;
+		height: 1em;
+		border-radius: 0.5em;
+		margin-right: 0.1em;
+	}
+
+	.score-and-icons {
+		display: flex;
+		gap: 0.5em;
+		align-items: center;
 	}
 
 	.tail-container {

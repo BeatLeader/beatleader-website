@@ -1,7 +1,7 @@
 <script>
 	import {getContext} from 'svelte';
 	import {writable} from 'svelte/store';
-	import {diffColors, describeModifiersAndMultipliers} from '../../../utils/beatleader/format';
+	import {describeModifiersAndMultipliers, badgesDef} from '../../../utils/beatleader/format';
 	import {formatNumber} from '../../../utils/format';
 	import Badge from '../Badge.svelte';
 	import Value from '../Value.svelte';
@@ -15,15 +15,6 @@
 	export let secondary = 'improvement';
 
 	const isDemo = getContext('isDemo') ?? writable(false);
-
-	const badgesDef = [
-		{name: 'SS+', min: 95, max: null, color: diffColors.expertPlus},
-		{name: 'SS', min: 90, max: 95, color: diffColors.expert},
-		{name: 'S+', min: 85, max: 90, color: diffColors.hard},
-		{name: 'S', min: 80, max: 85, color: diffColors.normal},
-		{name: 'A', min: 70, max: 80, color: diffColors.easy},
-		{name: '-', min: null, max: 70, color: 'var(--dimmed)'},
-	];
 
 	badgesDef.forEach(badge => {
 		badge.desc = `${showPercentageInstead ? 'Percentage' : 'Accuracy'} ${badge.name} (${

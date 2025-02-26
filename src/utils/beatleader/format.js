@@ -12,6 +12,15 @@ export const diffColors = {
 	expertplus: '#8f48db',
 };
 
+export const badgesDef = [
+	{name: 'SS+', min: 95, max: null, color: diffColors.expertPlus},
+	{name: 'SS', min: 90, max: 95, color: diffColors.expert},
+	{name: 'S+', min: 85, max: 90, color: diffColors.hard},
+	{name: 'S', min: 80, max: 85, color: diffColors.normal},
+	{name: 'A', min: 70, max: 80, color: diffColors.easy},
+	{name: '-', min: null, max: 70, color: 'var(--dimmed)'},
+];
+
 export function getDiffNameColor(diffName) {
 	return diffColors[diffName.toLowerCase()] ? diffColors[diffName.toLowerCase()] : null;
 }

@@ -22,8 +22,8 @@ export const serviceFilterFunc = serviceParams => s => {
 	if (serviceParams?.filters?.search?.length) {
 		const song = s?.leaderboard?.song ?? null;
 		if (song) {
-			const name = `${song?.name?.toLowerCase() ?? ''} ${song?.subName?.toLowerCase() ?? ''} ${song?.authorName?.toLowerCase() ?? ''} ${
-				song?.levelAuthorName?.toLowerCase() ?? ''
+			const name = `${song?.name?.toLowerCase() ?? ''} ${song?.subName?.toLowerCase() ?? ''} ${song?.author?.toLowerCase() ?? ''} ${
+				song?.mapper?.toLowerCase() ?? ''
 			}`;
 
 			filterVal &= name.indexOf(serviceParams.filters.search.toLowerCase()) >= 0;

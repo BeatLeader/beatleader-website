@@ -52,6 +52,7 @@
 	import {Svrollbar} from 'svrollbar';
 	import {PRIORITY} from '../utils/queue';
 	import {fetchJson} from '../network/fetch';
+	import AsideBox from '../components/Common/AsideBox.svelte';
 
 	export let page = 1;
 	export let type = 'ranked';
@@ -128,9 +129,10 @@
 	];
 
 	const baseMytypeFilterOptions = [
-		{key: '', label: 'All maps', iconFa: 'fa fa-music', cls: 'maps-type-button', color: 'var(--beatleader-primary)'},
-		{key: 'played', label: 'Played', iconFa: 'fa fa-user', cls: 'maps-type-button', color: 'var(--beatleader-primary)'},
-		{key: 'unplayed', label: 'Not played', iconFa: 'fa fa-times', cls: 'maps-type-button', color: 'var(--beatleader-primary)'},
+		{key: '', label: 'All maps', iconFa: 'fa fa-music', cls: 'my-type-button', color: 'var(--beatleader-primary)'},
+		{key: 'played', label: 'Played', iconFa: 'fa fa-user', cls: 'my-type-button', color: 'var(--beatleader-primary)'},
+		{key: 'unplayed', label: 'Not played', iconFa: 'fa fa-times', cls: 'my-type-button', color: 'var(--beatleader-primary)'},
+		{key: 'friendsPlayed', label: 'By friends', iconFa: 'fa fa-users', cls: 'my-type-button', color: 'var(--beatleader-primary)'},
 	];
 
 	let mytypeFilterOptions = baseMytypeFilterOptions;
@@ -225,6 +227,11 @@
 	}
 
 	function fetchMaps(page = 1, type = 'ranked', filters = {}, priority = PRIORITY.FG_LOW, options = {}) {
+		scrolling = true;
+		setTimeout(() => {
+			scrolling = false;
+		}, 100);
+
 		if (cache[page]) {
 			mapsList = cache[page];
 			return;
@@ -690,9 +697,9 @@
 				if (entry.target === topAnchor && currentPage > 1) {
 					console.log(entry);
 
-					scrollToPage(currentPage - 2);
 					scrolling = true;
-					scrollToBottom(150);
+					scrollToBottom(100);
+					scrollToPage(currentPage - 2);
 				}
 				if (entry.target === bottomAnchor && currentPage < Math.ceil(numOfMaps / itemsPerPage)) {
 					scrollToPage(currentPage);
@@ -726,8 +733,9 @@
 
 	function scrollToBottom(offset = 0) {
 		if (scrollContainer) {
+			console.log(scrollContainer.scrollHeight / 2 - offset);
 			safeScrollTo({
-				top: scrollContainer.scrollHeight - offset,
+				top: scrollContainer.scrollHeight / 2 - offset,
 				behavior: 'smooth',
 			});
 		}
@@ -763,6 +771,7 @@
 	);
 
 	let isPlaylistOpen = false;
+	let mobileFiltersOpen = false;
 
 	$: if (topAnchor && bottomAnchor && scrollContainer) {
 		if (observer) observer.disconnect();
@@ -792,16 +801,25 @@
 
 <section class="align-content">
 	<article class="page-content" transition:fade|global>
-		<section class="filter tab-container">
-			<TabSwitcher values={typeFilterOptions} value={typeFilterOptions.find(o => o.key === currentType)} on:change={onTypeChanged} />
-			{#if $account.id}
-				<TabSwitcher
-					values={mytypeFilterOptions}
-					value={mytypeFilterOptions.find(o => o.key === currentFilters.mytype)}
-					on:change={onMyTypeChanged} />
-			{/if}
-		</section>
 		<ContentBox cls="maps-box" bind:box={boxEl}>
+			<section class="filter tab-container">
+				<TabSwitcher values={typeFilterOptions} value={typeFilterOptions.find(o => o.key === currentType)} on:change={onTypeChanged} />
+				{#if $account.id}
+					<div class="desktop-switcher">
+						<TabSwitcher
+							values={mytypeFilterOptions}
+							value={mytypeFilterOptions.find(o => o.key === currentFilters.mytype)}
+							on:change={onMyTypeChanged} />
+					</div>
+				{/if}
+				<div class="mobile-only">
+					<Button
+						cls="mobile-filters-button"
+						iconFa="fas fa-{mobileFiltersOpen ? 'xmark' : 'bars'}"
+						label="Filters"
+						on:click={() => (mobileFiltersOpen = !mobileFiltersOpen)} />
+				</div>
+			</section>
 			{#if displayMaps?.length}
 				<div class="top-container"></div>
 				<div class="songs-container">
@@ -834,18 +852,14 @@
 		</ContentBox>
 	</article>
 
-	<aside>
-		<ContentBox>
-			<h2 class="title is-5">Sorting</h2>
-
+	<aside class="maps-aside-container" class:open={mobileFiltersOpen}>
+		<AsideBox title="Sorting" boolname="mapsSortingOpen" faicon="fas fa-sort">
 			<div class="sorting-options">
 				<Select bind:value={sortValue} on:change={onSortChange} fontSize="0.8" options={sortValues} />
 				<Select bind:value={orderValue} on:change={onOrderChange} fontSize="0.8" options={orderValues} />
 			</div>
-		</ContentBox>
-		<ContentBox>
-			<h2 class="title is-5">Filters</h2>
-
+		</AsideBox>
+		<AsideBox title="Filters" boolname="mapsFiltersOpen" faicon="fas fa-filter">
 			<section class="filter">
 				<input
 					on:input={debounce(onSearchChanged, FILTERS_DEBOUNCE_MS)}
@@ -867,6 +881,15 @@
 					playlistIds={(currentFilters.playlistIds?.length && currentFilters.playlistIds?.split(',')) ?? []}
 					on:change={e => onPlaylistIdsChange(e)} />
 			</section>
+
+			{#if $account.id}
+				<section class="filter mobile-switcher">
+					<Switcher
+						values={mytypeFilterOptions}
+						value={mytypeFilterOptions.find(o => o.key === currentFilters.mytype)}
+						on:change={onMyTypeChanged} />
+				</section>
+			{/if}
 
 			<section class="filter">
 				<Switcher
@@ -1163,58 +1186,41 @@
 					</div>
 				</div>
 			</section>
-
-			<section class="filter dropdown-filter">
-				<div class="dropdown-header" on:click={() => (isPlaylistOpen = !isPlaylistOpen)}>
-					<div class="header-content">
-						<i class="fas fa-list" />
-						<span>Generate Playlist</span>
+		</AsideBox>
+		<AsideBox title="Generate Playlist" boolname="mapsPlaylistOpen" faicon="fas fa-list">
+			<div class="dropdown-content" transition:fade>
+				{#if makingPlaylist}
+					<Spinner />
+				{:else}
+					<span>Maps count:</span>
+					<RangeSlider
+						range
+						min={0}
+						max={1000}
+						step={1}
+						values={[mapCount]}
+						hoverable
+						float
+						pips
+						pipstep={100}
+						all="label"
+						on:change={event => {
+							mapCount = event.detail.values[0];
+						}} />
+					<div class="duplicateDiffsContainer">
+						<input type="checkbox" id="duplicateDiffs" label="Duplicate map per diff" bind:checked={duplicateDiffs} />
+						<label for="duplicateDiffs" title="Will include every diff as a separate map entry">Duplicate map per diff</label>
 					</div>
-					<i class="fas fa-chevron-{isPlaylistOpen ? 'up' : 'down'}" />
-				</div>
-
-				{#if isPlaylistOpen}
-					<div class="dropdown-content" transition:fade>
-						{#if makingPlaylist}
-							<Spinner />
-						{:else}
-							<span>Maps count:</span>
-							<RangeSlider
-								range
-								min={0}
-								max={1000}
-								step={1}
-								values={[mapCount]}
-								hoverable
-								float
-								pips
-								pipstep={100}
-								all="label"
-								on:change={event => {
-									mapCount = event.detail.values[0];
-								}} />
-							<div class="duplicateDiffsContainer">
-								<input type="checkbox" id="duplicateDiffs" label="Duplicate map per diff" bind:checked={duplicateDiffs} />
-								<label for="duplicateDiffs" title="Will include every diff as a separate map entry">Duplicate map per diff</label>
-							</div>
-							<div class="playlistTitleContainer">
-								<label for="playlistTitle" title="Name of the playlist" style="margin: 0;">Title</label>
-								<input type="text" id="playlistTitle" label="Title" bind:value={playlistTitle} />
-							</div>
-							<Button
-								cls="playlist-button"
-								iconFa="fas fa-wand-magic-sparkles"
-								label="Generate playlist"
-								on:click={() => generatePlaylist()} />
-						{/if}
+					<div class="playlistTitleContainer">
+						<label for="playlistTitle" title="Name of the playlist" style="margin: 0;">Title</label>
+						<input type="text" id="playlistTitle" label="Title" bind:value={playlistTitle} />
 					</div>
+					<Button cls="playlist-button" iconFa="fas fa-wand-magic-sparkles" label="Generate playlist" on:click={() => generatePlaylist()} />
 				{/if}
-			</section>
-		</ContentBox>
+			</div>
+		</AsideBox>
 	</aside>
 </section>
-
-<BackToTop />
 
 <MetaTags
 	title={ssrConfig.name + ' - Leaderboards'}
@@ -1239,25 +1245,27 @@
 	.align-content {
 		display: flex;
 		justify-content: flex-end !important;
-		position: fixed;
-		height: 100%;
 	}
 
 	.page-content {
 		max-width: 70em;
 		width: 100%;
-		height: 100%;
 	}
 
 	.tab-container {
 		display: flex;
 		justify-content: space-between;
+		margin: 0 -1em;
 	}
 
 	.filter {
-		margin: 0 0.7em;
-
 		flex: 1;
+	}
+
+	:global(.tab-container .switch-types) {
+		flex-grow: 1;
+		margin-top: -1em;
+		margin-bottom: 1.5em;
 	}
 
 	.sorting-options {
@@ -1344,9 +1352,9 @@
 
 	.songs-container {
 		display: flex;
-		height: calc(100% + 2.7em);
+		height: calc(100% - 1.3em);
 		margin-top: -1em;
-		margin-bottom: -3.7em;
+		margin-bottom: -2.9em;
 	}
 
 	.pager-container {
@@ -1388,7 +1396,7 @@
 		position: relative;
 		margin-left: -1em;
 		margin-right: -1em;
-		height: 100%;
+		max-height: 100%;
 		overflow: scroll;
 
 		/* hide scrollbar */
@@ -1451,8 +1459,21 @@
 
 	:global(.maps-box) {
 		overflow: hidden;
-		height: 86.5%;
+		position: fixed !important;
+		width: 69em;
+		height: calc(100% - 11em);
 		border-radius: 0 0 6px !important;
+		margin-top: 2.5em !important;
+	}
+
+	:global(.maps-aside-container .aside-box) {
+		min-width: unset;
+	}
+
+	:global(.mobile-filters-button) {
+		font-size: 0.8em !important;
+		height: 1.6em !important;
+		margin: -0.6em 0.4em 0 0 !important;
 	}
 
 	:global(.maps-filters-box) {
@@ -1549,7 +1570,11 @@
 		margin-top: 1rem;
 	}
 
-	:global(.maps-type-button) {
+	.mobile-switcher {
+		display: none;
+	}
+
+	:global(.maps-type-button, .my-type-button) {
 		margin-bottom: -0.5em !important;
 		height: 3.5em;
 		border-radius: 12px 12px 0 0 !important;
@@ -1559,38 +1584,93 @@
 		justify-content: center !important;
 	}
 
-	:global(.maps-type-button span) {
+	:global(.maps-type-button span, .my-type-button span) {
 		font-weight: 900;
 	}
 
-	:global(.maps-type-button i) {
+	:global(.maps-type-button i, .my-type-button i) {
 		margin-right: 0 !important;
 	}
 
 	@media screen and (max-width: 1275px) {
-		.align-content {
-			flex-direction: column;
-			align-items: center;
+		.desktop-switcher {
+			display: none;
+		}
+		.mobile-switcher {
+			display: block;
+		}
+		:global(.my-type-button) {
+			margin-bottom: unset !important;
+			height: unset;
+			border-radius: unset !important;
+			width: unset;
+			flex-direction: unset;
+			align-items: unset !important;
+			justify-content: unset !important;
 		}
 
-		aside {
-			width: 100%;
-			max-width: 65em;
+		:global(.my-type-button span) {
+			font-weight: unset;
+		}
+
+		:global(.my-type-button i) {
+			margin-right: unset !important;
+		}
+		:global(.maps-box) {
+			width: 69%;
 		}
 	}
 
 	@media screen and (max-width: 767px) {
-		.icons {
-			margin-bottom: 0.5em;
+		.songs {
+			margin-left: 0;
+			margin-right: 0;
+		}
+
+		.filter {
+			margin: 1em 0;
+		}
+
+		.songs-container {
+			margin-bottom: -4.15em;
+		}
+
+		.pager-container {
+			margin: unset;
+		}
+
+		:global(.filter .switch-types) {
+			margin-top: -1em;
+			margin-bottom: 0.4em;
+		}
+
+		aside {
+			display: none;
+		}
+
+		aside.open {
+			display: block;
+			position: fixed;
+			top: 7em;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background-color: rgba(0, 0, 0, 0.5);
+		}
+
+		:global(.maps-box) {
+			padding: 0 !important;
+			margin-top: 0 !important;
 			width: 100%;
 		}
 
-		.playlist-buttons {
-			flex-direction: column;
-		}
-
-		.table-switches {
-			flex-direction: column-reverse;
+		:global(.maps-type-button) {
+			margin-bottom: -0.5em !important;
+			height: 3em;
+			padding-top: 0.8em !important;
+			border-radius: 8px 8px 0 0 !important;
+			width: 6em;
+			font-size: 0.7em !important;
 		}
 	}
 

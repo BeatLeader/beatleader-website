@@ -4,8 +4,8 @@ import processPlayer from '../../player/process';
 export const processScore = s => {
 	if (!s) return null;
 
-	const {hash, name, subName, author: authorName, mapper: levelAuthorName, duration, id, coverImage, bpm} = s?.leaderboard?.song ?? {};
-	const song = {hash, name, subName, authorName, levelAuthorName, duration, coverImage, id, bpm};
+	const {hash, name, subName, author, mapper, duration, id, coverImage, bpm} = s?.leaderboard?.song ?? {};
+	const song = {hash, name, subName, author, mapper, duration, coverImage, id, bpm};
 
 	const {id: leaderboardId} = s?.leaderboard ?? {};
 

@@ -341,8 +341,8 @@ export default () => {
 				let {
 					songHash: hash,
 					songName: name,
-					songAuthorName: authorName,
-					levelAuthorName,
+					songAuthorName: author,
+					levelAuthorName: mapper,
 					beatsaverKey,
 					complexity,
 					categoryName,
@@ -360,7 +360,7 @@ export default () => {
 				leaderboardId = parseInt(leaderboardId, 10);
 				if (isNaN(leaderboardId)) leaderboardId = null;
 
-				const song = {hash, name, subName: '', authorName, levelAuthorName, beatsaverKey};
+				const song = {hash, name, subName: '', author, mapper, beatsaverKey};
 				const diffInfo = {type: 'Standard', diff: difficulty?.toLowerCase()?.replace('plus', 'Plus')};
 				const leaderboard = {leaderboardId, song, diffInfo, complexity, category: categoryName};
 
