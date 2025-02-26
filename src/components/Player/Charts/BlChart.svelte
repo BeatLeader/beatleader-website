@@ -390,23 +390,25 @@
 							const xAxis = chart.scales.x;
 							const yAxis = chart.scales.y;
 
-							markers.forEach(marker => {
-								const x = xAxis.getPixelForValue(marker.time * 1000);
+							markers
+								.filter(m => m.time >= statsHistory.timestamp[0])
+								.forEach(marker => {
+									const x = xAxis.getPixelForValue(marker.time * 1000);
 
-								// Draw vertical line
-								ctx.beginPath();
-								ctx.strokeStyle = marker.color;
-								ctx.lineWidth = 2;
-								ctx.moveTo(x, yAxis.top);
-								ctx.lineTo(x, yAxis.top + yAxis.height);
-								ctx.stroke();
+									// Draw vertical line
+									ctx.beginPath();
+									ctx.strokeStyle = marker.color;
+									ctx.lineWidth = 2;
+									ctx.moveTo(x, yAxis.top);
+									ctx.lineTo(x, yAxis.top + yAxis.height);
+									ctx.stroke();
 
-								// Draw marker letter
-								ctx.font = '15px Arial';
-								ctx.fillStyle = marker.color;
-								ctx.textAlign = 'center';
-								ctx.fillText(marker.marker, x, yAxis.top - 8);
-							});
+									// Draw marker letter
+									ctx.font = '15px Arial';
+									ctx.fillStyle = marker.color;
+									ctx.textAlign = 'center';
+									ctx.fillText(marker.marker, x, yAxis.top - 8);
+								});
 						},
 					},
 				],
@@ -440,80 +442,82 @@
 			const xAxisScale = chart.scales.x;
 			const yAxisScale = chart.scales.y;
 
-			markers.forEach(marker => {
-				const x = xAxisScale.getPixelForValue(marker.time * 1000);
+			markers
+				.filter(m => m.time >= statsHistory.timestamp[0])
+				.forEach(marker => {
+					const x = xAxisScale.getPixelForValue(marker.time * 1000);
 
-				const hitArea = {
-					x: x - 10,
-					y: yAxisScale.top - 20,
-					width: 20,
-					height: yAxisScale.height + 20,
-				};
+					const hitArea = {
+						x: x - 10,
+						y: yAxisScale.top - 20,
+						width: 20,
+						height: yAxisScale.height + 20,
+					};
 
-				canvas.addEventListener('mousemove', e => {
-					const rect = canvas.getBoundingClientRect();
-					const mouseX = e.clientX - rect.left;
-					const mouseY = e.clientY - rect.top;
+					canvas.addEventListener('mousemove', e => {
+						const rect = canvas.getBoundingClientRect();
+						const mouseX = e.clientX - rect.left;
+						const mouseY = e.clientY - rect.top;
 
-					chart.draw();
+						chart.draw();
 
-					if (mouseX >= hitArea.x && mouseX <= hitArea.x + hitArea.width && mouseY >= hitArea.y && mouseY <= hitArea.y + hitArea.height) {
-						ctx.beginPath();
-						ctx.strokeStyle = '#999999';
-						ctx.lineWidth = 2;
-						ctx.moveTo(x, yAxisScale.top);
-						ctx.lineTo(x, yAxisScale.top + yAxisScale.height);
-						ctx.stroke();
+						if (mouseX >= hitArea.x && mouseX <= hitArea.x + hitArea.width && mouseY >= hitArea.y && mouseY <= hitArea.y + hitArea.height) {
+							ctx.beginPath();
+							ctx.strokeStyle = '#999999';
+							ctx.lineWidth = 2;
+							ctx.moveTo(x, yAxisScale.top);
+							ctx.lineTo(x, yAxisScale.top + yAxisScale.height);
+							ctx.stroke();
 
-						const textMetrics = ctx.measureText(marker.marker);
-						const padding = 3;
-						const rectWidth = textMetrics.width + padding * 2;
-						const rectHeight = 20;
-						const rectX = x - rectWidth / 2;
-						const rectY = yAxisScale.top - rectHeight;
+							const textMetrics = ctx.measureText(marker.marker);
+							const padding = 3;
+							const rectWidth = textMetrics.width + padding * 2;
+							const rectHeight = 20;
+							const rectX = x - rectWidth / 2;
+							const rectY = yAxisScale.top - rectHeight;
 
-						ctx.beginPath();
-						ctx.roundRect(rectX, rectY, rectWidth, rectHeight, 4);
-						ctx.strokeStyle = marker.color + '80';
-						ctx.lineWidth = 1;
-						ctx.stroke();
+							ctx.beginPath();
+							ctx.roundRect(rectX, rectY, rectWidth, rectHeight, 4);
+							ctx.strokeStyle = marker.color + '80';
+							ctx.lineWidth = 1;
+							ctx.stroke();
 
-						const tooltipPadding = 6;
-						const tooltipHeight = 24;
-						const tooltipText = marker.label;
-						ctx.font = '14px Arial';
-						const tooltipWidth = ctx.measureText(tooltipText).width + tooltipPadding * 2;
+							const tooltipPadding = 6;
+							const tooltipHeight = 24;
+							const tooltipText = marker.label;
+							ctx.font = '14px Arial';
+							const tooltipWidth = ctx.measureText(tooltipText).width + tooltipPadding * 2;
 
-						const tooltipX = x - tooltipWidth / 2;
-						const tooltipY = mouseY - tooltipHeight - 10;
+							const tooltipX = x - tooltipWidth / 2;
+							const tooltipY = mouseY - tooltipHeight - 10;
 
-						ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
-						ctx.fillRect(tooltipX, tooltipY, tooltipWidth, tooltipHeight);
+							ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+							ctx.fillRect(tooltipX, tooltipY, tooltipWidth, tooltipHeight);
 
-						// Draw tooltip text
-						ctx.fillStyle = '#fff';
-						ctx.textAlign = 'center';
-						ctx.textBaseline = 'middle';
-						ctx.fillText(tooltipText, tooltipX + tooltipWidth / 2, tooltipY + tooltipHeight / 2);
+							// Draw tooltip text
+							ctx.fillStyle = '#fff';
+							ctx.textAlign = 'center';
+							ctx.textBaseline = 'middle';
+							ctx.fillText(tooltipText, tooltipX + tooltipWidth / 2, tooltipY + tooltipHeight / 2);
 
-						document.body.style.cursor = 'pointer';
-					}
-				});
-
-				canvas.addEventListener('click', e => {
-					const rect = canvas.getBoundingClientRect();
-					const mouseX = e.clientX - rect.left;
-					const mouseY = e.clientY - rect.top;
-
-					console.log(mouseX, mouseY);
-
-					if (mouseX >= hitArea.x && mouseX <= hitArea.x + hitArea.width && mouseY >= hitArea.y && mouseY <= hitArea.y + hitArea.height) {
-						if (marker.link) {
-							window.open(marker.link, '_blank');
+							document.body.style.cursor = 'pointer';
 						}
-					}
+					});
+
+					canvas.addEventListener('click', e => {
+						const rect = canvas.getBoundingClientRect();
+						const mouseX = e.clientX - rect.left;
+						const mouseY = e.clientY - rect.top;
+
+						console.log(mouseX, mouseY);
+
+						if (mouseX >= hitArea.x && mouseX <= hitArea.x + hitArea.width && mouseY >= hitArea.y && mouseY <= hitArea.y + hitArea.height) {
+							if (marker.link) {
+								window.open(marker.link, '_blank');
+							}
+						}
+					});
 				});
-			});
 		}, 1000);
 
 		onLegendClick(null, null, chart.legend, true);
