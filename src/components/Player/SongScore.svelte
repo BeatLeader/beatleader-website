@@ -198,7 +198,7 @@
 						{twitchUrl}
 						{diffInfo}
 						scoreId={score.id}
-						attempt={service == 'attempts'}
+						attempt={score.endType > 0}
 						replayLink={score.replay?.includes('otherreplays') ? score.replay : null}
 						icons={selectedIcons}
 						{serviceIcon}
@@ -212,7 +212,7 @@
 						{twitchUrl}
 						{diffInfo}
 						scoreId={score.id}
-						attempt={service == 'attempts'}
+						attempt={score.endType > 0}
 						replayLink={score.replay?.includes('otherreplays') ? score.replay : null}
 						icons={selectedIcons}
 						{serviceIcon}
