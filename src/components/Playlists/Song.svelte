@@ -38,7 +38,7 @@
 			songInfo = songInfoValue.song;
 			leaderboards = songInfoValue.leaderboards.filter(
 				l =>
-					l.difficulty.mode < 7 ||
+					l.difficulty.mode <= 7 ||
 					(difficulties?.length &&
 						difficulties.find(
 							el => l.difficulty.modeName == el.characteristic && decapitalizeFirstLetter(l.difficulty.difficultyName) == el.name
