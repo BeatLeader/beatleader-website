@@ -212,16 +212,16 @@ export function formatDateRelative(val, roundFunc = Math.floor, unit = 'auto', l
 				unit === 'second'
 					? 1
 					: unit === 'minute'
-					? 60
-					: unit === 'hour'
-					? 60 * 60
-					: unit === 'day'
-					? 60 * 60 * 24
-					: unit === 'month'
-					? 60 * 60 * 24 * 30
-					: unit === 'year'
-					? 60 * 60 * 24 * 365
-					: null;
+						? 60
+						: unit === 'hour'
+							? 60 * 60
+							: unit === 'day'
+								? 60 * 60 * 24
+								: unit === 'month'
+									? 60 * 60 * 24 * 30
+									: unit === 'year'
+										? 60 * 60 * 24 * 365
+										: null;
 			if (!unitDivider) {
 				unitDivider = 1;
 				unit = 'second';
@@ -260,7 +260,7 @@ export function rankedIn() {
 }
 
 export function rewindIn() {
-	return DateTime.fromJSDate(dateFromUnix('1716062400')).diff(DateTime.now(), ['days', 'hours', 'minutes', 'seconds']).toObject();
+	return DateTime.fromJSDate(dateFromUnix('1740866400')).diff(DateTime.now(), ['days', 'hours', 'minutes', 'seconds']).toObject();
 }
 
 export function willBeRankedInCurrentBatch(approvalTimeset) {
