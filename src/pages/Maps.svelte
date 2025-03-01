@@ -21,7 +21,7 @@
 				title: 'The 2024 Beasties Premiere',
 				body: '',
 				imageUrl: '/assets/Discover/2024_beasties_times.png',
-				targetUrl: 'https://www.youtube.com/@BeatSaberMods',
+				targetUrl: 'https://youtu.be/u7CJoYyRVWg',
 				linkName: 'YouTube',
 				forcedColor: 'rgba(0, 0, 0, 0)',
 			},

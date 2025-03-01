@@ -221,7 +221,7 @@
 {/if}-->
 {#if $rewindTimer && $configStore.preferences.beastiesbanner2025}
 	<div class="rewindbanner">
-		<a class="reelink" href="https://www.youtube.com/@BeatSaberMods" />
+		<a class="reelink" href="https://youtu.be/u7CJoYyRVWg" />
 		<div class="banner-spacer" />
 		<img class="cc-cover-1" src="/assets/beastsabericonbig.webp" />
 
@@ -250,7 +250,8 @@
 					</div>
 				</div>
 			{:else}
-				<span class="replayed-link-text">2024 BeastSaber Awards NOW! 🔴</span>
+				<span class="replayed-link-text desktop-only">2024 BeastSaber Awards NOW! 🔴</span>
+				<span class="replayed-link-text mobile-only">Mapping Awards NOW! 🔴</span>
 			{/if}
 		</div>
 		<img class="cc-cover-2" src="/assets/beastsabericonbig.webp" />
