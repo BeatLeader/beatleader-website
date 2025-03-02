@@ -492,6 +492,32 @@
 				</span>
 			</ContentBox>
 		{/if}
+		{#if eventId == 65}
+			<ContentBox cls={modalShown ? 'inner-modal' : ''}>
+				<span>
+					An anonymous Beat Saber mapping contest with a $1000 prize pool is nearing its final.<br />
+					Mappers submitted their work and judges picked 15 best maps.<br />
+					<b>Now it's your turn to decide what will be ranked on both leaderboards!</b><br />
+				</span>
+				<div class="downloadButtons">
+					<a href="https://forms.gle/dDSfZgwJBU6AGvpy7" target="_blank" rel="noreferrer">
+						<Button iconFa="fas fa-check-to-slot" label="Vote" type="green" />
+					</a>
+				</div>
+				<span>
+					<br />
+					We are also having a competition on selected maps, get a badge for making it to the top 3 and try maps for real to make sure only the
+					best will be ranked.<br />
+					If you want to know more about "Building Blocks 2024", check the info page:<br />
+					<div class="downloadButtons">
+						<a href="/event/building-blocks-2024" target="_blank" rel="noreferrer">
+							<Button iconFa="fas fa-info" label="Info" />
+						</a>
+					</div>
+					<b>Have fun and let's find the best map!</b>
+				</span>
+			</ContentBox>
+		{/if}
 		<ContentBox cls={modalShown ? 'inner-modal' : ''}>
 			{#each params as param}
 				{#if param.type}

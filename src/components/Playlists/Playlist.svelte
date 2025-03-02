@@ -308,6 +308,8 @@
 		}
 	}
 
+	let submissions = [8, 26, 37, 43, 47, 49, 50, 53, 54, 57, 25, 31, 42, 48, 55];
+
 	$: setPlaylist(playlistExport);
 	$: songs = playlist.songs;
 	$: totalItems = songs.length;
@@ -474,6 +476,9 @@
 		{:else if playlist.playlistDescription?.length}
 			<span class="playlistDescription">{playlist.playlistDescription}</span>
 		{/if}
+		{#if sharedPlaylistId == 87503}
+			<a href="https://forms.gle/dDSfZgwJBU6AGvpy7" target="_blank" rel="noreferrer"> Vote for your favorite map! </a>
+		{/if}
 		{#if songList}
 			<div
 				use:dndzone={{
@@ -486,7 +491,10 @@
 				on:finalize={handleDndFinalize}
 				class="tab">
 				{#if detailsOpened}
-					{#each songList as song (song.id)}
+					{#each songList as song, idx (song.id)}
+						{#if sharedPlaylistId == 87503}
+							Submission #{submissions[page * itemsPerPage + idx]}:
+						{/if}
 						<Song
 							song={song.song}
 							{canModify}
