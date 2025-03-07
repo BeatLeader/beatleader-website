@@ -299,7 +299,7 @@ export const HMDs = {
 	},
 	58: {
 		name: 'VRidge',
-		icon: 'unknown.svg',
+		icon: 'vridge.svg',
 		color: 'invert(65%) sepia(100%) saturate(3000%) hue-rotate(170deg) brightness(80%) contrast(150%)',
 		priority: 34,
 	},
@@ -311,7 +311,7 @@ export const HMDs = {
 	},
 	59: {
 		name: 'Medion WMR',
-		icon: 'unknown.svg',
+		icon: 'medion.svg',
 		color: 'invert(70%) sepia(65%) saturate(4492%) hue-rotate(354deg) brightness(96%) contrast(91%)',
 		priority: 32,
 	},
