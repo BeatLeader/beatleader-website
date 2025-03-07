@@ -310,7 +310,7 @@ export const HMDs = {
 		priority: 30,
 	},
 	59: {
-		name: 'Medion Erazer',
+		name: 'Medion WMR',
 		icon: 'medion.png',
 		color: '',
 		priority: 32,
