@@ -63,6 +63,7 @@ export const DEFAULT_CONFIG = {
 		reebanner: true,
 		replayedbanner: true,
 		rewindbanner: true,
+		rewindbanner2025: true,
 		beastiesbanner: true,
 		beastiesbanner2025: true,
 		ostbanner: true,
