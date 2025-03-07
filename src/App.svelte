@@ -219,16 +219,16 @@
 			}}><i class="fas fa-xmark" /></button>
 	</div>
 {/if}-->
-{#if $rewindTimer && $configStore.preferences.rewindbanner2025}
+<!-- {#if $rewindTimer && $configStore.preferences.beastiesbanner2025}
 	<div class="rewindbanner">
-		<a class="reelink" href="https://www.youtube.com/watch?v=WQy7hb_jlCs" />
+		<a class="reelink" href="https://youtu.be/u7CJoYyRVWg" />
 		<div class="banner-spacer" />
-		<img class="cc-cover-1" src="/assets/cc-logo-left.webp" />
+		<img class="cc-cover-1" src="/assets/beastsabericonbig.webp" />
 
 		<div class="rewind-text-and-timer">
 			{#if $rewindTimer.seconds > 0}
-				<span class="replayed-link-text desktop-only">2024 Cube Community Rewind in</span>
-				<span class="replayed-link-text mobile-only">2024 CC Rewind in</span>
+				<span class="replayed-link-text desktop-only">2024 BeastSaber Awards in</span>
+				<span class="replayed-link-text mobile-only">Mapping Awards in</span>
 
 				<div class="timer">
 					<div class="rewind-time">
@@ -250,22 +250,22 @@
 					</div>
 				</div>
 			{:else}
-				<span class="replayed-link-text desktop-only">2024 Cube Community Rewind NOW! 🔴</span>
-				<span class="replayed-link-text mobile-only">2024 CC Rewind NOW! 🔴</span>
+				<span class="replayed-link-text desktop-only">2024 BeastSaber Awards NOW! 🔴</span>
+				<span class="replayed-link-text mobile-only">Mapping Awards NOW! 🔴</span>
 			{/if}
 		</div>
-		<img class="cc-cover-2" src="/assets/cc-logo-right.webp" />
+		<img class="cc-cover-2" src="/assets/beastsabericonbig.webp" />
 
 		<button
 			class="close-banner"
 			title="Hide banner"
 			on:click|preventDefault|stopPropagation={() => {
 				$configStore = produce($configStore, draft => {
-					draft.preferences.rewindbanner2025 = false;
+					draft.preferences.beastiesbanner2025 = false;
 				});
 			}}><i class="fas fa-xmark" /></button>
 	</div>
-{/if}
+{/if} -->
 <Router {url}>
 	<Nav class={$configStore?.preferences?.theme} />
 	<Notifications zIndex={10000} item={NotificationComponent}>
