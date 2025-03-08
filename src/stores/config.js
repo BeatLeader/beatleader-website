@@ -357,16 +357,20 @@ export default async () => {
 	}
 
 	const syncFromServer = async () => {
-		await fetch(BL_API_URL + 'user/config/link', {credentials: 'include'}).then(async response => {
+		await fetch(BL_API_URL + 'user/config', {credentials: 'include'}).then(async response => {
 			if (response.status == 404 && savedConfig) {
 				await fetch(BL_API_URL + 'user/config', {method: 'POST', credentials: 'include', body: JSON.stringify(savedConfig)});
 			} else if (response.status == 200) {
-				const cloudConfig = await fetch(await response.text()).then(r => r.json());
-				dbConfig = cloudConfig;
-				await set(cloudConfig, false);
+				try {
+					const cloudConfig = await response.json();
+					dbConfig = cloudConfig;
+					await set(cloudConfig, false);
 
-				settingsChanged = false;
-				await keyValueRepository().set(cloudConfig, STORE_CONFIG_KEY);
+					settingsChanged = false;
+					await keyValueRepository().set(cloudConfig, STORE_CONFIG_KEY);
+				} catch (error) {
+					console.error('Error syncing config from server:', error);
+				}
 			}
 		});
 	};
