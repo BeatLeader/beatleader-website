@@ -1113,6 +1113,7 @@ export const songStatusesMap = {
 	noodleMonday: 1 << 3,
 	featuredOnCC: 1 << 4,
 	beastSaberAwarded: 1 << 5,
+	buildingBlocksAwarded: 1 << 6,
 };
 
 export const songStatusesFilterMap = {
@@ -1150,6 +1151,13 @@ export const songStatusesDescription = {
 		icon: 'beastaward-icon',
 		iconFile: '/assets/beastawardbackground.webp',
 		gradient: 'linear-gradient(rgb(26 26 26 / 8%), rgb(16 16 16 / 12%))',
+		color: 'yellow',
+		textColor: 'yellow',
+	},
+	buildingBlocksAwarded: {
+		icon: 'buildingblocks-icon',
+		iconFile: '/assets/buildingblockslogo-background.webp',
+		gradient: 'linear-gradient(rgb(26 26 26 / 35%), rgb(16 16 16 / 89%))',
 		color: 'yellow',
 		textColor: 'yellow',
 	},
