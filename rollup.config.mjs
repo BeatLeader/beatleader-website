@@ -158,9 +158,23 @@ export default [
 			// the bundle has been generated
 			!production && serve(),
 
-			// Watch the `public` directory and refresh the
-			// browser on changes when not in production
-			!production && livereload('public'),
+			// Create a timestamp file for livereload triggering
+			!production && {
+				name: 'create-reload-trigger',
+				writeBundle() {
+					if (!fs.existsSync('forreload')) {
+						fs.mkdirSync('forreload', {recursive: true});
+					}
+					fs.writeFileSync('forreload/timestamp.js', `export default  ${Date.now().toString()}`);
+				},
+			},
+
+			// Watch only the forreload directory for changes
+			!production &&
+				livereload({
+					watch: 'forreload',
+					delay: 50,
+				}),
 
 			// If we're building for production (npm run build
 			// instead of npm run dev), minify
@@ -172,7 +186,7 @@ export default [
 				name: 'clean-old-assets',
 				buildStart() {
 					// Create directories if they don't exist
-					['public/build', 'public/build/themes'].forEach(dir => {
+					['public/build', 'public/build/themes', 'forreload'].forEach(dir => {
 						if (!fs.existsSync(dir)) {
 							fs.mkdirSync(dir, {recursive: true});
 						}
