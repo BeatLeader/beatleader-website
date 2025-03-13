@@ -8,56 +8,59 @@
 	import {search} from './stores/search';
 	import createContainerStore from './stores/container';
 	import {isTouchDevice} from './utils/is-touch';
-	import RankingPage from './pages/Ranking.svelte';
-	import EventPage from './pages/Event.svelte';
-	import LeaderboardPage from './pages/Leaderboard.svelte';
-	import LeaderboardsPage from './pages/Leaderboards.svelte';
-	import LeaderboardsLoloppe from './pages/LeaderboardsLoloppe.svelte';
-	import ClanPage from './pages/Clan.svelte';
-	import ClansPage from './pages/Clans.svelte';
-	import FollowedPage from './pages/Followed.svelte';
-	import PlayerPage from './pages/Player.svelte';
-	import NotFoundPage from './pages/NotFound.svelte';
-	import PrivacyPage from './pages/Privacy.svelte';
-	import AboutPage from './pages/About.svelte';
-	import DashboardPage from './pages/Dashboard.svelte';
-	import PlaylistsPage from './pages/Playlists.svelte';
-	import PlaylistPage from './pages/Playlist.svelte';
-	import SigninPage from './pages/SignIn.svelte';
-	import OauthSignInPage from './pages/OauthSignIn.svelte';
-	import SupportPage from './pages/Support.svelte';
 	import Nav from './components/Nav/Nav.svelte';
-	import StaffDashboard from './pages/StaffDashboard.svelte';
-	import EventsPage from './pages/Events.svelte';
-	import Socket from './pages/Socket.svelte';
-	import Settings from './pages/Settings.svelte';
-	import {importFonts, setGlobalCSSValue} from './utils/color';
 	import ContentBox from './components/Common/ContentBox.svelte';
 	import PlaylistCart from './components/Playlists/PlaylistCart.svelte';
 	import Search from './components/Search/Search.svelte';
-	import LandingPage from './pages/LandingPage.svelte';
-	import CensusPage from './pages/Census.svelte';
-	import SurveyAchievementPage from './pages/SurveyAchievement.svelte';
-	import PatreonPage from './pages/Patreon.svelte';
-	import DeveloperPortalPage from './pages/DeveloperPortal.svelte';
-	import {produce} from 'immer';
-	import Maps from './pages/Maps.svelte';
-	import Replayed from './pages/Replayed.svelte';
-	import ReplayedLanding from './pages/ReplayedLanding.svelte';
-	import ClansMap from './pages/ClansMap.svelte';
 	import NotificationComponent from './components/Common/NotificationComponent.svelte';
-	import SongSuggestMap from './pages/SongSuggestMap.svelte';
-	import GigaMap from './pages/GigaMap.svelte';
-	import AdminPage from './pages/Admin.svelte';
-	import Week100Page from './pages/Week100.svelte';
 	import GlobalClansMapHistory from './components/Clans/GlobalClansMapHistory.svelte';
-	import TibytesPresets from './pages/TibytesPresets.svelte';
-	import BuildingBlocks2024 from './pages/BuildingBlocks2024.svelte';
 	import rewindTimer from './stores/rewind-timer';
 	import {padNumber} from './utils/format';
 	import SimpleModal from './components/Common/SimpleModal.svelte';
-	import BeatCancerTopBanner from './components/Common/BeatCancerTopBanner.svelte';
-	import ProjectTree from './pages/ProjectTree.svelte';
+	import {produce} from 'immer';
+
+	// Dynamic imports for pages
+	const pageImports = {
+		RankingPage: () => import('./pages/Ranking.svelte'),
+		EventPage: () => import('./pages/Event.svelte'),
+		LeaderboardPage: () => import('./pages/Leaderboard.svelte'),
+		LeaderboardsPage: () => import('./pages/Leaderboards.svelte'),
+		LeaderboardsLoloppe: () => import('./pages/LeaderboardsLoloppe.svelte'),
+		ClanPage: () => import('./pages/Clan.svelte'),
+		ClansPage: () => import('./pages/Clans.svelte'),
+		FollowedPage: () => import('./pages/Followed.svelte'),
+		PlayerPage: () => import('./pages/Player.svelte'),
+		NotFoundPage: () => import('./pages/NotFound.svelte'),
+		PrivacyPage: () => import('./pages/Privacy.svelte'),
+		AboutPage: () => import('./pages/About.svelte'),
+		DashboardPage: () => import('./pages/Dashboard.svelte'),
+		PlaylistsPage: () => import('./pages/Playlists.svelte'),
+		PlaylistPage: () => import('./pages/Playlist.svelte'),
+		SigninPage: () => import('./pages/SignIn.svelte'),
+		OauthSignInPage: () => import('./pages/OauthSignIn.svelte'),
+		SupportPage: () => import('./pages/Support.svelte'),
+		StaffDashboard: () => import('./pages/StaffDashboard.svelte'),
+		EventsPage: () => import('./pages/Events.svelte'),
+		Socket: () => import('./pages/Socket.svelte'),
+		Settings: () => import('./pages/Settings.svelte'),
+		LandingPage: () => import('./pages/LandingPage.svelte'),
+		CensusPage: () => import('./pages/Census.svelte'),
+		SurveyAchievementPage: () => import('./pages/SurveyAchievement.svelte'),
+		PatreonPage: () => import('./pages/Patreon.svelte'),
+		DeveloperPortalPage: () => import('./pages/DeveloperPortal.svelte'),
+		Maps: () => import('./pages/Maps.svelte'),
+		Replayed: () => import('./pages/Replayed.svelte'),
+		ReplayedLanding: () => import('./pages/ReplayedLanding.svelte'),
+		ClansMap: () => import('./pages/ClansMap.svelte'),
+		SongSuggestMap: () => import('./pages/SongSuggestMap.svelte'),
+		GigaMap: () => import('./pages/GigaMap.svelte'),
+		AdminPage: () => import('./pages/Admin.svelte'),
+		Week100Page: () => import('./pages/Week100.svelte'),
+		TibytesPresets: () => import('./pages/TibytesPresets.svelte'),
+		BuildingBlocks2024: () => import('./pages/BuildingBlocks2024.svelte'),
+		ProjectTree: () => import('./pages/ProjectTree.svelte'),
+	};
+
 	export let url = '';
 
 	let mainEl = null;
@@ -136,7 +139,7 @@
 <div bind:this={mobileTooltip} class="mobile-tooltip" />
 <div class="main-background" />
 <!-- <TournamentTopBanner /> -->
-<BeatCancerTopBanner />
+<!-- <BeatCancerTopBanner /> -->
 <!-- {#if $account?.player && $configStore.preferences.followersBecomingPublic}
 	<div class="reebanner">
 		<a class="reelink" href="/settings#profile" />
@@ -274,99 +277,191 @@
 				<div class="ssr-page-container">
 					<Route path="/">
 						{#if $account?.player}
-							<DashboardPage />
+							{#await pageImports.DashboardPage() then module}
+								<svelte:component this={module.default} />
+							{/await}
 						{:else if $account?.refreshError}
-							<LandingPage />
+							{#await pageImports.LandingPage() then module}
+								<svelte:component this={module.default} />
+							{/await}
 						{/if}
 					</Route>
 					<Route path="/u/:initialPlayerId/*initialParams" let:params let:location>
-						<PlayerPage initialPlayerId={params.initialPlayerId} initialParams={params.initialParams} {location} />
+						{#await pageImports.PlayerPage() then module}
+							<svelte:component
+								this={module.default}
+								initialPlayerId={params.initialPlayerId}
+								initialParams={params.initialParams}
+								{location} />
+						{/await}
 					</Route>
 
 					<Route path="/admin/*type" let:params let:location>
-						<AdminPage initialType={params.type} {location} />
+						{#await pageImports.AdminPage() then module}
+							<svelte:component this={module.default} initialType={params.type} {location} />
+						{/await}
 					</Route>
 
 					<Route path="/staff" let:location>
-						<StaffDashboard {location} />
+						{#await pageImports.StaffDashboard() then module}
+							<svelte:component this={module.default} {location} />
+						{/await}
 					</Route>
-					<Route path="/privacy" component={PrivacyPage} />
-					<Route path="/about" component={AboutPage} />
-					<Route path="/socket" component={Socket} />
-					<Route path="/settings" component={Settings} />
-					<Route path="/followed" component={FollowedPage} />
-					<Route path="/census2023" component={CensusPage} />
-					<Route path="/week100" component={Week100Page} />
-					<Route path="/survey/achievement" component={SurveyAchievementPage} />
+					<Route path="/privacy">
+						{#await pageImports.PrivacyPage() then module}
+							<svelte:component this={module.default} />
+						{/await}
+					</Route>
+					<Route path="/about">
+						{#await pageImports.AboutPage() then module}
+							<svelte:component this={module.default} />
+						{/await}
+					</Route>
+					<Route path="/socket">
+						{#await pageImports.Socket() then module}
+							<svelte:component this={module.default} />
+						{/await}
+					</Route>
+					<Route path="/settings">
+						{#await pageImports.Settings() then module}
+							<svelte:component this={module.default} />
+						{/await}
+					</Route>
+					<Route path="/followed">
+						{#await pageImports.FollowedPage() then module}
+							<svelte:component this={module.default} />
+						{/await}
+					</Route>
+					<Route path="/census2023">
+						{#await pageImports.CensusPage() then module}
+							<svelte:component this={module.default} />
+						{/await}
+					</Route>
+					<Route path="/week100">
+						{#await pageImports.Week100Page() then module}
+							<svelte:component this={module.default} />
+						{/await}
+					</Route>
+					<Route path="/survey/achievement">
+						{#await pageImports.SurveyAchievementPage() then module}
+							<svelte:component this={module.default} />
+						{/await}
+					</Route>
 					<Route path="/supporting-project/link">
-						<PatreonPage action="linkPatreon" />
+						{#await pageImports.PatreonPage() then module}
+							<svelte:component this={module.default} action="linkPatreon" />
+						{/await}
 					</Route>
-					<Route path="/tibytes-presets" component={TibytesPresets} />
-					<Route path="/supporting-project" component={PatreonPage} />
+					<Route path="/tibytes-presets">
+						{#await pageImports.TibytesPresets() then module}
+							<svelte:component this={module.default} />
+						{/await}
+					</Route>
+					<Route path="/supporting-project">
+						{#await pageImports.PatreonPage() then module}
+							<svelte:component this={module.default} />
+						{/await}
+					</Route>
 					<Route path="/ranking/*page" let:params let:location>
-						<RankingPage page={params.page} {location} />
+						{#await pageImports.RankingPage() then module}
+							<svelte:component this={module.default} page={params.page} {location} />
+						{/await}
 					</Route>
 					<Route path="/leaderboard/:type/:leaderboardId/*page" let:params let:location>
-						<LeaderboardPage
-							leaderboardId={params.leaderboardId}
-							type={params.type}
-							page={params.page}
-							{location}
-							showCurve={true}
-							separatePage={true} />
+						{#await pageImports.LeaderboardPage() then module}
+							<svelte:component
+								this={module.default}
+								leaderboardId={params.leaderboardId}
+								type={params.type}
+								page={params.page}
+								{location}
+								showCurve={true}
+								separatePage={true} />
+						{/await}
 					</Route>
 					<Route path="/leaderboard/approval/:type/:leaderboardId/*page" let:params let:location>
-						<LeaderboardPage
-							leaderboardId={params.leaderboardId}
-							type={params.type}
-							page={params.page}
-							{location}
-							showCurve={true}
-							separatePage={true}
-							showApproveRequest={true} />
+						{#await pageImports.LeaderboardPage() then module}
+							<svelte:component
+								this={module.default}
+								leaderboardId={params.leaderboardId}
+								type={params.type}
+								page={params.page}
+								{location}
+								showCurve={true}
+								separatePage={true}
+								showApproveRequest={true} />
+						{/await}
 					</Route>
 					<Route path="/leaderboards/*page" let:params let:location>
-						<LeaderboardsPage page={params.page} {location} />
+						{#await pageImports.LeaderboardsPage() then module}
+							<svelte:component this={module.default} page={params.page} {location} />
+						{/await}
 					</Route>
 					<Route path="/leaderboards/loloppe/*page" let:params let:location>
-						<LeaderboardsLoloppe page={params.page} {location} />
+						{#await pageImports.LeaderboardsLoloppe() then module}
+							<svelte:component this={module.default} page={params.page} {location} />
+						{/await}
 					</Route>
 
 					<Route path="/maps">
-						<Maps />
+						{#await pageImports.Maps() then module}
+							<svelte:component this={module.default} />
+						{/await}
 					</Route>
 					<Route path="/replayed">
-						<ReplayedLanding />
+						{#await pageImports.ReplayedLanding() then module}
+							<svelte:component this={module.default} />
+						{/await}
 					</Route>
 					<Route path="/replayed/player/*id" let:params>
-						<Replayed playerId={params.id ? params.id : null} />
+						{#await pageImports.Replayed() then module}
+							<svelte:component this={module.default} playerId={params.id ? params.id : null} />
+						{/await}
 					</Route>
 					<Route path="/replayed/mapper/*id" let:params>
-						<Replayed replayedType="mapper" playerId={params.id ? params.id : null} />
+						{#await pageImports.Replayed() then module}
+							<svelte:component this={module.default} replayedType="mapper" playerId={params.id ? params.id : null} />
+						{/await}
 					</Route>
 					<Route path="/event/project-tree">
-						<ProjectTree />
+						{#await pageImports.ProjectTree() then module}
+							<svelte:component this={module.default} />
+						{/await}
 					</Route>
 					<Route path="/event/building-blocks-2024" let:location>
-						<BuildingBlocks2024 {location} />
+						{#await pageImports.BuildingBlocks2024() then module}
+							<svelte:component this={module.default} {location} />
+						{/await}
 					</Route>
 					<Route path="/event/:eventId/*page" let:params let:location>
-						<EventPage eventId={params.eventId} page={params.page} {location} />
+						{#await pageImports.EventPage() then module}
+							<svelte:component this={module.default} eventId={params.eventId} page={params.page} {location} />
+						{/await}
 					</Route>
 					<Route path="/events/*page" let:params let:location>
-						<EventsPage page={params.page} {location} />
+						{#await pageImports.EventsPage() then module}
+							<svelte:component this={module.default} page={params.page} {location} />
+						{/await}
 					</Route>
 					<Route path="/clan/:clanId/*page" let:params let:location>
-						<ClanPage clanId={params.clanId} page={params.page} {location} />
+						{#await pageImports.ClanPage() then module}
+							<svelte:component this={module.default} clanId={params.clanId} page={params.page} {location} />
+						{/await}
 					</Route>
 					<Route path="/clan/maps/:clanId/*page" let:params let:location>
-						<ClanPage clanId={params.clanId} page={params.page} maps={true} {location} />
+						{#await pageImports.ClanPage() then module}
+							<svelte:component this={module.default} clanId={params.clanId} page={params.page} maps={true} {location} />
+						{/await}
 					</Route>
 					<Route path="/clans/*page" let:params let:location>
-						<ClansPage page={params.page} {location} />
+						{#await pageImports.ClansPage() then module}
+							<svelte:component this={module.default} page={params.page} {location} />
+						{/await}
 					</Route>
 					<Route path="/clansmap/leaderboard/*leaderboardId" let:params let:location>
-						<ClansMap leaderboardId={params.leaderboardId} {location} />
+						{#await pageImports.ClansMap() then module}
+							<svelte:component this={module.default} leaderboardId={params.leaderboardId} {location} />
+						{/await}
 					</Route>
 					<Route path="/clansmap/history/*startTimeset" let:params let:location>
 						<GlobalClansMapHistory
@@ -375,44 +470,80 @@
 							{location} />
 					</Route>
 					<Route path="/clansmap" let:location>
-						<ClansMap {location} />
+						{#await pageImports.ClansMap() then module}
+							<svelte:component this={module.default} {location} />
+						{/await}
 					</Route>
 					<Route path="/songsuggestmap/leaderboard/*leaderboardId" let:params let:location>
-						<SongSuggestMap leaderboardId={params.leaderboardId} {location} />
+						{#await pageImports.SongSuggestMap() then module}
+							<svelte:component this={module.default} leaderboardId={params.leaderboardId} {location} />
+						{/await}
 					</Route>
 					<Route path="/songsuggestmap" let:location>
-						<SongSuggestMap {location} />
+						{#await pageImports.SongSuggestMap() then module}
+							<svelte:component this={module.default} {location} />
+						{/await}
 					</Route>
 					<Route path="/datavis/gigamap50" let:location>
-						<GigaMap {location} topCount={50} />
+						{#await pageImports.GigaMap() then module}
+							<svelte:component this={module.default} {location} topCount={50} />
+						{/await}
 					</Route>
 					<Route path="/datavis/gigamap1000" let:location>
-						<GigaMap {location} topCount={1000} />
+						{#await pageImports.GigaMap() then module}
+							<svelte:component this={module.default} {location} topCount={1000} />
+						{/await}
 					</Route>
 					<Route path="/datavis/gigamap5000" let:location>
-						<GigaMap {location} topCount={5000} />
+						{#await pageImports.GigaMap() then module}
+							<svelte:component this={module.default} {location} topCount={5000} />
+						{/await}
 					</Route>
 					<Route path="/clansmap/clan/*clanTag" let:params let:location>
-						<ClansMap clanTag={params.clanTag} {location} />
+						{#await pageImports.ClansMap() then module}
+							<svelte:component this={module.default} clanTag={params.clanTag} {location} />
+						{/await}
 					</Route>
 					<Route path="/playlists/*id" let:params>
-						<PlaylistsPage index={params.id} />
+						{#await pageImports.PlaylistsPage() then module}
+							<svelte:component this={module.default} index={params.id} />
+						{/await}
 					</Route>
 					<Route path="/playlist/:id" let:params>
-						<PlaylistPage id={params.id} />
+						{#await pageImports.PlaylistPage() then module}
+							<svelte:component this={module.default} id={params.id} />
+						{/await}
 					</Route>
-					<Route path="/help" component={SupportPage} />
-					<Route path="/dashboard" component={DashboardPage} />
+					<Route path="/help">
+						{#await pageImports.SupportPage() then module}
+							<svelte:component this={module.default} />
+						{/await}
+					</Route>
+					<Route path="/dashboard">
+						{#await pageImports.DashboardPage() then module}
+							<svelte:component this={module.default} />
+						{/await}
+					</Route>
 					<Route path="/signin/*action" let:params>
-						<SigninPage action={params.action} />
+						{#await pageImports.SigninPage() then module}
+							<svelte:component this={module.default} action={params.action} />
+						{/await}
 					</Route>
 					<Route path="/signin/oauth2" let:location>
-						<OauthSignInPage {location} />
+						{#await pageImports.OauthSignInPage() then module}
+							<svelte:component this={module.default} {location} />
+						{/await}
 					</Route>
 					<Route path="/developer" let:params let:location>
-						<DeveloperPortalPage {location} />
+						{#await pageImports.DeveloperPortalPage() then module}
+							<svelte:component this={module.default} {location} />
+						{/await}
 					</Route>
-					<Route path="/*" component={NotFoundPage} />
+					<Route path="/*">
+						{#await pageImports.NotFoundPage() then module}
+							<svelte:component this={module.default} />
+						{/await}
+					</Route>
 				</div>
 			</main>
 		</SimpleModal>

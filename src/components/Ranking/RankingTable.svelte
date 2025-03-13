@@ -14,9 +14,11 @@
 	import RankingMeta from './RankingMeta.svelte';
 	import Select from '../Settings/Select.svelte';
 	import {configStore} from '../../stores/config';
-	import {participants} from '../../others/bswc2024';
-	import player from '../../services/beatleader/player';
+
 	import {GLOBAL_LEADERBOARD_TYPE} from '../../utils/format';
+	import Spinner from '../Common/Spinner.svelte';
+
+	const participantsImport = () => import('../../others/bswc2024').then(m => m.participants);
 
 	export let type = 'global';
 	export let page = 1;
@@ -464,16 +466,20 @@
 						: (sortValue?.props ?? {})}
 					on:filters-updated />
 				{#if showFlags}
-					{@const team = participants.find(t =>
-						t.players.find(p =>
-							p.player.user.playableAccounts.find(
-								pa => pa.id == player?.playerId || pa.avatar.includes('cdn.assets.beatleader.com/' + player?.playerId)
+					{#await participantsImport()}
+						<Spinner />
+					{:then participants}
+						{@const team = participants.find(t =>
+							t.players.find(p =>
+								p.player.user.playableAccounts.find(
+									pa => pa.id == player?.playerId || pa.avatar.includes('cdn.assets.beatleader.com/' + player?.playerId)
+								)
 							)
-						)
-					)}
-					{#if team}
-						<img class={'bswc-country-icon' + checkEligible(eventId, team)} src={team.image} title={'Team ' + team.name} />
-					{/if}
+						)}
+						{#if team}
+							<img class={'bswc-country-icon' + checkEligible(eventId, team)} src={team.image} title={'Team ' + team.name} />
+						{/if}
+					{/await}
 				{:else if !noIcons && $configStore.rankingList.showFriendsButton}
 					<AddFriendButton playerId={player.playerId} />
 				{/if}

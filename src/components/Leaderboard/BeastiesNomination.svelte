@@ -1,11 +1,12 @@
 <script>
 	import {BL_API_URL} from '../../network/queues/beatleader/api-queue';
-	import {LottiePlayer} from '@lottiefiles/svelte-lottie-player';
 	import {bestiesCategoriesNames, DifficultyStatus, requirementsMap} from '../../utils/beatleader/format';
 	import DialogContent from '../Common/DialogContent.svelte';
 	import Select from '../Settings/Select.svelte';
 	import {dateFromUnix, formatDate} from '../../utils/date';
 	import Spinner from '../Common/Spinner.svelte';
+
+	const lottieImport = () => import('@lottiefiles/svelte-lottie-player').then(m => m.LottiePlayer);
 
 	export let leaderboard;
 	export let diffs;
@@ -128,7 +129,18 @@
 		on:cancel={cancel}>
 		<div slot="content">
 			{#if nominated}
-				<LottiePlayer width="7em" height="7em" speed="2.1" controls={false} bind:this={animationPlayer} src="/assets/beastiesRoket.json" />
+				{#await lottieImport()}
+					<Spinner />
+				{:then LottiePlayer}
+					<svelte:component
+						this={LottiePlayer}
+						width="7em"
+						height="7em"
+						speed="2.1"
+						controls={false}
+						bind:this={animationPlayer}
+						src="/assets/beastiesRoket.json" />
+				{/await}
 				<span style="color: green;">Map sucessfully nominated!</span>
 			{:else}
 				<div class="description-and-select">

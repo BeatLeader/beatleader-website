@@ -1,5 +1,4 @@
 <script>
-	import {audio} from 'suneditor/src/plugins';
 	import {onDestroy, onMount} from 'svelte';
 	import {cubicOut, linear} from 'svelte/easing';
 	import {tweened} from 'svelte/motion';

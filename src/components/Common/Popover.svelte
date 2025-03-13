@@ -29,9 +29,10 @@
 <script lang="ts">
 	// Popper requires you do replace the process.env.NODE_ENV variable. I think this is
 	// unnecessary to handle: https://github.com/popperjs/popper-core/issues/933
-	import {createPopper} from '@popperjs/core/dist/esm/popper';
 	import {createEventDispatcher, onDestroy, onMount} from 'svelte';
 	import {setGlobalCSSValue} from '../../utils/color';
+
+	const popperImport = () => import('@popperjs/core/dist/esm/popper').then(m => m.createPopper);
 
 	/**
 	 * This gives you the ability to manually control when to open and close the popover.
@@ -137,12 +138,12 @@
 	 * For more customizability, you may pass any options to the Popper instance to
 	 * customize the Popover. To see all Popper options, see the documentation [here](https://popper.js.org/docs/v2/constructors/#options)
 	 */
-	export let popperOptions: Parameters<typeof createPopper>[2] = {};
+	export let popperOptions: any = {};
 
 	/**
 	 * An instance of popper
 	 */
-	export let popperInstance: ReturnType<typeof createPopper> | undefined = undefined;
+	export let popperInstance: any = undefined;
 
 	let popoverElement: HTMLElement;
 
@@ -256,7 +257,8 @@
 		popperInstance = null;
 	}
 
-	function createInstance() {
+	async function createInstance() {
+		const createPopper = await popperImport();
 		popperInstance = createPopper(referenceElement, popoverElement, getOptions());
 	}
 

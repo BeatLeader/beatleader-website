@@ -40,7 +40,7 @@ export const DEFAULT_CONFIG = {
 		labelColor: 'rgba(219, 219, 219, 1.0)',
 		ppColor: 'rgba(253, 219, 255, 1.0)',
 		selectedColor: 'rgba(236, 0, 0, 0.4636)',
-		fontNames: 'Noto Sans, Noto Sans SC, Microsoft YaHei, sans-serif',
+		fontNames: 'Noto Sans, Microsoft YaHei, sans-serif',
 		daysToCompare: 1,
 		daysOfHistory: 30,
 		graphHeight: 350,
