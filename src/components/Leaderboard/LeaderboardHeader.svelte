@@ -118,10 +118,14 @@
 						</div>
 
 						{#if $configStore?.leaderboardPreferences?.showStatsInHeader}
-							<LeaderboardStats {leaderboard} />
+							<div class="stats-container desktop-only">
+								<LeaderboardStats {leaderboard} />
+							</div>
 						{/if}
 						{#if $configStore?.leaderboardPreferences?.showHashInHeader}
-							<HashDisplay {song} />
+							<div class="hash-container desktop-only">
+								<HashDisplay {song} />
+							</div>
 						{/if}
 					</div>
 				</div>
@@ -196,6 +200,17 @@
 			</div>
 		{/if}
 	</header>
+
+	{#if $configStore?.leaderboardPreferences?.showStatsInHeader}
+		<div class="stats-container mobile-only">
+			<LeaderboardStats {leaderboard} />
+		</div>
+	{/if}
+	{#if $configStore?.leaderboardPreferences?.showHashInHeader}
+		<div class="hash-container mobile-only">
+			<HashDisplay {song} />
+		</div>
+	{/if}
 
 	<div class="buttons-container mobile-only">
 		<div class="icons-container">
@@ -275,6 +290,10 @@
 	.version-selector-container {
 		transform: scale(1.15);
 		margin-bottom: -0.5em;
+	}
+
+	.hash-container {
+		justify-content: center;
 	}
 
 	header .title {
