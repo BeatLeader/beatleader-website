@@ -89,9 +89,10 @@ export default [
 		input: 'src/main.js',
 		output: {
 			sourcemap: true,
-			format: 'iife',
-			name: 'app',
-			file: `public/build/bundle.${buildTimestamp}.js`,
+			format: 'es',
+			dir: 'public/build',
+			entryFileNames: `[name].${buildTimestamp}.js`,
+			chunkFileNames: '[name].[hash].js',
 		},
 		plugins: [
 			{
@@ -188,7 +189,10 @@ export default [
 					// Clean up old files
 					const files = fs.readdirSync('public/build');
 					files.forEach(file => {
-						if (file.match(/bundle\.\d+\.(js|css)/) && !file.includes(buildTimestamp)) {
+						if (
+							(file.match(/main\.\d+\.js/) || file.match(/bundle\.\d+\.css/) || file.match(/\.[a-f0-9]+\.js$/)) &&
+							!file.includes(buildTimestamp)
+						) {
 							fs.unlinkSync(`public/build/${file}`);
 						}
 					});

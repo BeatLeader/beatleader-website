@@ -1,7 +1,6 @@
 <script>
 	import {navigate} from 'svelte-routing';
 	import {fade} from 'svelte/transition';
-	import Atropos from 'atropos/svelte';
 	import {
 		createBuildFiltersFromLocation,
 		processStringFilter,
@@ -430,11 +429,19 @@
 			</div>
 
 			<div class="event-container">
-				<Atropos rotateXMax={1} rotateYMax={1} highlight="false" shadow="false" rotateTouch="scroll-y">
-					<div class="cover-bg" data-atropos-offset="-2" />
-					<div class="cover-girls" data-atropos-offset="1" />
-					<div class="cover-hands" data-atropos-offset="3" />
-				</Atropos>
+				{#await import('atropos/svelte').then(m => m.default)}
+					<div class="loading-container">
+						<div class="cover-bg" />
+						<div class="cover-girls" />
+						<div class="cover-hands" />
+					</div>
+				{:then Atropos}
+					<svelte:component this={Atropos} rotateXMax={1} rotateYMax={1} highlight="false" shadow="false" rotateTouch="scroll-y">
+						<div class="cover-bg" data-atropos-offset="-2" />
+						<div class="cover-girls" data-atropos-offset="1" />
+						<div class="cover-hands" data-atropos-offset="3" />
+					</svelte:component>
+				{/await}
 
 				<div class="event-text-and-button">
 					<div class="event-text-container">

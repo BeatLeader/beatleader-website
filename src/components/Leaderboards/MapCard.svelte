@@ -1,5 +1,4 @@
 <script>
-	import Atropos from 'atropos/svelte';
 	import MapCardContent from './MapCardContent.svelte';
 
 	export let map;
@@ -12,6 +11,8 @@
 
 	let hovered = false;
 	let timeoutId = null;
+
+	const atroposImport = () => import('atropos/svelte').then(m => m.default);
 
 	function onEnter() {
 		hovered = true;
@@ -27,20 +28,32 @@
 </script>
 
 {#if maps3D}
-	<Atropos
-		class="map-card-atropos {hovered ? 'card-hovered' : ''}"
-		rotateXMax={5}
-		rotateYMax={5}
-		rotateTouch="scroll-y"
-		on:enter={() => onEnter()}
-		on:leave={() => onExit()}>
-		<MapCardContent {map} {idx} {currentFilters} {starsKey} {viewType} {nodetails} />
-	</Atropos>
+	{#await atroposImport()}
+		<div class="loading-container">
+			<MapCardContent {map} {idx} {currentFilters} {starsKey} {viewType} {nodetails} />
+		</div>
+	{:then Atropos}
+		<svelte:component
+			this={Atropos}
+			class="map-card-atropos {hovered ? 'card-hovered' : ''}"
+			rotateXMax={5}
+			rotateYMax={5}
+			rotateTouch="scroll-y"
+			on:enter={() => onEnter()}
+			on:leave={() => onExit()}>
+			<MapCardContent {map} {idx} {currentFilters} {starsKey} {viewType} {nodetails} />
+		</svelte:component>
+	{/await}
 {:else}
 	<MapCardContent {map} {idx} {currentFilters} {starsKey} {viewType} {nodetails} />
 {/if}
 
 <style>
+	.loading-container {
+		display: flex;
+		border-radius: 0.4em;
+	}
+
 	:global(.map-card-atropos .atropos-inner) {
 		display: flex !important;
 		overflow: visible !important;
