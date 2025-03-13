@@ -23,7 +23,7 @@
 	let currentTheme = DEFAULT_THEME;
 	let currentBGImage = '';
 
-	let currentFontNames = 'Noto Sans, Noto Sans SC, Microsoft YaHei, sans-serif';
+	let currentFontNames = 'Noto Sans, Microsoft YaHei, sans-serif';
 
 	let currentBGColor = 'rgba(17, 17, 17, 0.3682)';
 	let currentHeaderColor = 'rgba(0, 0, 0, 0.4152)';
@@ -169,9 +169,8 @@
 		<section class="option">
 			<label title="Input url of the background image you want">Fonts (Google Fonts or System)</label>
 			<input type="text" value={currentFontNames} on:input={debounceCurrentFontNames} />
-			<span
-				style="cursor: pointer; font-size: x-small;"
-				on:click={() => (currentFontNames = 'Noto Sans, Noto Sans SC, Microsoft YaHei, sans-serif')}><u>Reset to default</u></span>
+			<span style="cursor: pointer; font-size: x-small;" on:click={() => (currentFontNames = 'Noto Sans, Microsoft YaHei, sans-serif')}
+				><u>Reset to default</u></span>
 		</section>
 	{/if}
 </div>
