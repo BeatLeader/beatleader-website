@@ -9,6 +9,7 @@
 	import createContainerStore from './stores/container';
 	import {isTouchDevice} from './utils/is-touch';
 	import Nav from './components/Nav/Nav.svelte';
+	import {importFonts, setGlobalCSSValue} from './utils/color';
 	import ContentBox from './components/Common/ContentBox.svelte';
 	import PlaylistCart from './components/Playlists/PlaylistCart.svelte';
 	import Search from './components/Search/Search.svelte';
