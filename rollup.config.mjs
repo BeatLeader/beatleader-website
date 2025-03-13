@@ -11,9 +11,17 @@ import svg from 'rollup-plugin-svg';
 import less from 'rollup-plugin-less';
 import {execa} from 'execa';
 import {readFileSync, writeFileSync} from 'fs';
+import CleanCSS from 'clean-css';
 
 const production = !process.env.ROLLUP_WATCH;
 const buildTimestamp = Date.now();
+const cssMinifier = new CleanCSS({
+	level: {
+		1: {
+			specialComments: 0,
+		},
+	},
+});
 
 // const buildVersion = execSync('git rev-parse --short HEAD').toString();
 fs.writeFileSync(
@@ -43,32 +51,6 @@ function serve() {
 
 			process.on('SIGTERM', toExit);
 			process.on('exit', toExit);
-		},
-	};
-}
-
-function copyAndRenameBulma() {
-	return {
-		name: 'copy-bulma',
-		writeBundle() {
-			// Ensure assets directory exists
-			if (!fs.existsSync('public/assets')) {
-				fs.mkdirSync('public/assets', {recursive: true});
-			}
-
-			const source = 'public/assets/ss-bulma.css';
-			const dest = `public/assets/ss-bulma.${buildTimestamp}.css`;
-
-			// Copy the file with new timestamp name
-			fs.copyFileSync(source, dest);
-
-			// Clean up old versions
-			const files = fs.readdirSync('public/assets');
-			files.forEach(file => {
-				if (file.match(/ss-bulma\.\d+\.css/) && !file.includes(buildTimestamp)) {
-					fs.unlinkSync(`public/assets/${file}`);
-				}
-			});
 		},
 	};
 }
@@ -133,8 +115,11 @@ export default [
 					fs.rmSync(`public/build/themes/${filename}.css`, {
 						force: true,
 					});
-					return `public/build/themes/${filename}.css`;
+					const minified = production ? cssMinifier.minify(css).styles : css;
+					fs.writeFileSync(`public/build/themes/${filename}.css`, minified);
+					return false;
 				},
+				compress: production,
 			}),
 			svelte({
 				preprocess: sveltePreprocess({sourceMap: !production}),
@@ -145,7 +130,15 @@ export default [
 			}),
 			// we'll extract any component CSS out into
 			// a separate file - better for performance
-			css({output: `bundle.${buildTimestamp}.css`}),
+			css({
+				output: function (styles, dependencies) {
+					if (!fs.existsSync('public/build')) {
+						fs.mkdirSync('public/build', {recursive: true});
+					}
+					const minified = production ? cssMinifier.minify(styles).styles : styles;
+					writeFileSync(`public/build/bundle.${buildTimestamp}.css`, minified);
+				},
+			}),
 
 			svg(),
 
@@ -173,7 +166,6 @@ export default [
 			// instead of npm run dev), minify
 			production && terser(),
 
-			copyAndRenameBulma(),
 			processHtml(),
 
 			{
@@ -183,17 +175,6 @@ export default [
 					['public/build', 'public/build/themes'].forEach(dir => {
 						if (!fs.existsSync(dir)) {
 							fs.mkdirSync(dir, {recursive: true});
-						}
-					});
-
-					// Clean up old files
-					const files = fs.readdirSync('public/build');
-					files.forEach(file => {
-						if (
-							(file.match(/main\.\d+\.js/) || file.match(/bundle\.\d+\.css/) || file.match(/\.[a-f0-9]+\.js$/)) &&
-							!file.includes(buildTimestamp)
-						) {
-							fs.unlinkSync(`public/build/${file}`);
 						}
 					});
 				},

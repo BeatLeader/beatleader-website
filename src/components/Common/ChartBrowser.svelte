@@ -69,7 +69,7 @@
 								localeMatcher: 'best fit',
 								year: '2-digit',
 								month: 'short',
-						  })
+							})
 						: formatNumber(ticks[idx]?.value, linearRoundPrecision);
 				},
 			},
@@ -136,8 +136,8 @@
 									return tooltipLabelFunc
 										? tooltipLabelFunc(ctx)
 										: (ctx?.raw?.page ?? null) !== null
-										? `Go to page ${ctx.raw.page + 1}`
-										: null;
+											? `Go to page ${ctx.raw.page + 1}`
+											: null;
 								},
 							},
 						},

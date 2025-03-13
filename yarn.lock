@@ -585,6 +585,13 @@ chokidar@^4.0.1:
   dependencies:
     readdirp "^4.0.1"
 
+clean-css@^5.3.3:
+  version "5.3.3"
+  resolved "https://registry.yarnpkg.com/clean-css/-/clean-css-5.3.3.tgz#b330653cd3bd6b75009cc25c714cae7b93351ccd"
+  integrity sha512-D5J+kHaVb/wKSFcyyV75uCn8fiY4sV38XJoe4CUyGQ+mOU/fMVYUdH1hJC+CJQ5uY3EnW27SbJYS4X8BiLrAFg==
+  dependencies:
+    source-map "~0.6.0"
+
 codemirror-formatting@1.0.0, codemirror-formatting@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/codemirror-formatting/-/codemirror-formatting-1.0.0.tgz#879cc1fdd9018343c1d5511769ce5360d705ebf2"
