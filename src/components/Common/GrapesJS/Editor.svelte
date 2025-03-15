@@ -574,6 +574,7 @@
 			console.error('Error initializing GrapesJS:', error);
 		} finally {
 			loading = false;
+			dispatch('editor-ready');
 		}
 	}
 

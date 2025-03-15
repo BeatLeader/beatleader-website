@@ -88,14 +88,25 @@
 			{#if !edititing || !editModel}
 				<iframe bind:this={viewport} class="message-body" allow="fullscreen;" src={iframeUrl} />
 			{:else}
-				<Editor initialValue={richBio} {vertical} on:cancel={() => updateEditing(false)} on:post={editComment} />
+				<Editor
+					initialValue={richBio}
+					{vertical}
+					on:cancel={() => updateEditing(false)}
+					on:post={editComment}
+					on:editor-ready={() => {
+						dispatch('height-changed');
+					}} />
 			{/if}
 		{/if}
 
 		{#if !edititing && editModel}
 			{#if !richBioID}
 				<div class="sample-bio">
-					<Editor initialValue={defaultBio} />
+					<Editor
+						initialValue={defaultBio}
+						on:editor-ready={() => {
+							dispatch('height-changed');
+						}} />
 				</div>
 			{/if}
 			{#if !patron}
