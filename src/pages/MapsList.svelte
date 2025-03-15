@@ -305,6 +305,8 @@
 		return result;
 	};
 
+	let scrollChange = false;
+
 	function changePageAndFilters(newPage, newFilters, replace, setUrl = true) {
 		currentFilters = newFilters;
 
@@ -376,10 +378,9 @@
 					scrollToTop(180);
 					scrolling = false;
 				}, 200);
-			} else if (newPage == 1 && newPage < previousPage) {
+			} else if (newPage == 1 && !scrollChange) {
 				setTimeout(() => {
 					console.log('scrollToTop');
-
 					scrollToTop();
 					scrolling = false;
 				}, 200);
@@ -397,6 +398,8 @@
 				window.history.pushState({}, '', url);
 			}
 		}
+
+		scrollChange = false;
 
 		console.log(currentType);
 
@@ -682,6 +685,7 @@
 	function scrollToPage(page) {
 		previousPage = currentPage;
 		currentPage = page + 1;
+		scrollChange = true;
 
 		navigateToCurrentPageAndFilters(true);
 	}
@@ -828,6 +832,9 @@
 							<div class="top-anchor" bind:this={topAnchor}></div>
 							{#each displayMaps as song, idx (song.index)}
 								<MapCard {idx} {song} {starsKey} sortBy={currentFilters.sortBy} />
+								{#if (song.index + 1) % itemsPerPage == 0}
+									<div class="page-split">---------- {Math.ceil(song.index / itemsPerPage) - 1} ----------</div>
+								{/if}
 							{/each}
 							<div class="bottom-anchor" bind:this={bottomAnchor}></div>
 						</div>
@@ -1453,6 +1460,13 @@
 		flex-wrap: wrap;
 	}
 
+	.page-split {
+		width: 100%;
+		justify-content: center;
+		display: flex;
+		margin-top: -2.8em;
+	}
+
 	:global(.pager-and-switch .pagination) {
 		flex-grow: 1;
 	}
@@ -1625,6 +1639,7 @@
 		.songs {
 			margin-left: 0;
 			margin-right: 0;
+			row-gap: 0.4em;
 		}
 
 		.filter {
@@ -1637,6 +1652,11 @@
 
 		.pager-container {
 			margin: unset;
+		}
+
+		.page-split {
+			margin-top: -1em;
+			margin-bottom: -1em;
 		}
 
 		:global(.filter .switch-types) {

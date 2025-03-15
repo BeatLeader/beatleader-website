@@ -12,6 +12,7 @@
 	import Icons from '../../Song/Icons.svelte';
 	import SongScoreCompact from './SongScoreCompact.svelte';
 	import SongStatus from './SongStatus.svelte';
+	import {createEventDispatcher} from 'svelte';
 
 	export let song;
 	export let isHovered;
@@ -20,6 +21,8 @@
 	export let sortBy;
 
 	let modes;
+
+	const dispatch = createEventDispatcher();
 
 	function groupDiffs(song) {
 		var result = [];
@@ -52,7 +55,7 @@
 </script>
 
 {#if modes?.length}
-	<div class="modes-list" class:isHovered>
+	<div class="modes-list" on:scroll={e => dispatch('container-scroll', e)} class:isHovered>
 		{#each modes as mode}
 			<div class="mode-container" class:isHovered>
 				<div class="mode-icon-name" class:isHovered>
@@ -142,7 +145,7 @@
 		display: flex;
 		flex-direction: column;
 		align-items: baseline;
-		padding: 0.2em 0.2em 0.2em 0.4em;
+		padding: 0.2em 0.4em 0.3em 0.4em;
 	}
 
 	.mode-icon-name.isHovered {
@@ -210,6 +213,7 @@
 		padding: 0.25em 0.3em 0.2em 0.4em;
 		font-size: 0.8em;
 		border-radius: 0.7em;
+		justify-content: center;
 	}
 
 	.my-score {
@@ -230,5 +234,12 @@
 		justify-content: space-between;
 		align-items: center;
 		gap: 0.2em;
+	}
+
+	@media (max-width: 767px) {
+		.modes-list {
+			width: 16em;
+			font-size: 0.9em;
+		}
 	}
 </style>

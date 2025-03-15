@@ -13,6 +13,7 @@
 	import LeaderboardStats from '../../Leaderboard/LeaderboardStats.svelte';
 	import ModesList from './ModesList.svelte';
 	import SongPlayer from './SongPlayer.svelte';
+	import {songPlayerStore} from '../../../stores/songPlayer';
 
 	export let song;
 	export let sortBy = 'stars';
@@ -35,6 +36,7 @@
 
 	let bottomContainer;
 	let bottomContainerHeight = 0;
+	let bottomContainerObserver;
 
 	function calculateStatus(song) {
 		for (const status of [
@@ -88,8 +90,14 @@
 
 	let hoverTimeout;
 	let dummyElement;
+	let playingSong = false;
+	let mouseInside = false;
 
-	function handleHover(hovering) {
+	function handleHover(hovering, userHovering = false) {
+		mouseInside = hovering && userHovering;
+		if (!hovering && playingSong) {
+			return;
+		}
 		clearTimeout(hoverTimeout);
 		hoverTimeout = setTimeout(() => {
 			isHovered = hovering;
@@ -104,14 +112,27 @@
 					mapCardWrapper.parentNode.insertBefore(dummyElement, mapCardWrapper.nextSibling);
 				}
 
+				// Start observing bottom container when hovered
+				if (bottomContainer && bottomContainerObserver) {
+					bottomContainerObserver.observe(bottomContainer);
+				}
+
 				setTimeout(() => {
-					bottomContainerHeight = bottomContainer?.getBoundingClientRect().height ?? 0;
-				}, 50);
+					if (modesListContainer) {
+						containerHeight = modesListContainer.clientHeight;
+						contentHeight = modesListContainer.scrollHeight;
+						updateMaskImage();
+					}
+				}, 0);
 			} else {
 				// Remove dummy element when not hovering
 				if (dummyElement) {
 					dummyElement.remove();
 					dummyElement = null;
+				}
+				// Stop observing when not hovered
+				if (bottomContainerObserver) {
+					bottomContainerObserver.disconnect();
 				}
 			}
 		}, 300);
@@ -126,6 +147,13 @@
 			}
 		};
 
+		// Create ResizeObserver for bottom container
+		bottomContainerObserver = new ResizeObserver(entries => {
+			for (const entry of entries) {
+				bottomContainerHeight = entry.contentRect.height;
+			}
+		});
+
 		window.addEventListener('scroll', updatePosition);
 		window.addEventListener('resize', updatePosition);
 
@@ -135,6 +163,9 @@
 			if (dummyElement) {
 				dummyElement.remove();
 			}
+			if (bottomContainerObserver) {
+				bottomContainerObserver.disconnect();
+			}
 		};
 	});
 
@@ -143,23 +174,82 @@
 	let containerHeight = 0;
 	let contentHeight = 0;
 
+	let currentGradient = {
+		transparent: 0,
+		whiteStart: 0,
+		whiteEnd: 250,
+		transparentEnd: 450,
+	};
+
+	// Define target gradient positions based on scroll
+	let targetGradient = currentGradient;
+
+	function lerp(start, end, t) {
+		return start * (1 - t) + end * t;
+	}
+
+	let needsUpdate = false;
+
+	function animateMask() {
+		const easing = 0.15; // Controls animation speed (0-1)
+
+		// Interpolate each value
+		for (let key in currentGradient) {
+			if (Math.abs(currentGradient[key] - targetGradient[key]) > 0.1) {
+				currentGradient[key] = lerp(currentGradient[key], targetGradient[key], easing);
+				needsUpdate = true;
+			} else {
+				currentGradient[key] = targetGradient[key];
+			}
+		}
+
+		const maskImage = `linear-gradient(180deg, 
+			transparent ${currentGradient.transparent}px, 
+			white ${currentGradient.whiteStart}px, 
+			white ${currentGradient.whiteEnd}px, 
+			transparent ${currentGradient.transparentEnd}px)`;
+
+		modesListContainer.style.maskImage = maskImage;
+		modesListContainer.style.webkitMaskImage = maskImage;
+
+		if (needsUpdate) {
+			requestAnimationFrame(animateMask);
+		}
+	}
+
 	function updateMaskImage() {
 		if (!modesListContainer) return;
 
 		const scrollPercentage = scrollPosition / (contentHeight - containerHeight);
-		let maskImage;
 
 		if (scrollPosition === 0) {
-			maskImage = 'linear-gradient(180deg, white 0%, white 20em, transparent)';
-		} else if (scrollPercentage >= 1) {
-			maskImage = 'linear-gradient(180deg, transparent 0%, white 2em, white)';
+			targetGradient = {
+				transparent: 0,
+				whiteStart: 0,
+				whiteEnd: 250,
+				transparentEnd: containerHeight,
+			};
+		} else if (Math.abs(scrollPercentage - 1) <= 0.01) {
+			targetGradient = {
+				transparent: 0,
+				whiteStart: 50,
+				whiteEnd: containerHeight,
+				transparentEnd: containerHeight,
+			};
 		} else {
-			// const middlePosition = 10 + scrollPercentage * 80;
-			maskImage = `linear-gradient(180deg, transparent 0%, white 2em, white 20em, transparent 100%)`;
+			targetGradient = {
+				transparent: 0,
+				whiteStart: 50,
+				whiteEnd: 250,
+				transparentEnd: containerHeight,
+			};
 		}
 
-		modesListContainer.style.maskImage = maskImage;
-		modesListContainer.style.webkitMaskImage = maskImage;
+		// Animate the gradient positions
+
+		if (!needsUpdate) {
+			requestAnimationFrame(animateMask);
+		}
 	}
 
 	function handleScroll(e) {
@@ -169,16 +259,23 @@
 		updateMaskImage();
 	}
 
-	$: sortValue = getSongSortingValue(song, null, sortBy);
-	$: if (isHovered) {
-		setTimeout(() => {
-			if (modesListContainer) {
-				containerHeight = modesListContainer.clientHeight;
-				contentHeight = modesListContainer.scrollHeight;
-				updateMaskImage();
+	function handlePlay(currentHash) {
+		console.log(currentHash, song.hash);
+		if (currentHash === song.hash) {
+			if (!isHovered) {
+				handleHover(true);
 			}
-		}, 0);
+			playingSong = true;
+		} else {
+			playingSong = false;
+			if (isHovered && !mouseInside) {
+				handleHover(false);
+			}
+		}
 	}
+
+	$: sortValue = getSongSortingValue(song, null, sortBy);
+	$: handlePlay($songPlayerStore?.currentHash);
 </script>
 
 {#if song}
@@ -188,10 +285,10 @@
 		bind:this={mapCardWrapper}
 		tabindex="-1"
 		role="button"
-		on:mouseover={() => handleHover(true)}
-		on:mouseout={() => handleHover(false)}
-		on:focus={() => handleHover(true)}
-		on:blur={() => handleHover(false)}>
+		on:mouseover={() => handleHover(true, true)}
+		on:mouseout={() => handleHover(false, true)}
+		on:focus={() => handleHover(true, true)}
+		on:blur={() => handleHover(true, true)}>
 		<div class="cinematics root-cinematics" style={isHovered ? `height: ${mapCardRect.height}px;` : ''} class:is-hovered={isHovered}>
 			<div class="cinematics-canvas">
 				<canvas bind:this={rootcinematicsCanvas} style="position: absolute; width: 100%; height: 100%; opacity: 0" />
@@ -203,7 +300,11 @@
 					<canvas bind:this={cinematicsCanvas} style="position: absolute; width: 100%; height: 100%; opacity: 0" />
 				</div>
 			</div>
-			<div class="header" style="height: {headerContainerHeight < 150 ? '100%' : 'unset'};" class:is-hovered={isHovered}>
+			<a
+				href={`/leaderboard/global/${song.difficulties?.[0]?.leaderboardId ?? song.id}`}
+				class="header"
+				style="height: {headerContainerHeight < 150 ? '100%' : 'unset'};"
+				class:is-hovered={isHovered}>
 				<div
 					class="map-cover"
 					style={coverUrl
@@ -245,14 +346,14 @@
 				<div class="icons-container">
 					<Icons {song} />
 				</div>
-			</div>
-			<div class="bottom-container-background" class:is-hovered={isHovered} style="height: {bottomContainerHeight}px;"></div>
+			</a>
+			<div class="bottom-container-background" class:is-hovered={isHovered} style="height: {bottomContainerHeight + 15}px;"></div>
 			<div
 				class="bottom-container"
 				class:has-sort-value={!!sortValue}
 				class:is-hovered={isHovered}
 				bind:this={bottomContainer}
-				style="margin-top: -{headerContainerHeight < 150 ? 2.6 : 0}em;">
+				style="--margin-top-value: -{headerContainerHeight < 150 ? (isHovered ? 2.1 : 2.6) : 0}em;">
 				<div class="placeholder">
 					{#if sortValue}
 						<div class="sort-value">
@@ -266,7 +367,7 @@
 						<SongPlayer {song} />
 					</div>
 				{/if}
-				<div class="modes-list-container" class:is-hovered={isHovered} bind:this={modesListContainer}>
+				<div class="modes-list-container" class:is-hovered={isHovered} on:scroll={handleScroll} bind:this={modesListContainer}>
 					<ModesList {song} {isHovered} {sortValue} {sortBy} />
 				</div>
 			</div>
@@ -319,7 +420,7 @@
 		width: 19em;
 	}
 	.header {
-		padding: 0.6em;
+		padding: 0.5em;
 
 		color: var(--alternate);
 		display: flex;
@@ -343,7 +444,7 @@
 		position: relative;
 		background-color: #0000004f;
 		border-radius: 0 0 12px 12px;
-		transition: all 0.3s ease-in-out;
+		margin-top: var(--margin-top-value);
 	}
 
 	.bottom-container.has-sort-value {
@@ -443,7 +544,7 @@
 
 	.icons-container {
 		width: fit-content;
-		margin-top: 0.1em;
+		margin-top: 0.25em;
 		transform: scale(1.1);
 	}
 
@@ -709,11 +810,20 @@
 			margin-bottom: 0.2em;
 		}
 
+		.bottom-container {
+			padding: 0.2em;
+			margin-top: calc(var(--margin-top-value) + 0.8em);
+		}
+
 		.header {
 			margin-inline: 0;
 			padding: 0.4em 0.4em 0.15em 0.4em;
 			gap: 0.5em;
 			width: 100%;
+		}
+
+		.song-player {
+			width: 14em;
 		}
 
 		.desktop-only {
@@ -776,12 +886,25 @@
 		}
 
 		.placeholder {
-			display: none;
+			width: 7.8em;
+			height: 1em;
 		}
 
 		.icons-container {
 			transform: scale(0.95);
 			margin-top: -0.2em;
+		}
+
+		.main-container {
+			font-size: 0.8em;
+		}
+
+		.header h1 span.name {
+			font-size: 0.8em;
+		}
+
+		:global(.song-statuses .song-status) {
+			font-size: 0.6em;
 		}
 
 		:global(.leaderboard-header-box) {

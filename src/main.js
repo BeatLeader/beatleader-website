@@ -4,6 +4,7 @@ import log from './utils/logger';
 import initDb from './db/db';
 import initializeRepositories from './db/repositories-init';
 import createConfigStore from './stores/config';
+import createSongPlayerStore from './stores/songPlayer';
 import createAccountStore from './stores/beatleader/account';
 import createPlayerService from './services/beatleader/player';
 import {enablePatches, setAutoFreeze} from 'immer';
@@ -40,6 +41,7 @@ let app = null;
 		await createConfigStore();
 		createAccountStore();
 		createPlayerService();
+		createSongPlayerStore();
 
 		log.info('Site initialized', 'Main');
 

@@ -5,50 +5,36 @@
 	import {createEventDispatcher} from 'svelte';
 	import Button from '../../Common/Button.svelte';
 	import {fade, fly, slide} from 'svelte/transition';
+	import {songPlayerStore, currentTimeStore} from '../../../stores/songPlayer';
 
 	export let song;
-	export let playing = false;
 
-	const dispatch = createEventDispatcher();
-	let audio;
-	let currentTime = tweened(0, {duration: 400, easing: cubicOut});
-	let duration = song.duration;
-
-	// onMount(() => {
-	// 	audio = new Audio(song.previewUrl);
-	// 	audio.addEventListener('timeupdate', () => {
-	// 		currentTime.set(audio.currentTime);
-	// 	});
-	// 	audio.addEventListener('loadedmetadata', () => {
-	// 		duration = audio.duration;
-	// 	});
-	// 	audio.addEventListener('ended', () => {
-	// 		playing = false;
-	// 		dispatch('playing', playing);
-	// 	});
-	// });
-
-	$: if (playing) {
-		audio && audio.play();
-	} else {
-		audio && audio.pause();
+	$: if (song) {
+		isCurrentSong = $songPlayerStore?.currentHash === song.hash;
 	}
 
-	function togglePlay() {
-		playing = !playing;
-		dispatch('playing', playing);
+	let isCurrentSong = false;
+
+	function handleTogglePlay() {
+		songPlayerStore.togglePlay(song.hash);
 	}
+
+	$: currentTime = $songPlayerStore?.currentHash == song.hash ? $currentTimeStore : 0;
 </script>
 
 <div class="player">
-	<Button iconFa="fas fa-play" cls="song-play-button" square={true} on:click={togglePlay} />
+	<Button
+		iconFa={isCurrentSong && $songPlayerStore?.playing ? 'fas fa-pause' : 'fas fa-play'}
+		cls="song-play-button"
+		square={true}
+		on:click={handleTogglePlay} />
 	<div class="timeline">
-		<div class="progress" style="width: {($currentTime / duration) * 100}%"></div>
+		<div class="progress" style="width: {(currentTime / $songPlayerStore?.duration) * 100}%"></div>
 	</div>
 	<div class="time">
-		{Math.floor($currentTime / 60)}:{Math.floor($currentTime % 60)
+		{Math.floor(currentTime / 60)}:{Math.floor(currentTime % 60)
 			.toString()
-			.padStart(2, '0')} / {Math.floor(duration / 60)}:{Math.floor(duration % 60)
+			.padStart(2, '0')} / {Math.floor($songPlayerStore?.duration / 60)}:{Math.floor($songPlayerStore?.duration % 60)
 			.toString()
 			.padStart(2, '0')}
 	</div>
@@ -71,7 +57,6 @@
 	.progress {
 		height: 100%;
 		background: #007bff;
-		transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 	}
 	.time {
 		font-size: 0.9em;
@@ -83,5 +68,12 @@
 		padding: 0 !important;
 		padding-top: 0.15em !important;
 		margin-bottom: 0em !important;
+		--btn-bg-color: transparent !important;
+		--btn-color: #ffffff63 !important;
+		--btn-active-bg-color: transparent !important;
+	}
+
+	:global(.song-play-button:hover) {
+		--btn-color: #ffffff !important;
 	}
 </style>
