@@ -935,6 +935,10 @@
 		.desktop-only {
 			display: none;
 		}
+
+		footer {
+			display: none;
+		}
 	}
 
 	.ssr-page-container {

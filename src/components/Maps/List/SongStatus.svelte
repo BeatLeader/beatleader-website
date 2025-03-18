@@ -22,7 +22,7 @@
 		border-radius: 0.7em;
 		padding: 0.2em;
 		color: #000000b3;
-		font-size: small;
+		font-size: 0.8em;
 		display: flex;
 		align-items: center;
 		font-weight: 600;

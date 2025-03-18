@@ -16,6 +16,7 @@
 	export let itemsPerPage = 10;
 	export let itemsPerPageValues = [5, 10, 15, 20, 25];
 	export let displayMax = 11;
+	export let itemWidth = 51.85;
 	export let hide = false;
 	export let mode = 'pages';
 	export let dnd = false;
@@ -82,7 +83,6 @@
 		if (!navEl) return;
 
 		const minPositionWidth = 8.5 * 16;
-		const itemWidth = 51.85;
 
 		const pagerWidth = opt(navEl.getBoundingClientRect(), 'width', null);
 		if (!pagerWidth) return;
@@ -137,9 +137,13 @@
 {#if !hide}
 	<nav class="pagination" class:simple={currentMode === 'simple'} bind:this={navEl} class:no-items-per-page={!itemsPerPageValues}>
 		<div class="position">
-			{startItem} - {endItem}
+			<span class="current-page-position">
+				{startItem} - {endItem}
+			</span>
 			{#if totalItems}
-				/ {totalItems}{/if}
+				<span> / </span>
+				<span class="total-items">{totalItems}</span>
+			{/if}
 		</div>
 		{#if pagesTotal > 1 || currentMode === 'simple'}
 			<ul class="pagination-list">

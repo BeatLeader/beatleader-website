@@ -14,6 +14,7 @@
 	import ModesList from './ModesList.svelte';
 	import SongPlayer from './SongPlayer.svelte';
 	import {songPlayerStore} from '../../../stores/songPlayer';
+	import {cinematicsStore} from '../../../stores/cinematics';
 
 	export let song;
 	export let sortBy = 'stars';
@@ -58,23 +59,9 @@
 	let cinematicsCanvas;
 	let rootcinematicsCanvas;
 
-	function drawCinematics(cinematicsCanvas, coverUrl) {
-		if (coverUrl && cinematicsCanvas) {
-			cinematicsCanvas.style.opacity = 1;
-			const context = cinematicsCanvas.getContext('2d');
-
-			const cover = new Image();
-			cover.onload = function () {
-				context.drawImage(cover, 0, 0, cinematicsCanvas.width, cinematicsCanvas.height);
-			};
-			cover.src = coverUrl;
-		}
-	}
-
 	$: coverUrl = song?.coverImage;
-
-	$: drawCinematics(cinematicsCanvas, coverUrl);
-	$: drawCinematics(rootcinematicsCanvas, coverUrl);
+	$: if (cinematicsCanvas && coverUrl) cinematicsStore.drawCinematics(cinematicsCanvas, coverUrl);
+	$: if (rootcinematicsCanvas && coverUrl) cinematicsStore.drawCinematics(rootcinematicsCanvas, coverUrl);
 
 	let headerContainer;
 	let headerContainerHeight = 0;
@@ -102,6 +89,9 @@
 		hoverTimeout = setTimeout(() => {
 			isHovered = hovering;
 			if (hovering) {
+				if (!mapCardWrapper) {
+					return;
+				}
 				mapCardRect = mapCardWrapper.getBoundingClientRect();
 				if (!dummyElement) {
 					// Create and insert dummy element
@@ -177,8 +167,8 @@
 	let currentGradient = {
 		transparent: 0,
 		whiteStart: 0,
-		whiteEnd: 250,
-		transparentEnd: 450,
+		whiteEnd: 500,
+		transparentEnd: 500,
 	};
 
 	// Define target gradient positions based on scroll
@@ -191,6 +181,7 @@
 	let needsUpdate = false;
 
 	function animateMask() {
+		if (!modesListContainer) return;
 		const easing = 0.15; // Controls animation speed (0-1)
 
 		// Interpolate each value
@@ -220,29 +211,38 @@
 	function updateMaskImage() {
 		if (!modesListContainer) return;
 
-		const scrollPercentage = scrollPosition / (contentHeight - containerHeight);
-
-		if (scrollPosition === 0) {
+		if (Math.abs(contentHeight - containerHeight) < 1) {
 			targetGradient = {
 				transparent: 0,
 				whiteStart: 0,
-				whiteEnd: 250,
-				transparentEnd: containerHeight,
-			};
-		} else if (Math.abs(scrollPercentage - 1) <= 0.01) {
-			targetGradient = {
-				transparent: 0,
-				whiteStart: 50,
 				whiteEnd: containerHeight,
 				transparentEnd: containerHeight,
 			};
 		} else {
-			targetGradient = {
-				transparent: 0,
-				whiteStart: 50,
-				whiteEnd: 250,
-				transparentEnd: containerHeight,
-			};
+			const scrollPercentage = scrollPosition / (contentHeight - containerHeight);
+
+			if (scrollPosition === 0) {
+				targetGradient = {
+					transparent: 0,
+					whiteStart: 0,
+					whiteEnd: 320,
+					transparentEnd: containerHeight,
+				};
+			} else if (Math.abs(scrollPercentage - 1) <= 0.01) {
+				targetGradient = {
+					transparent: 0,
+					whiteStart: 20,
+					whiteEnd: containerHeight,
+					transparentEnd: containerHeight,
+				};
+			} else {
+				targetGradient = {
+					transparent: 0,
+					whiteStart: 20,
+					whiteEnd: 320,
+					transparentEnd: containerHeight,
+				};
+			}
 		}
 
 		// Animate the gradient positions
@@ -260,7 +260,6 @@
 	}
 
 	function handlePlay(currentHash) {
-		console.log(currentHash, song.hash);
 		if (currentHash === song.hash) {
 			if (!isHovered) {
 				handleHover(true);
@@ -282,13 +281,14 @@
 	<div
 		class="map-card-wrapper"
 		class:transparent={song.transparent}
+		class:is-hovered={isHovered}
 		bind:this={mapCardWrapper}
 		tabindex="-1"
 		role="button"
 		on:mouseover={() => handleHover(true, true)}
 		on:mouseout={() => handleHover(false, true)}
 		on:focus={() => handleHover(true, true)}
-		on:blur={() => handleHover(true, true)}>
+		on:blur={() => handleHover(false, true)}>
 		<div class="cinematics root-cinematics" style={isHovered ? `height: ${mapCardRect.height}px;` : ''} class:is-hovered={isHovered}>
 			<div class="cinematics-canvas">
 				<canvas bind:this={rootcinematicsCanvas} style="position: absolute; width: 100%; height: 100%; opacity: 0" />
@@ -316,7 +316,7 @@
 				<div class="main-container">
 					<div class="header-container" bind:this={headerContainer}>
 						<div class="header-top-part">
-							<h1 class="title is-4">
+							<h1 class="song-title">
 								<span class="name" title="Song name">{name} </span>
 								{#if $configStore?.leaderboardPreferences?.showSubtitleInHeader && song.subName}
 									<span class="subname">{song.subName}</span>
@@ -344,7 +344,7 @@
 					</div>
 				</div>
 				<div class="icons-container">
-					<Icons {song} />
+					<Icons {song} icons={['playlist', 'bsr', 'bs', 'oneclick']} />
 				</div>
 			</a>
 			<div class="bottom-container-background" class:is-hovered={isHovered} style="height: {bottomContainerHeight + 15}px;"></div>
@@ -353,7 +353,7 @@
 				class:has-sort-value={!!sortValue}
 				class:is-hovered={isHovered}
 				bind:this={bottomContainer}
-				style="--margin-top-value: -{headerContainerHeight < 150 ? (isHovered ? 2.1 : 2.6) : 0}em;">
+				style="--margin-top-value: -{headerContainerHeight < 150 ? (isHovered ? 2.25 : 2.4) : 0}em;">
 				<div class="placeholder">
 					{#if sortValue}
 						<div class="sort-value">
@@ -366,10 +366,18 @@
 					<div class="song-player">
 						<SongPlayer {song} />
 					</div>
+					<div class="preview-icon-container-hovered">
+						<Icons {song} icons={['preview']} />
+					</div>
 				{/if}
 				<div class="modes-list-container" class:is-hovered={isHovered} on:scroll={handleScroll} bind:this={modesListContainer}>
 					<ModesList {song} {isHovered} {sortValue} {sortBy} />
 				</div>
+				{#if !isHovered}
+					<div class="preview-icon-container">
+						<Icons {song} icons={['preview']} />
+					</div>
+				{/if}
 			</div>
 		</div>
 	</div>
@@ -381,6 +389,12 @@
 		width: 32em;
 		margin-bottom: 1.2em;
 		overflow: visible;
+		background-color: #000000;
+		border-radius: 12px;
+	}
+
+	.map-card-wrapper.is-hovered {
+		border-radius: 12px 12px 16px 16px;
 	}
 
 	.map-card-wrapper.transparent {
@@ -404,12 +418,15 @@
 	.map-card.is-hovered {
 		z-index: 3;
 		box-shadow: 0 4px 10px rgba(0, 0, 0, 0.7);
+		background-color: #141414;
 		height: unset;
+		border-radius: 12px 12px 16px 16px;
 	}
 
 	.root-cinematics {
 		opacity: 0;
 		transition: opacity 0.3s ease;
+		z-index: -1;
 	}
 
 	.root-cinematics.is-hovered {
@@ -445,6 +462,7 @@
 		background-color: #0000004f;
 		border-radius: 0 0 12px 12px;
 		margin-top: var(--margin-top-value);
+		align-items: center;
 	}
 
 	.bottom-container.has-sort-value {
@@ -525,8 +543,13 @@
 		display: flex;
 		justify-content: space-between;
 		flex: 1;
-		min-height: 11em;
+		min-height: 9em;
 		z-index: 1;
+	}
+
+	.preview-icon-container-hovered {
+		margin-left: 1em;
+		margin-top: -0.6em;
 	}
 
 	.buttons-container {
@@ -553,7 +576,7 @@
 		margin-bottom: -0.5em;
 	}
 
-	.header .title {
+	.header .song-title {
 		color: inherit !important;
 		margin-bottom: 0;
 	}
@@ -573,19 +596,21 @@
 		text-overflow: ellipsis;
 		white-space: normal;
 		word-break: break-word;
+		font-size: 1.3em;
+		font-weight: 600;
+		margin-top: -0.2em;
 	}
 
 	.map-cover {
 		position: relative;
-		width: 11em;
+		width: 9em;
 		aspect-ratio: 1;
 		border-radius: 8px;
 		z-index: 2;
 	}
 
 	.placeholder {
-		width: 11.9em;
-		height: 1.8em;
+		width: 9.7em;
 		display: flex;
 		justify-content: center;
 	}
@@ -631,7 +656,7 @@
 		z-index: 2;
 	}
 
-	.header h2.title {
+	.header h2.song-title {
 		font-size: 1em !important;
 		color: var(--increase, #42b129) !important;
 		margin-top: 0.5em;
@@ -669,6 +694,7 @@
 		display: flex;
 		flex-direction: column;
 		gap: 0.4em;
+		font-size: 0.9em;
 	}
 
 	.song-statuses {
@@ -823,7 +849,7 @@
 		}
 
 		.song-player {
-			width: 14em;
+			width: calc(100vw - 9.7em);
 		}
 
 		.desktop-only {
@@ -857,14 +883,13 @@
 
 		.header-container {
 			min-height: unset;
-			gap: 0.3em;
 		}
 
 		.main-container {
 			min-height: unset;
 		}
 
-		.header .title {
+		.header .song-title {
 			margin-left: unset;
 		}
 
@@ -878,21 +903,23 @@
 		}
 
 		.author {
-			font-size: 1em;
+			font-size: 0.9em;
+			margin-top: -0.2em;
 		}
 
 		.map-cover {
-			width: 7.4em;
+			width: 6.4em;
 		}
 
 		.placeholder {
-			width: 7.8em;
+			width: 6.8em;
 			height: 1em;
 		}
 
 		.icons-container {
-			transform: scale(0.95);
-			margin-top: -0.2em;
+			transform: scale(0.75);
+			margin-top: -0.8em;
+			margin-right: -0.2em;
 		}
 
 		.main-container {
@@ -900,7 +927,7 @@
 		}
 
 		.header h1 span.name {
-			font-size: 0.8em;
+			font-size: 1.1em;
 		}
 
 		:global(.song-statuses .song-status) {

@@ -10,6 +10,7 @@ const DEFAULT_STATE = {
 	playing: false,
 	duration: 0,
 	currentTime: 0,
+	volume: 0.3,
 };
 
 export default () => {
@@ -54,12 +55,14 @@ export default () => {
 				cleanup();
 				currentTimeStore.set(0);
 				audio = new Audio(`https://eu.cdn.beatsaver.com/${hash.toLowerCase()}.mp3`);
+				audio.volume = state.volume;
 				audio.addEventListener('timeupdate', handleTimeUpdate);
 				audio.addEventListener('loadedmetadata', handleMetadata);
 				audio.addEventListener('ended', handleEnded);
 				audio.addEventListener('pause', handleEnded);
 			} else if (!audio) {
 				audio = new Audio(`https://eu.cdn.beatsaver.com/${hash.toLowerCase()}.mp3`);
+				audio.volume = state.volume;
 				audio.addEventListener('timeupdate', handleTimeUpdate);
 				audio.addEventListener('loadedmetadata', handleMetadata);
 				audio.addEventListener('ended', handleEnded);
@@ -80,6 +83,15 @@ export default () => {
 		});
 	}
 
+	function setVolume(volume) {
+		update(state => {
+			if (audio) {
+				audio.volume = volume;
+			}
+			return {...state, volume};
+		});
+	}
+
 	const reset = () => {
 		cleanup();
 		set(DEFAULT_STATE);
@@ -88,6 +100,7 @@ export default () => {
 	songPlayerStore = {
 		subscribe,
 		togglePlay,
+		setVolume,
 		reset,
 	};
 

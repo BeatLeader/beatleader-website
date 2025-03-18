@@ -119,7 +119,7 @@
 		gap: 0.3em;
 		transition: all 0.3s ease-in-out;
 		overflow: hidden;
-		width: 19em;
+		width: 20em;
 		overflow: hidden;
 		mask-image: linear-gradient(90deg, white 0%, white 90%, transparent);
 	}
@@ -138,7 +138,6 @@
 		display: flex;
 		gap: 0.2em;
 		align-items: center;
-		transition: all 0.3s ease-in-out;
 	}
 
 	.mode-container.isHovered {
@@ -157,7 +156,6 @@
 
 	.diff-container {
 		display: flex;
-		transition: all 0.3s ease-in-out;
 	}
 
 	.diff-container.isHovered {
@@ -170,7 +168,6 @@
 	.diffs-container {
 		display: flex;
 		gap: 0.2em;
-		transition: all 0.3s ease-in-out;
 	}
 
 	.diffs-container.isHovered {
@@ -238,7 +235,7 @@
 
 	@media (max-width: 767px) {
 		.modes-list {
-			width: 16em;
+			width: calc(100vw - 9.7em);
 			font-size: 0.9em;
 		}
 	}
