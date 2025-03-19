@@ -125,7 +125,7 @@
 					bottomContainerObserver.disconnect();
 				}
 			}
-		}, 300);
+		}, 50);
 	}
 
 	onMount(() => {

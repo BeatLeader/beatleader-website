@@ -727,7 +727,7 @@
 	let currentPageAnchor;
 
 	let scrollContainer;
-
+	let asideContainer;
 	function scrollToPage(page) {
 		previousPage = currentPage;
 		currentPage = page + 1;
@@ -865,7 +865,7 @@
 		</div>
 	</article>
 
-	<aside class="maps-aside-container" class:open={mobileFiltersOpen}>
+	<aside class="maps-aside-container" class:open={mobileFiltersOpen} bind:this={asideContainer}>
 		<AsideBox title="Sorting" boolname="mapsSortingOpen" faicon="fas fa-sort">
 			<div class="sorting-options">
 				<Select bind:value={sortValue} on:change={onSortChange} fontSize="0.8" options={sortValues} />
@@ -1248,6 +1248,7 @@
 				on:page-changed={onPageChanged} />
 		</ContentBox>
 	</aside>
+	<Svrollbar viewport={asideContainer} />
 </section>
 
 <MetaTags
@@ -1352,6 +1353,16 @@
 		position: fixed;
 		right: 1em;
 		width: 25em;
+		max-height: 90%;
+		overflow: auto;
+		/* hide scrollbar */
+		-ms-overflow-style: none;
+		scrollbar-width: none;
+	}
+
+	aside::-webkit-scrollbar {
+		/* hide scrollbar */
+		display: none;
 	}
 
 	aside .filter {
