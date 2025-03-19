@@ -16,8 +16,9 @@
 	import {songPlayerStore} from '../../../stores/songPlayer';
 	import {cinematicsStore} from '../../../stores/cinematics';
 
-	export let song;
+	export let map;
 	export let sortBy = 'stars';
+	export let forcePlaceholder = false;
 	export let idx = 0;
 	export let ratings = null;
 
@@ -55,11 +56,37 @@
 		return song.difficulties[0].status;
 	}
 
-	$: song?.difficulties && (status = calculateStatus(song));
+	let song = null;
+	let hash = null;
+	let name = null;
+	let sortValue = null;
+	let coverUrl = null;
+
+	function getSong(map) {
+		if (!map) return;
+
+		song = map;
+
+		if (song.placeholder) {
+			song.updateCallback = newMap => {
+				getSong(newMap);
+			};
+		} else {
+			if (song.difficulties) {
+				status = calculateStatus(song);
+			}
+			hash = song.hash;
+			name = song.name;
+			coverUrl = song.coverImage;
+			sortValue = getSongSortingValue(song, null, sortBy);
+		}
+	}
+
+	$: getSong(map);
+
 	let cinematicsCanvas;
 	let rootcinematicsCanvas;
 
-	$: coverUrl = song?.coverImage;
 	$: if (cinematicsCanvas && coverUrl) cinematicsStore.drawCinematics(cinematicsCanvas, coverUrl);
 	$: if (rootcinematicsCanvas && coverUrl) cinematicsStore.drawCinematics(rootcinematicsCanvas, coverUrl);
 
@@ -71,9 +98,6 @@
 	}
 
 	$: headerContainer && updateHeaderContainerHeight(headerContainer);
-
-	$: hash = song?.hash;
-	$: name = song?.name;
 
 	let hoverTimeout;
 	let dummyElement;
@@ -259,8 +283,8 @@
 		updateMaskImage();
 	}
 
-	function handlePlay(currentHash) {
-		if (currentHash === song.hash) {
+	function handlePlay(currentHash, songHash) {
+		if (currentHash === songHash) {
 			if (!isHovered) {
 				handleHover(true);
 			}
@@ -273,120 +297,128 @@
 		}
 	}
 
-	$: sortValue = getSongSortingValue(song, null, sortBy);
-	$: handlePlay($songPlayerStore?.currentHash);
+	$: hash && handlePlay($songPlayerStore?.currentHash, hash);
 </script>
 
 {#if song}
-	<div
-		class="map-card-wrapper"
-		class:transparent={song.transparent}
-		class:is-hovered={isHovered}
-		bind:this={mapCardWrapper}
-		tabindex="-1"
-		role="button"
-		on:mouseover={() => handleHover(true, true)}
-		on:mouseout={() => handleHover(false, true)}
-		on:focus={() => handleHover(true, true)}
-		on:blur={() => handleHover(false, true)}>
-		<div class="cinematics root-cinematics" style={isHovered ? `height: ${mapCardRect.height}px;` : ''} class:is-hovered={isHovered}>
-			<div class="cinematics-canvas">
-				<canvas bind:this={rootcinematicsCanvas} style="position: absolute; width: 100%; height: 100%; opacity: 0" />
-			</div>
-		</div>
-		<div class="map-card" class:is-hovered={isHovered} style={isHovered ? `position: absolute;` : ''} bind:this={mapCardElement}>
-			<div class="cinematics">
+	{#if !forcePlaceholder && !song.placeholder}
+		<div
+			class="map-card-wrapper"
+			class:transparent={song.transparent}
+			class:is-hovered={isHovered}
+			bind:this={mapCardWrapper}
+			tabindex="-1"
+			role="button"
+			on:mouseover={() => handleHover(true, true)}
+			on:mouseout={() => handleHover(false, true)}
+			on:focus={() => handleHover(true, true)}
+			on:blur={() => handleHover(false, true)}>
+			<div class="cinematics root-cinematics" style={isHovered ? `height: ${mapCardRect.height}px;` : ''} class:is-hovered={isHovered}>
 				<div class="cinematics-canvas">
-					<canvas bind:this={cinematicsCanvas} style="position: absolute; width: 100%; height: 100%; opacity: 0" />
+					<canvas bind:this={rootcinematicsCanvas} style="position: absolute; width: 100%; height: 100%; opacity: 0" />
 				</div>
 			</div>
-			<a
-				href={`/leaderboard/global/${song.difficulties?.[0]?.leaderboardId ?? song.id}`}
-				class="header"
-				style="height: {headerContainerHeight < 150 ? '100%' : 'unset'};"
-				class:is-hovered={isHovered}>
-				<div
-					class="map-cover"
-					style={coverUrl
-						? `background: url(${coverUrl}); background-repeat: no-repeat; background-size: cover; background-position: center;`
-						: ''}>
-					<div class="sort-value-background" class:is-hovered={sortValue && isHovered}></div>
+			<div class="map-card" class:is-hovered={isHovered} style={isHovered ? `position: absolute;` : ''} bind:this={mapCardElement}>
+				<div class="cinematics">
+					<div class="cinematics-canvas">
+						<canvas bind:this={cinematicsCanvas} style="position: absolute; width: 100%; height: 100%; opacity: 0" />
+					</div>
 				</div>
+				<a
+					href={`/leaderboard/global/${song.difficulties?.[0]?.leaderboardId ?? song.id}`}
+					class="header"
+					style="height: {headerContainerHeight < 150 ? '100%' : 'unset'};"
+					class:is-hovered={isHovered}>
+					<div
+						class="map-cover"
+						style={coverUrl
+							? `background: url(${coverUrl}); background-repeat: no-repeat; background-size: cover; background-position: center;`
+							: ''}>
+						<div class="sort-value-background" class:is-hovered={sortValue && isHovered}></div>
+					</div>
 
-				<div class="main-container">
-					<div class="header-container" bind:this={headerContainer}>
-						<div class="header-top-part">
-							<h1 class="song-title">
-								<span class="name" title="Song name">{name} </span>
-								{#if $configStore?.leaderboardPreferences?.showSubtitleInHeader && song.subName}
-									<span class="subname">{song.subName}</span>
-								{/if}
-							</h1>
+					<div class="main-container">
+						<div class="header-container" bind:this={headerContainer}>
+							<div class="header-top-part">
+								<h1 class="song-title">
+									<span class="name" title="Song name">{name} </span>
+									{#if $configStore?.leaderboardPreferences?.showSubtitleInHeader && song.subName}
+										<span class="subname">{song.subName}</span>
+									{/if}
+								</h1>
 
-							<div class="title-container">
-								<span class="author" title="Song author name">{song.author}</span>
+								<div class="title-container">
+									<span class="author" title="Song author name">{song.author}</span>
+								</div>
 							</div>
-						</div>
 
-						<div class="mapper-and-statuses">
-							<MapperList {song} maxHeight={isHovered ? '4.5em' : '2.2em'} fontSize="0.9em" />
-							<div class="song-statuses" class:is-hovered={isHovered}>
-								{#if status && status != DifficultyStatus.unranked && status != DifficultyStatus.unrankable}
-									<SongStatus songStatus={wrapBLStatus(status)} />
-								{/if}
-								{#if song.externalStatuses}
-									{#each song.externalStatuses as songStatus}
-										<SongStatus {songStatus} />
-									{/each}
-								{/if}
+							<div class="mapper-and-statuses">
+								<MapperList {song} maxHeight={isHovered ? '4.5em' : '2.2em'} fontSize="0.9em" />
+								<div class="song-statuses" class:is-hovered={isHovered}>
+									{#if status && status != DifficultyStatus.unranked && status != DifficultyStatus.unrankable}
+										<SongStatus songStatus={wrapBLStatus(status)} />
+									{/if}
+									{#if song.externalStatuses}
+										{#each song.externalStatuses as songStatus}
+											<SongStatus {songStatus} />
+										{/each}
+									{/if}
+								</div>
 							</div>
 						</div>
 					</div>
-				</div>
-				<div class="icons-container">
-					<Icons {song} icons={['playlist', 'bsr', 'bs', 'oneclick']} />
-				</div>
-			</a>
-			<div class="bottom-container-background" class:is-hovered={isHovered} style="height: {bottomContainerHeight + 15}px;"></div>
-			<div
-				class="bottom-container"
-				class:has-sort-value={!!sortValue}
-				class:is-hovered={isHovered}
-				bind:this={bottomContainer}
-				style="--margin-top-value: -{headerContainerHeight < 150 ? (isHovered ? 2.25 : 2.4) : 0}em;">
-				<div class="placeholder">
-					{#if sortValue}
-						<div class="sort-value">
-							{sortValue}
+					<div class="icons-container">
+						<Icons {song} icons={['playlist', 'bsr', 'bs', 'oneclick']} />
+					</div>
+				</a>
+				<div class="bottom-container-background" class:is-hovered={isHovered} style="height: {bottomContainerHeight + 15}px;"></div>
+				<div
+					class="bottom-container"
+					class:has-sort-value={!!sortValue}
+					class:is-hovered={isHovered}
+					bind:this={bottomContainer}
+					style="--margin-top-value: -{headerContainerHeight < 150 ? (isHovered ? 2.25 : 2.4) : 0}em;">
+					<div class="placeholder">
+						{#if sortValue}
+							<div class="sort-value">
+								{sortValue}
+							</div>
+						{/if}
+					</div>
+
+					{#if isHovered}
+						<div class="song-player">
+							<SongPlayer {song} />
+						</div>
+						<div class="preview-icon-container-hovered">
+							<Icons {song} icons={['preview']} />
+						</div>
+					{/if}
+					<div class="modes-list-container" class:is-hovered={isHovered} on:scroll={handleScroll} bind:this={modesListContainer}>
+						<ModesList {song} {isHovered} {sortValue} {sortBy} />
+					</div>
+					{#if !isHovered}
+						<div class="preview-icon-container">
+							<Icons {song} icons={['preview']} />
 						</div>
 					{/if}
 				</div>
-
-				{#if isHovered}
-					<div class="song-player">
-						<SongPlayer {song} />
-					</div>
-					<div class="preview-icon-container-hovered">
-						<Icons {song} icons={['preview']} />
-					</div>
-				{/if}
-				<div class="modes-list-container" class:is-hovered={isHovered} on:scroll={handleScroll} bind:this={modesListContainer}>
-					<ModesList {song} {isHovered} {sortValue} {sortBy} />
-				</div>
-				{#if !isHovered}
-					<div class="preview-icon-container">
-						<Icons {song} icons={['preview']} />
-					</div>
-				{/if}
 			</div>
 		</div>
-	</div>
+	{:else}
+		<div class="map-card-wrapper">
+			<div class="map-card-placeholder">
+				<div class="map-card-loading">Loading...</div>
+			</div>
+		</div>
+	{/if}
 {/if}
 
 <style>
 	.map-card-wrapper {
 		position: relative;
 		width: 32em;
+		height: 10em;
 		margin-bottom: 1.2em;
 		overflow: visible;
 		background-color: #000000;
@@ -421,6 +453,16 @@
 		background-color: #141414;
 		height: unset;
 		border-radius: 12px 12px 16px 16px;
+	}
+
+	.map-card-placeholder {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		height: 100%;
+		width: 100%;
+		background-color: #1c1c1c;
+		border-radius: 12px;
 	}
 
 	.root-cinematics {
@@ -834,6 +876,7 @@
 		.map-card-wrapper {
 			width: 100%;
 			margin-bottom: 0.2em;
+			height: 7.2em;
 		}
 
 		.bottom-container {
