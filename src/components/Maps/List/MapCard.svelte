@@ -324,11 +324,8 @@
 						<canvas bind:this={cinematicsCanvas} style="position: absolute; width: 100%; height: 100%; opacity: 0" />
 					</div>
 				</div>
-				<a
-					href={`/leaderboard/global/${song.difficulties?.[0]?.leaderboardId ?? song.id}`}
-					class="header"
-					style="height: {headerContainerHeight < 150 ? '100%' : 'unset'};"
-					class:is-hovered={isHovered}>
+				<a class="header-link" href={`/leaderboard/global/${song.difficulties?.[0]?.leaderboardId ?? song.id}`}></a>
+				<div class="header" style="height: {headerContainerHeight < 150 ? '100%' : 'unset'};" class:is-hovered={isHovered}>
 					<div
 						class="map-cover"
 						style={coverUrl
@@ -337,7 +334,7 @@
 						<div class="sort-value-background" class:is-hovered={sortValue && isHovered}></div>
 					</div>
 
-					<div class="main-container">
+					<a class="main-container" href={`/leaderboard/global/${song.difficulties?.[0]?.leaderboardId ?? song.id}`}>
 						<div class="header-container" bind:this={headerContainer}>
 							<div class="header-top-part">
 								<h1 class="song-title">
@@ -353,7 +350,7 @@
 							</div>
 
 							<div class="mapper-and-statuses">
-								<MapperList {song} maxHeight={isHovered ? '4.5em' : '2.2em'} fontSize="0.9em" />
+								<MapperList {song} maxHeight="2.2em" fontSize="0.9em" />
 								<div class="song-statuses" class:is-hovered={isHovered}>
 									{#if status && status != DifficultyStatus.unranked && status != DifficultyStatus.unrankable}
 										<SongStatus songStatus={wrapBLStatus(status)} />
@@ -366,11 +363,11 @@
 								</div>
 							</div>
 						</div>
-					</div>
+					</a>
 					<div class="icons-container">
 						<Icons {song} icons={['playlist', 'bsr', 'bs', 'oneclick']} />
 					</div>
-				</a>
+				</div>
 				<div class="bottom-container-background" class:is-hovered={isHovered} style="height: {bottomContainerHeight + 15}px;"></div>
 				<div
 					class="bottom-container"
@@ -564,6 +561,14 @@
 		width: 100%;
 	}
 
+	.header-link {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+	}
+
 	:global(.map-card-wrapper .icons-container .buttons-container.flat) {
 		flex-direction: column;
 	}
@@ -649,6 +654,7 @@
 		aspect-ratio: 1;
 		border-radius: 8px;
 		z-index: 2;
+		pointer-events: none;
 	}
 
 	.placeholder {
@@ -744,10 +750,6 @@
 		display: flex;
 		gap: 0.2em;
 		flex-wrap: wrap;
-	}
-
-	.song-statuses.is-hovered {
-		display: none;
 	}
 
 	.cinematics {

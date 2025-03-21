@@ -250,7 +250,7 @@
 
 			<div class="categories">
 				<MapsCategoryCard categoryName="Ranked" showRankedCounter bgColor="#2d0c1f" redirectUrl={'/maps/ranked'} />
-				<MapsCategoryCard categoryName="Trending" bgColor="#292823" />
+				<MapsCategoryCard categoryName="Trending" bgColor="#292823" redirectUrl={'/maps/trending'} />
 				<MapsCategoryCard categoryName="Curated" bgColor="#15261D" redirectUrl={'/maps/all/1?songStatus=6'} />
 			</div>
 
@@ -258,7 +258,7 @@
 				<div class="buttons">
 					<BigButton label="All Maps" destination="/maps/all" />
 					<BigButton label="Events" destination="/events" />
-					<BigButton label="Nominated" destination="/maps/nominated" />
+					<BigButton label="Playlists" destination="/playlists/featured" />
 				</div>
 			</div>
 

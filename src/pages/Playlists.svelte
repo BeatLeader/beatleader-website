@@ -1,5 +1,6 @@
 <script>
 	import ssrConfig from '../ssr-config';
+	import {navigate} from 'svelte-routing';
 	import {scrollToTargetAdjusted} from '../utils/browser';
 	import createPlaylistStore from '../stores/playlists';
 	import createAccountStore from '../stores/beatleader/account';
@@ -7,6 +8,7 @@
 	import Pager from '../components/Common/Pager.svelte';
 	import Button from '../components/Common/Button.svelte';
 	import ContentBox from '../components/Common/ContentBox.svelte';
+	import TabSwitcher from '../components/Common/TabSwitcher.svelte';
 	import {MetaTags} from 'svelte-meta-tags';
 	import {BL_API_URL, CURRENT_URL} from '../network/queues/beatleader/api-queue';
 
@@ -83,6 +85,16 @@
 			});
 	}
 
+	const tabOptions = [
+		{value: 'my-playlists', label: 'My playlists', iconFa: 'fas fa-user', url: '/playlists', cls: 'playlist-tab-button'},
+		{value: 'featured', label: 'Featured', iconFa: 'fas fa-star', url: '/playlists/featured/1', cls: 'playlist-tab-button'},
+	];
+	const currentTab = tabOptions[0];
+
+	function onTabChanged(e) {
+		navigate(`/playlists/featured/1`);
+	}
+
 	$: document.body.scrollIntoView({behavior: 'smooth'});
 	$: totalItems = $playlists.length;
 	$: updatePage(parseInt(index, 10), $playlists.length);
@@ -97,7 +109,10 @@
 	<title>{metaTitle}</title>
 </svelte:head>
 
-<ContentBox>
+<div class="playlist-switcher">
+	<TabSwitcher values={tabOptions} value={currentTab} on:change={onTabChanged} class="playlist" />
+</div>
+<ContentBox cls="playlists-container">
 	<div class="playlistButtonsContainer">
 		<Button iconFa="fas fa-plus-square" label="New" on:click={() => playlists.create()} />
 		<Button iconFa="fas fa-upload" label="Upload" on:click={() => fileinput.click()} />
@@ -147,3 +162,27 @@
 		image: CURRENT_URL + 'assets/defaultplaylisticon.png',
 		imageAlt: metaTitle + ' picture',
 	}} />
+
+<style>
+	.playlist-switcher {
+		margin-left: 0.6em;
+	}
+
+	:global(.playlists-container) {
+		margin-top: 2.6em !important;
+		border-radius: 0 12px !important;
+	}
+
+	:global(.playlist-tab-button) {
+		margin-bottom: -0.5em !important;
+		height: 3.5em;
+		border-radius: 12px 12px 0 0 !important;
+	}
+
+	:global(.playlist-tab-button span) {
+		font-weight: 900;
+		text-align: center;
+		white-space: break-spaces;
+		margin-right: -0.3em;
+	}
+</style>
