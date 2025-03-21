@@ -421,7 +421,7 @@
 				<Button label="Event" iconFa="fas fa-rocket" on:click={() => navigate('/event/49')} />
 			</div>
 		</ContentBox> -->
-		<!-- <ContentBox cls="event-banner" on:click={() => navigate('/event/60')}>
+		<ContentBox cls="event-banner" on:click={() => navigate('/event/67')}>
 			<div class="cinematics">
 				<div class="cinematics-canvas">
 					<canvas bind:this={cinematicsCanvas} style="position: absolute; width: 100%; height: 100%; opacity: 0" />
@@ -432,13 +432,11 @@
 				{#await import('atropos/svelte').then(m => m.default)}
 					<div class="loading-container">
 						<div class="cover-bg" />
-						<div class="cover-girls" />
 						<div class="cover-hands" />
 					</div>
 				{:then Atropos}
 					<svelte:component this={Atropos} rotateXMax={1} rotateYMax={1} highlight="false" shadow="false" rotateTouch="scroll-y">
 						<div class="cover-bg" data-atropos-offset="-2" />
-						<div class="cover-girls" data-atropos-offset="1" />
 						<div class="cover-hands" data-atropos-offset="3" />
 					</svelte:component>
 				{/await}
@@ -448,11 +446,11 @@
 						<span class="event-title"></span>
 					</div>
 					<div>
-						<Button label="Event" cls="event-cover-btn" iconFa="fas fa-rocket" on:click={() => navigate('/event/60')} />
+						<Button label=". ...- . -. -" cls="event-cover-btn" iconFa="fas fa-question" on:click={() => navigate('/event/67')} />
 					</div>
 				</div>
 			</div>
-		</ContentBox> -->
+		</ContentBox>
 
 		<ContentBox bind:box={boxEl}>
 			<h1 class="title is-5">
@@ -696,13 +694,14 @@
 	.cover-hands {
 		position: absolute;
 		display: block;
-		background: url(/assets/week120_numbers_big.webp) !important;
+		background: url(/assets/week120_girl.webp) !important;
 		background-size: cover !important;
 		background-position-y: 50% !important;
-		width: 43em;
+		width: 59em;
 		height: 22em;
-		left: calc(50% - 23em);
+		left: calc(50% - 30em);
 		top: calc(50% - 8.5em);
+		mix-blend-mode: color-burn;
 	}
 
 	.cinematics {
@@ -785,7 +784,6 @@
 		.cover-hands {
 			position: absolute;
 			display: block;
-			background: url(/assets/week120_numbers.webp) !important;
 			background-size: cover !important;
 			background-position-y: 50% !important;
 			width: 27em;
@@ -800,10 +798,6 @@
 		.event-title-mobile {
 			display: block;
 			color: #4caf50 !important;
-		}
-
-		:global(.event-cover-btn) {
-			display: none !important;
 		}
 	}
 

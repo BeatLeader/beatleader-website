@@ -14,7 +14,7 @@
 {#if event}
 	<section class="event">
 		<img src={event.image} />
-		<h2>{event.name}</h2>
+		<h2 class="event-name">{event.name}</h2>
 
 		{#if event.leader && withLeader}
 			<div class="metric">
@@ -55,6 +55,10 @@
 		align-items: center;
 		flex-direction: column;
 		gap: 1em;
+	}
+
+	.event-name {
+		text-align: center;
 	}
 
 	img {
