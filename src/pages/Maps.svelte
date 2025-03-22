@@ -28,6 +28,24 @@
 		{
 			component: CarouselCard,
 			props: {
+				title: 'CC Rewind 2024 Map Released',
+				body: '',
+				imageUrl: '/assets/Discover/cc-rewind-2024-map.jpg',
+				targetUrl: 'https://www.youtube.com/watch?v=Z4FXyArnA0M',
+				linkName: 'YouTube',
+				forcedColor: 'rgb(141 141 141)',
+				buttons: [
+					{
+						text: 'Play!',
+						type: 'primary',
+						url: 'https://beatsaver.com/maps/45629',
+					},
+				],
+			},
+		},
+		{
+			component: CarouselCard,
+			props: {
 				title: 'Cube Community Fall Highlights',
 				body: '',
 				imageUrl: '/assets/Discover/cc-fall-highlights.jpg',
