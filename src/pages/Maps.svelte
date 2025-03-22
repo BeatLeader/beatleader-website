@@ -17,17 +17,6 @@
 		{
 			component: CarouselCard,
 			props: {
-				title: 'The 2024 Beasties Premiere',
-				body: '',
-				imageUrl: '/assets/Discover/2024_beasties_times.png',
-				targetUrl: 'https://youtu.be/u7CJoYyRVWg',
-				linkName: 'YouTube',
-				forcedColor: 'rgba(0, 0, 0, 0)',
-			},
-		},
-		{
-			component: CarouselCard,
-			props: {
 				title: 'Extra Sensory 2 Mods and Maps are out!',
 				body: '',
 				imageUrl: '/assets/Discover/extra_sensory_thumbnail_2.webp',
@@ -72,41 +61,42 @@
 	];
 
 	let tournamentCards = [
-		// {
-		// 	component: CarouselCard,
-		// 	props: {
-		// 		title: 'BeatKhana RST 24!',
-		// 		body: "BeatKhana returns with the biggest 1v1 tournament yet, with 128 players and a random map for every match! \nSignups are open now, so what are you waiting for? Let's go gambling!",
-		// 		imageUrl: '/assets/Discover/BK_RST-24_bg.webp',
-		// 		targetUrl: 'https://youtu.be/9_UE3ZG8TgA',
-		// 		linkName: 'contest info page',
-		// 		buttons: [
-		// 			{
-		// 				text: 'Sign up!',
-		// 				type: 'primary',
-		// 				url: 'https://beatkhana.com/tournaments/rst2024/general',
-		// 			},
-		// 		],
-		// 	},
-		// },
 		{
 			component: CarouselCard,
 			props: {
-				title: 'Building Blocks 2024',
-				body: 'Ongoing mapping contest with a prize pool and chance to get directly into ranked!',
-				imageUrl: '/assets/Discover/buildingblocks.png',
-				targetUrl: '/event/building-blocks-2024',
-				forcedColor: 'rgb(24 3 29 / 75%)',
+				title: 'Beat Saber Elites!',
+				body: 'An exclusive, invite-only tournament, for the top 25 ScoreSaber players. \nSignups are open!',
+				imageUrl: '/assets/Discover/BSE_2025.webp',
+				targetUrl: 'https://beatkhana.com/tournaments/bse/general',
 				linkName: 'contest info page',
+				forcedColor: 'rgb(0 1 24)',
 				buttons: [
 					{
-						text: 'More Info',
+						text: 'Sign up!',
 						type: 'primary',
-						url: '/event/building-blocks-2024',
+						url: 'https://beatkhana.com/tournaments/bse/general',
 					},
 				],
 			},
 		},
+		// {
+		// 	component: CarouselCard,
+		// 	props: {
+		// 		title: 'Building Blocks 2024',
+		// 		body: 'Ongoing mapping contest with a prize pool and chance to get directly into ranked!',
+		// 		imageUrl: '/assets/Discover/buildingblocks.png',
+		// 		targetUrl: '/event/building-blocks-2024',
+		// 		forcedColor: 'rgb(24 3 29 / 75%)',
+		// 		linkName: 'contest info page',
+		// 		buttons: [
+		// 			{
+		// 				text: 'More Info',
+		// 				type: 'primary',
+		// 				url: '/event/building-blocks-2024',
+		// 			},
+		// 		],
+		// 	},
+		// },
 		// {
 		// 	component: CarouselCard,
 		// 	props: {
