@@ -14,25 +14,30 @@
 	import FeaturedPlaylist from '../components/Playlists/FeaturedPlaylist.svelte';
 	import FeaturedPlaylistRanked from '../components/Playlists/FeaturedPlaylistRanked.svelte';
 
-	export let page = null;
+	export let page = 1;
 
 	const account = createAccountStore();
 
 	let itemsPerPage = 10;
-	let currentPage = 0;
-	let totalItems = 20;
+	let currentPage = page;
+	let previousPage = 0;
+	let totalItems = 10 * page + 1;
 
 	function onPageChanged(event) {
-		currentPage = event.detail.page;
+		previousPage = currentPage;
+		currentPage = event.detail.page + 1;
+
+		navigate(`/playlists/featured/${currentPage}`);
 	}
 
 	var playlists = [];
 
 	function fetchPlaylists(itemsPerPage, page) {
-		fetch(`${BL_API_URL}playlists/featured?page=${page}&itemsPerPage=${itemsPerPage}`)
+		fetch(`${BL_API_URL}playlists/featured/paged?page=${page}&count=${itemsPerPage}`)
 			.then(res => res.json())
 			.then(data => {
-				playlists = data;
+				playlists = data.data;
+				totalItems = data.metadata.total;
 			});
 	}
 
@@ -92,13 +97,13 @@
 	</div>
 	{#if playlists?.length}
 		<div class="playlists-container">
-			{#each playlists as playlist, pageIdx}
-				<FeaturedPlaylist {playlist} />
+			{#each playlists as playlist, idx (playlist?.id)}
+				<FeaturedPlaylist {playlist} {idx} animationSign={currentPage >= previousPage ? 1 : -1} />
 			{/each}
 		</div>
 	{/if}
 
-	<Pager bind:currentPage bind:itemsPerPage {totalItems} on:page-changed={onPageChanged} />
+	<Pager currentPage={currentPage - 1} {itemsPerPage} {totalItems} itemsPerPageValues={null} on:page-changed={onPageChanged} />
 </ContentBox>
 
 <MetaTags

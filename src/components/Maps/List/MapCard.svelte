@@ -149,7 +149,7 @@
 					bottomContainerObserver.disconnect();
 				}
 			}
-		}, 50);
+		}, 100);
 	}
 
 	onMount(() => {
@@ -338,19 +338,23 @@
 						<div class="header-container" bind:this={headerContainer}>
 							<div class="header-top-part">
 								<h1 class="song-title">
-									<span class="name" title="Song name">{name} </span>
+									<span class="name {$configStore?.leaderboardPreferences?.showSubtitleInHeader ? 'single-line' : ''}" title="Song name"
+										>{name}
+									</span>
 									{#if $configStore?.leaderboardPreferences?.showSubtitleInHeader && song.subName}
 										<span class="subname">{song.subName}</span>
 									{/if}
 								</h1>
 
 								<div class="title-container">
-									<span class="author" title="Song author name">{song.author}</span>
+									<span
+										class="author {$configStore?.leaderboardPreferences?.showSubtitleInHeader ? 'single-line' : ''}"
+										title="Song author name">{song.author}</span>
 								</div>
 							</div>
 
 							<div class="mapper-and-statuses">
-								<MapperList {song} maxHeight="2.2em" fontSize="0.9em" />
+								<MapperList {song} maxHeight="2.2em" fontSize="0.9em" noArrow={true} />
 								<div class="song-statuses" class:is-hovered={isHovered}>
 									{#if status && status != DifficultyStatus.unranked && status != DifficultyStatus.unrankable}
 										<SongStatus songStatus={wrapBLStatus(status)} />
@@ -364,7 +368,7 @@
 							</div>
 						</div>
 					</a>
-					<div class="icons-container">
+					<div class="icons-container" class:is-hovered={isHovered}>
 						<Icons {song} icons={['playlist', 'bsr', 'bs', 'oneclick']} />
 					</div>
 				</div>
@@ -430,6 +434,14 @@
 		opacity: 0;
 		pointer-events: none;
 	}
+
+	/* .map-card-wrapper:hover .root-cinematics {
+		opacity: 0.2;
+	} */
+
+	/* .map-card-wrapper:hover .icons-container {
+		display: block;
+	} */
 
 	.map-card {
 		position: relative;
@@ -590,8 +602,10 @@
 		display: flex;
 		justify-content: space-between;
 		flex: 1;
-		min-height: 9em;
 		z-index: 1;
+		user-select: text;
+		-webkit-user-select: text;
+		-webkit-user-drag: none;
 	}
 
 	.preview-icon-container-hovered {
@@ -616,6 +630,11 @@
 		width: fit-content;
 		margin-top: 0.25em;
 		transform: scale(1.1);
+		display: none;
+	}
+
+	.icons-container.is-hovered {
+		display: block;
 	}
 
 	.version-selector-container {
@@ -626,6 +645,10 @@
 	.header .song-title {
 		color: inherit !important;
 		margin-bottom: 0;
+		display: flex;
+		align-items: center;
+		column-gap: 0.5em;
+		flex-wrap: wrap;
 	}
 
 	.header h1 {
@@ -691,6 +714,13 @@
 		word-break: break-word;
 	}
 
+	.single-line {
+		width: 14em;
+		display: block;
+		overflow: hidden;
+		white-space: nowrap;
+	}
+
 	.diff-status {
 		color: white;
 	}
@@ -716,8 +746,8 @@
 		justify-content: start;
 		flex-direction: column;
 		gap: 0.2em;
-		height: fit-content;
-		mask-image: linear-gradient(180deg, white 0%, white 8em, transparent);
+		height: 8em;
+		mask-image: linear-gradient(180deg, white 0%, white 6.5em, transparent 7.5em);
 	}
 
 	.header-top-part {
@@ -741,8 +771,13 @@
 	.mapper-and-statuses {
 		display: flex;
 		flex-direction: column;
-		gap: 0.4em;
+		flex-wrap: wrap;
+		row-gap: 0.1em;
+		column-gap: 0.3em;
 		font-size: 0.9em;
+		flex: 1 2em;
+		justify-content: flex-start;
+		align-content: baseline;
 	}
 
 	.song-statuses {
@@ -750,6 +785,7 @@
 		display: flex;
 		gap: 0.2em;
 		flex-wrap: wrap;
+		margin-top: 0.3em;
 	}
 
 	.cinematics {
@@ -927,7 +963,8 @@
 		}
 
 		.header-container {
-			min-height: unset;
+			height: 7em;
+			mask-image: linear-gradient(180deg, white 0%, white 5.5em, transparent 6.5em);
 		}
 
 		.main-container {

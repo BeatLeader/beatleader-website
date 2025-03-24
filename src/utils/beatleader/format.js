@@ -1402,6 +1402,11 @@ export function getSongSortingValue(song, diff, sortingKey) {
 		return `${total} vote${total !== 1 ? 's' : ''}`;
 	}
 
+	if (sortingKey == 'upvotes') {
+		const upvotes = song.upvotes;
+		return `${upvotes} vote${upvotes !== 1 ? 's' : ''}`;
+	}
+
 	if (sortingKey == 'playcount' || sortingKey == 'plays') {
 		if (diff) {
 			return `${diff.plays} play${diff.plays !== 1 ? 's' : ''}`;

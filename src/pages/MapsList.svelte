@@ -1672,7 +1672,6 @@
 			padding: 0.5em;
 			left: 0;
 			width: 100%;
-			height: 87%;
 		}
 
 		.maps-box {

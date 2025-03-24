@@ -6,6 +6,7 @@
 	let topPlayedToday = [];
 	let topPlayedThisWeek = [];
 	let topVotedNewMaps = [];
+	let topBeatSaverTrending = [];
 
 	let unixNow = Math.floor(Date.now() / 1000);
 
@@ -44,6 +45,15 @@
 				topVotedNewMaps = data.data;
 				for (let i = 0; i < topVotedNewMaps.length; i++) {
 					topVotedNewMaps[i].index = i;
+				}
+			});
+
+		fetch(`${BL_API_URL}maps/trending/beatsaver`)
+			.then(res => res.json())
+			.then(data => {
+				topBeatSaverTrending = data.data.slice(0, 5);
+				for (let i = 0; i < topBeatSaverTrending.length; i++) {
+					topBeatSaverTrending[i].index = i;
 				}
 			});
 	}
@@ -96,15 +106,17 @@
 			</div>
 		</ContentBox>
 		<ContentBox cls="maps-trending-section-box">
-			<a href="/maps/all/1?date_from={unixOneMonthAgo}&date_range=upload&sortBy=voting" class="maps-trending-section-header">
-				<span class="maps-trending-section-title">BeatSaver Vote Growing</span>
+			<a
+				href="https://beatsaver.com/?order=Rating&from={new Date(unixOneWeekAgo * 1000).toISOString()}"
+				class="maps-trending-section-header">
+				<span class="maps-trending-section-title">BeatSaver Trending</span>
 				<i class="fas fa-arrow-right"></i>
 			</a>
 			<div class="maps-trending-list darkened-background">
-				{#each topVotedNewMaps as map, idx (map.index)}
+				{#each topBeatSaverTrending as map, idx (map.index)}
 					<div class="maps-trending-section-map {idx != 0 ? 'maps-trending-section-map-not-first' : ''}">
 						<div class="maps-trending-section-map-number">{idx + 1}.</div>
-						<MapCard {idx} {map} sortBy="voting" />
+						<MapCard {idx} {map} sortBy="upvotes" />
 					</div>
 				{/each}
 			</div>

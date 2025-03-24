@@ -5,6 +5,7 @@
 	export let song;
 	export let maxHeight = '4.5em';
 	export let fontSize = '1em';
+	export let noArrow = false;
 
 	let lessInAuthorName = false;
 	let moreInAuthorName = false;
@@ -68,7 +69,8 @@
 		style="max-height: {maxHeight}; font-size: {fontSize}"
 		bind:this={badgeContainer}
 		class:expanded={isExpanded}
-		class:expandable={isOverflowing && !isExpanded}>
+		class:expandable={isOverflowing && !isExpanded}
+		class:no-arrow={noArrow}>
 		{#if moreInAuthorName && authorNameMockMapper}
 			<Mapper mapper={authorNameMockMapper} />
 		{/if}
@@ -81,7 +83,7 @@
 				class:higher-opacity={lessInAuthorName && !isVariousMappers}
 				title="Mapped by: {song.mapper}" />
 		{/if}
-		{#if isOverflowing || isExpanded}
+		{#if !noArrow && (isOverflowing || isExpanded)}
 			<div class="expand-button" class:inverse={isExpanded} on:click={toggleExpansion}>
 				<i class="fa-solid fa-chevron-down"></i>
 			</div>
@@ -102,6 +104,11 @@
 		flex-wrap: wrap;
 		overflow-y: hidden;
 		padding-right: 1.25em;
+	}
+
+	.no-arrow {
+		width: fit-content;
+		padding-right: 0;
 	}
 
 	.expanded {
