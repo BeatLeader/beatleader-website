@@ -102,7 +102,7 @@
 		height: 100%;
 		gap: 0.3em;
 		flex-wrap: wrap;
-		overflow-y: hidden;
+		overflow: hidden;
 		padding-right: 1.25em;
 	}
 
