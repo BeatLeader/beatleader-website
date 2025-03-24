@@ -314,7 +314,7 @@
 			on:focus={() => handleHover(true, true)}
 			on:blur={() => handleHover(false, true)}>
 			<div class="cinematics root-cinematics" style={isHovered ? `height: ${mapCardRect.height}px;` : ''} class:is-hovered={isHovered}>
-				<div class="cinematics-canvas">
+				<div class="cinematics-canvas root-canvas">
 					<canvas bind:this={rootcinematicsCanvas} style="position: absolute; width: 100%; height: 100%; opacity: 0" />
 				</div>
 			</div>
@@ -783,7 +783,7 @@
 	.song-statuses {
 		color: #ffffffab;
 		display: flex;
-		gap: 0.2em;
+		gap: 0.3em;
 		flex-wrap: wrap;
 		margin-top: 0.3em;
 	}
@@ -806,6 +806,10 @@
 		transform: scale(1.1) translateZ(0);
 		width: 100%;
 		height: 100%;
+	}
+
+	.root-canvas {
+		transform: scale(0.9) translateZ(0);
 	}
 
 	.status-and-type {

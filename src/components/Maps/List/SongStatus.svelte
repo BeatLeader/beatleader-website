@@ -19,9 +19,9 @@
 
 <style>
 	.song-status {
-		border-radius: 0.7em;
-		padding: 0.2em;
-		color: #000000b3;
+		border-radius: 0.6em;
+		padding: 0.1em 0.18em;
+		color: #2e383c;
 		font-size: 0.8em;
 		display: flex;
 		align-items: center;

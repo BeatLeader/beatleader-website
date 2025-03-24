@@ -123,6 +123,7 @@ export const DEFAULT_CONFIG = {
 		showClanCaptureInHeader: true,
 		showClanCaptureInList: true,
 		alwaysShowAuthorHint: false,
+		showSubtitleInHeader: true,
 
 		show: {
 			avatar: true,
