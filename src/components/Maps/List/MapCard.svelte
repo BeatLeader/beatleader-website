@@ -298,10 +298,40 @@
 	}
 
 	$: hash && handlePlay($songPlayerStore?.currentHash, hash);
+
+	let tooltipVisible = false;
+	let tooltipX = 0;
+	let tooltipY = 0;
+	let titleTextElement;
+
+	function showTooltip() {
+		// Only show tooltip if the content is overflowing
+		if (titleTextElement && titleTextElement.scrollWidth > titleTextElement.clientWidth) {
+			const rect = titleTextElement.getBoundingClientRect();
+
+			// Position tooltip centered above the text
+			tooltipX = rect.left + rect.width / 2;
+			tooltipY = rect.top - 30; // 30px above the element
+
+			tooltipVisible = true;
+		}
+	}
+
+	function hideTooltip() {
+		tooltipVisible = false;
+	}
 </script>
 
 {#if song}
 	{#if !forcePlaceholder && !song.placeholder}
+		{#if tooltipVisible}
+			<div class="title-tooltip" style="left: {tooltipX}px; top: {tooltipY}px;">
+				{name}
+				{#if $configStore?.leaderboardPreferences?.showSubtitleInHeader && song.subName}
+					<span class="tooltip-subname">{song.subName}</span>
+				{/if}
+			</div>
+		{/if}
 		<div
 			class="map-card-wrapper"
 			class:transparent={song.transparent}
@@ -338,8 +368,8 @@
 						<div class="header-container" bind:this={headerContainer}>
 							<div class="header-top-part">
 								<h1 class="song-title">
-									<div class="title-text">
-										<span class="name" title="Song name">{name}</span>
+									<div class="title-text" on:mouseenter={showTooltip} on:mouseleave={hideTooltip} bind:this={titleTextElement}>
+										<span class="name">{name}</span>
 										{#if $configStore?.leaderboardPreferences?.showSubtitleInHeader && song.subName}
 											<span class="subname">{song.subName}</span>
 										{/if}
@@ -767,13 +797,24 @@
 		width: 100%;
 	}
 
-	.song-statuses {
-		color: #ffffffab;
-		display: flex;
-		gap: 0.3em;
-		flex-wrap: nowrap;
-		margin-top: 0.3em;
-		overflow: hidden;
+	.title-tooltip {
+		position: fixed;
+		z-index: 100;
+		background: rgba(0, 0, 0, 0.8);
+		color: white;
+		padding: 0.3em 0.5em;
+		border-radius: 0.6em;
+		pointer-events: none;
+		white-space: normal;
+		width: max-content;
+		max-width: 90vw;
+		transform: translateX(-50%);
+	}
+
+	.tooltip-subname {
+		opacity: 0.8;
+		font-size: 0.9em;
+		margin-left: 0.05em;
 	}
 
 	.cinematics {
