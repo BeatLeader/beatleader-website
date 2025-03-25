@@ -51,6 +51,26 @@
 
 {#if qualification}
 	<div class="qualification-description">
+		<span>
+			<b><i class="fa fa-check" /> Nominated by:</b>
+		</span>
+
+		<div class="player-info">
+			<Avatar player={nominator} />
+			<PlayerNameWithFlag
+				player={nominator}
+				type={'beatleader/date'}
+				hideFlag={true}
+				on:click={nominator ? () => navigateToPlayer(nominator.playerId) : null} />
+
+			<div class="timeset">
+				<span style="color: {getTimeStringColor(qualification?.timeset)}; ">
+					{formatDateRelative(dateFromUnix(qualification?.timeset))}
+				</span>
+			</div>
+		</div>
+	</div>
+	<div class="qualification-description">
 		{#if qualification?.criteriaMet != 0}
 			{#if qualification?.criteriaMet == 1}
 				<b><i class="fa fa-check" /> Criteria checked by:</b>
@@ -64,7 +84,7 @@
 				<PlayerNameWithFlag player={criteriaChecker} on:click={criteriaChecker ? () => navigateToPlayer(criteriaChecker.playerId) : null} />
 
 				<div class="timeset">
-					<span style="color: {getTimeStringColor(qualification?.timeset)}; ">
+					<span style="color: {getTimeStringColor(qualification?.criteriaTimeset)}; ">
 						{formatDateRelative(dateFromUnix(qualification?.criteriaTimeset))}
 					</span>
 				</div>
