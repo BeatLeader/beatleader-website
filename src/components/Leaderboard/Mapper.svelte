@@ -51,6 +51,7 @@
 		padding-right: 0.5em;
 		color: white;
 		background-color: #20202073;
+		min-width: fit-content;
 	}
 
 	.mapper-avatar {

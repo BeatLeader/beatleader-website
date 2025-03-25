@@ -6,6 +6,8 @@
 	export let maxHeight = '4.5em';
 	export let fontSize = '1em';
 	export let noArrow = false;
+	export let rootElement;
+	export let tooltip = false;
 
 	let lessInAuthorName = false;
 	let moreInAuthorName = false;
@@ -61,6 +63,7 @@
 		setTimeout(() => {
 			checkOverflow(badgeContainer);
 		}, 400);
+	$: rootElement = badgeContainer;
 </script>
 
 {#if song.mappers?.length}
@@ -70,7 +73,8 @@
 		bind:this={badgeContainer}
 		class:expanded={isExpanded}
 		class:expandable={isOverflowing && !isExpanded}
-		class:no-arrow={noArrow}>
+		class:no-arrow={noArrow}
+		class:tooltip>
 		{#if moreInAuthorName && authorNameMockMapper}
 			<Mapper mapper={authorNameMockMapper} />
 		{/if}
@@ -109,6 +113,12 @@
 	.no-arrow {
 		width: fit-content;
 		padding-right: 0;
+		white-space: nowrap;
+		flex-wrap: nowrap;
+	}
+
+	.tooltip {
+		flex-wrap: wrap;
 	}
 
 	.expanded {

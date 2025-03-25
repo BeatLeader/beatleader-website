@@ -305,17 +305,33 @@
 	let tooltipType = '';
 	let titleTextElement;
 	let authorElement;
+	let mappersElement;
 
 	function showTooltip(type) {
-		let element = type === 'title' ? titleTextElement : authorElement;
+		let element;
+		let offset = 5;
+		switch (type) {
+			case 'title':
+				element = titleTextElement;
+				break;
+			case 'author':
+				element = authorElement;
+				break;
+			case 'mappers':
+				element = mappersElement;
+				offset = 0;
+				break;
+			default:
+				element = titleTextElement;
+				break;
+		}
 
 		// Only show tooltip if the content is overflowing
 		if (element && element.scrollWidth > element.clientWidth) {
 			const rect = element.getBoundingClientRect();
 
 			tooltipX = rect.left + rect.width / 2;
-
-			tooltipY = rect.top + 5;
+			tooltipY = rect.top + offset;
 
 			tooltipType = type;
 			tooltipVisible = true;
@@ -338,6 +354,8 @@
 					{/if}
 				{:else if tooltipType === 'author'}
 					<span class="tooltip-author">{song.author}</span>
+				{:else if tooltipType === 'mappers'}
+					<MapperList {song} maxHeight="7em" fontSize="0.9em" noArrow={true} tooltip={true} />
 				{/if}
 			</div>
 		{/if}
@@ -395,8 +413,8 @@
 								</div>
 							</div>
 
-							<div class="mapper-container">
-								<MapperList {song} maxHeight="2.2em" fontSize="0.9em" noArrow={true} />
+							<div class="mapper-container" on:mouseenter={() => showTooltip('mappers')} on:mouseleave={hideTooltip}>
+								<MapperList {song} maxHeight="2.2em" fontSize="0.9em" noArrow={true} bind:rootElement={mappersElement} />
 							</div>
 							<div class="status-container" class:is-hovered={isHovered}>
 								{#if status && status != DifficultyStatus.unranked && status != DifficultyStatus.unrankable}
@@ -799,6 +817,7 @@
 		overflow: hidden;
 		width: 100%;
 		margin-top: -0.1em;
+		mask-image: linear-gradient(90deg, white 0%, white 80%, transparent 100%);
 	}
 
 	.status-container {
