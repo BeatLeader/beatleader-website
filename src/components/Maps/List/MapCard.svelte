@@ -15,6 +15,7 @@
 	import SongPlayer from './SongPlayer.svelte';
 	import {songPlayerStore} from '../../../stores/songPlayer';
 	import {cinematicsStore} from '../../../stores/cinematics';
+	import MapRequirements from './MapRequirements.svelte';
 
 	export let map;
 	export let sortBy = 'stars';
@@ -30,6 +31,8 @@
 	}
 
 	let status = null;
+	let requirements = null;
+
 	let isHovered = false;
 
 	let mapCardElement;
@@ -56,6 +59,14 @@
 		return song.difficulties[0].status;
 	}
 
+	function calculateRequirements(song) {
+		var result = 0;
+		for (const difficulty of song.difficulties) {
+			result |= difficulty.requirements;
+		}
+		return result;
+	}
+
 	let song = null;
 	let hash = null;
 	let name = null;
@@ -74,6 +85,7 @@
 		} else {
 			if (song.difficulties) {
 				status = calculateStatus(song);
+				requirements = calculateRequirements(song);
 			}
 			hash = song.hash;
 			name = song.name;
@@ -390,6 +402,11 @@
 							: ''}>
 						<div class="sort-value-background" class:is-hovered={sortValue && isHovered}></div>
 					</div>
+					{#if requirements && isHovered}
+						<div class="requirements-icons">
+							<MapRequirements type={requirements} />
+						</div>
+					{/if}
 
 					<a class="main-container" href={`/leaderboard/global/${song.difficulties?.[0]?.leaderboardId ?? song.id}`}>
 						<div class="header-container" bind:this={headerContainer}>
@@ -596,9 +613,27 @@
 		background-color: black;
 	}
 
+	.requirements-icons {
+		position: absolute;
+		top: 0em;
+		width: 2em;
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: start;
+		align-items: center;
+		gap: 0.2em;
+		z-index: 2;
+		padding-top: 0.7em;
+	}
+
+	:global(.requirements-icons:has(> :nth-child(4))) {
+		width: 4em;
+	}
+
 	.sort-value {
 		z-index: 2;
 		font-weight: 600;
+		font-size: 0.9em;
 	}
 
 	.sort-value-background {
@@ -1008,6 +1043,10 @@
 			width: calc(100vw - 9.7em);
 		}
 
+		.sort-value {
+			font-size: 0.8em;
+		}
+
 		.desktop-only {
 			display: none;
 		}
@@ -1076,6 +1115,11 @@
 
 		.main-container {
 			font-size: 0.8em;
+		}
+
+		.requirements-icons {
+			padding-top: 0.4em;
+			left: 0.1em;
 		}
 
 		.header h1 span.name {
