@@ -298,10 +298,67 @@
 	}
 
 	$: hash && handlePlay($songPlayerStore?.currentHash, hash);
+
+	let tooltipVisible = false;
+	let tooltipX = 0;
+	let tooltipY = 0;
+	let tooltipType = '';
+	let titleTextElement;
+	let authorElement;
+	let mappersElement;
+
+	function showTooltip(type) {
+		let element;
+		let offset = 5;
+		switch (type) {
+			case 'title':
+				element = titleTextElement;
+				break;
+			case 'author':
+				element = authorElement;
+				break;
+			case 'mappers':
+				element = mappersElement;
+				offset = 0;
+				break;
+			default:
+				element = titleTextElement;
+				break;
+		}
+
+		// Only show tooltip if the content is overflowing
+		if (element && element.scrollWidth > element.clientWidth) {
+			const rect = element.getBoundingClientRect();
+
+			tooltipX = rect.left + rect.width / 2;
+			tooltipY = rect.top + offset;
+
+			tooltipType = type;
+			tooltipVisible = true;
+		}
+	}
+
+	function hideTooltip() {
+		tooltipVisible = false;
+	}
 </script>
 
 {#if song}
 	{#if !forcePlaceholder && !song.placeholder}
+		{#if tooltipVisible}
+			<div class="title-tooltip" style="left: {tooltipX}px; bottom: calc(100vh - {tooltipY}px + 5px);">
+				{#if tooltipType === 'title'}
+					{name}
+					{#if $configStore?.leaderboardPreferences?.showSubtitleInHeader && song.subName}
+						<span class="tooltip-subname">{song.subName}</span>
+					{/if}
+				{:else if tooltipType === 'author'}
+					<span class="tooltip-author">{song.author}</span>
+				{:else if tooltipType === 'mappers'}
+					<MapperList {song} maxHeight="7em" fontSize="0.9em" noArrow={true} tooltip={true} />
+				{/if}
+			</div>
+		{/if}
 		<div
 			class="map-card-wrapper"
 			class:transparent={song.transparent}
@@ -314,7 +371,7 @@
 			on:focus={() => handleHover(true, true)}
 			on:blur={() => handleHover(false, true)}>
 			<div class="cinematics root-cinematics" style={isHovered ? `height: ${mapCardRect.height}px;` : ''} class:is-hovered={isHovered}>
-				<div class="cinematics-canvas">
+				<div class="cinematics-canvas root-canvas">
 					<canvas bind:this={rootcinematicsCanvas} style="position: absolute; width: 100%; height: 100%; opacity: 0" />
 				</div>
 			</div>
@@ -338,33 +395,36 @@
 						<div class="header-container" bind:this={headerContainer}>
 							<div class="header-top-part">
 								<h1 class="song-title">
-									<span class="name {$configStore?.leaderboardPreferences?.showSubtitleInHeader ? 'single-line' : ''}" title="Song name"
-										>{name}
-									</span>
-									{#if $configStore?.leaderboardPreferences?.showSubtitleInHeader && song.subName}
-										<span class="subname">{song.subName}</span>
-									{/if}
+									<div
+										class="title-text"
+										on:mouseenter={() => showTooltip('title')}
+										on:mouseleave={hideTooltip}
+										bind:this={titleTextElement}>
+										<span class="name">{name}</span>
+										{#if $configStore?.leaderboardPreferences?.showSubtitleInHeader && song.subName}
+											<span class="subname">{song.subName}</span>
+										{/if}
+									</div>
 								</h1>
 
 								<div class="title-container">
-									<span
-										class="author {$configStore?.leaderboardPreferences?.showSubtitleInHeader ? 'single-line' : ''}"
-										title="Song author name">{song.author}</span>
+									<span class="author" on:mouseenter={() => showTooltip('author')} on:mouseleave={hideTooltip} bind:this={authorElement}
+										>{song.author}</span>
 								</div>
 							</div>
 
-							<div class="mapper-and-statuses">
-								<MapperList {song} maxHeight="2.2em" fontSize="0.9em" noArrow={true} />
-								<div class="song-statuses" class:is-hovered={isHovered}>
-									{#if status && status != DifficultyStatus.unranked && status != DifficultyStatus.unrankable}
-										<SongStatus songStatus={wrapBLStatus(status)} />
-									{/if}
-									{#if song.externalStatuses}
-										{#each song.externalStatuses as songStatus}
-											<SongStatus {songStatus} />
-										{/each}
-									{/if}
-								</div>
+							<div class="mapper-container" on:mouseenter={() => showTooltip('mappers')} on:mouseleave={hideTooltip}>
+								<MapperList {song} maxHeight="2.2em" fontSize="0.9em" noArrow={true} bind:rootElement={mappersElement} />
+							</div>
+							<div class="status-container" class:is-hovered={isHovered}>
+								{#if status && status != DifficultyStatus.unranked && status != DifficultyStatus.unrankable}
+									<SongStatus songStatus={wrapBLStatus(status)} />
+								{/if}
+								{#if song.externalStatuses}
+									{#each song.externalStatuses as songStatus}
+										<SongStatus {songStatus} />
+									{/each}
+								{/if}
 							</div>
 						</div>
 					</a>
@@ -489,13 +549,11 @@
 	}
 	.header {
 		padding: 0.5em;
-
 		color: var(--alternate);
 		display: flex;
 		align-items: flex-start;
 		justify-content: start !important;
 		gap: 0.8em;
-
 		width: 32em;
 		flex: 1;
 	}
@@ -507,7 +565,7 @@
 	.bottom-container {
 		display: flex;
 		flex-wrap: wrap;
-		padding: 0.4em;
+		padding: 0.3em;
 		z-index: 1;
 		position: relative;
 		background-color: #0000004f;
@@ -606,6 +664,7 @@
 		user-select: text;
 		-webkit-user-select: text;
 		-webkit-user-drag: none;
+		overflow: hidden;
 	}
 
 	.preview-icon-container-hovered {
@@ -645,30 +704,34 @@
 	.header .song-title {
 		color: inherit !important;
 		margin-bottom: 0;
-		display: flex;
-		align-items: center;
-		column-gap: 0.5em;
-		flex-wrap: wrap;
+		width: 100%;
+	}
+
+	.header .song-title .title-text {
+		display: block;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		width: 100%;
+		color: #ffffff93 !important;
 	}
 
 	.header h1 {
 		margin-bottom: 0.2em;
+		max-width: 100%;
+		overflow: hidden;
 	}
 
 	.header h1 span.name {
 		color: #ffffffcc !important;
-		display: -webkit-box;
-		box-orient: vertical;
-		line-clamp: 2;
-		-webkit-box-orient: vertical;
-		-webkit-line-clamp: 2;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: normal;
-		word-break: break-word;
 		font-size: 1.3em;
 		font-weight: 600;
 		margin-top: -0.2em;
+	}
+
+	.subname {
+		color: #ffffff93;
+		font-size: 0.8em;
 	}
 
 	.map-cover {
@@ -686,39 +749,13 @@
 		justify-content: center;
 	}
 
-	.subname {
-		color: #ffffff93;
-		font-size: 0.8em;
-		display: -webkit-box;
-		box-orient: vertical;
-		line-clamp: 2;
-		-webkit-box-orient: vertical;
-		-webkit-line-clamp: 2;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: normal;
-		word-break: break-word;
-	}
-
 	.author {
 		color: #ffffffa3;
 		font-size: 1em;
-		display: -webkit-box;
-		box-orient: vertical;
-		line-clamp: 2;
-		-webkit-box-orient: vertical;
-		-webkit-line-clamp: 2;
 		overflow: hidden;
 		text-overflow: ellipsis;
-		white-space: normal;
-		word-break: break-word;
-	}
-
-	.single-line {
-		width: 14em;
-		display: block;
-		overflow: hidden;
 		white-space: nowrap;
+		max-width: 100%;
 	}
 
 	.diff-status {
@@ -746,8 +783,9 @@
 		justify-content: start;
 		flex-direction: column;
 		gap: 0.2em;
-		height: 8em;
-		mask-image: linear-gradient(180deg, white 0%, white 6.5em, transparent 7.5em);
+		width: 100%;
+		overflow: hidden;
+		height: 7em;
 	}
 
 	.header-top-part {
@@ -755,6 +793,8 @@
 		flex-direction: column;
 		justify-content: flex-start;
 		z-index: 1;
+		width: 100%;
+		overflow: hidden;
 	}
 
 	.header-bottom-part {
@@ -766,26 +806,53 @@
 		justify-content: center;
 		flex-direction: column;
 		grid-gap: 0.2em;
+		width: 100%;
+		overflow: hidden;
 	}
 
-	.mapper-and-statuses {
+	.mapper-container {
 		display: flex;
-		flex-direction: column;
-		flex-wrap: wrap;
-		row-gap: 0.1em;
-		column-gap: 0.3em;
 		font-size: 0.9em;
-		flex: 1 2em;
-		justify-content: flex-start;
-		align-content: baseline;
+		white-space: nowrap;
+		overflow: hidden;
+		width: 100%;
+		margin-top: -0.1em;
+		mask-image: linear-gradient(90deg, white 0%, white 80%, transparent 100%);
 	}
 
-	.song-statuses {
-		color: #ffffffab;
+	.status-container {
 		display: flex;
-		gap: 0.2em;
-		flex-wrap: wrap;
-		margin-top: 0.3em;
+		gap: 0.3em;
+		font-size: 0.9em;
+		justify-content: flex-start;
+		margin-top: 0.1em;
+		white-space: nowrap;
+		overflow: hidden;
+		width: 100%;
+	}
+
+	.title-tooltip {
+		position: fixed;
+		z-index: 100;
+		background: rgba(0, 0, 0, 0.8);
+		color: white;
+		padding: 0.3em 0.5em;
+		border-radius: 0.6em;
+		pointer-events: none;
+		white-space: normal;
+		width: max-content;
+		max-width: 24vw;
+		transform: translateX(-50%);
+	}
+
+	.tooltip-subname {
+		opacity: 0.8;
+		font-size: 0.9em;
+		margin-left: 0.05em;
+	}
+
+	.tooltip-author {
+		color: #ffffffee;
 	}
 
 	.cinematics {
@@ -808,9 +875,15 @@
 		height: 100%;
 	}
 
+	.root-canvas {
+		transform: scale(0.9) translateZ(0);
+	}
+
 	.status-and-type {
 		display: flex;
 		gap: 0.6em;
+		overflow: hidden;
+		white-space: nowrap;
 	}
 
 	:global(.title-container .stats) {
@@ -846,13 +919,14 @@
 
 	.requirements {
 		display: flex;
-		flex-wrap: wrap;
+		flex-wrap: nowrap;
 		justify-content: center;
 		align-items: center;
 		gap: 0.2em;
 		row-gap: 0.5em;
 		padding-top: 0.7em;
 		padding-bottom: 0.7em;
+		overflow: hidden;
 	}
 
 	.header small {
@@ -882,10 +956,11 @@
 		align-items: center;
 		align-self: stretch;
 		justify-content: center;
-		flex-wrap: wrap;
+		flex-wrap: nowrap;
 		flex-direction: column;
 		padding: 0.5em;
 		min-width: fit-content;
+		overflow: hidden;
 	}
 
 	.mobile-triangle {
@@ -962,11 +1037,6 @@
 			display: none;
 		}
 
-		.header-container {
-			height: 7em;
-			mask-image: linear-gradient(180deg, white 0%, white 5.5em, transparent 6.5em);
-		}
-
 		.main-container {
 			min-height: unset;
 		}
@@ -981,7 +1051,7 @@
 		}
 
 		.song-statuses {
-			flex-wrap: wrap;
+			flex-wrap: nowrap;
 		}
 
 		.author {

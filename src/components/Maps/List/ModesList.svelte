@@ -134,7 +134,7 @@
 	.mode-container {
 		border-radius: 12px;
 		background-color: #00000069;
-		padding: 0.15em 0.2em 0.15em 0.4em;
+		padding: 0.25em 0.2em 0.25em 0.4em;
 		display: flex;
 		gap: 0.2em;
 		align-items: center;
