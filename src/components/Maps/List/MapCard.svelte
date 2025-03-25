@@ -565,7 +565,7 @@
 	.bottom-container {
 		display: flex;
 		flex-wrap: wrap;
-		padding: 0.4em;
+		padding: 0.3em;
 		z-index: 1;
 		position: relative;
 		background-color: #0000004f;
