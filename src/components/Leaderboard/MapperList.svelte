@@ -129,6 +129,7 @@
 	.map-name-info {
 		color: white;
 		opacity: 0.25;
+		align-self: center;
 	}
 
 	.higher-opacity {

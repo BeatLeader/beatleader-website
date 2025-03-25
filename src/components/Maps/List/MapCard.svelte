@@ -798,6 +798,7 @@
 		white-space: nowrap;
 		overflow: hidden;
 		width: 100%;
+		margin-top: -0.1em;
 	}
 
 	.status-container {
@@ -805,7 +806,7 @@
 		gap: 0.3em;
 		font-size: 0.9em;
 		justify-content: flex-start;
-		margin-top: 0.05em;
+		margin-top: 0.1em;
 		white-space: nowrap;
 		overflow: hidden;
 		width: 100%;
