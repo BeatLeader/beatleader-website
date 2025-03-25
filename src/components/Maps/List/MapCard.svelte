@@ -302,17 +302,22 @@
 	let tooltipVisible = false;
 	let tooltipX = 0;
 	let tooltipY = 0;
+	let tooltipType = '';
 	let titleTextElement;
+	let authorElement;
 
-	function showTooltip() {
+	function showTooltip(type) {
+		let element = type === 'title' ? titleTextElement : authorElement;
+
 		// Only show tooltip if the content is overflowing
-		if (titleTextElement && titleTextElement.scrollWidth > titleTextElement.clientWidth) {
-			const rect = titleTextElement.getBoundingClientRect();
+		if (element && element.scrollWidth > element.clientWidth) {
+			const rect = element.getBoundingClientRect();
 
-			// Position tooltip centered above the text
 			tooltipX = rect.left + rect.width / 2;
-			tooltipY = rect.top - 30; // 30px above the element
 
+			tooltipY = rect.top + 5;
+
+			tooltipType = type;
 			tooltipVisible = true;
 		}
 	}
@@ -325,10 +330,14 @@
 {#if song}
 	{#if !forcePlaceholder && !song.placeholder}
 		{#if tooltipVisible}
-			<div class="title-tooltip" style="left: {tooltipX}px; top: {tooltipY}px;">
-				{name}
-				{#if $configStore?.leaderboardPreferences?.showSubtitleInHeader && song.subName}
-					<span class="tooltip-subname">{song.subName}</span>
+			<div class="title-tooltip" style="left: {tooltipX}px; bottom: calc(100vh - {tooltipY}px + 5px);">
+				{#if tooltipType === 'title'}
+					{name}
+					{#if $configStore?.leaderboardPreferences?.showSubtitleInHeader && song.subName}
+						<span class="tooltip-subname">{song.subName}</span>
+					{/if}
+				{:else if tooltipType === 'author'}
+					<span class="tooltip-author">{song.author}</span>
 				{/if}
 			</div>
 		{/if}
@@ -368,8 +377,12 @@
 						<div class="header-container" bind:this={headerContainer}>
 							<div class="header-top-part">
 								<h1 class="song-title">
-									<div class="title-text" on:mouseenter={showTooltip} on:mouseleave={hideTooltip} bind:this={titleTextElement}>
-										<span class="name">{name}</span>
+									<div
+										class="title-text"
+										on:mouseenter={() => showTooltip('title')}
+										on:mouseleave={hideTooltip}
+										bind:this={titleTextElement}>
+										<span class="name" title="Song name">{name}</span>
 										{#if $configStore?.leaderboardPreferences?.showSubtitleInHeader && song.subName}
 											<span class="subname">{song.subName}</span>
 										{/if}
@@ -377,7 +390,12 @@
 								</h1>
 
 								<div class="title-container">
-									<span class="author" title="Song author name">{song.author}</span>
+									<span
+										class="author"
+										title="Song author name"
+										on:mouseenter={() => showTooltip('author')}
+										on:mouseleave={hideTooltip}
+										bind:this={authorElement}>{song.author}</span>
 								</div>
 							</div>
 
@@ -751,9 +769,9 @@
 		justify-content: start;
 		flex-direction: column;
 		gap: 0.2em;
-		mask-image: linear-gradient(180deg, white 0%, white 6.5em, transparent 7.5em);
 		width: 100%;
 		overflow: hidden;
+		height: 7em;
 	}
 
 	.header-top-part {
@@ -791,7 +809,7 @@
 		gap: 0.3em;
 		font-size: 0.9em;
 		justify-content: flex-start;
-		margin-top: 0.2em;
+		margin-top: 0.05em;
 		white-space: nowrap;
 		overflow: hidden;
 		width: 100%;
@@ -807,7 +825,7 @@
 		pointer-events: none;
 		white-space: normal;
 		width: max-content;
-		max-width: 90vw;
+		max-width: 24vw;
 		transform: translateX(-50%);
 	}
 
@@ -815,6 +833,10 @@
 		opacity: 0.8;
 		font-size: 0.9em;
 		margin-left: 0.05em;
+	}
+
+	.tooltip-author {
+		color: #ffffffee;
 	}
 
 	.cinematics {
@@ -997,11 +1019,6 @@
 
 		:global(.player .clan-badges) {
 			display: none;
-		}
-
-		.header-container {
-			height: 7em;
-			mask-image: linear-gradient(180deg, white 0%, white 5.5em, transparent 6.5em);
 		}
 
 		.main-container {
