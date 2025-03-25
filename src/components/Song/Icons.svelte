@@ -8,7 +8,7 @@
 	import beatSaverSvg from '../../resources/beatsaver.svg';
 	import Button from '../Common/Button.svelte';
 	import Preview from '../Common/Preview.svelte';
-	import {capitalize, opt} from '../../utils/js';
+	import {capitalize, opt, decapitalizeFirstLetter} from '../../utils/js';
 	import {BL_ANALYZER_URL, BL_API_URL, BL_REPLAYS_URL} from '../../network/queues/beatleader/api-queue';
 	import PinIcon from '../Player/PinIcon.svelte';
 	import ScoreActionButtonsLayout from './ScoreActionButtonsLayout.svelte';
@@ -90,10 +90,6 @@
 	let beatSaverService = createBeatSaverService();
 	const account = createAccountStore();
 	const playlists = createPlaylistStore();
-
-	function decapitalizeFirstLetter(string) {
-		return string.charAt(0).toLowerCase() + string.slice(1);
-	}
 
 	function updateSongKey(song) {
 		if (!song) {
@@ -227,7 +223,7 @@
 			{#if $configStore?.preferences?.playlistOption == 'selected'}
 				{#if selectedPlaylist != null}
 					{#if playlistSong}
-						{#if !diffInfo}
+						{#if !diffInfo || (playlistEntries && playlistEntries.length == 1 && playlistEntries[0] == playlistKey)}
 							<Button
 								iconFa="fas fa-list-ul"
 								title="Remove from the {selectedPlaylist.playlistTitle}"

@@ -67,3 +67,7 @@ export function shallowEqual(object1, object2, exceptionKeys = []) {
 	}
 	return true;
 }
+
+export function decapitalizeFirstLetter(string) {
+	return string.charAt(0).toLowerCase() + string.slice(1);
+}

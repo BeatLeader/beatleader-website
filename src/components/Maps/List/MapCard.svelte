@@ -446,7 +446,7 @@
 						</div>
 					</a>
 					<div class="icons-container" class:is-hovered={isHovered}>
-						<Icons {song} icons={['playlist', 'bsr', 'bs', 'oneclick']} />
+						<Icons {song} icons={['preview', 'bsr', 'bs', 'oneclick']} />
 					</div>
 				</div>
 				<div class="bottom-container-background" class:is-hovered={isHovered} style="height: {bottomContainerHeight + 15}px;"></div>
@@ -468,16 +468,22 @@
 						<div class="song-player">
 							<SongPlayer {song} />
 						</div>
-						<div class="preview-icon-container-hovered">
-							<Icons {song} icons={['preview']} />
+						<div
+							class="mobile-chevron-container hovered mobile-only"
+							on:click={() => handleHover(false, true)}
+							on:keydown={() => handleHover(false, true)}>
+							<i class="fas fa-chevron-up"></i>
 						</div>
 					{/if}
 					<div class="modes-list-container" class:is-hovered={isHovered} on:scroll={handleScroll} bind:this={modesListContainer}>
 						<ModesList {song} {isHovered} {sortValue} {sortBy} />
 					</div>
 					{#if !isHovered}
-						<div class="preview-icon-container">
-							<Icons {song} icons={['preview']} />
+						<div
+							class="mobile-chevron-container mobile-only"
+							on:click={() => handleHover(true, true)}
+							on:keydown={() => handleHover(true, true)}>
+							<i class="fas fa-chevron-down"></i>
 						</div>
 					{/if}
 				</div>
@@ -562,7 +568,7 @@
 	}
 
 	.song-player {
-		width: 19em;
+		flex: 1;
 	}
 	.header {
 		padding: 0.5em;
@@ -702,7 +708,13 @@
 		overflow: hidden;
 	}
 
-	.preview-icon-container-hovered {
+	.mobile-chevron-container {
+		cursor: pointer;
+		pointer-events: auto;
+		color: #ffffffa1;
+	}
+
+	.mobile-chevron-container.hovered {
 		margin-left: 1em;
 		margin-top: -0.6em;
 	}
@@ -1041,6 +1053,7 @@
 
 		.song-player {
 			width: calc(100vw - 9.7em);
+			flex: unset;
 		}
 
 		.sort-value {
@@ -1115,6 +1128,7 @@
 
 		.main-container {
 			font-size: 0.8em;
+			max-width: 19em;
 		}
 
 		.requirements-icons {

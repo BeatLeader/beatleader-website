@@ -10,6 +10,7 @@
 		badgesDef,
 	} from '../../../utils/beatleader/format';
 	import Icons from '../../Song/Icons.svelte';
+	import {decapitalizeFirstLetter} from '../../../utils/js';
 	import SongScoreCompact from './SongScoreCompact.svelte';
 	import SongStatus from './SongStatus.svelte';
 	import {createEventDispatcher} from 'svelte';
@@ -101,7 +102,7 @@
 									</div>
 									<div class="score-and-icons">
 										<SongScoreCompact score={diff.myScore} />
-										<Icons {song} diffInfo={diff.diffInfo} icons={['playlist']} />
+										<Icons {song} diffInfo={{diff: diff.difficultyName, type: diff.modeName}} icons={['playlist']} />
 									</div>
 								</div>
 							{/if}
@@ -119,7 +120,7 @@
 		gap: 0.3em;
 		transition: all 0.3s ease-in-out;
 		overflow: hidden;
-		width: 20em;
+		width: 21.5em;
 		overflow: hidden;
 		mask-image: linear-gradient(90deg, white 0%, white 90%, transparent);
 	}
