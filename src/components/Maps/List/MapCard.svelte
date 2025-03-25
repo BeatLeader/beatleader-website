@@ -382,7 +382,7 @@
 										on:mouseenter={() => showTooltip('title')}
 										on:mouseleave={hideTooltip}
 										bind:this={titleTextElement}>
-										<span class="name" title="Song name">{name}</span>
+										<span class="name">{name}</span>
 										{#if $configStore?.leaderboardPreferences?.showSubtitleInHeader && song.subName}
 											<span class="subname">{song.subName}</span>
 										{/if}
@@ -390,12 +390,8 @@
 								</h1>
 
 								<div class="title-container">
-									<span
-										class="author"
-										title="Song author name"
-										on:mouseenter={() => showTooltip('author')}
-										on:mouseleave={hideTooltip}
-										bind:this={authorElement}>{song.author}</span>
+									<span class="author" on:mouseenter={() => showTooltip('author')} on:mouseleave={hideTooltip} bind:this={authorElement}
+										>{song.author}</span>
 								</div>
 							</div>
 
