@@ -197,23 +197,6 @@
 	}
 
 	$: console.log('IT HAPPENED', isHovered);
-
-	let isExpanded = false;
-	let transitionInProgress = false;
-
-	// Update the expanded state when hover state changes
-	$: {
-		if (isHovered && !isExpanded && !transitionInProgress) {
-			isExpanded = true;
-		} else if (!isHovered && isExpanded && !transitionInProgress) {
-			isExpanded = false;
-		}
-	}
-
-	// Function to handle transition start/end
-	function handleTransition(event) {
-		transitionInProgress = event.type === 'introstart' || event.type === 'outrostart';
-	}
 </script>
 
 {#if song}
