@@ -120,13 +120,14 @@
 	let containerHeight = 0;
 	let contentHeight = 0;
 	let currentHeight = 0;
+	let currentTargetHeight = 0;
 
 	let currentAnimation = null;
 	let scheduledAnimation = null;
 
-	let startTime = null;
-
-	let animationDuration = 4000;
+	function lerp(start, end, t) {
+		return start * (1 - t) + end * t;
+	}
 
 	function animateHeight(targetHeight, callback, mobile = false) {
 		if (!modesListContainer) return;
@@ -136,40 +137,21 @@
 			cancelAnimationFrame(currentAnimation);
 		}
 
-		const startHeight = currentHeight;
-
-		animationDuration = 300;
-		if (mobile) {
-			animationDuration /= 2;
-		}
-
-		if (currentAnimation) {
-			animationDuration -= Math.max(0, animationDuration - (performance.now() - startTime));
-		}
-
-		startTime = performance.now();
-
 		function update(currentTime) {
 			if (!modesListContainer) return;
 
-			const elapsed = currentTime - startTime;
-			const progress = Math.min(elapsed / animationDuration, 1);
-
-			// Easing function for smooth animation (slow start, fast end)
-			const easeProgress = progress === 1 ? 1 : Math.pow(progress, 3);
-
-			currentHeight = startHeight + (targetHeight - startHeight) * easeProgress;
+			currentHeight = lerp(currentHeight, targetHeight, targetHeight > 0 ? 0.3 : 0.45);
 			modesListContainer.style.height = `${currentHeight}px`;
 
 			containerHeight = modesListContainer.clientHeight;
 			contentHeight = modesListContainer.scrollHeight;
 			updateMaskImage();
 
-			if (progress < 1) {
+			if (Math.abs(currentHeight - targetHeight) > 1) {
 				currentAnimation = requestAnimationFrame(update);
 			} else {
 				currentAnimation = null;
-				if (targetHeight > 20) {
+				if (targetHeight > 0) {
 					currentHeight = modesListContainer.scrollHeight;
 				} else {
 					currentHeight = 0;
@@ -179,6 +161,7 @@
 			}
 		}
 
+		currentTargetHeight = targetHeight;
 		currentAnimation = requestAnimationFrame(update);
 	}
 
@@ -209,7 +192,7 @@
 					if (modesListContainer) {
 						animateHeight(modesListContainer.scrollHeight, null, mobile);
 					}
-				}, 200);
+				}, 20);
 			} else {
 				// Animate height to 0 before removing dummy element
 				if (modesListContainer) {
@@ -220,8 +203,8 @@
 						}
 					};
 
-					if (currentHeight > 20) {
-						animateHeight(20, callback, mobile);
+					if (currentHeight > 0) {
+						animateHeight(0, callback, mobile);
 					} else {
 						callback();
 						if (currentAnimation) {
@@ -279,10 +262,6 @@
 
 	// Define target gradient positions based on scroll
 	let targetGradient = currentGradient;
-
-	function lerp(start, end, t) {
-		return start * (1 - t) + end * t;
-	}
 
 	let needsUpdate = false;
 
@@ -450,6 +429,7 @@
 			<div
 				class="map-card"
 				class:is-hovered={isHovered || currentAnimation}
+				class:expanding={currentAnimation && currentTargetHeight > 0}
 				style={isHovered || currentAnimation ? `position: absolute;` : ''}
 				bind:this={mapCardElement}
 				tabindex="-1"
@@ -473,7 +453,7 @@
 						<div class="sort-value-background" class:is-hovered={sortValue && isHovered}></div>
 					</div>
 					{#if requirements && isHovered}
-						<div in:fly|global={{x: -40, duration: 150}} out:fade|global={{duration: 100}} class="requirements-icons">
+						<div transition:fly|local={{x: -40, duration: 300, y: 0}} class="requirements-icons">
 							<MapRequirements type={requirements} />
 						</div>
 					{/if}
@@ -516,11 +496,7 @@
 						</div>
 					</a>
 					{#if isHovered}
-						<div
-							in:fly|global={{x: 20, duration: 150}}
-							out:fade|global={{duration: 100}}
-							class="icons-container"
-							class:is-hovered={isHovered}>
+						<div transition:fly|local={{x: 20, duration: 300, y: 0}} class="icons-container" class:is-hovered={isHovered}>
 							<Icons {song} icons={['preview', 'bsr', 'bs', 'oneclick']} />
 						</div>
 					{/if}
@@ -629,6 +605,10 @@
 		background-color: #141414;
 		height: unset;
 		border-radius: 12px 12px 16px 16px;
+	}
+
+	.map-card.expanding {
+		z-index: 4;
 	}
 
 	.map-card-placeholder {
