@@ -34,6 +34,7 @@
 	let requirements = null;
 
 	let isHovered = false;
+	let isTopHovered = false;
 
 	let mapCardElement;
 	let mapCardWrapper;
@@ -128,144 +129,12 @@
 
 	let animationDuration = 4000;
 
-	function animateHeight(targetHeight, callback, mobile = false) {
-		if (!modesListContainer) return;
-
-		// Cancel any ongoing animation
-		if (currentAnimation) {
-			cancelAnimationFrame(currentAnimation);
-		}
-
-		const startHeight = currentHeight;
-
-		animationDuration = 300;
-		if (mobile) {
-			animationDuration /= 2;
-		}
-
-		if (currentAnimation) {
-			animationDuration -= Math.max(0, animationDuration - (performance.now() - startTime));
-		}
-
-		startTime = performance.now();
-
-		function update(currentTime) {
-			if (!modesListContainer) return;
-
-			const elapsed = currentTime - startTime;
-			const progress = Math.min(elapsed / animationDuration, 1);
-
-			// Easing function for smooth animation (slow start, fast end)
-			const easeProgress = progress === 1 ? 1 : Math.pow(progress, 3);
-
-			currentHeight = startHeight + (targetHeight - startHeight) * easeProgress;
-			modesListContainer.style.height = `${currentHeight}px`;
-
-			containerHeight = modesListContainer.clientHeight;
-			contentHeight = modesListContainer.scrollHeight;
-			updateMaskImage();
-
-			if (progress < 1) {
-				currentAnimation = requestAnimationFrame(update);
-			} else {
-				currentAnimation = null;
-				if (targetHeight > 20) {
-					currentHeight = modesListContainer.scrollHeight;
-				} else {
-					currentHeight = 0;
-				}
-				modesListContainer.style.height = 'auto';
-				callback?.();
-			}
-		}
-
-		currentAnimation = requestAnimationFrame(update);
-	}
-
-	function handleHover(hovering, userHovering = false, mobile = false) {
-		mouseInside = hovering && userHovering;
-		if (!hovering && playingSong) {
-			return;
-		}
-		clearTimeout(hoverTimeout);
-		hoverTimeout = setTimeout(() => {
-			if (isHovered == hovering) return;
-
-			clearTimeout(scheduledAnimation);
-			isHovered = hovering;
-			if (hovering) {
-				if (!mapCardWrapper) {
-					return;
-				}
-				mapCardRect = mapCardWrapper.getBoundingClientRect();
-
-				// Start observing bottom container when hovered
-				if (bottomContainer && bottomContainerObserver) {
-					bottomContainerObserver.observe(bottomContainer);
-				}
-				modesListContainer.style.height = `${currentHeight}px`;
-
-				scheduledAnimation = setTimeout(() => {
-					if (modesListContainer) {
-						animateHeight(modesListContainer.scrollHeight, null, mobile);
-					}
-				}, 200);
-			} else {
-				// Animate height to 0 before removing dummy element
-				if (modesListContainer) {
-					let callback = () => {
-						// Stop observing when not hovered
-						if (bottomContainerObserver) {
-							bottomContainerObserver.disconnect();
-						}
-					};
-
-					if (currentHeight > 20) {
-						animateHeight(20, callback, mobile);
-					} else {
-						callback();
-						if (currentAnimation) {
-							cancelAnimationFrame(currentAnimation);
-						}
-						currentAnimation = null;
-						currentHeight = 0;
-						modesListContainer.style.height = 'auto';
-					}
-				}
-			}
-		}, 5);
-	}
-
 	onMount(() => {
 		const updatePosition = () => {
 			if (isHovered && mapCardWrapper) {
 				const newRect = mapCardWrapper.getBoundingClientRect();
 				mapCardElement.style.top = `${newRect.top}px`;
 				mapCardElement.style.left = `${newRect.left}px`;
-			}
-		};
-
-		// Create ResizeObserver for bottom container
-		bottomContainerObserver = new ResizeObserver(entries => {
-			for (const entry of entries) {
-				bottomContainerHeight = entry.contentRect.height;
-			}
-		});
-
-		window.addEventListener('scroll', updatePosition);
-		window.addEventListener('resize', updatePosition);
-
-		return () => {
-			window.removeEventListener('scroll', updatePosition);
-			window.removeEventListener('resize', updatePosition);
-			if (dummyElement) {
-				dummyElement.remove();
-			}
-			if (bottomContainerObserver) {
-				bottomContainerObserver.disconnect();
-			}
-			if (currentAnimation) {
-				cancelAnimationFrame(currentAnimation);
 			}
 		};
 	});
@@ -423,6 +292,15 @@
 	function hideTooltip() {
 		tooltipVisible = false;
 	}
+
+	let clickTimeout = null;
+
+	function handleHover(bottom, hovering) {
+		isHovered = hovering;
+		isTopHovered = !bottom && hovering;
+	}
+
+	$: console.log('IT HAPPENED', isHovered);
 </script>
 
 {#if song}
@@ -442,7 +320,7 @@
 			</div>
 		{/if}
 		<div class="map-card-wrapper" class:transparent={song.transparent} class:is-hovered={isHovered} bind:this={mapCardWrapper}>
-			<div class="cinematics root-cinematics" style={isHovered ? `height: ${mapCardRect.height}px;` : ''} class:is-hovered={isHovered}>
+			<div class="cinematics root-cinematics" class:is-hovered={isHovered}>
 				<div class="cinematics-canvas root-canvas">
 					<canvas bind:this={rootcinematicsCanvas} style="position: absolute; width: 100%; height: 100%; opacity: 0" />
 				</div>
@@ -454,10 +332,8 @@
 				bind:this={mapCardElement}
 				tabindex="-1"
 				role="button"
-				on:mouseover={() => handleHover(true, true)}
-				on:mouseout={() => handleHover(false, true)}
-				on:focus={() => handleHover(true, true)}
-				on:blur={() => handleHover(false, true)}>
+				on:mouseenter={() => handleHover(false, true)}
+				on:mouseleave={() => handleHover(false, false)}>
 				<div class="cinematics">
 					<div class="cinematics-canvas">
 						<canvas bind:this={cinematicsCanvas} style="position: absolute; width: 100%; height: 100%; opacity: 0" />
@@ -473,7 +349,7 @@
 						<div class="sort-value-background" class:is-hovered={sortValue && isHovered}></div>
 					</div>
 					{#if requirements && isHovered}
-						<div in:fly|global={{x: -40, duration: 150}} out:fade|global={{duration: 100}} class="requirements-icons">
+						<div transition:fly|local={{duration: 300, x: -40, y: 0}} class="requirements-icons">
 							<MapRequirements type={requirements} />
 						</div>
 					{/if}
@@ -516,16 +392,12 @@
 						</div>
 					</a>
 					{#if isHovered}
-						<div
-							in:fly|global={{x: 20, duration: 150}}
-							out:fade|global={{duration: 100}}
-							class="icons-container"
-							class:is-hovered={isHovered}>
+						<div class="icons-container" transition:fly|local={{duration: 300, x: 50, y: 0}}>
 							<Icons {song} icons={['preview', 'bsr', 'bs', 'oneclick']} />
 						</div>
 					{/if}
 				</div>
-				<div class="bottom-container-background" class:is-hovered={isHovered} style="height: {bottomContainerHeight + 9}px;"></div>
+				<div class="bottom-container-background" class:is-hovered={isHovered}></div>
 				<div
 					class="bottom-container"
 					class:has-sort-value={!!sortValue}
@@ -540,31 +412,27 @@
 						{/if}
 					</div>
 
-					{#if isHovered || currentAnimation}
+					{#if isHovered}
 						<div class="song-player">
 							<SongPlayer {song} />
 						</div>
 						<div
 							class="mobile-chevron-container hovered mobile-only"
-							on:click={() => handleHover(false, true, true)}
-							on:keydown={() => handleHover(false, true, true)}
+							on:click={() => handleHover(true, false)}
+							on:keydown={() => handleHover(true, false)}
 							tabindex="-1"
 							role="button">
 							<i class="fas fa-chevron-up"></i>
 						</div>
 					{/if}
-					<div
-						class="modes-list-container"
-						class:is-hovered={isHovered || currentAnimation}
-						on:scroll={handleScroll}
-						bind:this={modesListContainer}>
-						<ModesList {song} isHovered={isHovered || currentAnimation} {sortValue} {sortBy} />
+					<div class="modes-list-container" class:is-hovered={isHovered} on:scroll={handleScroll} bind:this={modesListContainer}>
+						<ModesList {song} {isHovered} {sortValue} {sortBy} />
 					</div>
-					{#if !isHovered && !currentAnimation}
+					{#if !isHovered}
 						<div
 							class="mobile-chevron-container mobile-only"
-							on:click={() => handleHover(true, true, true)}
-							on:keydown={() => handleHover(true, true, true)}
+							on:click={() => handleHover(true, true)}
+							on:keydown={() => handleHover(true, true)}
 							tabindex="-1"
 							role="button">
 							<i class="fas fa-chevron-down"></i>
