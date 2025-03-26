@@ -38,12 +38,10 @@
 
 	let mapCardElement;
 	let mapCardWrapper;
-	let mapCardRect;
 
 	let bottomContainer;
-	let bottomContainerHeight = 0;
-	let bottomContainerObserver;
 
+	// data prep
 	function calculateStatus(song) {
 		for (const status of [
 			DifficultyStatus.ranked,
@@ -112,127 +110,11 @@
 
 	$: headerContainer && updateHeaderContainerHeight(headerContainer);
 
-	let hoverTimeout;
+	// handle preview playing
 	let playingSong = false;
 	let mouseInside = false;
 
-	let modesListContainer;
-	let scrollPosition = 0;
-	let containerHeight = 0;
-	let contentHeight = 0;
-	let currentHeight = 0;
-
 	let currentAnimation = null;
-	let scheduledAnimation = null;
-
-	let startTime = null;
-
-	let animationDuration = 4000;
-
-	onMount(() => {
-		const updatePosition = () => {
-			if (isHovered && mapCardWrapper) {
-				const newRect = mapCardWrapper.getBoundingClientRect();
-				mapCardElement.style.top = `${newRect.top}px`;
-				mapCardElement.style.left = `${newRect.left}px`;
-			}
-		};
-	});
-
-	let currentGradient = {
-		transparent: 0,
-		whiteStart: 0,
-		whiteEnd: 500,
-		transparentEnd: 500,
-	};
-
-	// Define target gradient positions based on scroll
-	let targetGradient = currentGradient;
-
-	function lerp(start, end, t) {
-		return start * (1 - t) + end * t;
-	}
-
-	let needsUpdate = false;
-
-	function animateMask() {
-		if (!modesListContainer) return;
-		const easing = 0.15; // Controls animation speed (0-1)
-
-		// Interpolate each value
-		for (let key in currentGradient) {
-			if (Math.abs(currentGradient[key] - targetGradient[key]) > 0.1) {
-				currentGradient[key] = lerp(currentGradient[key], targetGradient[key], easing);
-				needsUpdate = true;
-			} else {
-				currentGradient[key] = targetGradient[key];
-			}
-		}
-
-		const maskImage = `linear-gradient(180deg, 
-			transparent ${currentGradient.transparent}px, 
-			white ${currentGradient.whiteStart}px, 
-			white ${currentGradient.whiteEnd}px, 
-			transparent ${currentGradient.transparentEnd}px)`;
-
-		modesListContainer.style.maskImage = maskImage;
-		modesListContainer.style.webkitMaskImage = maskImage;
-
-		if (needsUpdate) {
-			requestAnimationFrame(animateMask);
-		}
-	}
-
-	function updateMaskImage() {
-		if (!modesListContainer) return;
-
-		if (Math.abs(contentHeight - containerHeight) < 1) {
-			targetGradient = {
-				transparent: 0,
-				whiteStart: 0,
-				whiteEnd: containerHeight,
-				transparentEnd: containerHeight,
-			};
-		} else {
-			const scrollPercentage = scrollPosition / (contentHeight - containerHeight);
-
-			if (scrollPosition === 0) {
-				targetGradient = {
-					transparent: 0,
-					whiteStart: 0,
-					whiteEnd: 320,
-					transparentEnd: containerHeight,
-				};
-			} else if (Math.abs(scrollPercentage - 1) <= 0.01) {
-				targetGradient = {
-					transparent: 0,
-					whiteStart: 20,
-					whiteEnd: containerHeight,
-					transparentEnd: containerHeight,
-				};
-			} else {
-				targetGradient = {
-					transparent: 0,
-					whiteStart: 20,
-					whiteEnd: 320,
-					transparentEnd: containerHeight,
-				};
-			}
-		}
-
-		// Animate the gradient positions
-
-		if (!needsUpdate) {
-			requestAnimationFrame(animateMask);
-		}
-	}
-
-	function handleScroll(e) {
-		scrollPosition = e.target.scrollTop;
-		containerHeight = e.target.clientHeight;
-		contentHeight = e.target.scrollHeight;
-		updateMaskImage();
-	}
 
 	function handlePlay(currentHash, songHash) {
 		if (currentHash === songHash) {
@@ -250,6 +132,7 @@
 
 	$: hash && handlePlay($songPlayerStore?.currentHash, hash);
 
+	// hover tooltip code
 	let tooltipVisible = false;
 	let tooltipX = 0;
 	let tooltipY = 0;
@@ -293,8 +176,21 @@
 		tooltipVisible = false;
 	}
 
-	let clickTimeout = null;
+	onMount(() => {
+		// handle tooltip positioning on resize
+		const updatePosition = () => {
+			if (isHovered && mapCardWrapper) {
+				const newRect = mapCardWrapper.getBoundingClientRect();
+				mapCardElement.style.top = `${newRect.top}px`;
+				mapCardElement.style.left = `${newRect.left}px`;
+			}
+		};
 
+		window.addEventListener('resize', updatePosition);
+		return () => window.removeEventListener('resize', updatePosition);
+	});
+
+	// isHovered handling
 	function handleHover(bottom, hovering) {
 		isHovered = hovering;
 		isTopHovered = !bottom && hovering;
@@ -425,7 +321,7 @@
 							<i class="fas fa-chevron-up"></i>
 						</div>
 					{/if}
-					<div class="modes-list-container" class:is-hovered={isHovered} on:scroll={handleScroll} bind:this={modesListContainer}>
+					<div class="modes-list-container" class:is-hovered={isHovered}>
 						<ModesList {song} {isHovered} {sortValue} {sortBy} />
 					</div>
 					{#if !isHovered}
