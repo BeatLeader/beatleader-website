@@ -140,7 +140,7 @@
 		function update(currentTime) {
 			if (!modesListContainer) return;
 
-			currentHeight = lerp(currentHeight, targetHeight, targetHeight > 0 ? 0.3 : 0.45);
+			currentHeight = lerp(currentHeight, targetHeight, targetHeight > 0 ? 0.3 : 0.6);
 			modesListContainer.style.height = `${currentHeight}px`;
 
 			containerHeight = modesListContainer.clientHeight;
@@ -192,7 +192,7 @@
 					if (modesListContainer) {
 						animateHeight(modesListContainer.scrollHeight, null, mobile);
 					}
-				}, 20);
+				}, 0);
 			} else {
 				// Animate height to 0 before removing dummy element
 				if (modesListContainer) {
@@ -216,7 +216,7 @@
 					}
 				}
 			}
-		}, 5);
+		}, 0);
 	}
 
 	onMount(() => {
