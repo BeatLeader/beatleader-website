@@ -68,7 +68,7 @@
 				<div class="diffs-container" class:isHovered>
 					{#each mode.diffs as diff, idx}
 						{@const diffSortValue = getSongSortingValue(song, diff, sortBy)}
-						<div class="diff-container" class:isHovered>
+						<a href={`/leaderboard/global/${diff.leaderboardId}`} class="diff-container" class:isHovered>
 							{#if isHovered}
 								<span class="diff-name">{diff.difficultyName}</span>
 							{/if}
@@ -106,7 +106,7 @@
 									</div>
 								</div>
 							{/if}
-						</div>
+						</a>
 					{/each}
 				</div>
 			</div>
@@ -118,7 +118,6 @@
 	.modes-list {
 		display: flex;
 		gap: 0.3em;
-		transition: all 0.3s ease-in-out;
 		overflow: hidden;
 		width: 21.5em;
 		overflow: hidden;
@@ -155,8 +154,16 @@
 		font-weight: 600;
 	}
 
+	.diff-container:hover {
+		background-color: #202020a1;
+		border-radius: 6px;
+	}
+
 	.diff-container {
 		display: flex;
+		position: relative;
+		pointer-events: none;
+		color: white;
 	}
 
 	.diff-container.isHovered {
@@ -164,6 +171,7 @@
 		grid-template-columns: 6em 3.5em auto;
 		gap: 0.2em;
 		align-items: center;
+		pointer-events: auto;
 	}
 
 	.diffs-container {

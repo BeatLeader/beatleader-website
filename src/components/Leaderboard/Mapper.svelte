@@ -5,7 +5,7 @@
 	import MiniProfile from '../Player/Mini/MiniProfile.svelte';
 
 	export let mapper;
-
+	export let noPopover = false;
 	let referenceElement;
 
 	function navigateToPlayer(playerId) {
@@ -24,11 +24,13 @@
 		<img loading="lazy" class="mapper-avatar" src={mapper.avatar} />
 		<span>{mapper.name}</span>
 	</a>
-	<Popover triggerEvents={['hover', 'focus']} placement="bottom" {referenceElement} spaceAway={10}>
-		<div class="popover-contents" transition:fade|global={{duration: 250}}>
-			<MiniProfile player={{playerId: mapper.playerId, name: mapper.name, playerInfo: {}}} />
-		</div>
-	</Popover>
+	{#if !noPopover}
+		<Popover triggerEvents={['hover', 'focus']} placement="bottom" {referenceElement} spaceAway={10}>
+			<div class="popover-contents" transition:fade|global={{duration: 250}}>
+				<MiniProfile player={{playerId: mapper.playerId, name: mapper.name, playerInfo: {}}} />
+			</div>
+		</Popover>
+	{/if}
 {:else}
 	<div class="mapper-container">
 		{#if mapper.authorName}
@@ -52,6 +54,10 @@
 		color: white;
 		background-color: #20202073;
 		min-width: fit-content;
+	}
+
+	.mapper-container:hover {
+		background-color: #474747a1;
 	}
 
 	.mapper-avatar {

@@ -70,7 +70,8 @@
 		display: flex;
 		align-items: center;
 		gap: 1em;
-		margin-bottom: 0.5em;
+		margin-top: 0.25em;
+		margin-bottom: 0.25em;
 	}
 	.timeline {
 		flex-grow: 1;
@@ -132,5 +133,11 @@
 	:global(.song-play-button:hover),
 	:global(.volume-button:hover) {
 		--btn-color: #ffffff !important;
+	}
+
+	@media (max-width: 768px) {
+		.player {
+			margin-bottom: unset;
+		}
 	}
 </style>

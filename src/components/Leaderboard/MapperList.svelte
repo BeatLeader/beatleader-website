@@ -79,7 +79,7 @@
 			<Mapper mapper={authorNameMockMapper} />
 		{/if}
 		{#each song.mappers as mapper}
-			<Mapper {mapper} />
+			<Mapper {mapper} noPopover={noArrow} />
 		{/each}
 		{#if !moreInAuthorName && (lessInAuthorName || isVariousMappers || $configStore.leaderboardPreferences.alwaysShowAuthorHint)}
 			<i

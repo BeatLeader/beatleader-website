@@ -112,56 +112,128 @@
 	$: headerContainer && updateHeaderContainerHeight(headerContainer);
 
 	let hoverTimeout;
-	let dummyElement;
 	let playingSong = false;
 	let mouseInside = false;
 
-	function handleHover(hovering, userHovering = false) {
+	let modesListContainer;
+	let scrollPosition = 0;
+	let containerHeight = 0;
+	let contentHeight = 0;
+	let currentHeight = 0;
+
+	let currentAnimation = null;
+	let scheduledAnimation = null;
+
+	let startTime = null;
+
+	let animationDuration = 4000;
+
+	function animateHeight(targetHeight, callback, mobile = false) {
+		if (!modesListContainer) return;
+
+		// Cancel any ongoing animation
+		if (currentAnimation) {
+			cancelAnimationFrame(currentAnimation);
+		}
+
+		const startHeight = currentHeight;
+
+		animationDuration = 300;
+		if (mobile) {
+			animationDuration /= 2;
+		}
+
+		if (currentAnimation) {
+			animationDuration -= Math.max(0, animationDuration - (performance.now() - startTime));
+		}
+
+		startTime = performance.now();
+
+		function update(currentTime) {
+			if (!modesListContainer) return;
+
+			const elapsed = currentTime - startTime;
+			const progress = Math.min(elapsed / animationDuration, 1);
+
+			// Easing function for smooth animation (slow start, fast end)
+			const easeProgress = progress === 1 ? 1 : Math.pow(progress, 3);
+
+			currentHeight = startHeight + (targetHeight - startHeight) * easeProgress;
+			modesListContainer.style.height = `${currentHeight}px`;
+
+			containerHeight = modesListContainer.clientHeight;
+			contentHeight = modesListContainer.scrollHeight;
+			updateMaskImage();
+
+			if (progress < 1) {
+				currentAnimation = requestAnimationFrame(update);
+			} else {
+				currentAnimation = null;
+				if (targetHeight > 20) {
+					currentHeight = modesListContainer.scrollHeight;
+				} else {
+					currentHeight = 0;
+				}
+				modesListContainer.style.height = 'auto';
+				callback?.();
+			}
+		}
+
+		currentAnimation = requestAnimationFrame(update);
+	}
+
+	function handleHover(hovering, userHovering = false, mobile = false) {
 		mouseInside = hovering && userHovering;
 		if (!hovering && playingSong) {
 			return;
 		}
 		clearTimeout(hoverTimeout);
 		hoverTimeout = setTimeout(() => {
+			if (isHovered == hovering) return;
+
+			clearTimeout(scheduledAnimation);
 			isHovered = hovering;
 			if (hovering) {
 				if (!mapCardWrapper) {
 					return;
 				}
 				mapCardRect = mapCardWrapper.getBoundingClientRect();
-				if (!dummyElement) {
-					// Create and insert dummy element
-					dummyElement = document.createElement('div');
-					dummyElement.style.height = `${mapCardRect.height + 19}px`;
-					dummyElement.style.width = `0px`;
-					dummyElement.style.marginLeft = '-2em';
-					mapCardWrapper.parentNode.insertBefore(dummyElement, mapCardWrapper.nextSibling);
-				}
 
 				// Start observing bottom container when hovered
 				if (bottomContainer && bottomContainerObserver) {
 					bottomContainerObserver.observe(bottomContainer);
 				}
+				modesListContainer.style.height = `${currentHeight}px`;
 
-				setTimeout(() => {
+				scheduledAnimation = setTimeout(() => {
 					if (modesListContainer) {
-						containerHeight = modesListContainer.clientHeight;
-						contentHeight = modesListContainer.scrollHeight;
-						updateMaskImage();
+						animateHeight(modesListContainer.scrollHeight, null, mobile);
 					}
-				}, 0);
+				}, 200);
 			} else {
-				// Remove dummy element when not hovering
-				if (dummyElement) {
-					dummyElement.remove();
-					dummyElement = null;
-				}
-				// Stop observing when not hovered
-				if (bottomContainerObserver) {
-					bottomContainerObserver.disconnect();
+				// Animate height to 0 before removing dummy element
+				if (modesListContainer) {
+					let callback = () => {
+						// Stop observing when not hovered
+						if (bottomContainerObserver) {
+							bottomContainerObserver.disconnect();
+						}
+					};
+
+					if (currentHeight > 20) {
+						animateHeight(20, callback, mobile);
+					} else {
+						callback();
+						if (currentAnimation) {
+							cancelAnimationFrame(currentAnimation);
+						}
+						currentAnimation = null;
+						currentHeight = 0;
+						modesListContainer.style.height = 'auto';
+					}
 				}
 			}
-		}, 100);
+		}, 5);
 	}
 
 	onMount(() => {
@@ -192,13 +264,11 @@
 			if (bottomContainerObserver) {
 				bottomContainerObserver.disconnect();
 			}
+			if (currentAnimation) {
+				cancelAnimationFrame(currentAnimation);
+			}
 		};
 	});
-
-	let modesListContainer;
-	let scrollPosition = 0;
-	let containerHeight = 0;
-	let contentHeight = 0;
 
 	let currentGradient = {
 		transparent: 0,
@@ -371,23 +441,23 @@
 				{/if}
 			</div>
 		{/if}
-		<div
-			class="map-card-wrapper"
-			class:transparent={song.transparent}
-			class:is-hovered={isHovered}
-			bind:this={mapCardWrapper}
-			tabindex="-1"
-			role="button"
-			on:mouseover={() => handleHover(true, true)}
-			on:mouseout={() => handleHover(false, true)}
-			on:focus={() => handleHover(true, true)}
-			on:blur={() => handleHover(false, true)}>
+		<div class="map-card-wrapper" class:transparent={song.transparent} class:is-hovered={isHovered} bind:this={mapCardWrapper}>
 			<div class="cinematics root-cinematics" style={isHovered ? `height: ${mapCardRect.height}px;` : ''} class:is-hovered={isHovered}>
 				<div class="cinematics-canvas root-canvas">
 					<canvas bind:this={rootcinematicsCanvas} style="position: absolute; width: 100%; height: 100%; opacity: 0" />
 				</div>
 			</div>
-			<div class="map-card" class:is-hovered={isHovered} style={isHovered ? `position: absolute;` : ''} bind:this={mapCardElement}>
+			<div
+				class="map-card"
+				class:is-hovered={isHovered || currentAnimation}
+				style={isHovered || currentAnimation ? `position: absolute;` : ''}
+				bind:this={mapCardElement}
+				tabindex="-1"
+				role="button"
+				on:mouseover={() => handleHover(true, true)}
+				on:mouseout={() => handleHover(false, true)}
+				on:focus={() => handleHover(true, true)}
+				on:blur={() => handleHover(false, true)}>
 				<div class="cinematics">
 					<div class="cinematics-canvas">
 						<canvas bind:this={cinematicsCanvas} style="position: absolute; width: 100%; height: 100%; opacity: 0" />
@@ -403,7 +473,7 @@
 						<div class="sort-value-background" class:is-hovered={sortValue && isHovered}></div>
 					</div>
 					{#if requirements && isHovered}
-						<div class="requirements-icons">
+						<div in:fly|global={{x: -40, duration: 150}} out:fade|global={{duration: 100}} class="requirements-icons">
 							<MapRequirements type={requirements} />
 						</div>
 					{/if}
@@ -445,17 +515,23 @@
 							</div>
 						</div>
 					</a>
-					<div class="icons-container" class:is-hovered={isHovered}>
-						<Icons {song} icons={['preview', 'bsr', 'bs', 'oneclick']} />
-					</div>
+					{#if isHovered}
+						<div
+							in:fly|global={{x: 20, duration: 150}}
+							out:fade|global={{duration: 100}}
+							class="icons-container"
+							class:is-hovered={isHovered}>
+							<Icons {song} icons={['preview', 'bsr', 'bs', 'oneclick']} />
+						</div>
+					{/if}
 				</div>
-				<div class="bottom-container-background" class:is-hovered={isHovered} style="height: {bottomContainerHeight + 15}px;"></div>
+				<div class="bottom-container-background" class:is-hovered={isHovered} style="height: {bottomContainerHeight + 9}px;"></div>
 				<div
 					class="bottom-container"
 					class:has-sort-value={!!sortValue}
 					class:is-hovered={isHovered}
 					bind:this={bottomContainer}
-					style="--margin-top-value: -{headerContainerHeight < 150 ? (isHovered ? 2.25 : 2.4) : 0}em;">
+					style="--margin-top-value: -{headerContainerHeight < 150 ? 2.4 : 0}em;">
 					<div class="placeholder">
 						{#if sortValue}
 							<div class="sort-value">
@@ -464,25 +540,33 @@
 						{/if}
 					</div>
 
-					{#if isHovered}
+					{#if isHovered || currentAnimation}
 						<div class="song-player">
 							<SongPlayer {song} />
 						</div>
 						<div
 							class="mobile-chevron-container hovered mobile-only"
-							on:click={() => handleHover(false, true)}
-							on:keydown={() => handleHover(false, true)}>
+							on:click={() => handleHover(false, true, true)}
+							on:keydown={() => handleHover(false, true, true)}
+							tabindex="-1"
+							role="button">
 							<i class="fas fa-chevron-up"></i>
 						</div>
 					{/if}
-					<div class="modes-list-container" class:is-hovered={isHovered} on:scroll={handleScroll} bind:this={modesListContainer}>
-						<ModesList {song} {isHovered} {sortValue} {sortBy} />
+					<div
+						class="modes-list-container"
+						class:is-hovered={isHovered || currentAnimation}
+						on:scroll={handleScroll}
+						bind:this={modesListContainer}>
+						<ModesList {song} isHovered={isHovered || currentAnimation} {sortValue} {sortBy} />
 					</div>
-					{#if !isHovered}
+					{#if !isHovered && !currentAnimation}
 						<div
 							class="mobile-chevron-container mobile-only"
-							on:click={() => handleHover(true, true)}
-							on:keydown={() => handleHover(true, true)}>
+							on:click={() => handleHover(true, true, true)}
+							on:keydown={() => handleHover(true, true, true)}
+							tabindex="-1"
+							role="button">
 							<i class="fas fa-chevron-down"></i>
 						</div>
 					{/if}
@@ -670,6 +754,7 @@
 	.modes-list-container.is-hovered {
 		max-height: 22em;
 		width: 100%;
+		margin-top: 0.1em;
 	}
 
 	.header-link {
@@ -736,11 +821,6 @@
 		width: fit-content;
 		margin-top: 0.25em;
 		transform: scale(1.1);
-		display: none;
-	}
-
-	.icons-container.is-hovered {
-		display: block;
 	}
 
 	.version-selector-container {
@@ -1128,12 +1208,12 @@
 
 		.main-container {
 			font-size: 0.8em;
-			max-width: 19em;
+			max-width: calc(100vw - 10em);
 		}
 
 		.requirements-icons {
-			padding-top: 0.4em;
-			left: 0.1em;
+			padding-top: 0.5em;
+			left: 0.5em;
 		}
 
 		.header h1 span.name {
