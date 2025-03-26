@@ -672,28 +672,10 @@
 		margin-top: -0.6em;
 	}
 
-	.buttons-container {
-		position: absolute;
-		bottom: 0;
-		height: 2.7em;
-		margin-left: -0.6em;
-		width: 100%;
-		display: flex;
-		justify-content: space-between;
-		background-color: #0000004f;
-		padding: 0.6em;
-		border-radius: 0 0 12px 12px;
-	}
-
 	.icons-container {
 		width: fit-content;
 		margin-top: 0.25em;
 		transform: scale(1.1);
-	}
-
-	.version-selector-container {
-		transform: scale(1.15);
-		margin-bottom: -0.5em;
 	}
 
 	.header .song-title {
@@ -753,26 +735,6 @@
 		max-width: 100%;
 	}
 
-	.diff-status {
-		color: white;
-	}
-
-	.capture-status {
-		position: absolute;
-		top: 0;
-		left: 0;
-		height: 6em;
-		overflow: hidden;
-		z-index: 2;
-	}
-
-	.header h2.song-title {
-		font-size: 1em !important;
-		color: var(--increase, #42b129) !important;
-		margin-top: 0.5em;
-		margin-bottom: 0.5em;
-	}
-
 	.header-container {
 		display: flex;
 		justify-content: start;
@@ -790,10 +752,6 @@
 		z-index: 1;
 		width: 100%;
 		overflow: hidden;
-	}
-
-	.header-bottom-part {
-		z-index: 1;
 	}
 
 	.title-container {
@@ -874,67 +832,10 @@
 		transform: scale(0.9) translateZ(0);
 	}
 
-	.status-and-type {
-		display: flex;
-		gap: 0.6em;
-		overflow: hidden;
-		white-space: nowrap;
-	}
-
 	:global(.title-container .stats) {
 		justify-content: start !important;
 		color: #ffffffa3;
 		max-width: 35em;
-	}
-
-	.group-select {
-		height: fit-content;
-		padding: 0.175rem;
-		text-align: center;
-		text-align-last: center;
-		white-space: nowrap;
-		border: 0;
-		border-radius: 6px;
-		cursor: pointer;
-		color: #363636;
-		background-color: #dbdbdb;
-		box-shadow: none;
-		opacity: 0.35;
-		font-family: inherit;
-		font-size: 0.875rem;
-		font-weight: 500;
-		width: 100%;
-		margin-bottom: -0.6em;
-	}
-
-	.group-option {
-		color: black;
-		font-family: inherit;
-	}
-
-	.requirements {
-		display: flex;
-		flex-wrap: nowrap;
-		justify-content: center;
-		align-items: center;
-		gap: 0.2em;
-		row-gap: 0.5em;
-		padding-top: 0.7em;
-		padding-bottom: 0.7em;
-		overflow: hidden;
-	}
-
-	.header small {
-		font-size: 0.75em;
-		color: var(--ppColour);
-	}
-
-	.header .diff :global(.reversed) {
-		display: inline-block;
-		padding: 0.1em 0.25em 0.25em 0.25em;
-		margin-left: 0.5em;
-		margin-right: 0.5em;
-		border-radius: 0.25em;
 	}
 
 	:global(.voter-feedback-button) {
@@ -944,25 +845,6 @@
 	:global(.battleroyalebtn) {
 		margin-left: 1em;
 		margin-bottom: 0.5em;
-	}
-
-	.title-and-buttons {
-		display: flex;
-		align-items: center;
-		align-self: stretch;
-		justify-content: center;
-		flex-wrap: nowrap;
-		flex-direction: column;
-		padding: 0.5em;
-		min-width: fit-content;
-		overflow: hidden;
-	}
-
-	.mobile-triangle {
-		position: absolute;
-		left: 8em;
-		top: 8.4em;
-		z-index: 2;
 	}
 
 	.mobile-only {
@@ -1016,15 +898,6 @@
 			display: flex;
 		}
 
-		.buttons-container {
-			position: relative;
-			margin-left: 0;
-			border-radius: 0;
-			justify-content: flex-start;
-			gap: 0.6em;
-			height: unset;
-		}
-
 		.cinematics-canvas {
 			transform: scaleY(1.2) translateZ(0);
 		}
@@ -1048,10 +921,6 @@
 		.header {
 			border-radius: 0;
 			margin-bottom: 0;
-		}
-
-		.song-statuses {
-			flex-wrap: nowrap;
 		}
 
 		.author {
