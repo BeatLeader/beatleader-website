@@ -1,6 +1,6 @@
 <script>
 	import {createEventDispatcher, getContext, onMount} from 'svelte';
-	import {fade, fly, slide} from 'svelte/transition';
+	import {crossfade, fade, fly, slide} from 'svelte/transition';
 
 	import Value from '../../Common/Value.svelte';
 	import Badge from '../../Common/Badge.svelte';
@@ -197,6 +197,23 @@
 	}
 
 	$: console.log('IT HAPPENED', isHovered);
+
+	let isExpanded = false;
+	let transitionInProgress = false;
+
+	// Update the expanded state when hover state changes
+	$: {
+		if (isHovered && !isExpanded && !transitionInProgress) {
+			isExpanded = true;
+		} else if (!isHovered && isExpanded && !transitionInProgress) {
+			isExpanded = false;
+		}
+	}
+
+	// Function to handle transition start/end
+	function handleTransition(event) {
+		transitionInProgress = event.type === 'introstart' || event.type === 'outrostart';
+	}
 </script>
 
 {#if song}
@@ -300,38 +317,45 @@
 					class:is-hovered={isHovered}
 					bind:this={bottomContainer}
 					style="--margin-top-value: -{headerContainerHeight < 150 ? 2.4 : 0}em;">
-					<div class="placeholder">
-						{#if sortValue}
-							<div class="sort-value">
-								{sortValue}
+					<div class="top-row">
+						<div class="placeholder">
+							{#if sortValue}
+								<div class="sort-value">
+									{sortValue}
+								</div>
+							{/if}
+						</div>
+
+						{#if !isHovered}
+							<div class="modes-list-container" class:is-hovered={false}>
+								<ModesList {song} isHovered={false} {sortValue} {sortBy} />
+							</div>
+							<div
+								class="mobile-chevron-container mobile-only"
+								on:click={() => handleHover(true, true)}
+								on:keydown={() => handleHover(true, true)}
+								tabindex="-1"
+								role="button">
+								<i class="fas fa-chevron-down"></i>
+							</div>
+						{:else}
+							<div class="song-player">
+								<SongPlayer {song} />
+							</div>
+							<div
+								class="mobile-chevron-container hovered mobile-only"
+								on:click={() => handleHover(true, false)}
+								on:keydown={() => handleHover(true, false)}
+								tabindex="-1"
+								role="button">
+								<i class="fas fa-chevron-up"></i>
 							</div>
 						{/if}
 					</div>
 
 					{#if isHovered}
-						<div class="song-player">
-							<SongPlayer {song} />
-						</div>
-						<div
-							class="mobile-chevron-container hovered mobile-only"
-							on:click={() => handleHover(true, false)}
-							on:keydown={() => handleHover(true, false)}
-							tabindex="-1"
-							role="button">
-							<i class="fas fa-chevron-up"></i>
-						</div>
-					{/if}
-					<div class="modes-list-container" class:is-hovered={isHovered}>
-						<ModesList {song} {isHovered} {sortValue} {sortBy} />
-					</div>
-					{#if !isHovered}
-						<div
-							class="mobile-chevron-container mobile-only"
-							on:click={() => handleHover(true, true)}
-							on:keydown={() => handleHover(true, true)}
-							tabindex="-1"
-							role="button">
-							<i class="fas fa-chevron-down"></i>
+						<div class="modes-list-container" class:is-hovered={true} transition:slide|local={{duration: 300}}>
+							<ModesList {song} isHovered={true} {sortValue} {sortBy} />
 						</div>
 					{/if}
 				</div>
@@ -503,6 +527,11 @@
 
 	.sort-value-background.is-hovered {
 		background-color: #0000004f;
+	}
+
+	.top-row {
+		display: flex;
+		width: 100%;
 	}
 
 	.modes-list-container {
