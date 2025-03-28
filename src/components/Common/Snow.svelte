@@ -1,47 +1,158 @@
 <script>
-	let smallSnow;
-	let mediumSnow;
+	import {onMount, onDestroy} from 'svelte';
 
-	const makeItSnow = function (smallSnow, mediumSnow) {
-		if (!smallSnow || !mediumSnow) return;
+	// Configuration options
+	const MAX_FLAKES = window.innerWidth / 10;
+	const MAX_DELTA_TIME = 0.1; // Cap maximum time delta to prevent large jumps (in seconds)
+	let canvas;
+	let ctx;
+	let flakes = [];
+	let animationFrame;
+	let width, height;
+	let lastTime = 0; // Track the last animation timestamp
+	let isPaused = false; // Track if animation is paused due to tab visibility
 
-		let smallSnowElements = '';
-		let mediumSnowElements = '';
-
-		let windowWidth = window.innerWidth;
-
-		for (let i = 0; i < windowWidth / 10; i++) {
-			const left = Math.floor(Math.random() * 100); // Random position within 800px width
-			const delay = Math.random() * 15; // Random delay between 0-10s
-			const shakeDelay = Math.random() * 3; // Random shake delay
-
-			smallSnowElements += `<div class="small-snowflake" style="left: ${left}%; animation-delay: ${delay}s, ${shakeDelay}s;"></div>`;
+	// Snowflake class for more efficient management
+	class Snowflake {
+		constructor() {
+			this.reset();
 		}
 
-		for (let i = 0; i < windowWidth / 20; i++) {
-			const left = Math.floor(Math.random() * 100);
-			const delay = Math.random() * 15;
-			const shakeDelay = Math.random() * 3;
+		reset() {
+			this.x = Math.random() * width;
+			this.y = Math.random() * height;
+			this.originalX = this.x; // Store original X for oscillation
+			this.size = Math.random() * 3 + 2;
 
-			mediumSnowElements += `<div class="medium-snowflake" style="left: ${left}%; animation-delay: ${delay}s, ${shakeDelay}s;"></div>`;
+			// Fall speed similar to original (15s duration for screen height)
+			this.speed = (height / 900) * (Math.random() * 0.4 + 0.8);
+
+			this.opacity = Math.random() * 0.6 + 0.4;
+
+			// Parameters for oscillation
+			this.amplitude = 30 + Math.random() * 30; // Similar to original 60px shake
+			this.period = 5 + Math.random() * 2; // Time to complete one oscillation (seconds)
+			this.phaseShift = Math.random() * Math.PI * 2; // Random starting point in oscillation
+			this.time = 0;
 		}
 
-		smallSnow.innerHTML = smallSnowElements;
-		mediumSnow.innerHTML = mediumSnowElements;
-	};
+		// Update with actual delta time
+		update(deltaTime) {
+			// Update time counter with actual elapsed time in seconds
+			this.time += deltaTime;
 
-	$: makeItSnow(smallSnow, mediumSnow);
+			// Update vertical position (falling)
+			this.y += this.speed * deltaTime * 60; // Scale by deltaTime and normalize to 60fps
+
+			// Calculate horizontal oscillation using sine wave (like original)
+			const oscillationX = Math.sin((this.time / this.period) * Math.PI * 2 + this.phaseShift) * this.amplitude;
+			this.x = this.originalX + oscillationX;
+
+			// Reset if off screen
+			if (this.y > height) {
+				this.reset();
+				this.y = -10;
+				this.originalX = Math.random() * width; // New starting X position
+			}
+		}
+
+		draw() {
+			ctx.beginPath();
+			ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+			ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
+			ctx.fill();
+		}
+	}
+
+	function createFlakes() {
+		flakes = [];
+		for (let i = 0; i < MAX_FLAKES; i++) {
+			flakes.push(new Snowflake());
+		}
+	}
+
+	function resizeCanvas() {
+		if (!canvas) return;
+
+		width = window.innerWidth;
+		height = window.innerHeight;
+
+		canvas.width = width;
+		canvas.height = height;
+	}
+
+	function animate(timestamp) {
+		if (!ctx || isPaused) return;
+
+		// Calculate actual delta time in seconds
+		if (!lastTime) lastTime = timestamp;
+		let deltaTime = (timestamp - lastTime) / 1000; // Convert to seconds
+
+		// Cap deltaTime to prevent large jumps when tab regains focus
+		deltaTime = Math.min(deltaTime, MAX_DELTA_TIME);
+
+		lastTime = timestamp;
+
+		// Clear canvas
+		ctx.clearRect(0, 0, width, height);
+
+		// Update and draw snowflakes with actual deltaTime
+		flakes.forEach(flake => {
+			flake.update(deltaTime);
+			flake.draw();
+		});
+
+		// Request next frame
+		animationFrame = requestAnimationFrame(animate);
+	}
+
+	// Handle tab visibility changes
+	function handleVisibilityChange() {
+		if (document.hidden) {
+			// Tab lost focus - pause animation and reset timer
+			isPaused = true;
+			cancelAnimationFrame(animationFrame);
+		} else {
+			// Tab regained focus - restart animation with fresh timer
+			isPaused = false;
+			lastTime = 0; // Reset timer on resume to prevent large delta
+			animationFrame = requestAnimationFrame(animate);
+		}
+	}
+
+	// Initialize everything on mount
+	onMount(() => {
+		if (!canvas) return;
+
+		ctx = canvas.getContext('2d');
+
+		resizeCanvas();
+		createFlakes();
+		animationFrame = requestAnimationFrame(animate);
+
+		// Add event listeners
+		window.addEventListener('resize', handleResize);
+		document.addEventListener('visibilitychange', handleVisibilityChange);
+	});
+
+	// Cleanup on destroy
+	onDestroy(() => {
+		window.removeEventListener('resize', handleResize);
+		document.removeEventListener('visibilitychange', handleVisibilityChange);
+		cancelAnimationFrame(animationFrame);
+	});
+
+	function handleResize() {
+		resizeCanvas();
+		// Recreate flakes on resize to maintain appropriate density
+		createFlakes();
+	}
 </script>
 
-<div class="snow-container">
-	<div class="snowing">
-		<div class="small-snow" bind:this={smallSnow}></div>
-		<div class="medium-snow" bind:this={mediumSnow}></div>
-	</div>
-</div>
+<canvas bind:this={canvas} class="snow-canvas"></canvas>
 
 <style>
-	.snow-container {
+	.snow-canvas {
 		position: fixed;
 		top: 0;
 		left: 0;
@@ -49,60 +160,6 @@
 		height: 100%;
 		pointer-events: none;
 		z-index: -1;
-		overflow: hidden;
-	}
-
-	.snowing {
-		position: absolute;
-		filter: blur(0.8px);
-		width: 100%;
-		height: 100%;
-	}
-
-	:global(.snowing .small-snowflake) {
-		position: absolute;
-		width: 6px;
-		height: 6px;
-		background: #fff;
-		border-radius: 50%;
-		animation-name: snow-fall, snow-shake;
-		animation-duration: 15s, 4s;
-		animation-timing-function: linear, ease-in-out;
-		animation-iteration-count: infinite, infinite;
-		top: -10%;
-	}
-
-	:global(.snowing .medium-snowflake) {
-		position: absolute;
-		width: 8px;
-		height: 8px;
-		background: #fff;
-		border-radius: 50%;
-		animation-name: snow-fall, snow-shake;
-		animation-duration: 15s, 4s;
-		animation-timing-function: linear, ease-in-out;
-		animation-iteration-count: infinite, infinite;
-		top: -10%;
-	}
-
-	@keyframes snow-fall {
-		0% {
-			top: -10%;
-		}
-		100% {
-			top: 100%;
-		}
-	}
-
-	@keyframes snow-shake {
-		0% {
-			transform: translateX(0px);
-		}
-		50% {
-			transform: translateX(60px);
-		}
-		100% {
-			transform: translateX(0px);
-		}
+		filter: blur(0.8px); /* Match original blur effect */
 	}
 </style>
