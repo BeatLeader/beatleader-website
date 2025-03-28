@@ -15,7 +15,7 @@
 			const delay = Math.random() * 15; // Random delay between 0-10s
 			const shakeDelay = Math.random() * 3; // Random shake delay
 
-			smallSnowElements += `<div class="small" style="left: ${left}%; animation-delay: ${delay}s, ${shakeDelay}s;"></div>`;
+			smallSnowElements += `<div class="small-snowflake" style="left: ${left}%; animation-delay: ${delay}s, ${shakeDelay}s;"></div>`;
 		}
 
 		for (let i = 0; i < windowWidth / 20; i++) {
@@ -23,7 +23,7 @@
 			const delay = Math.random() * 15;
 			const shakeDelay = Math.random() * 3;
 
-			mediumSnowElements += `<div class="medium" style="left: ${left}%; animation-delay: ${delay}s, ${shakeDelay}s;"></div>`;
+			mediumSnowElements += `<div class="medium-snowflake" style="left: ${left}%; animation-delay: ${delay}s, ${shakeDelay}s;"></div>`;
 		}
 
 		smallSnow.innerHTML = smallSnowElements;
@@ -59,7 +59,7 @@
 		height: 100%;
 	}
 
-	:global(.small) {
+	:global(.snowing .small-snowflake) {
 		position: absolute;
 		width: 6px;
 		height: 6px;
@@ -72,7 +72,7 @@
 		top: -10%;
 	}
 
-	:global(.medium) {
+	:global(.snowing .medium-snowflake) {
 		position: absolute;
 		width: 8px;
 		height: 8px;
