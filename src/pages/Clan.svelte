@@ -29,6 +29,7 @@
 	import SelectFilter from '../components/Player/ScoreFilters/SelectFilter.svelte';
 	import ClanSkillTriangle from '../components/Clans/ClanSkillTriangle.svelte';
 	import RangeSlider from 'svelte-range-slider-pips';
+	import Snow from '../components/Common/Snow.svelte';
 
 	export let clanId;
 	export let page = 1;
@@ -286,7 +287,10 @@
 
 {#if clan?.tag == 'BSFR' || clan?.tag == 'BB'}
 	<Rain baguete={clan?.tag == 'BSFR'} />
+{:else if clan?.tag == 'COLD'}
+	<Snow />
 {/if}
+
 {#if clan?.tag == 'SOUP'}
 	<RandomRain />
 {/if}

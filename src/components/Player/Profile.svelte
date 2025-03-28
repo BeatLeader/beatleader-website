@@ -26,6 +26,7 @@
 	import SummaryBox from './Summary/SummaryBox.svelte';
 	import Followers from './Bio/Followers.svelte';
 	import Socials from './Bio/Socials.svelte';
+	import Snow from '../Common/Snow.svelte';
 
 	export let playerData;
 	export let isLoading = false;
@@ -258,8 +259,12 @@
 </script>
 
 <svelte:window on:keyup={onKeyUp} />
-{#if clanEffects && playerInfo?.clans?.filter(cl => cl.tag == 'BB').length}
-	<Rain />
+{#if clanEffects}
+	{#if playerInfo?.clans?.filter(cl => cl.tag == 'BB').length}
+		<Rain />
+	{:else if playerInfo?.clans?.filter(cl => cl.tag == 'COLD').length}
+		<Snow />
+	{/if}
 {/if}
 
 <AvatarOverlayEditor bind:editModel={$editModel} {roles} />
