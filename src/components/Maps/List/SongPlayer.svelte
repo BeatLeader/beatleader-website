@@ -137,7 +137,8 @@
 
 	@media (max-width: 768px) {
 		.player {
-			margin-bottom: unset;
+			margin-bottom: 0.1em;
+			margin-top: 0.1em;
 		}
 	}
 </style>

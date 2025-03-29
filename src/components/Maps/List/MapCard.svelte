@@ -129,7 +129,7 @@
 		return start * (1 - t) + end * t;
 	}
 
-	function animateHeight(targetHeight, callback, mobile = false) {
+	function animateHeight(targetHeight, callback) {
 		if (!modesListContainer) return;
 
 		// Cancel any ongoing animation
@@ -165,7 +165,7 @@
 		currentAnimation = requestAnimationFrame(update);
 	}
 
-	function handleHover(hovering, userHovering = false, mobile = false) {
+	function handleHover(hovering, userHovering = false) {
 		mouseInside = hovering && userHovering;
 		if (!hovering && playingSong) {
 			return;
@@ -190,11 +190,10 @@
 
 				scheduledAnimation = setTimeout(() => {
 					if (modesListContainer) {
-						animateHeight(modesListContainer.scrollHeight, null, mobile);
+						animateHeight(modesListContainer.scrollHeight, null);
 					}
 				}, 0);
 			} else {
-				// Animate height to 0 before removing dummy element
 				if (modesListContainer) {
 					let callback = () => {
 						// Stop observing when not hovered
@@ -204,7 +203,7 @@
 					};
 
 					if (currentHeight > 0) {
-						animateHeight(0, callback, mobile);
+						animateHeight(0, callback);
 					} else {
 						callback();
 						if (currentAnimation) {
@@ -241,9 +240,6 @@
 		return () => {
 			window.removeEventListener('scroll', updatePosition);
 			window.removeEventListener('resize', updatePosition);
-			if (dummyElement) {
-				dummyElement.remove();
-			}
 			if (bottomContainerObserver) {
 				bottomContainerObserver.disconnect();
 			}
@@ -501,7 +497,8 @@
 						</div>
 					{/if}
 				</div>
-				<div class="bottom-container-background" class:is-hovered={isHovered} style="height: {bottomContainerHeight + 9}px;"></div>
+				<div class="bottom-container-background" class:is-hovered={isHovered} style="--bottom-container-height: {bottomContainerHeight}px;">
+				</div>
 				<div
 					class="bottom-container"
 					class:has-sort-value={!!sortValue}
@@ -522,8 +519,8 @@
 						</div>
 						<div
 							class="mobile-chevron-container hovered mobile-only"
-							on:click={() => handleHover(false, true, true)}
-							on:keydown={() => handleHover(false, true, true)}
+							on:click={() => handleHover(false, true)}
+							on:keydown={() => handleHover(false, true)}
 							tabindex="-1"
 							role="button">
 							<i class="fas fa-chevron-up"></i>
@@ -537,12 +534,7 @@
 						<ModesList {song} isHovered={isHovered || currentAnimation} {sortValue} {sortBy} />
 					</div>
 					{#if !isHovered && !currentAnimation}
-						<div
-							class="mobile-chevron-container mobile-only"
-							on:click={() => handleHover(true, true, true)}
-							on:keydown={() => handleHover(true, true, true)}
-							tabindex="-1"
-							role="button">
+						<div class="mobile-chevron-container mobile-only">
 							<i class="fas fa-chevron-down"></i>
 						</div>
 					{/if}
@@ -672,6 +664,7 @@
 	.bottom-container-background {
 		display: none;
 		z-index: -2;
+		height: calc(var(--bottom-container-height) + 9px);
 	}
 
 	.bottom-container-background.is-hovered {
@@ -781,7 +774,6 @@
 
 	.mobile-chevron-container.hovered {
 		margin-left: 1em;
-		margin-top: -0.6em;
 	}
 
 	.buttons-container {
@@ -1198,6 +1190,10 @@
 
 		.header h1 span.name {
 			font-size: 1.1em;
+		}
+
+		.bottom-container-background {
+			height: calc(var(--bottom-container-height) + 7px);
 		}
 
 		:global(.song-statuses .song-status) {

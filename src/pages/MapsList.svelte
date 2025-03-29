@@ -745,13 +745,6 @@
 <section class="align-content">
 	<article class="page-content" transition:fade|global>
 		<div class="maps-box">
-			<ContentBox cls="filter tab-container frosted mobile-only">
-				<Button
-					cls="mobile-filters-button"
-					iconFa="fas fa-{mobileFiltersOpen ? 'xmark' : 'bars'}"
-					label="Filters"
-					on:click={() => (mobileFiltersOpen = !mobileFiltersOpen)} />
-			</ContentBox>
 			{#if allMaps?.length}
 				<div class="songs-container">
 					<div class="songs-list">
@@ -795,13 +788,11 @@
 	</article>
 
 	<aside class="maps-aside-container" class:open={mobileFiltersOpen} bind:this={asideContainer}>
-		<AsideBox title="Sorting" boolname="mapsSortingOpen" faicon="fas fa-sort">
+		<AsideBox title="Filters" boolname="mapsFiltersOpen" faicon="fas fa-filter">
 			<div class="sorting-options">
 				<Select bind:value={sortValue} on:change={onSortChange} fontSize="0.8" options={sortValues} />
 				<Select bind:value={orderValue} on:change={onOrderChange} fontSize="0.8" options={orderValues} />
 			</div>
-		</AsideBox>
-		<AsideBox title="Filters" boolname="mapsFiltersOpen" faicon="fas fa-filter">
 			<section class="filter">
 				<input
 					on:input={debounce(onSearchChanged, FILTERS_DEBOUNCE_MS)}
@@ -1132,50 +1123,64 @@
 					</div>
 				</div>
 			</section>
-		</AsideBox>
-		<AsideBox title="Generate Playlist" boolname="mapsPlaylistOpen" faicon="fas fa-list">
-			<div class="dropdown-content" transition:fade>
-				{#if makingPlaylist}
-					<Spinner />
-				{:else}
-					<span>Maps count:</span>
-					<RangeSlider
-						range
-						min={0}
-						max={1000}
-						step={1}
-						values={[mapCount]}
-						hoverable
-						float
-						pips
-						pipstep={100}
-						all="label"
-						on:change={event => {
-							mapCount = event.detail.values[0];
-						}} />
-					<div class="duplicateDiffsContainer">
-						<input type="checkbox" id="duplicateDiffs" label="Duplicate map per diff" bind:checked={duplicateDiffs} />
-						<label for="duplicateDiffs" title="Will include every diff as a separate map entry">Duplicate map per diff</label>
+			<section class="filter dropdown-filter">
+				<div class="dropdown-header" on:click={() => (isPlaylistOpen = !isPlaylistOpen)}>
+					<div class="header-content">
+						<i class="fas fa-list" />
+						<span>Generate Playlist</span>
 					</div>
-					<div class="playlistTitleContainer">
-						<label for="playlistTitle" title="Name of the playlist" style="margin: 0;">Title</label>
-						<input type="text" id="playlistTitle" label="Title" bind:value={playlistTitle} />
+					<i class="fas fa-chevron-{isPlaylistOpen ? 'up' : 'down'}" />
+				</div>
+
+				{#if isPlaylistOpen}
+					<div class="dropdown-content" transition:fade>
+						{#if makingPlaylist}
+							<Spinner />
+						{:else}
+							<span>Maps count:</span>
+							<RangeSlider
+								range
+								min={0}
+								max={1000}
+								step={1}
+								values={[mapCount]}
+								hoverable
+								float
+								pips
+								pipstep={100}
+								all="label"
+								on:change={event => {
+									mapCount = event.detail.values[0];
+								}} />
+							<div class="duplicateDiffsContainer">
+								<input type="checkbox" id="duplicateDiffs" label="Duplicate map per diff" bind:checked={duplicateDiffs} />
+								<label for="duplicateDiffs" title="Will include every diff as a separate map entry">Duplicate map per diff</label>
+							</div>
+							<div class="playlistTitleContainer">
+								<label for="playlistTitle" title="Name of the playlist" style="margin: 0;">Title</label>
+								<input type="text" id="playlistTitle" label="Title" bind:value={playlistTitle} />
+							</div>
+							<Button
+								cls="playlist-button"
+								iconFa="fas fa-wand-magic-sparkles"
+								label="Generate playlist"
+								on:click={() => generatePlaylist()} />
+						{/if}
 					</div>
-					<Button cls="playlist-button" iconFa="fas fa-wand-magic-sparkles" label="Generate playlist" on:click={() => generatePlaylist()} />
 				{/if}
+			</section>
+			<div class="compact-pager-container">
+				<Pager
+					totalItems={numOfMaps}
+					{itemsPerPage}
+					itemsPerPageValues={null}
+					currentPage={currentPage - 1}
+					{loadingPage}
+					itemWidth={23}
+					mode={numOfMaps ? 'pages' : 'simple'}
+					on:page-changed={onPageChanged} />
 			</div>
 		</AsideBox>
-		<ContentBox cls="pager-container frosted">
-			<Pager
-				totalItems={numOfMaps}
-				{itemsPerPage}
-				itemsPerPageValues={null}
-				currentPage={currentPage - 1}
-				{loadingPage}
-				itemWidth={23}
-				mode={numOfMaps ? 'pages' : 'simple'}
-				on:page-changed={onPageChanged} />
-		</ContentBox>
 	</aside>
 	<Svrollbar viewport={asideContainer} />
 </section>
@@ -1240,18 +1245,18 @@
 		width: 100%;
 	}
 
-	:global(.pager-container) {
+	:global(.compact-pager-container) {
 		padding: 0.5em;
 		border-radius: 12px !important;
 		overflow: hidden;
 	}
 
-	:global(.pager-container .pagination) {
+	:global(.compact-pager-container .pagination) {
 		flex-direction: column;
 		align-items: center;
 	}
 
-	:global(.pager-container .pagination .position) {
+	:global(.compact-pager-container .pagination .position) {
 		display: flex;
 		justify-content: space-between;
 		width: 97%;
@@ -1271,6 +1276,7 @@
 		display: flex;
 		gap: 0.5em;
 		position: relative;
+		margin-bottom: 1.5em;
 	}
 
 	article {
@@ -1370,7 +1376,7 @@
 		margin: -1em;
 	}
 
-	:global(.pager-container .pagination) {
+	:global(.compact-pager-container .pagination) {
 		flex-grow: 1;
 	}
 
@@ -1643,13 +1649,17 @@
 			height: 105%;
 		}
 
-		.pager-container {
+		.compact-pager-container {
 			margin: unset;
 		}
 
 		.page-split {
 			margin-top: -1em;
 			margin-bottom: -1em;
+		}
+
+		.first-page-spacer {
+			height: 5em;
 		}
 
 		:global(.tab-container) {
@@ -1662,16 +1672,13 @@
 		}
 
 		aside {
-			display: none;
-		}
-
-		aside.open {
 			display: block;
 			position: fixed;
 			top: 4em;
 			padding: 0.5em;
 			left: 0;
 			width: 100%;
+			max-height: 95%;
 		}
 
 		.maps-box {
