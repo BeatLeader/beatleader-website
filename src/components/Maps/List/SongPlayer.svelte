@@ -17,7 +17,7 @@
 	let showVolumeSlider = false;
 
 	function handleTogglePlay() {
-		songPlayerStore.togglePlay(song.hash);
+		songPlayerStore.togglePlay(song.hash, song.downloadUrl.includes('beatleader'));
 	}
 
 	function handleVolumeChange(event) {

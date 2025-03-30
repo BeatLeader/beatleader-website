@@ -336,7 +336,7 @@
 		sortValues = sortValues1.map(v => {
 			let result = {...v};
 			if (result.value == 'timestamp') {
-				switch (currentFilters.type) {
+				switch (currentType) {
 					case 'ranked':
 						result.name = 'Rank date';
 						result.title = 'Sort by the date map become ranked';
@@ -360,7 +360,7 @@
 			return result;
 		});
 
-		switch (currentFilters.type) {
+		switch (currentType) {
 			case 'ranked':
 				dateRangeOptions = [...dateRangeOptions1, {value: 'ranked', name: 'Map ranking', icon: 'fa-star'}];
 				break;
@@ -735,7 +735,6 @@
 	);
 
 	let isPlaylistOpen = false;
-	let mobileFiltersOpen = false;
 </script>
 
 <svelte:head>
@@ -756,24 +755,24 @@
 								{:else if idx % itemsPerPage == 0}
 									{#if page == currentPage - 1}
 										<div class="page-split page-maker-{currentPage - 1}" bind:this={previousPageAnchor}>
-											---------- {currentPage - 1} ----------
+											{currentPage - 1}
 										</div>
 									{:else if page == currentPage}
 										<div class="page-split page-maker-{currentPage}" bind:this={currentPageAnchor}>
-											---------- {currentPage} ----------
+											{currentPage}
 										</div>
 									{:else}
 										<div class="page-split page-maker-{page}">
-											---------- {page} ----------
+											{page}
 										</div>
 									{/if}
 								{/if}
 								<MapCard
-									{idx}
 									map={song}
 									{starsKey}
 									forcePlaceholder={currentPage != page && currentPage - 1 != page && currentPage - 2 != page}
-									sortBy={currentFilters.sortBy} />
+									sortBy={currentFilters.sortBy}
+									dateType={currentType} />
 							{/each}
 						</div>
 						<Svrollbar viewport={scrollContainer} />
@@ -787,7 +786,7 @@
 		</div>
 	</article>
 
-	<aside class="maps-aside-container" class:open={mobileFiltersOpen} bind:this={asideContainer}>
+	<aside class="maps-aside-container" bind:this={asideContainer}>
 		<AsideBox title="Filters" boolname="mapsFiltersOpen" faicon="fas fa-filter">
 			<div class="sorting-options">
 				<Select bind:value={sortValue} on:change={onSortChange} fontSize="0.8" options={sortValues} />
@@ -1249,6 +1248,7 @@
 		padding: 0.5em;
 		border-radius: 12px !important;
 		overflow: hidden;
+		height: 5em;
 	}
 
 	:global(.compact-pager-container .pagination) {
@@ -1454,10 +1454,12 @@
 	}
 
 	.page-split {
-		width: 100%;
+		width: 60%;
 		justify-content: center;
 		display: flex;
-		margin-top: -2.8em;
+		margin-top: -2.2em;
+		border-bottom: solid 1px white;
+		opacity: 0.4;
 	}
 
 	:global(.pager-and-switch .pagination) {
@@ -1655,7 +1657,6 @@
 
 		.page-split {
 			margin-top: -1em;
-			margin-bottom: -1em;
 		}
 
 		.first-page-spacer {

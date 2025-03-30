@@ -20,8 +20,7 @@
 	export let map;
 	export let sortBy = 'stars';
 	export let forcePlaceholder = false;
-	export let idx = 0;
-	export let ratings = null;
+	export let dateType = 'ranked';
 
 	const dispatch = createEventDispatcher();
 	const {open, close} = getContext('simple-modal');
@@ -56,7 +55,7 @@
 			}
 		}
 
-		return song.difficulties[0].status;
+		return song.difficulties.length > 0 ? song.difficulties[0].status : null;
 	}
 
 	function calculateRequirements(song) {
@@ -219,27 +218,13 @@
 	}
 
 	onMount(() => {
-		const updatePosition = () => {
-			if (isHovered && mapCardWrapper) {
-				const newRect = mapCardWrapper.getBoundingClientRect();
-				mapCardElement.style.top = `${newRect.top}px`;
-				mapCardElement.style.left = `${newRect.left}px`;
-			}
-		};
-
-		// Create ResizeObserver for bottom container
 		bottomContainerObserver = new ResizeObserver(entries => {
 			for (const entry of entries) {
 				bottomContainerHeight = entry.contentRect.height;
 			}
 		});
 
-		window.addEventListener('scroll', updatePosition);
-		window.addEventListener('resize', updatePosition);
-
 		return () => {
-			window.removeEventListener('scroll', updatePosition);
-			window.removeEventListener('resize', updatePosition);
 			if (bottomContainerObserver) {
 				bottomContainerObserver.disconnect();
 			}
@@ -531,7 +516,7 @@
 						class:is-hovered={isHovered || currentAnimation}
 						on:scroll={handleScroll}
 						bind:this={modesListContainer}>
-						<ModesList {song} isHovered={isHovered || currentAnimation} {sortValue} {sortBy} />
+						<ModesList {song} isHovered={isHovered || currentAnimation} {sortValue} {sortBy} {dateType} />
 					</div>
 					{#if !isHovered && !currentAnimation}
 						<div class="mobile-chevron-container mobile-only">
@@ -686,7 +671,8 @@
 		align-items: center;
 		gap: 0.2em;
 		z-index: 2;
-		padding-top: 0.7em;
+		padding-top: 0.6em;
+		padding-left: 0.1em;
 	}
 
 	:global(.requirements-icons:has(> :nth-child(4))) {

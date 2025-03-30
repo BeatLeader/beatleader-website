@@ -8,18 +8,21 @@
 		wrapBLStatus,
 		sortingValueIsSongOnly,
 		badgesDef,
+		userDiffNameForDiff,
 	} from '../../../utils/beatleader/format';
 	import Icons from '../../Song/Icons.svelte';
 	import {decapitalizeFirstLetter} from '../../../utils/js';
 	import SongScoreCompact from './SongScoreCompact.svelte';
 	import SongStatus from './SongStatus.svelte';
 	import {createEventDispatcher} from 'svelte';
+	import FormattedDate from '../../Common/FormattedDate.svelte';
 
 	export let song;
 	export let isHovered;
 
 	export let sortValue;
 	export let sortBy;
+	export let dateType;
 
 	let modes;
 
@@ -51,6 +54,32 @@
 		modes = result;
 	}
 
+	function dateTypeDescription(dateType) {
+		switch (dateType) {
+			case 'ranked':
+				return 'Ranked:';
+			case 'qualification':
+				return 'Qualified:';
+			case 'nomination':
+				return 'Nominated:';
+			default:
+				return 'Uploaded:';
+		}
+	}
+
+	function dateTypeKey(dateType) {
+		switch (dateType) {
+			case 'ranked':
+				return 'rankedTime';
+			case 'qualification':
+				return 'qualificationTime';
+			case 'nomination':
+				return 'nominationTime';
+			default:
+				return 'uploadTime';
+		}
+	}
+
 	$: song?.difficulties && groupDiffs(song);
 	$: songOnly = sortingValueIsSongOnly(sortBy);
 </script>
@@ -68,10 +97,7 @@
 				<div class="diffs-container" class:isHovered>
 					{#each mode.diffs as diff, idx}
 						{@const diffSortValue = getSongSortingValue(song, diff, sortBy)}
-						<a href={`/leaderboard/global/${diff.leaderboardId}`} class="diff-container" class:isHovered>
-							{#if isHovered}
-								<span class="diff-name">{diff.difficultyName}</span>
-							{/if}
+						<div class="diff-container" class:isHovered>
 							<div
 								class="diff-orb"
 								class:isHovered
@@ -86,17 +112,28 @@
 										).color}; border: solid {diff.myScore.fullCombo ? 'yellow' : 'white'} 2px;">
 									</div>
 								{/if}
+								{#if isHovered}
+									<a
+										style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;"
+										href={`/leaderboard/global/${diff.leaderboardId}`} />
+									<span class="diff-name">{userDiffNameForDiff(diff.value)}</span>
+								{/if}
 								{#if diff.stars}
-									<span>{diff.stars.toFixed(isHovered ? 2 : 1)}</span><span>★</span>
+									<div class="stars-container">
+										<span>{diff.stars.toFixed(isHovered ? 2 : 1)}</span><span>★</span>
+									</div>
 								{/if}
 							</div>
 							{#if isHovered}
-								<div class="tail-container">
+								<a href={`/leaderboard/global/${diff.leaderboardId}`} class="tail-container">
 									<div class="status-container">
 										{#if diff.status && diff.status != DifficultyStatus.unranked && diff.status != DifficultyStatus.unrankable}
 											<SongStatus songStatus={wrapBLStatus(diff.status)} />
 										{/if}
-										{#if !songOnly}
+										{#if sortBy == 'timestamp' && (diff[dateTypeKey(dateType)] || song[dateTypeKey(dateType)])}
+											<span class="sort-value" style="font-size: 0.8em;">
+												<FormattedDate date={diff[dateTypeKey(dateType)] ?? song[dateTypeKey(dateType)]} /></span>
+										{:else if !songOnly}
 											<span class="sort-value">{diffSortValue}</span>
 										{/if}
 									</div>
@@ -104,9 +141,9 @@
 										<SongScoreCompact score={diff.myScore} />
 										<Icons {song} diffInfo={{diff: diff.difficultyName, type: diff.modeName}} icons={['playlist']} />
 									</div>
-								</div>
+								</a>
 							{/if}
-						</a>
+						</div>
 					{/each}
 				</div>
 			</div>
@@ -167,9 +204,7 @@
 	}
 
 	.diff-container.isHovered {
-		display: grid;
-		grid-template-columns: 6em 3.5em auto;
-		gap: 0.2em;
+		display: contents;
 		align-items: center;
 		pointer-events: auto;
 	}
@@ -180,8 +215,9 @@
 	}
 
 	.diffs-container.isHovered {
-		flex-direction: column;
 		width: 100%;
+		display: grid;
+		grid-template-columns: max-content 1fr;
 	}
 
 	.status-container {
@@ -216,10 +252,12 @@
 	}
 
 	.diff-orb.isHovered {
+		position: relative;
 		padding: 0.25em 0.3em 0.2em 0.4em;
 		font-size: 0.8em;
 		border-radius: 0.7em;
-		justify-content: center;
+		justify-content: space-between;
+		gap: 0.5em;
 	}
 
 	.my-score {
@@ -236,10 +274,12 @@
 	}
 
 	.tail-container {
+		position: relative;
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
 		gap: 0.2em;
+		color: white;
 	}
 
 	@media (max-width: 767px) {

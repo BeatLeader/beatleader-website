@@ -47,21 +47,23 @@ export default () => {
 		update(state => ({...state, playing: false, currentHash: null}));
 	}
 
-	function togglePlay(hash) {
+	function togglePlay(hash, local = false) {
 		update(state => {
 			const isPlaying = hash == state.currentHash ? !state.playing : true;
+
+			let url = local ? `https://cdn.songs.beatleader.com/${hash}.mp3` : `https://eu.cdn.beatsaver.com/${hash.toLowerCase()}.mp3`;
 
 			if (hash !== state.currentHash) {
 				cleanup();
 				currentTimeStore.set(0);
-				audio = new Audio(`https://eu.cdn.beatsaver.com/${hash.toLowerCase()}.mp3`);
+				audio = new Audio(url);
 				audio.volume = state.volume;
 				audio.addEventListener('timeupdate', handleTimeUpdate);
 				audio.addEventListener('loadedmetadata', handleMetadata);
 				audio.addEventListener('ended', handleEnded);
 				audio.addEventListener('pause', handleEnded);
 			} else if (!audio) {
-				audio = new Audio(`https://eu.cdn.beatsaver.com/${hash.toLowerCase()}.mp3`);
+				audio = new Audio(url);
 				audio.volume = state.volume;
 				audio.addEventListener('timeupdate', handleTimeUpdate);
 				audio.addEventListener('loadedmetadata', handleMetadata);
