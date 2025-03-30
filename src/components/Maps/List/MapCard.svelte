@@ -144,10 +144,12 @@
 
 			containerHeight = modesListContainer.clientHeight;
 			contentHeight = modesListContainer.scrollHeight;
-			updateMaskImage();
 
 			if (Math.abs(currentHeight - targetHeight) > 1) {
 				currentAnimation = requestAnimationFrame(update);
+				if (contentHeight > 350 && Math.abs(currentHeight - targetHeight) < 50) {
+					callback?.();
+				}
 			} else {
 				currentAnimation = null;
 				if (targetHeight > 0) {
@@ -155,14 +157,16 @@
 				} else {
 					currentHeight = 0;
 				}
-				modesListContainer.style.height = 'auto';
 				callback?.();
+				modesListContainer.style.height = 'auto';
 			}
 		}
 
 		currentTargetHeight = targetHeight;
 		currentAnimation = requestAnimationFrame(update);
 	}
+
+	var shouldInit = false;
 
 	function handleHover(hovering, userHovering = false) {
 		mouseInside = hovering && userHovering;
@@ -189,7 +193,13 @@
 
 				scheduledAnimation = setTimeout(() => {
 					if (modesListContainer) {
-						animateHeight(modesListContainer.scrollHeight, null);
+						shouldInit = true;
+						animateHeight(modesListContainer.scrollHeight, () => {
+							if (shouldInit) {
+								updateMaskImage(true);
+								shouldInit = false;
+							}
+						});
 					}
 				}, 0);
 			} else {
@@ -237,8 +247,8 @@
 	let currentGradient = {
 		transparent: 0,
 		whiteStart: 0,
-		whiteEnd: 500,
-		transparentEnd: 500,
+		whiteEnd: 345,
+		transparentEnd: 345,
 	};
 
 	// Define target gradient positions based on scroll
@@ -274,15 +284,15 @@
 		}
 	}
 
-	function updateMaskImage() {
+	function updateMaskImage(initial = false) {
 		if (!modesListContainer) return;
 
-		if (Math.abs(contentHeight - containerHeight) < 1) {
+		if (Math.abs(contentHeight - containerHeight) < 5) {
 			targetGradient = {
 				transparent: 0,
 				whiteStart: 0,
-				whiteEnd: containerHeight,
-				transparentEnd: containerHeight,
+				whiteEnd: containerHeight + 5,
+				transparentEnd: containerHeight + 5,
 			};
 		} else {
 			const scrollPercentage = scrollPosition / (contentHeight - containerHeight);
@@ -294,7 +304,7 @@
 					whiteEnd: 320,
 					transparentEnd: containerHeight,
 				};
-			} else if (Math.abs(scrollPercentage - 1) <= 0.01) {
+			} else if (Math.abs(scrollPercentage - 1) <= 0.05) {
 				targetGradient = {
 					transparent: 0,
 					whiteStart: 20,
@@ -311,10 +321,22 @@
 			}
 		}
 
-		// Animate the gradient positions
+		if (initial) {
+			currentGradient = {...targetGradient};
+			const maskImage = `linear-gradient(180deg, 
+			transparent ${currentGradient.transparent}px, 
+			white ${currentGradient.whiteStart}px, 
+			white ${currentGradient.whiteEnd}px, 
+			transparent ${currentGradient.transparentEnd}px)`;
 
-		if (!needsUpdate) {
-			requestAnimationFrame(animateMask);
+			modesListContainer.style.maskImage = maskImage;
+			modesListContainer.style.webkitMaskImage = maskImage;
+		} else {
+			// Animate the gradient positions
+
+			if (!needsUpdate) {
+				requestAnimationFrame(animateMask);
+			}
 		}
 	}
 
@@ -397,7 +419,7 @@
 				{:else if tooltipType === 'author'}
 					<span class="tooltip-author">{song.author}</span>
 				{:else if tooltipType === 'mappers'}
-					<MapperList {song} maxHeight="7em" fontSize="0.9em" noArrow={true} tooltip={true} />
+					<MapperList {song} maxHeight="unset" fontSize="0.9em" noArrow={true} tooltip={true} />
 				{/if}
 			</div>
 		{/if}
@@ -492,7 +514,7 @@
 					style="--margin-top-value: -{headerContainerHeight < 150 ? 2.4 : 0}em;">
 					<div class="placeholder">
 						{#if sortValue}
-							<div class="sort-value">
+							<div class="sort-value" class:is-hovered={isHovered || currentAnimation}>
 								{sortValue}
 							</div>
 						{/if}
@@ -677,15 +699,18 @@
 		font-size: 0.9em;
 	}
 
+	.sort-value.is-hovered {
+		margin-bottom: 0.09em;
+	}
+
 	.sort-value-background {
-		height: 32px;
+		height: 1.88em;
 		position: absolute;
 		display: block;
 		bottom: 0;
 		background-color: transparent;
 		width: 100%;
 		border-radius: 0 0 8px 8px;
-		transition: all 0.3s ease-in-out;
 	}
 
 	.sort-value-background.is-hovered {
@@ -1163,7 +1188,7 @@
 
 		.requirements-icons {
 			padding-top: 0.5em;
-			left: 0.5em;
+			left: 0.4em;
 		}
 
 		.header h1 span.name {

@@ -24,7 +24,6 @@
 		height: 26px;
 		justify-content: center;
 		margin: 1px;
-		padding-top: 1px;
 		pointer-events: auto;
 		width: 26px;
 		color: white;

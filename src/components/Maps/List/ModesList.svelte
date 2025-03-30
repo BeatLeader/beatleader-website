@@ -241,11 +241,9 @@
 	.diff-orb {
 		color: white;
 		font-weight: 600;
-
 		padding: 0.15em 0.3em 0.18em 0.4em;
 		font-size: 0.7em;
 		border-radius: 0.8em;
-
 		display: flex;
 		align-items: center;
 		gap: 0.1em;
@@ -254,11 +252,26 @@
 
 	.diff-orb.isHovered {
 		position: relative;
-		padding: 0.25em 0.3em 0.2em 0.4em;
+		padding: 0.1em 0.3em 0.1em 0.4em;
 		font-size: 0.8em;
 		border-radius: 0.7em;
 		justify-content: space-between;
 		gap: 0.5em;
+	}
+
+	.diff-orb.isHovered::before {
+		content: '';
+		position: absolute;
+		top: -0.2em;
+		bottom: -0.2em;
+		right: -0.2em;
+		border-radius: 10px 0 0 10px;
+		left: -0.2em;
+		z-index: -1;
+	}
+
+	.diff-container.isHovered:hover .diff-orb::before {
+		background-color: #474747a1;
 	}
 
 	.my-score {
@@ -281,6 +294,21 @@
 		align-items: center;
 		gap: 0.2em;
 		color: white;
+	}
+
+	.tail-container::before {
+		content: '';
+		position: absolute;
+		top: -0.16em;
+		bottom: -0.16em;
+		right: -0.2em;
+		border-radius: 0 10px 10px 0;
+		left: -0.15em;
+		z-index: -1;
+	}
+
+	.diff-container.isHovered:hover .tail-container::before {
+		background-color: #474747a1;
 	}
 
 	@media (max-width: 767px) {

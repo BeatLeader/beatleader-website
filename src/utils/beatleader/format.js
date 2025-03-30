@@ -1121,7 +1121,7 @@ export const requirementsDescription = {
 	vnjs: {
 		title: 'v4.1 Map with variable note speed. Works only on Beat Saber 1.40+',
 		name: 'VNJS',
-		icon: 'fas fa-chart-simple',
+		icon: 'vnjs-icon',
 		color: 'grey',
 		textColor: 'white',
 	},

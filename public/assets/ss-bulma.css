@@ -11877,11 +11877,21 @@ select {
 }
 
 .v3-icon {
-	width: 100% !important;
-	height: 100% !important;
-	background-size: cover !important;
+	width: 88% !important;
+	aspect-ratio: 1;
+	background-size: contain !important;
+	background-position: center !important;
 	background-repeat: no-repeat !important;
 	background-image: url('./v3.svg') !important;
+}
+
+.vnjs-icon {
+	width: 74% !important;
+	aspect-ratio: 1;
+	background-size: contain;
+	background-repeat: no-repeat !important;
+	background-position: center;
+	background-image: url('./vnjs.svg') !important;
 }
 
 /* https://www.vecteezy.com/vector-art/1268644-set-of-fresh-bread */

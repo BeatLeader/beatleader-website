@@ -270,7 +270,7 @@
 
 				numOfMaps = response.metadata.total;
 
-				if (numOfMaps && allMaps.length > numOfMaps) {
+				if (allMaps.length > numOfMaps) {
 					allMaps = allMaps.slice(0, numOfMaps);
 				}
 
@@ -782,7 +782,10 @@
 			{:else if isLoading}
 				<Spinner />
 			{:else}
-				<p>No maps found.</p>
+				<div class="no-maps-found">
+					<p>Can't find any maps.</p>
+					<a href="https://bsmg.wiki/mapping/">Try making a new one!</a>
+				</div>
 			{/if}
 		</div>
 	</article>
@@ -1573,6 +1576,13 @@
 
 	.mobile-switcher {
 		display: none;
+	}
+
+	.no-maps-found {
+		width: 70vw;
+		height: 100%;
+		text-align: center;
+		align-content: center;
 	}
 
 	:global(.maps-type-button, .my-type-button) {
