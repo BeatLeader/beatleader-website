@@ -555,14 +555,6 @@
 		pointer-events: none;
 	}
 
-	/* .map-card-wrapper:hover .root-cinematics {
-		opacity: 0.2;
-	} */
-
-	/* .map-card-wrapper:hover .icons-container {
-		display: block;
-	} */
-
 	.map-card {
 		position: relative;
 		border-radius: 0.4em;
@@ -672,7 +664,7 @@
 		gap: 0.2em;
 		z-index: 2;
 		padding-top: 0.6em;
-		padding-left: 0.1em;
+		padding-left: 0.13em;
 	}
 
 	:global(.requirements-icons:has(> :nth-child(4))) {

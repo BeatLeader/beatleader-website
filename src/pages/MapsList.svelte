@@ -607,7 +607,7 @@
 		if (!event?.detail) return;
 
 		currentFilters.date_from = event.detail?.from ? parseInt(event.detail.from.getTime() / 1000) : null;
-		currentFilters.date_to = event.detail?.to ? parseInt((event.detail.to.getTime() + DAY) / 1000) : null;
+		currentFilters.date_to = event.detail?.to ? parseInt(event.detail.to.getTime() / 1000) : null;
 
 		currentFilters = currentFilters;
 
@@ -716,9 +716,10 @@
 		}
 	}
 
-	const today = new Date(new Date().setHours(0, 0, 0, 0));
-	const lastWeek = new Date(new Date(new Date().setHours(0, 0, 0, 0)).setDate(today.getDate() - 7));
-	const lastYear = new Date(new Date(new Date().setHours(0, 0, 0, 0)).setFullYear(today.getFullYear() - 1));
+	const now = Date.now() / 1000;
+	const today = dateFromUnix(now - 60 * 60 * 24);
+	const lastWeek = dateFromUnix(now - 60 * 60 * 24 * 7);
+	const lastYear = dateFromUnix(now - 60 * 60 * 24 * 365);
 
 	let isDateFilterOpen = !!(currentFilters.date_from || currentFilters.date_to);
 	let isCategoryFilterOpen = !!currentFilters.mapType;
@@ -1594,13 +1595,13 @@
 
 	@media screen and (min-width: 2000px) {
 		aside {
-			left: calc(50vw + 35em);
+			left: calc(50vw + 32em);
 			right: unset;
 		}
 
 		.songs {
 			padding-left: calc(50vw - 40em);
-			padding-right: calc(50vw - 40em);
+			padding-right: calc(50vw - 32em);
 		}
 	}
 

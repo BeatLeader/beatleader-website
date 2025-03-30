@@ -218,11 +218,12 @@
 		width: 100%;
 		display: grid;
 		grid-template-columns: max-content 1fr;
+		gap: 0.3em;
 	}
 
 	.status-container {
 		display: flex;
-		gap: 0.2em;
+		gap: 0.3em;
 		align-items: center;
 	}
 
