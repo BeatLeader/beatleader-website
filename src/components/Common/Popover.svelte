@@ -44,6 +44,12 @@
 	export let isOpen: boolean = undefined;
 
 	/**
+	 * If true, the popover will only open when the reference element's content overflows
+	 * (i.e., when scrollWidth > clientWidth)
+	 */
+	export let forOverflow: boolean = false;
+
+	/**
 	 * The reference element to which we are placing the popover around.
 	 *
 	 * All modifiers, including `spaceAway` and `placement`, use this as the reference.
@@ -141,6 +147,13 @@
 	export let popperOptions: any = {};
 
 	/**
+	 * Offset from the viewport edges when calculating available space for popover placement.
+	 * Useful when you have fixed headers or other elements that should be considered as boundaries.
+	 * Format: { top: number, bottom: number, left: number, right: number }
+	 */
+	export let boundsOffset: {top?: number; bottom?: number; left?: number; right?: number} = {top: 100, bottom: 100, left: 0, right: 0};
+
+	/**
 	 * An instance of popper
 	 */
 	export let popperInstance: any = undefined;
@@ -173,7 +186,11 @@
 		isPopoverVisible =
 			typeof isOpen === 'boolean'
 				? isOpen
-				: isPopoverHovered || isReferenceClicked || isReferenceFocused || isReferenceHovered || isPopoverFocused || isContextMenuOpen;
+				: forOverflow
+					? referenceElement &&
+						referenceElement.scrollWidth > referenceElement.clientWidth &&
+						(isPopoverHovered || isReferenceClicked || isReferenceFocused || isReferenceHovered || isPopoverFocused || isContextMenuOpen)
+					: isPopoverHovered || isReferenceClicked || isReferenceFocused || isReferenceHovered || isPopoverFocused || isContextMenuOpen;
 
 		if (oldState !== isPopoverVisible) {
 			// If you're using click events with hovers, this buffer helps ensure their UX
@@ -307,6 +324,18 @@
 				name: 'offset',
 				options: {
 					offset: [spaceAlong, spaceAway],
+				},
+			},
+			{
+				name: 'flip',
+				options: {
+					padding: {
+						top: boundsOffset.top || 0,
+						bottom: boundsOffset.bottom || 0,
+						left: boundsOffset.left || 0,
+						right: boundsOffset.right || 0,
+					},
+					fallbackPlacements: [placement == 'bottom' ? 'top' : 'bottom', placement == 'right' ? 'left' : 'right'],
 				},
 			},
 		];

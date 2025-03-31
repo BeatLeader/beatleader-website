@@ -1293,7 +1293,7 @@
 		right: 1em;
 		width: 25em;
 		max-height: 90%;
-		overflow: auto;
+		overflow: visible;
 		/* hide scrollbar */
 		-ms-overflow-style: none;
 		scrollbar-width: none;

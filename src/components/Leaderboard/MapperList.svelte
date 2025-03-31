@@ -3,7 +3,10 @@
 	import {configStore} from '../../stores/config';
 
 	export let song;
+
 	export let maxHeight = '4.5em';
+	export let maxWidth = 'unset';
+
 	export let fontSize = '1em';
 	export let noArrow = false;
 	export let rootElement;
@@ -69,7 +72,7 @@
 {#if song.mappers?.length}
 	<div
 		class="mappers-list"
-		style="max-height: {maxHeight}; font-size: {fontSize}"
+		style="max-height: {maxHeight}; font-size: {fontSize}; max-width: {maxWidth}"
 		bind:this={badgeContainer}
 		class:expanded={isExpanded}
 		class:expandable={isOverflowing && !isExpanded}

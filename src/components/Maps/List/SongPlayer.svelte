@@ -83,7 +83,7 @@
 	}
 	.progress {
 		height: 100%;
-		background: #007bff;
+		background: #ffffff7c;
 	}
 	.time {
 		font-size: 0.9em;

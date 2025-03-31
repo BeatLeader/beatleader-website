@@ -16,6 +16,7 @@
 	import {songPlayerStore} from '../../../stores/songPlayer';
 	import {cinematicsStore} from '../../../stores/cinematics';
 	import MapRequirements from './MapRequirements.svelte';
+	import Popover from '../../Common/Popover.svelte';
 
 	export let map;
 	export let sortBy = 'stars';
@@ -361,68 +362,33 @@
 		}
 	}
 
-	$: hash && handlePlay($songPlayerStore?.currentHash, hash);
-
-	let tooltipVisible = false;
-	let tooltipX = 0;
-	let tooltipY = 0;
-	let tooltipType = '';
 	let titleTextElement;
 	let authorElement;
 	let mappersElement;
 
-	function showTooltip(type) {
-		let element;
-		let offset = 5;
-		switch (type) {
-			case 'title':
-				element = titleTextElement;
-				break;
-			case 'author':
-				element = authorElement;
-				break;
-			case 'mappers':
-				element = mappersElement;
-				offset = 0;
-				break;
-			default:
-				element = titleTextElement;
-				break;
-		}
-
-		// Only show tooltip if the content is overflowing
-		if (element && element.scrollWidth > element.clientWidth) {
-			const rect = element.getBoundingClientRect();
-
-			tooltipX = rect.left + rect.width / 2;
-			tooltipY = rect.top + offset;
-
-			tooltipType = type;
-			tooltipVisible = true;
-		}
-	}
-
-	function hideTooltip() {
-		tooltipVisible = false;
-	}
+	$: hash && handlePlay($songPlayerStore?.currentHash, hash);
 </script>
 
 {#if song}
 	{#if !forcePlaceholder && !song.placeholder}
-		{#if tooltipVisible}
-			<div class="title-tooltip" style="left: {tooltipX}px; bottom: calc(100vh - {tooltipY}px + 5px);">
-				{#if tooltipType === 'title'}
-					{name}
-					{#if $configStore?.leaderboardPreferences?.showSubtitleInHeader && song.subName}
-						<span class="tooltip-subname">{song.subName}</span>
-					{/if}
-				{:else if tooltipType === 'author'}
-					<span class="tooltip-author">{song.author}</span>
-				{:else if tooltipType === 'mappers'}
-					<MapperList {song} maxHeight="unset" fontSize="0.9em" noArrow={true} tooltip={true} />
+		<Popover triggerEvents={['hover', 'focus']} placement="top" referenceElement={titleTextElement} forOverflow={true}>
+			<div class="title-tooltip">
+				{name}
+				{#if $configStore?.leaderboardPreferences?.showSubtitleInHeader && song.subName}
+					<span class="tooltip-subname">{song.subName}</span>
 				{/if}
 			</div>
-		{/if}
+		</Popover>
+		<Popover triggerEvents={['hover', 'focus']} placement="top" referenceElement={authorElement} forOverflow={true}>
+			<div class="title-tooltip">
+				<span class="tooltip-author">{song.author}</span>
+			</div>
+		</Popover>
+		<Popover triggerEvents={['hover', 'focus']} placement="top" referenceElement={mappersElement} forOverflow={true} spaceAway={4}>
+			<div class="title-tooltip">
+				<MapperList {song} maxHeight="unset" maxWidth="25em" fontSize="0.9em" noArrow={true} tooltip={true} />
+			</div>
+		</Popover>
 		<div class="map-card-wrapper" class:transparent={song.transparent} class:is-hovered={isHovered} bind:this={mapCardWrapper}>
 			<div class="cinematics root-cinematics" style={isHovered ? `height: ${mapCardRect.height}px;` : ''} class:is-hovered={isHovered}>
 				<div class="cinematics-canvas root-canvas">
@@ -465,11 +431,7 @@
 						<div class="header-container" bind:this={headerContainer}>
 							<div class="header-top-part">
 								<h1 class="song-title">
-									<div
-										class="title-text"
-										on:mouseenter={() => showTooltip('title')}
-										on:mouseleave={hideTooltip}
-										bind:this={titleTextElement}>
+									<div class="title-text" bind:this={titleTextElement}>
 										<span class="name">{name}</span>
 										{#if $configStore?.leaderboardPreferences?.showSubtitleInHeader && song.subName}
 											<span class="subname">{song.subName}</span>
@@ -478,12 +440,11 @@
 								</h1>
 
 								<div class="title-container">
-									<span class="author" on:mouseenter={() => showTooltip('author')} on:mouseleave={hideTooltip} bind:this={authorElement}
-										>{song.author}</span>
+									<span class="author" bind:this={authorElement}>{song.author}</span>
 								</div>
 							</div>
 
-							<div class="mapper-container" on:mouseenter={() => showTooltip('mappers')} on:mouseleave={hideTooltip}>
+							<div class="mapper-container">
 								<MapperList {song} maxHeight="2.2em" fontSize="0.9em" noArrow={true} bind:rootElement={mappersElement} />
 							</div>
 							<div class="status-container" class:is-hovered={isHovered}>
@@ -934,8 +895,6 @@
 	}
 
 	.title-tooltip {
-		position: fixed;
-		z-index: 100;
 		background: rgba(0, 0, 0, 0.8);
 		color: white;
 		padding: 0.3em 0.5em;
@@ -944,7 +903,6 @@
 		white-space: normal;
 		width: max-content;
 		max-width: 24vw;
-		transform: translateX(-50%);
 	}
 
 	.tooltip-subname {
