@@ -362,6 +362,18 @@
 		}
 	}
 
+	let mapLink = null;
+
+	function getMapLink(song) {
+		if (song.difficulties) {
+			mapLink = `/leaderboard/global/${song.difficulties?.filter(d => d.value && d.applicable).sort((a, b) => b.value - a.value)?.[0]?.leaderboardId}`;
+		} else {
+			mapLink = `/leaderboard/global/${song.id}`;
+		}
+	}
+
+	$: getMapLink(song);
+
 	let titleTextElement;
 	let authorElement;
 	let mappersElement;
@@ -412,7 +424,7 @@
 						<canvas bind:this={cinematicsCanvas} style="position: absolute; width: 100%; height: 100%; opacity: 0" />
 					</div>
 				</div>
-				<a class="header-link" href={`/leaderboard/global/${song.difficulties?.[0]?.leaderboardId ?? song.id}`}></a>
+				<a class="header-link" href={mapLink}></a>
 				<div class="header" style="height: {headerContainerHeight < 150 ? '100%' : 'unset'};" class:is-hovered={isHovered}>
 					<div
 						class="map-cover"
@@ -427,7 +439,7 @@
 						</div>
 					{/if}
 
-					<a class="main-container" href={`/leaderboard/global/${song.difficulties?.[0]?.leaderboardId ?? song.id}`}>
+					<a class="main-container" href={mapLink}>
 						<div class="header-container" bind:this={headerContainer}>
 							<div class="header-top-part">
 								<h1 class="song-title">

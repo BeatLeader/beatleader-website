@@ -51,7 +51,12 @@
 			}
 		}
 
-		modes = result;
+		for (let i = 0; i < result.length; i++) {
+			const mode = result[i];
+			mode.diffs = mode.diffs.sort((a, b) => a.value - b.value);
+		}
+
+		modes = result.sort((a, b) => (a.mode > 0 ? a.mode : 10) - (b.mode > 0 ? b.mode : 10));
 	}
 
 	function dateTypeDescription(dateType) {
@@ -101,6 +106,7 @@
 							<div
 								class="diff-orb"
 								class:isHovered
+								class:nonApplicable={!diff.applicable}
 								style="background-color: {diff.color}; margin-right: {!isHovered && idx == mode.diffs.length - 1 && !diff.stars
 									? '0.3em'
 									: '0'};">
@@ -272,6 +278,10 @@
 
 	.diff-container.isHovered:hover .diff-orb::before {
 		background-color: #474747a1;
+	}
+
+	.diff-orb.nonApplicable {
+		opacity: 0.6;
 	}
 
 	.my-score {

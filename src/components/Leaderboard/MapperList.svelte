@@ -135,7 +135,8 @@
 	}
 
 	.level-author {
-		color: var(--alternate);
+		color: white;
+		opacity: 0.8;
 		font-size: 1.1em;
 	}
 

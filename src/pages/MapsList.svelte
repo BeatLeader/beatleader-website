@@ -1291,9 +1291,11 @@
 	aside {
 		position: fixed;
 		right: 1em;
-		width: 25em;
+		width: 26em;
+		padding-left: 0.5em;
+		padding-right: 0.5em;
 		max-height: 90%;
-		overflow: visible;
+		overflow: auto;
 		/* hide scrollbar */
 		-ms-overflow-style: none;
 		scrollbar-width: none;
