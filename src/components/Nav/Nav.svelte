@@ -118,7 +118,7 @@
 	];
 
 	let leaderboardType = leaderboardTypeOptions.find(
-		t => t.id == GLOBAL_LEADERBOARD_TYPE || ((GLOBAL_LEADERBOARD_TYPE == 'general' || GLOBAL_LEADERBOARD_TYPE == 'funny') && t.id == '')
+		t => t.id == GLOBAL_LEADERBOARD_TYPE || (GLOBAL_LEADERBOARD_TYPE == 'funny' && t.id == '')
 	);
 
 	let signupOptions = [];
@@ -267,15 +267,15 @@
 				<div class="logo-name">
 					<span class="name">OS</span>
 					{#if leaderboardType.id != ''}
-						<span class="leaderboard-type">{leaderboardType.name}</span>
+						<span class="leaderboard-type">{leaderboardType.id == 'general' ? 'TRAITOR' : leaderboardType.name}</span>
 					{/if}
 				</div>
 			</div>
 
 			<div class="logo-container up-to-tablet">
 				<img src="/assets/logo-small.webp" class="logo" alt="" />
-				{#if leaderboardType.id != 'general' && leaderboardType.id != 'funny'}
-					<span class="leaderboard-type">{leaderboardType.name}</span>
+				{#if leaderboardType.id != ''}
+					<span class="leaderboard-type">{leaderboardType.id == 'general' ? 'TRAITOR' : leaderboardType.name}</span>
 				{/if}
 			</div>
 		</a>
