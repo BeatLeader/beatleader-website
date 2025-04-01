@@ -44,7 +44,7 @@
 		var mapBorderColor = '#003e54';
 
 		Chart.defaults.color = '#fff';
-		if ($configStore.preferences.theme == 'flylight') {
+		if ($configStore.preferences.apriltheme == 'flylight' || $configStore.preferences.apriltheme == 'paradise') {
 			mapBorderColor = '#dadadaaf';
 
 			Chart.defaults.color = '#757575';

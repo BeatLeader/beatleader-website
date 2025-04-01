@@ -30,6 +30,7 @@ export const DEFAULT_CONFIG = {
 		iconsOnAvatars: 'show',
 		scoresSortOptions: 'last',
 		theme: 'ree-dark',
+		apriltheme: 'paradise',
 		oneclick: 'modassistant',
 		webPlayer: 'beatleader',
 		linkOption: 'thistab',

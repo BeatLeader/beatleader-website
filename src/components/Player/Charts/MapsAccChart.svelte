@@ -75,7 +75,7 @@
 		var averageLinesColor = 'rgba(255,255,255,.35)';
 
 		Chart.defaults.color = '#fff';
-		if ($configStore.preferences.theme == 'flylight') {
+		if ($configStore.preferences.apriltheme == 'flylight' || $configStore.preferences.apriltheme == 'paradise') {
 			mapBorderColor = '#dadadaaf';
 			ssPlusColor = 'rgba(143,72,219, .4)';
 			ssColor = 'rgba(190,42,66, .4)';

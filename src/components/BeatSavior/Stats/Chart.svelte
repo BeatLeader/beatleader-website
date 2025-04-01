@@ -17,7 +17,7 @@
 	let theme = null;
 	let textColor = '';
 
-	if ($configStore.preferences.theme != 'flylight') {
+	if ($configStore.preferences.apriltheme != 'flylight' && $configStore.preferences.apriltheme != 'paradise') {
 		textColor = '#fff';
 	} else {
 		textColor = '#757575';

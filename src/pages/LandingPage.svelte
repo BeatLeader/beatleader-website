@@ -67,11 +67,11 @@
 				<div class="features">
 					<div class="feature">
 						<img src="/assets/leaderboard-landing.webp" class="feature-image" style="transform: rotate3d(0, 1, 0, 22deg);" />
-						<h3 class="feature-description">In-game leaderboards<br />for custom maps!</h3>
+						<h1 class="feature-description">In-game leaderboards<br />for custom maps!</h1>
 					</div>
 					<div class="feature">
 						<img src="/assets/webreplays-landing.webp" class="feature-image" style="transform: rotate3d(0, 1, 0, -22deg);" />
-						<h3 class="feature-description">Gameplay replays!</h3>
+						<h1 class="feature-description">Gameplay replays!</h1>
 					</div>
 				</div>
 

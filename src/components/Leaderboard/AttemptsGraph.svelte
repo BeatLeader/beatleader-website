@@ -248,7 +248,6 @@
 
 	.rate {
 		font-size: 1.25rem;
-		color: white;
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -266,7 +265,6 @@
 	.count {
 		font-size: 2.5rem;
 		font-weight: bold;
-		color: white;
 	}
 
 	.label {

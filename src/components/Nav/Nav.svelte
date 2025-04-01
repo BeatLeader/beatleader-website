@@ -80,7 +80,7 @@
 
 	var leaderboardTypeOptions = [
 		{
-			name: 'General',
+			name: 'OurSaber',
 			id: '',
 			logoBig: '/assets/logo.webp',
 			logoSmall: '/assets/logo-small.webp',
@@ -109,10 +109,16 @@
 			logoBig: '/assets/logo.webp',
 			logoSmall: '/assets/favicon-96x96.webp',
 		},
+		{
+			name: 'Betray Motherland',
+			id: 'general',
+			logoBig: '/assets/logo.webp',
+			logoSmall: '/assets/logo-small.webp',
+		},
 	];
 
 	let leaderboardType = leaderboardTypeOptions.find(
-		t => t.id == GLOBAL_LEADERBOARD_TYPE || (GLOBAL_LEADERBOARD_TYPE == 'general' && t.id == '')
+		t => t.id == GLOBAL_LEADERBOARD_TYPE || ((GLOBAL_LEADERBOARD_TYPE == 'general' || GLOBAL_LEADERBOARD_TYPE == 'funny') && t.id == '')
 	);
 
 	let signupOptions = [];
@@ -249,7 +255,7 @@
 			<div class="logo-container desktop-and-up">
 				<img src="/assets/logo.webp" class="logo" alt="" />
 				<div class="logo-name">
-					<span class="name">BEATLEADER</span>
+					<span class="name">OU<span class="funny-r">R</span>SABE<span class="funny-r">R</span></span>
 					{#if leaderboardType.id != ''}
 						<span class="leaderboard-type">{leaderboardType.name}</span>
 					{/if}
@@ -259,7 +265,7 @@
 			<div class="logo-container tablet">
 				<img src="/assets/logo-small.webp" class="logo" alt="" />
 				<div class="logo-name">
-					<span class="name">BL</span>
+					<span class="name">OS</span>
 					{#if leaderboardType.id != ''}
 						<span class="leaderboard-type">{leaderboardType.name}</span>
 					{/if}
@@ -268,7 +274,7 @@
 
 			<div class="logo-container up-to-tablet">
 				<img src="/assets/logo-small.webp" class="logo" alt="" />
-				{#if leaderboardType.id != 'general'}
+				{#if leaderboardType.id != 'general' && leaderboardType.id != 'funny'}
 					<span class="leaderboard-type">{leaderboardType.name}</span>
 				{/if}
 			</div>
@@ -773,6 +779,15 @@
 
 	.search-hint {
 		display: none !important;
+	}
+
+	.funny-r {
+		display: inline-block;
+		transform: scaleX(-1);
+		font-family: 'Audiowide';
+		margin-left: -0.16em;
+		margin-right: 0.2em;
+		font-size: 1em;
 	}
 
 	@media (pointer: coarse) {

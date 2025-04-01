@@ -2,8 +2,10 @@
 	import {fade} from 'svelte/transition';
 	import ToolTip from '../../Common/ToolTip.svelte';
 	import {onMount, onDestroy} from 'svelte';
+	import {GLOBAL_LEADERBOARD_TYPE} from '../../../utils/format';
 
 	export let badges;
+	export let pp;
 
 	let badgesContainer;
 	let allElements = [];
@@ -206,7 +208,13 @@
 	$: fetchElements(badges);
 </script>
 
-{#if badges}
+{#if GLOBAL_LEADERBOARD_TYPE == 'funny' && pp > 0}
+	<div class="bl-badges" bind:this={badgesContainer} transition:fade|global={{duration: 500}}>
+		<ToolTip content="PP Grinder">
+			<div class="pp-grinder-badge">★</div>
+		</ToolTip>
+	</div>
+{:else if badges}
 	<div class="bl-badges" bind:this={badgesContainer} transition:fade|global={{duration: 500}}>
 		{#each badges as badge (badge.src)}
 			{#if badge.link}
@@ -257,6 +265,21 @@
 	.badge-link {
 		display: contents;
 		touch-action: none;
+	}
+
+	.pp-grinder-badge {
+		font-size: 24px;
+		font-weight: bold;
+		color: #ff0000;
+		text-shadow: 0 0 10px #ff0000;
+		width: 96px;
+		height: 41px;
+		display: flex;
+		align-content: center;
+		align-items: center;
+		justify-content: center;
+		background-color: #4dade6;
+		border: solid 2px red;
 	}
 
 	@media (max-width: 768px) {

@@ -66,7 +66,7 @@
 		height: 22px !important;
 		font-size: 12px !important;
 		overflow: hidden !important;
-		border-radius: 5px !important;
+		border-radius: 5px;
 
 		display: flex !important;
 		justify-content: center !important;
