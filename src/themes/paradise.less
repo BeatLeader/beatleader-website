@@ -517,7 +517,7 @@ select, .select-container {
 }
 
 /* Charts and visualizations */
-.chart {
+.chart:not(.details-box) {
   background-color: #efeae1 !important;
   border: 1px solid var(--aged-border) !important;
   padding: 15px !important;
@@ -1214,4 +1214,18 @@ img.overlay {
 
 .mobile-first-line .timeset span {
   color: black !important;
+}
+
+.followers-container .player-container {
+  background-color: transparent !important;
+}
+
+.compare-player-name {
+  color: white !important;
+}
+
+.history-item {
+  box-shadow: none !important;
+  border: 1px dotted grey;
+
 }

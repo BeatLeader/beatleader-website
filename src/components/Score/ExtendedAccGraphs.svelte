@@ -2,6 +2,7 @@
 	import Chart from 'chart.js/auto';
 	import {formatNumber} from '../../utils/format';
 	import {createMinMaxCounter, createDistanceWeightFunction} from '../../utils/math';
+	import {configStore} from '../../stores/config';
 
 	export let replayAccGraphs = null;
 	export let underswingsData = null;
@@ -106,9 +107,15 @@
 			});
 		}
 
+		var textColor = '#ffffff';
+		if ($configStore.preferences.apriltheme == 'paradise' || $configStore.preferences.apriltheme == 'flylight') {
+			textColor = '#000000';
+		}
+
 		const xAxis = {
 			display: false,
 			scaleLabel: {
+				color: textColor,
 				display: true,
 			},
 			grid: {
@@ -117,7 +124,7 @@
 			ticks: {
 				autoSkip: true,
 				autoSkipPadding: 4,
-				color: 'white',
+				color: textColor,
 			},
 		};
 
@@ -129,7 +136,7 @@
 				position: 'left',
 				ticks: {
 					autoSkipPadding: 12,
-					color: 'white',
+					color: textColor,
 				},
 			},
 		};
@@ -264,7 +271,7 @@
 						title: {
 							display: !!title?.length,
 							text: title,
-							color: 'white',
+							color: textColor,
 							font: {weight: 'normal'},
 							position: 'bottom',
 							padding: {top: 5, bottom: 0},
