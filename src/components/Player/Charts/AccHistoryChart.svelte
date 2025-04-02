@@ -42,7 +42,7 @@
 
 		Chart.defaults.color = '#fff';
 
-		if ($configStore.preferences.apriltheme == 'flylight' || $configStore.preferences.apriltheme == 'paradise') {
+		if ($configStore.preferences.theme == 'flylight') {
 			gridColor = '#dadadaaf';
 			averageColor = '#3273dc';
 			averageRankedColor = '#3e95cd';

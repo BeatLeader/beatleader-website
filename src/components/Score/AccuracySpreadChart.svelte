@@ -1,7 +1,6 @@
 <script>
 	import Chart from 'chart.js/auto';
 	import {formatNumber} from '../../utils/format';
-	import {configStore} from '../../stores/config';
 
 	export let accSpreadData = null;
 	export let height = '12em';
@@ -18,11 +17,6 @@
 		for (startIndex = 0; startIndex <= 15; ) {
 			if (chartData.leftCount[startIndex] !== 0 || chartData.rightCount[startIndex] !== 0) break;
 			startIndex += 1;
-		}
-
-		var textColor = '#ffffff';
-		if ($configStore.preferences.apriltheme == 'paradise' || $configStore.preferences.apriltheme == 'flylight') {
-			textColor = '#000000';
 		}
 
 		labels = labels.slice(startIndex, 16);
@@ -43,7 +37,6 @@
 			display: false,
 			scaleLabel: {
 				display: true,
-				color: textColor,
 			},
 			grid: {
 				drawTicks: false,
@@ -51,7 +44,7 @@
 			ticks: {
 				autoSkip: true,
 				autoSkipPadding: 4,
-				color: textColor,
+				color: 'white',
 			},
 			offset: true, // Add offset to prevent bar clipping
 		};
@@ -67,7 +60,6 @@
 						return `${formatNumber(val * 100, 1)}%`;
 					},
 					autoSkipPadding: 12,
-					color: textColor,
 				},
 			},
 			td: {
@@ -80,7 +72,6 @@
 				},
 				ticks: {
 					autoSkipPadding: 14,
-					color: textColor,
 				},
 			},
 			timeDeviation: {

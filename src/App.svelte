@@ -16,7 +16,7 @@
 	import NotificationComponent from './components/Common/NotificationComponent.svelte';
 	import GlobalClansMapHistory from './components/Clans/GlobalClansMapHistory.svelte';
 	import rewindTimer from './stores/rewind-timer';
-	import {GLOBAL_LEADERBOARD_TYPE, padNumber} from './utils/format';
+	import {padNumber} from './utils/format';
 	import SimpleModal from './components/Common/SimpleModal.svelte';
 	import {produce} from 'immer';
 
@@ -60,7 +60,6 @@
 		TibytesPresets: () => import('./pages/TibytesPresets.svelte'),
 		BuildingBlocks2024: () => import('./pages/BuildingBlocks2024.svelte'),
 		ProjectTree: () => import('./pages/ProjectTree.svelte'),
-		Manifesto: () => import('./pages/Manifesto.svelte'),
 	};
 
 	export let url = '';
@@ -122,7 +121,7 @@
 
 	$: if (mainEl) containerStore.observe(mainEl);
 
-	if ($configStore.preferences.apriltheme != 'default' && $configStore.preferences.apriltheme != 'ree-dark') {
+	if ($configStore.preferences.theme != 'default' && $configStore.preferences.theme != 'ree-dark') {
 		setGlobalCSSValue('background-image', 'url(' + $configStore.preferences.bgimage + ')');
 		setGlobalCSSValue('customizable-color-1', $configStore.preferences.bgColor);
 		setGlobalCSSValue('customizable-color-2', $configStore.preferences.headerColor);
@@ -178,7 +177,6 @@
 			}}><i class="fas fa-xmark" /></button>
 	</div>
 {/if} -->
-
 <!--{#if $rewindTimer && $configStore.preferences.ccWinterHighlights24}
 	<div class="rewindbanner">
 		<a class="reelink" href="https://www.youtube.com/watch?v=9dr-M1hfCLo" />
@@ -272,18 +270,11 @@
 			}}><i class="fas fa-xmark" /></button>
 	</div>
 {/if} -->
-
-{#if GLOBAL_LEADERBOARD_TYPE == 'funny'}
-	<a href="/manifesto" class="funnybanner">
-		<span class="funnybanner-link-text">PP GRINDERS, UNITE!</span>
-	</a>
-{/if}
-
 <Router {url}>
-	<Nav class={$configStore?.preferences?.apriltheme} />
+	<Nav class={$configStore?.preferences?.theme} />
 	<Notifications zIndex={10000} item={NotificationComponent}>
 		<SimpleModal closeButton={false} styleWindow={{width: '90vw', height: '65vh'}} styleContent={{padding: 0, 'margin-bottom': '-0.5em'}}>
-			<main bind:this={mainEl} class={$configStore?.preferences?.apriltheme}>
+			<main bind:this={mainEl} class={$configStore?.preferences?.theme}>
 				<div class="ssr-page-container">
 					<Route path="/">
 						{#if $account?.player}
@@ -549,11 +540,6 @@
 							<svelte:component this={module.default} {location} />
 						{/await}
 					</Route>
-					<Route path="/manifesto">
-						{#await pageImports.Manifesto() then module}
-							<svelte:component this={module.default} />
-						{/await}
-					</Route>
 					<Route path="/*">
 						{#await pageImports.NotFoundPage() then module}
 							<svelte:component this={module.default} />
@@ -571,7 +557,7 @@
 	<Search />
 {/if}
 
-<link rel="stylesheet" href="/build/themes/{$configStore.preferences.apriltheme}.css" />
+<link rel="stylesheet" href="/build/themes/{$configStore.preferences.theme}.css" />
 
 <footer>
 	<p class="build">Build: {buildInfo.buildVersion} ({buildInfo.buildDate})</p>
@@ -635,23 +621,6 @@
 		pointer-events: none;
 	}
 
-	.funnybanner {
-		background-color: rgb(255, 0, 0);
-		color: white;
-		font-size: large;
-		height: 3em;
-		width: 100%;
-		display: flex;
-		justify-content: center;
-		justify-items: center;
-		align-items: center;
-		margin-bottom: -0.1em;
-		font-family: 'Audiowide' !important;
-		cursor: pointer;
-
-		overflow: visible;
-	}
-
 	.rewindbanner {
 		background-color: #2e0d51;
 		color: white;
@@ -702,16 +671,7 @@
 	.replayed-link-text {
 		z-index: 101;
 		font-weight: 800;
-		color: #ffffff;
-		text-shadow: 0 0 3px #000000;
-	}
-
-	.funnybanner-link-text {
-		z-index: 101;
-		color: #ffffff;
-		letter-spacing: 0.4em;
-		font-family: 'Audiowide';
-		font-size: larger;
+		color: #20a0ee;
 	}
 
 	.banner-spacer {

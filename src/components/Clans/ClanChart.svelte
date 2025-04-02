@@ -32,8 +32,8 @@
 
 		const ctx = canvas.getContext('2d');
 
-		const theme = $configStore.preferences.apriltheme;
-		const isDarkTheme = theme !== 'flylight' && theme !== 'paradise';
+		const theme = $configStore.preferences.theme;
+		const isDarkTheme = theme !== 'flylight';
 
 		const gridColor = isDarkTheme ? '#2a2a2a' : '#e0e0e0';
 		const textColor = isDarkTheme ? '#ffffff' : '#000000';

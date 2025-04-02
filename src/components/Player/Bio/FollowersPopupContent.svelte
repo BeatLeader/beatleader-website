@@ -131,6 +131,7 @@
 
 	.tab-title {
 		cursor: pointer;
+		color: white;
 		font-size: 1.4em;
 		opacity: 0.6;
 		transition: all 0.5s cubic-bezier(0.215, 0.61, 0.355, 1);
@@ -144,6 +145,7 @@
 		display: flex;
 		flex-direction: column;
 		gap: 0.4em;
+		color: white;
 	}
 
 	:global(.wrap .window:has(.followers-popup-container)) {

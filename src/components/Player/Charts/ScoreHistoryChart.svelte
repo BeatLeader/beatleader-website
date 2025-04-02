@@ -115,14 +115,6 @@
 
 		const songDuration = leaderboard.song.duration;
 
-		let textColor = '';
-
-		if ($configStore.preferences.apriltheme != 'flylight' && $configStore.preferences.apriltheme != 'paradise') {
-			textColor = '#fff';
-		} else {
-			textColor = '#757575';
-		}
-
 		const pointList = currentHistory
 			.filter(h => h.type == 1)
 			.map((h, idx) => ({
@@ -180,9 +172,6 @@
 			scaleLabel: {
 				display: false,
 			},
-			ticks: {
-				color: textColor,
-			},
 
 			grid: {
 				color: gridColor,
@@ -199,15 +188,11 @@
 				title: {
 					display: $pageContainer.name !== 'phone',
 					text: 'Accuracy',
-					color: textColor,
 				},
 				min,
 				max,
 				grid: {
 					color: gridColor,
-				},
-				ticks: {
-					color: textColor,
 				},
 			},
 
@@ -217,12 +202,10 @@
 				title: {
 					display: $pageContainer.name !== 'phone',
 					text: 'Attempts',
-					color: textColor,
 				},
 				ticks: {
 					callback: val => (val === Math.floor(val) ? val : null),
 					precision: 0,
-					color: textColor,
 				},
 				grid: {
 					color: gridColor,
@@ -354,9 +337,6 @@
 						legend: {
 							display: true,
 							onClick: onLegendClick,
-							labels: {
-								color: textColor,
-							},
 						},
 						tooltip: {
 							callbacks: {

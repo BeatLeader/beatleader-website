@@ -64,11 +64,7 @@
 
 		const gridColor = '#2a2a2a';
 		const mainColor = '#eb008c';
-		var textColor = '#fff';
-
-		if (configStore.preferences.apriltheme == 'paradise' || configStore.preferences.apriltheme == 'flylight') {
-			textColor = '#000';
-		}
+		const annotationColor = '#aaa';
 
 		let annotations = [];
 		const totalPPData = [];
@@ -90,7 +86,7 @@
 					annotations.push({
 						min: acc,
 						max: acc,
-						color: textColor,
+						color: annotationColor,
 						label: `${formatNumber(pp, 0)}pp`,
 						position: {horizontal: 'left', vertical: 'top'},
 					});
@@ -153,7 +149,7 @@
 			ticks: {
 				callback: val => (val * 100 === Math.floor(val * 100) ? (logarithmic ? 1 - val : `${formatNumber(val * 100, 0)}%`) : null),
 				autoSkip: true,
-				color: textColor,
+				color: 'white',
 			},
 			grid: {
 				color: gridColor,
@@ -168,12 +164,12 @@
 			title: {
 				display: $pageContainer.name !== 'phone',
 				text: 'pp',
-				color: textColor,
+				color: 'white',
 			},
 			ticks: {
 				callback: val => (val === Math.floor(val) ? val : null),
 				precision: 0,
-				color: textColor,
+				color: 'white',
 			},
 			grid: {
 				color: gridColor,

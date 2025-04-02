@@ -45,13 +45,6 @@
 		const labels = data.map((_, i) => i);
 
 		const getBackgroundColor = (color, alpha) => color.replace(/[\d.]+\)$/g, `${alpha})`);
-		let textColor = '';
-
-		if ($configStore.preferences.apriltheme != 'flylight' && $configStore.preferences.apriltheme != 'paradise') {
-			textColor = '#fff';
-		} else {
-			textColor = '#757575';
-		}
 
 		const datasets = [
 			{
@@ -105,7 +98,7 @@
 							color: '#2a2a2a',
 						},
 						ticks: {
-							color: textColor,
+							color: 'white',
 							callback: value => formatTime((value / (data.length - 1)) * duration),
 						},
 					},
@@ -117,7 +110,7 @@
 							color: '#2a2a2a',
 						},
 						ticks: {
-							color: textColor,
+							color: 'white',
 							callback: value => `${formatNumber(value, 1)}%`,
 						},
 					},
@@ -127,7 +120,7 @@
 						display: false,
 						position: 'top',
 						labels: {
-							color: textColor,
+							color: 'white',
 							padding: 20,
 						},
 					},
@@ -255,6 +248,7 @@
 
 	.rate {
 		font-size: 1.25rem;
+		color: white;
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -272,6 +266,7 @@
 	.count {
 		font-size: 2.5rem;
 		font-weight: bold;
+		color: white;
 	}
 
 	.label {

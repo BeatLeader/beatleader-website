@@ -98,7 +98,7 @@
 
 		Chart.defaults.color = '#fff';
 
-		if ($configStore.preferences.apriltheme == 'flylight' || $configStore.preferences.apriltheme == 'paradise') {
+		if ($configStore.preferences.theme == 'flylight') {
 			gridColor = '#dadadaaf';
 			rankColor = '#3e95cd';
 			ppColor = '#007100';

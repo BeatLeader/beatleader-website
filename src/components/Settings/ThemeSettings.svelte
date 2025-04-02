@@ -18,7 +18,6 @@
 		{name: 'Unbounded - MicroBlock', value: 'unbounded'},
 		{name: 'ReeDark', value: 'ree-dark'},
 		{name: 'FlyLight', value: 'flylight'},
-		{name: 'Paradise', value: 'paradise'},
 	];
 
 	let currentTheme = DEFAULT_THEME;
@@ -35,7 +34,7 @@
 	let currentSelectedColor = 'rgba(50, 115, 220, 1.0)';
 
 	function onConfigUpdated(config) {
-		if (config?.preferences?.apriltheme != currentTheme) currentTheme = config?.preferences?.apriltheme ?? DEFAULT_THEME;
+		if (config?.preferences?.theme != currentTheme) currentTheme = config?.preferences?.theme ?? DEFAULT_THEME;
 		if (config?.preferences?.bgimage != currentBGImage) currentBGImage = config?.preferences?.bgimage ?? '';
 		if (config?.preferences?.fontNames != currentFontNames) currentFontNames = config?.preferences?.fontNames ?? '';
 
@@ -122,7 +121,7 @@
 	$: currentTheme && selectedColorCallback(currentSelectedColor);
 
 	$: fontNamesCallback(currentFontNames);
-	$: settempsetting('apriltheme', currentTheme);
+	$: settempsetting('theme', currentTheme);
 </script>
 
 <div class="options" in:fly|global={{y: animationSign * 200, duration: 400}} out:fade|global={{duration: 100}}>

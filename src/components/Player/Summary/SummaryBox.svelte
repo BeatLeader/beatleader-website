@@ -68,7 +68,7 @@
 			<BeatLeaderSummary {playerId} {scoresStats} {accBadges} {skeleton} {profileAppearance} bind:editModel />
 		</div>
 		<div class="badges-footer">
-			<BlBadges badges={ssBadges} pp={playerData?.playerInfo?.pp} />
+			<BlBadges badges={ssBadges} />
 		</div>
 	</ContentBox>
 {/if}
