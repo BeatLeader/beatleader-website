@@ -9,7 +9,7 @@
 	let allElements = [];
 	let hoveredBadge = null;
 	let placeholder = null;
-	let portalContainer;
+
 	let fontChangeInterval;
 	let glitchInterval;
 	let touchTimeout;
@@ -17,12 +17,20 @@
 	let isTouching = false;
 	let isHovered = false;
 
+	let portalContainer;
+
+	const exsiiBadges = [1755, 1756];
+	const phoenixBadges = [1803, 1804, 1805];
+	const specialBadges = [...exsiiBadges, ...phoenixBadges];
+
 	function fetchElements(badges) {
-		if (badges && badges.find(badge => badge.id == 1755 || badge.id == 1756)) {
+		if (badges && badges.find(badge => specialBadges.includes(badge.id))) {
 			setTimeout(() => {
-				allElements = document.querySelectorAll(
-					'body *:not(script):not(style):not(meta):not(.avatar-overlay):not(.align-content):not(.page-content):not(.main-background):not(main):not(.avatar-overlay-container):not(.profile-box):not(.cinematics):not(.share-buttons-container):not(.cover-image):not(.ssr-page-container):not(.content-box)'
-				);
+				allElements = Array.from(
+					document.querySelectorAll(
+						'body *:not(script):not(style):not(meta):not(.avatar-overlay):not(.align-content):not(.page-content):not(.main-background):not(main):not(.avatar-overlay-container):not(.profile-box):not(.cinematics):not(.share-buttons-container):not(.cover-image):not(.ssr-page-container):not(.content-box)'
+					)
+				).filter(el => el.getBoundingClientRect().top <= 1000);
 				if (!portalContainer) {
 					portalContainer = document.createElement('div');
 					portalContainer.style.position = 'absolute';
@@ -32,14 +40,6 @@
 					portalContainer.style.height = '100%';
 					portalContainer.style.width = '100%';
 					document.body.appendChild(portalContainer);
-
-					const fontLink = document.createElement('link');
-					fontLink.rel = 'preload';
-					fontLink.href = '/assets/EPTA-GLYPHS.ttf.woff';
-					fontLink.as = 'font';
-					fontLink.type = 'font/woff';
-					fontLink.crossOrigin = 'anonymous';
-					document.head.appendChild(fontLink);
 				}
 			}, 1000);
 		}
@@ -80,6 +80,68 @@
 		});
 	}
 
+	let morseMessage = '-.-. .... .- -- .--. .. --- -.';
+	function applyMorseFontChange() {
+		if (!isHovered) return;
+
+		const numElements = Math.floor(Math.random() * 20) + 1;
+		const selectedElements = [...allElements]
+			.filter(
+				el =>
+					el.textContent?.trim().length > 0 &&
+					(el.tagName === 'SPAN' ||
+						el.tagName === 'H1' ||
+						el.tagName === 'H2' ||
+						el.tagName === 'H3' ||
+						el.tagName === 'H4' ||
+						el.tagName === 'H5' ||
+						el.tagName === 'H6')
+			)
+			.sort(() => Math.random() - 0.5)
+			.slice(0, numElements);
+
+		selectedElements.forEach(element => {
+			if (!isHovered) return;
+			if (element.classList.contains('morse-font') || element.morseTimeout) {
+				return;
+			}
+			element.opacityBackup = element.style.opacity ?? 1;
+			element.morseIndex = 0;
+			element.classList.add('morse-font');
+			element.querySelectorAll('*').forEach(child => {
+				child.classList.add('morse-font');
+			});
+
+			const morseCallback = () => {
+				element.style.opacity = '1';
+				const currentSignal = morseMessage[element.morseIndex];
+				var delay = 0;
+				if (currentSignal === '.') {
+					delay = 400;
+				} else if (currentSignal === '-') {
+					delay = 800;
+				}
+
+				element.morseTimeout = setTimeout(() => {
+					element.morseIndex++;
+					element.style.opacity = '0';
+					if (element.morseIndex < morseMessage.length) {
+						if (morseMessage[element.morseIndex] == ' ') {
+							element.morseTimeout = setTimeout(morseCallback, 1000);
+						} else {
+							element.morseTimeout = setTimeout(morseCallback, 200);
+						}
+					} else {
+						element.morseIndex = 0;
+						element.morseTimeout = setTimeout(morseCallback, 2000);
+						element.style.opacity = element.opacityBackup;
+					}
+				}, delay);
+			};
+			morseCallback();
+		});
+	}
+
 	function applyGlitchToRandomElements() {
 		if (!isHovered) return;
 
@@ -100,7 +162,7 @@
 		});
 	}
 
-	function handleMouseEnter(event) {
+	function handleMouseEnter(event, badgeId) {
 		const badge = event.currentTarget;
 		const rect = badge.children[0].getBoundingClientRect();
 
@@ -119,16 +181,22 @@
 		badge.style.display = 'block';
 		hoveredBadge = badge;
 
-		startGlitchTimeout = setTimeout(() => {
-			isHovered = true;
-			glitchInterval = setInterval(() => {
-				applyGlitchToRandomElements();
-			}, 50);
-		}, 1000);
+		if (exsiiBadges.includes(badgeId)) {
+			startGlitchTimeout = setTimeout(() => {
+				isHovered = true;
+				glitchInterval = setInterval(() => {
+					applyGlitchToRandomElements();
+				}, 50);
+			}, 1000);
+			fontChangeInterval = setInterval(() => {
+				applyRandomFontChange();
+			}, 100);
+		}
 
-		fontChangeInterval = setInterval(() => {
-			applyRandomFontChange();
-		}, 100);
+		if (phoenixBadges.includes(badgeId)) {
+			isHovered = true;
+			applyMorseFontChange();
+		}
 	}
 
 	function handleMouseLeave() {
@@ -142,7 +210,6 @@
 			clearInterval(fontChangeInterval);
 			fontChangeInterval = null;
 		}
-
 		if (hoveredBadge && placeholder) {
 			placeholder.parentNode.insertBefore(hoveredBadge, placeholder);
 			placeholder.remove();
@@ -156,10 +223,15 @@
 			placeholder = null;
 			portalContainer.style.pointerEvents = 'none';
 		}
-
 		allElements.forEach(element => {
 			element.classList.remove('glitch-effect');
 			element.classList.remove('glitch-font');
+			element.classList.remove('morse-font');
+			if (element.morseTimeout) {
+				clearTimeout(element.morseTimeout);
+				element.morseTimeout = null;
+				element.style.opacity = element.opacityBackup;
+			}
 			element.style.removeProperty('--glitch-x');
 			element.style.removeProperty('--glitch-y');
 			element.style.removeProperty('--glitch-x2');
@@ -171,7 +243,7 @@
 		window.location.href = link;
 	}
 
-	function handleTouchStart(event) {
+	function handleTouchStart(event, badgeId) {
 		isTouching = true;
 
 		var currentTarget = event.currentTarget;
@@ -179,7 +251,7 @@
 		touchTimeout = setTimeout(() => {
 			if (isTouching) {
 				isHovered = true;
-				handleMouseEnter({currentTarget});
+				handleMouseEnter({currentTarget}, badgeId);
 			}
 		}, 600);
 	}
@@ -210,14 +282,14 @@
 	<div class="bl-badges" bind:this={badgesContainer} transition:fade|global={{duration: 500}}>
 		{#each badges as badge (badge.src)}
 			{#if badge.link}
-				{#if badge.id == 1755 || badge.id == 1756}
+				{#if specialBadges.includes(badge.id)}
 					<div
 						class="badge-link"
-						on:mouseenter={handleMouseEnter}
-						on:mouseleave={handleMouseLeave}
-						on:touchstart={handleTouchStart}
-						on:touchend={handleTouchEnd}
-						on:touchcancel={handleTouchCancel}
+						on:mouseenter={e => handleMouseEnter(e, badge.id)}
+						on:mouseleave={e => handleMouseLeave(e, badge.id)}
+						on:touchstart={e => handleTouchStart(e, badge.id)}
+						on:touchend={e => handleTouchEnd(e, badge.id)}
+						on:touchcancel={e => handleTouchCancel(e, badge.id)}
 						on:click={() => handleClick(badge.link)}>
 						<ToolTip content={badge.title}>
 							<img class="clickable" src={badge.src} alt={badge.title} />
@@ -417,9 +489,20 @@
 		transition: font-family 50ms ease-in-out;
 	}
 
+	:global(.morse-font) {
+		font-family: 'Morse', sans-serif !important;
+		transition: font-family 50ms ease-in-out;
+	}
+
 	@font-face {
 		font-family: 'EPTA-GLYPHS';
 		src: url('/assets/EPTA-GLYPHS.ttf.woff') format('woff');
+		font-display: swap;
+	}
+
+	@font-face {
+		font-family: 'Morse';
+		src: url('/assets/morse.woff') format('woff');
 		font-display: swap;
 	}
 </style>
