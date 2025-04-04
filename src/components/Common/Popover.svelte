@@ -119,6 +119,9 @@
 	/** Amount of time to wait before the an action closes the menu */
 	export let closeDelay: number = 50;
 
+	/** Amount of time to wait before the hover event is triggered */
+	export let hoverDelay: number = 600;
+
 	/**
 	 * The placement of the popover with respect to the reference element.
 	 * This uses the Popper `placement` option, which is documented
@@ -392,7 +395,7 @@
 			if (isContextMenuOpen) {
 				isContextMenuOpen = false;
 			}
-		}, 600);
+		}, hoverDelay);
 	}
 
 	function onReferenceUnhover() {

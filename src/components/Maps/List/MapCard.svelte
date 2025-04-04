@@ -383,7 +383,7 @@
 
 {#if song}
 	{#if !forcePlaceholder && !song.placeholder}
-		<Popover triggerEvents={['hover', 'focus']} placement="top" referenceElement={titleTextElement} forOverflow={true}>
+		<Popover triggerEvents={['hover', 'focus']} placement="top" referenceElement={titleTextElement} forOverflow={true} hoverDelay={200}>
 			<div class="title-tooltip">
 				{name}
 				{#if $configStore?.leaderboardPreferences?.showSubtitleInHeader && song.subName}
@@ -391,12 +391,18 @@
 				{/if}
 			</div>
 		</Popover>
-		<Popover triggerEvents={['hover', 'focus']} placement="top" referenceElement={authorElement} forOverflow={true}>
+		<Popover triggerEvents={['hover', 'focus']} placement="top" referenceElement={authorElement} forOverflow={true} hoverDelay={200}>
 			<div class="title-tooltip">
 				<span class="tooltip-author">{song.author}</span>
 			</div>
 		</Popover>
-		<Popover triggerEvents={['hover', 'focus']} placement="top" referenceElement={mappersElement} forOverflow={true} spaceAway={4}>
+		<Popover
+			triggerEvents={['hover', 'focus']}
+			placement="top"
+			referenceElement={mappersElement}
+			forOverflow={true}
+			spaceAway={4}
+			hoverDelay={200}>
 			<div class="title-tooltip">
 				<MapperList {song} maxHeight="unset" maxWidth="25em" fontSize="0.9em" noArrow={true} tooltip={true} />
 			</div>
