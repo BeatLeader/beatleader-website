@@ -27,7 +27,7 @@
 		previousPage = currentPage;
 		currentPage = event.detail.page + 1;
 
-		navigate(`/playlists/featured/${currentPage}`);
+		navigate(`/playlists/featured/${currentPage}`, {replace: true});
 	}
 
 	var playlists = [];

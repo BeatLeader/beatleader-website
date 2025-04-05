@@ -5,6 +5,7 @@
 
 	let topPlayedToday = [];
 	let topPlayedThisWeek = [];
+	let topPlayedNewMaps = [];
 	let topVotedNewMaps = [];
 	let topBeatSaverTrending = [];
 
@@ -15,44 +16,100 @@
 	let unixOneDayAgo = unixNow - 60 * 60 * 24;
 
 	function fetchTrendingMaps() {
+		// Initialize placeholder data for all arrays
+		for (let i = 0; i < 5; i++) {
+			const placeholderMap = {
+				index: i,
+				name: 'Loading...',
+				artist: 'Unknown Artist',
+				hash: '00000000000000000000000000000000',
+				cover: 'https://via.placeholder.com/150',
+				placeholder: true,
+			};
+
+			topPlayedToday.push(placeholderMap);
+			topPlayedThisWeek.push({...placeholderMap});
+			topVotedNewMaps.push({...placeholderMap});
+			topBeatSaverTrending.push({...placeholderMap});
+			topPlayedNewMaps.push({...placeholderMap});
+		}
+
+		// Force Svelte reactivity
+		topPlayedToday = topPlayedToday;
+		topPlayedThisWeek = topPlayedThisWeek;
+		topVotedNewMaps = topVotedNewMaps;
+		topBeatSaverTrending = topBeatSaverTrending;
+		topPlayedNewMaps = topPlayedNewMaps;
+
 		fetch(
-			`${BL_API_URL}maps?leaderboardContext=general&page=1&type=all&date_from=${unixOneDayAgo}&date_range=score&sortBy=playcount&order=desc&count=5&allTypes=0&allRequirements=0`
+			`${BL_API_URL}maps?leaderboardContext=general&page=1&type=all&date_from=${unixOneDayAgo}&date_range=score&sortBy=playcount&order=desc&count=5&allTypes=0&allRequirements=0`,
+			{credentials: 'include'}
 		)
 			.then(res => res.json())
 			.then(data => {
-				topPlayedToday = data.data;
 				for (let i = 0; i < topPlayedToday.length; i++) {
+					if (topPlayedToday[i].placeholder && topPlayedToday[i].updateCallback) {
+						topPlayedToday[i].updateCallback(data.data[i]);
+					}
+					topPlayedToday[i] = data.data[i];
 					topPlayedToday[i].index = i;
 				}
 			});
 
 		fetch(
-			`${BL_API_URL}maps?leaderboardContext=general&page=1&type=all&date_from=${unixOneWeekAgo}&date_range=score&sortBy=playcount&order=desc&count=5&allTypes=0&allRequirements=0`
+			`${BL_API_URL}maps?leaderboardContext=general&page=1&type=all&date_from=${unixOneWeekAgo}&date_range=score&sortBy=playcount&order=desc&count=5&allTypes=0&allRequirements=0`,
+			{credentials: 'include'}
 		)
 			.then(res => res.json())
 			.then(data => {
-				topPlayedThisWeek = data.data;
 				for (let i = 0; i < topPlayedThisWeek.length; i++) {
+					if (topPlayedThisWeek[i].placeholder && topPlayedThisWeek[i].updateCallback) {
+						topPlayedThisWeek[i].updateCallback(data.data[i]);
+					}
+					topPlayedThisWeek[i] = data.data[i];
 					topPlayedThisWeek[i].index = i;
 				}
 			});
 
 		fetch(
-			`${BL_API_URL}maps?leaderboardContext=general&page=1&type=all&date_from=${unixOneMonthAgo}&date_range=upload&sortBy=voting&order=desc&count=5&allTypes=0&allRequirements=0`
+			`${BL_API_URL}maps?leaderboardContext=general&page=1&type=all&date_from=${unixOneMonthAgo}&date_range=upload&sortBy=voting&order=desc&count=5&allTypes=0&allRequirements=0`,
+			{credentials: 'include'}
 		)
 			.then(res => res.json())
 			.then(data => {
-				topVotedNewMaps = data.data;
 				for (let i = 0; i < topVotedNewMaps.length; i++) {
+					if (topVotedNewMaps[i].placeholder && topVotedNewMaps[i].updateCallback) {
+						topVotedNewMaps[i].updateCallback(data.data[i]);
+					}
+					topVotedNewMaps[i] = data.data[i];
 					topVotedNewMaps[i].index = i;
 				}
 			});
 
-		fetch(`${BL_API_URL}maps/trending/beatsaver`)
+		fetch(
+			`${BL_API_URL}maps?leaderboardContext=general&page=1&type=all&date_from=${unixOneWeekAgo}&date_range=upload&sortBy=playcount&order=desc&count=5&allTypes=0&allRequirements=0`,
+			{credentials: 'include'}
+		)
 			.then(res => res.json())
 			.then(data => {
-				topBeatSaverTrending = data.data.slice(0, 5);
+				for (let i = 0; i < topPlayedNewMaps.length; i++) {
+					if (topPlayedNewMaps[i].placeholder && topPlayedNewMaps[i].updateCallback) {
+						topPlayedNewMaps[i].updateCallback(data.data[i]);
+					}
+					topPlayedNewMaps[i] = data.data[i];
+					topPlayedNewMaps[i].index = i;
+				}
+			});
+
+		fetch(`${BL_API_URL}maps/trending/beatsaver`, {credentials: 'include'})
+			.then(res => res.json())
+			.then(data => {
+				const trendingData = data.data.slice(0, 5);
 				for (let i = 0; i < topBeatSaverTrending.length; i++) {
+					if (topBeatSaverTrending[i].placeholder && topBeatSaverTrending[i].updateCallback) {
+						topBeatSaverTrending[i].updateCallback(trendingData[i]);
+					}
+					topBeatSaverTrending[i] = trendingData[i];
 					topBeatSaverTrending[i].index = i;
 				}
 			});
@@ -92,15 +149,15 @@
 			</div>
 		</ContentBox>
 		<ContentBox cls="maps-trending-section-box">
-			<a href="/maps/all/1?date_from={unixOneMonthAgo}&date_range=upload&sortBy=voting" class="maps-trending-section-header">
-				<span class="maps-trending-section-title">Top Voted New Maps</span>
+			<a href="/maps/all/1?date_from={unixOneWeekAgo}&date_range=upload&sortBy=playcount" class="maps-trending-section-header">
+				<span class="maps-trending-section-title">Top Played New Maps</span>
 				<i class="fas fa-arrow-right"></i>
 			</a>
 			<div class="maps-trending-list darkened-background">
-				{#each topVotedNewMaps as map, idx (map.index)}
+				{#each topPlayedNewMaps as map, idx (map.index)}
 					<div class="maps-trending-section-map {idx != 0 ? 'maps-trending-section-map-not-first' : ''}">
 						<div class="maps-trending-section-map-number">{idx + 1}.</div>
-						<MapCard {idx} {map} sortBy="voting" />
+						<MapCard {idx} {map} sortBy="playcount" />
 					</div>
 				{/each}
 			</div>
@@ -121,6 +178,20 @@
 				{/each}
 			</div>
 		</ContentBox>
+		<ContentBox cls="maps-trending-section-box">
+			<a href="/maps/all/1?date_from={unixOneMonthAgo}&date_range=upload&sortBy=voting" class="maps-trending-section-header">
+				<span class="maps-trending-section-title">Top Voted New Maps</span>
+				<i class="fas fa-arrow-right"></i>
+			</a>
+			<div class="maps-trending-list darkened-background">
+				{#each topVotedNewMaps as map, idx (map.index)}
+					<div class="maps-trending-section-map {idx != 0 ? 'maps-trending-section-map-not-first' : ''}">
+						<div class="maps-trending-section-map-number">{idx + 1}.</div>
+						<MapCard {idx} {map} sortBy="voting" />
+					</div>
+				{/each}
+			</div>
+		</ContentBox>
 	</div>
 </ContentBox>
 
@@ -129,10 +200,6 @@
 		display: flex;
 		flex-direction: column;
 		gap: 10px;
-		transform: scale(0.8);
-		margin-left: -2em !important;
-		margin-top: -4em !important;
-		margin-bottom: -6em !important;
 		padding: 0.5em !important;
 		border-radius: 12px !important;
 	}
@@ -141,6 +208,8 @@
 		display: flex;
 		justify-content: center;
 		flex-wrap: wrap;
+		transform: scale(0.8);
+		margin: -12em -10em 0em;
 	}
 
 	.maps-trending-section-map {
@@ -171,5 +240,34 @@
 	.maps-trending-section-title {
 		font-size: 1.2em;
 		font-weight: bold;
+	}
+
+	@media screen and (max-width: 910px) {
+		.maps-trending-section {
+			flex-direction: column;
+			transform: none;
+			margin: 0;
+		}
+
+		:global(.maps-trending-section-box) {
+			margin: 0 !important;
+			padding: 0 !important;
+			margin-top: 1em !important;
+		}
+
+		:global(.maps-trending-container) {
+			margin: 0 !important;
+			padding: 0 !important;
+			border-radius: 0 !important;
+		}
+
+		.maps-trending-section-map-number {
+			display: none;
+		}
+
+		.maps-trending-list {
+			border-radius: 0;
+			padding: 0;
+		}
 	}
 </style>
