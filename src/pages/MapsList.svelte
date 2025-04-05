@@ -728,15 +728,48 @@
 			scrollToPage(currentPage);
 		} else if (currentNotVisible && previousNotVisible) {
 			// If neither anchor is visible, look for other page anchors
-			const otherAnchors = scrollContainer.querySelectorAll('.other-page-anchor');
+			let otherAnchors = Array.from(scrollContainer.querySelectorAll('.other-page-anchor')).sort((a, b) => b.offsetTop - a.offsetTop);
+
+			// First try to find visible anchors
+			let foundVisibleAnchor = false;
 			for (const anchor of otherAnchors) {
 				const anchorTop = anchor.offsetTop;
 				if (anchorTop >= containerTop && anchorTop <= containerBottom) {
 					const page = parseInt(anchor.textContent);
 					if (!isNaN(page)) {
+						scrollToPage(page - 1);
+						foundVisibleAnchor = true;
+						break;
+					}
+				}
+			}
+
+			// If no visible anchors found, find closest anchor below viewport
+			if (!foundVisibleAnchor) {
+				let closestAnchor = null;
+				let closestDistance = Infinity;
+
+				if (previousPageAnchor) {
+					otherAnchors.push(previousPageAnchor);
+				}
+
+				if (currentPageAnchor) {
+					otherAnchors.push(currentPageAnchor);
+				}
+
+				for (const anchor of otherAnchors) {
+					const distance = Math.abs(anchor.offsetTop + anchor.offsetHeight - containerTop);
+					if (distance < closestDistance) {
+						closestDistance = distance;
+						closestAnchor = anchor;
+					}
+				}
+
+				if (closestAnchor && closestAnchor.offsetTop + closestAnchor.offsetHeight < containerTop) {
+					const page = parseInt(closestAnchor.textContent);
+					if (!isNaN(page)) {
 						scrollToPage(page);
 					}
-					break;
 				}
 			}
 		}
