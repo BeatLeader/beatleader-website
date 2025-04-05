@@ -84,7 +84,7 @@
 		{#each song.mappers as mapper}
 			<Mapper {mapper} noPopover={noArrow} />
 		{/each}
-		{#if !moreInAuthorName && (lessInAuthorName || isVariousMappers || $configStore.leaderboardPreferences.alwaysShowAuthorHint)}
+		{#if !tooltip && !moreInAuthorName && (lessInAuthorName || isVariousMappers || $configStore.leaderboardPreferences.alwaysShowAuthorHint)}
 			<i
 				class="fa-solid fa-circle-info map-name-info"
 				class:higher-opacity={lessInAuthorName && !isVariousMappers}

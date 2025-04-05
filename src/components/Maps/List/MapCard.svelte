@@ -477,11 +477,9 @@
 							</div>
 						</div>
 					</a>
-					{#if isHovered}
-						<div transition:fly|local={{x: 20, duration: 300, y: 0}} class="icons-container" class:is-hovered={isHovered}>
-							<Icons {song} icons={['preview', 'bsr', 'bs', 'oneclick']} />
-						</div>
-					{/if}
+					<div class="icons-container" class:is-hovered={isHovered}>
+						<Icons {song} icons={['preview', 'bsr', 'bs', 'oneclick']} />
+					</div>
 				</div>
 				<div class="bottom-container-background" class:is-hovered={isHovered} style="--bottom-container-height: {bottomContainerHeight}px;">
 				</div>
@@ -775,6 +773,12 @@
 		width: fit-content;
 		margin-top: 0.25em;
 		transform: scale(1.1);
+		margin-right: -2em;
+		transition: margin-right 0.15s;
+	}
+
+	.icons-container.is-hovered {
+		margin-right: 0;
 	}
 
 	.version-selector-container {

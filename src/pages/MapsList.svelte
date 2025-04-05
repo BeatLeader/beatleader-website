@@ -210,7 +210,7 @@
 	let loadingPage = null;
 
 	let allMaps = [];
-	let activeRequests = [];
+	let activeRequests = {};
 
 	function resetCache(resetPages = true) {
 		if (resetPages) {
@@ -220,13 +220,14 @@
 		numOfMaps = 0;
 		allMaps = [];
 
-		for (let i = 0; i < activeRequests.length; i++) {
+		// for keys in activeRequests
+		for (let i in activeRequests) {
 			if (activeRequests[i] && activeRequests[i].inProgress) {
 				activeRequests[i].controller.abort();
 			}
 		}
 
-		activeRequests = [];
+		activeRequests = {};
 	}
 
 	function populateMapsList(page = 1, type = 'ranked', filters = {}, priority = PRIORITY.FG_LOW, options = {}) {
@@ -274,7 +275,6 @@
 					allMaps = allMaps.slice(0, numOfMaps);
 				}
 
-				// Only call callback if request wasn't aborted and page is still active
 				if (activeRequests[capturePage]) {
 					activeRequests[capturePage].inProgress = false;
 				}
@@ -317,9 +317,10 @@
 			populateMapsList(page + 1, type, filters, priority, options);
 		}
 
-		for (let i = 0; i < activeRequests.length; i++) {
-			if (i != page && i != page - 1 && i != page + 1 && activeRequests[i] && activeRequests[i].inProgress) {
+		for (let i in activeRequests) {
+			if (i != page && i != page - 1 && i != page + 1 && activeRequests[i].inProgress) {
 				activeRequests[i].controller.abort();
+				activeRequests[i].inProgress = false;
 			}
 		}
 	}
@@ -654,13 +655,6 @@
 		});
 	}
 
-	$: document.body.scrollIntoView({behavior: 'smooth'});
-
-	$: isRT =
-		$account.player &&
-		$account.player.playerInfo.role &&
-		($account.player.playerInfo.role.includes('admin') || $account.player.playerInfo.role.includes('rankedteam'));
-
 	$: updateProfileSettings($account);
 
 	$: changePageAndFilters(page, buildFiltersFromLocation(location), false, false);
@@ -705,14 +699,46 @@
 	function onScroll() {
 		if (isAutoScrolling) return;
 
+		const containerTop = scrollContainer.scrollTop;
+		if (containerTop < 100) {
+			scrollToPage(0);
+			return;
+		}
+
+		const containerBottom = containerTop + scrollContainer.offsetHeight;
+
+		// Check if current and previous anchors are outside visible area
+		const currentNotVisible =
+			!currentPageAnchor ||
+			currentPageAnchor.offsetTop > containerBottom ||
+			currentPageAnchor.offsetTop + currentPageAnchor.offsetHeight < containerTop;
+
+		const previousNotVisible =
+			!previousPageAnchor ||
+			previousPageAnchor.offsetTop > containerBottom ||
+			previousPageAnchor.offsetTop + previousPageAnchor.offsetHeight < containerTop;
+
 		if (
-			previousPageAnchor &&
+			!previousNotVisible &&
 			previousPageAnchor.offsetTop > scrollContainer.scrollTop + scrollContainer.offsetHeight / 2 &&
 			currentPage > 1
 		) {
 			scrollToPage(currentPage - 2);
-		} else if (currentPageAnchor && currentPageAnchor.offsetTop < scrollContainer.scrollTop + scrollContainer.offsetHeight / 2) {
+		} else if (!currentNotVisible && currentPageAnchor.offsetTop < scrollContainer.scrollTop + scrollContainer.offsetHeight / 2) {
 			scrollToPage(currentPage);
+		} else if (currentNotVisible && previousNotVisible) {
+			// If neither anchor is visible, look for other page anchors
+			const otherAnchors = scrollContainer.querySelectorAll('.other-page-anchor');
+			for (const anchor of otherAnchors) {
+				const anchorTop = anchor.offsetTop;
+				if (anchorTop >= containerTop && anchorTop <= containerBottom) {
+					const page = parseInt(anchor.textContent);
+					if (!isNaN(page)) {
+						scrollToPage(page);
+					}
+					break;
+				}
+			}
 		}
 	}
 
@@ -763,7 +789,7 @@
 											{currentPage}
 										</div>
 									{:else}
-										<div class="page-split page-maker-{page}">
+										<div class="page-split page-maker-{page} other-page-anchor">
 											{page}
 										</div>
 									{/if}
