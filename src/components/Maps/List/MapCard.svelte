@@ -417,6 +417,7 @@
 				class="map-card"
 				class:is-hovered={isHovered || currentAnimation}
 				class:expanding={currentAnimation && currentTargetHeight > 0}
+				class:player-hovered={isHovered && mouseInside}
 				style={isHovered || currentAnimation ? `position: absolute;` : ''}
 				bind:this={mapCardElement}
 				tabindex="-1"
@@ -437,7 +438,7 @@
 						style={coverUrl
 							? `background: url(${coverUrl}); background-repeat: no-repeat; background-size: cover; background-position: center;`
 							: ''}>
-						<div class="sort-value-background" class:is-hovered={sortValue && isHovered}></div>
+						<div class="sort-value-background" class:with-value={sortValue} class:is-hovered={sortValue && isHovered}></div>
 					</div>
 					{#if requirements && isHovered}
 						<div transition:fly|local={{x: -40, duration: 300, y: 0}} class="requirements-icons">
@@ -575,6 +576,10 @@
 		border-radius: 12px 12px 16px 16px;
 	}
 
+	.map-card.player-hovered {
+		z-index: 5;
+	}
+
 	.map-card.expanding {
 		z-index: 4;
 	}
@@ -674,10 +679,11 @@
 		z-index: 2;
 		font-weight: 600;
 		font-size: 0.9em;
+		margin-bottom: 0.4em;
 	}
 
 	.sort-value.is-hovered {
-		margin-bottom: 0.09em;
+		margin-bottom: 0.49em;
 	}
 
 	.sort-value-background {
@@ -691,7 +697,11 @@
 	}
 
 	.sort-value-background.is-hovered {
-		background-color: #0000004f;
+		background-color: #00000066 !important;
+	}
+
+	.sort-value-background.with-value {
+		background-color: #0000004a;
 	}
 
 	.modes-list-container {
