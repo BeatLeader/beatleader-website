@@ -26,6 +26,7 @@
 	import {dateFromUnix} from '../utils/date';
 	import DatePicker from '../components/Common/DatePicker.svelte';
 	import Button from '../components/Common/Button.svelte';
+	import {GLOBAL_LEADERBOARD_TYPE} from '../utils/format';
 
 	export let page = 1;
 	export let location;
@@ -175,7 +176,7 @@
 			min: 0,
 			max: 24000,
 			step: 1,
-			pipstep: 6000,
+			pipstep: 5000,
 			type: 'slider',
 			process: processIntArrayFilter,
 			values: [],
@@ -235,6 +236,18 @@
 			onChange: e => onInputValueChange(e.detail ? e.detail.getTime() / 1000 : null, 'recentScoreTime'),
 		},
 	];
+
+	function fetchMaxPp() {
+		fetch(`${BL_API_URL}players/top/pp?leaderboardContext=${GLOBAL_LEADERBOARD_TYPE}`)
+			.then(res => res.text())
+			.then(data => {
+				const maxPp = parseFloat(data);
+				if (maxPp) {
+					params.find(p => p.key === 'pp_range').max = Math.floor(maxPp) + 1;
+					params = params;
+				}
+			});
+	}
 
 	const buildFiltersFromLocation = createBuildFiltersFromLocation(params, filters => {
 		params.forEach(p => {
@@ -403,6 +416,7 @@
 	$: cinematicsCanvas && drawCinematics(cinematicsCanvas, '/assets/week120_bg.webp');
 
 	$: showFilters = $configStore.preferences.showFiltersOnRanking;
+	$: fetchMaxPp();
 </script>
 
 <svelte:head>
