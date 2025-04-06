@@ -14,7 +14,6 @@
 	import ModesList from './ModesList.svelte';
 	import SongPlayer from './SongPlayer.svelte';
 	import {songPlayerStore} from '../../../stores/songPlayer';
-	import {cinematicsStore} from '../../../stores/cinematics';
 	import MapRequirements from './MapRequirements.svelte';
 	import Popover from '../../Common/Popover.svelte';
 
@@ -98,9 +97,6 @@
 
 	let cinematicsCanvas;
 	let rootcinematicsCanvas;
-
-	$: if (cinematicsCanvas && coverUrl) cinematicsStore.drawCinematics(cinematicsCanvas, coverUrl);
-	$: if (rootcinematicsCanvas && coverUrl) cinematicsStore.drawCinematics(rootcinematicsCanvas, coverUrl);
 
 	let headerContainer;
 	let headerContainerHeight = 0;
@@ -408,11 +404,18 @@
 			</div>
 		</Popover>
 		<div class="map-card-wrapper" class:transparent={song.transparent} class:is-hovered={isHovered} bind:this={mapCardWrapper}>
-			<div class="cinematics root-cinematics" style={isHovered ? `height: ${mapCardRect.height}px;` : ''} class:is-hovered={isHovered}>
-				<div class="cinematics-canvas root-canvas">
-					<canvas bind:this={rootcinematicsCanvas} style="position: absolute; width: 100%; height: 100%; opacity: 0" />
+			{#if isHovered}
+				<div
+					transition:fade={{duration: 150}}
+					class="cinematics root-cinematics"
+					style={isHovered ? `height: ${mapCardRect.height}px;` : ''}>
+					<div class="cinematics-canvas root-canvas">
+						<div
+							style="position: absolute; background-size: cover;
+			background-position: center; background-image: url({coverUrl}); width: 100%; height: 100%" />
+					</div>
 				</div>
-			</div>
+			{/if}
 			<div
 				class="map-card"
 				class:is-hovered={isHovered || currentAnimation}
@@ -428,7 +431,8 @@
 				on:blur={() => handleHover(false, true)}>
 				<div class="cinematics">
 					<div class="cinematics-canvas">
-						<canvas bind:this={cinematicsCanvas} style="position: absolute; width: 100%; height: 100%; opacity: 0" />
+						<div
+							style="position: absolute; background-size: cover; background-position: center; background-image: url({coverUrl}); width: 100%; height: 100%" />
 					</div>
 				</div>
 				<a class="header-link" href={mapLink}></a>
@@ -595,13 +599,8 @@
 	}
 
 	.root-cinematics {
-		opacity: 0;
-		transition: opacity 0.3s ease;
-		z-index: -1;
-	}
-
-	.root-cinematics.is-hovered {
 		opacity: 0.9;
+		z-index: -1;
 	}
 
 	.song-player {
@@ -1126,10 +1125,6 @@
 			transform: scaleY(1.2) translateZ(0);
 		}
 
-		.icons-container {
-			margin-left: 2em;
-		}
-
 		:global(.player .clan-badges) {
 			display: none;
 		}
@@ -1169,11 +1164,18 @@
 			transform: scale(0.75);
 			margin-top: -0.8em;
 			margin-right: -2.2em;
+			transition:
+				margin-right 0.15s,
+				margin-left 0.15s;
+		}
+
+		.icons-container.is-hovered {
+			margin-left: 0;
 		}
 
 		.main-container {
 			font-size: 0.8em;
-			max-width: calc(100vw - 10em);
+			max-width: calc(100vw - 9em);
 		}
 
 		.requirements-icons {

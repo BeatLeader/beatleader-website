@@ -320,6 +320,7 @@
 		width: 100%;
 		flex-wrap: wrap;
 		background: inherit;
+		border-radius: 0 0 12px 12px;
 	}
 
 	.bl-badges img {
