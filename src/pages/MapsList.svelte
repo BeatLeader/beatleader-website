@@ -664,9 +664,99 @@
 	let playlistTitle = 'Search result';
 	function generatePlaylist() {
 		makingPlaylist = true;
+
 		playlists.generatePlaylist(mapCount, {...currentFilters, duplicateDiffs, playlistTitle}, () => {
 			navigate('/playlists');
 		});
+	}
+
+	function generateMetaTitle() {
+		let title = '';
+
+		// Base title by type
+		if (currentType === 'ranked') title = 'Ranked Maps';
+		else if (currentType === 'qualified') title = 'Qualified Maps';
+		else if (currentType === 'nominated') title = 'Nominated Maps';
+		else if (currentType === 'ost') title = 'OST Maps';
+		else title = 'Maps';
+
+		// Add search term if present
+		if (currentFilters.search) {
+			title = `"${currentFilters.search}" in ${title}`;
+		}
+
+		// Add star rating if present
+		if (currentFilters.stars_from && currentFilters.stars_to) {
+			title += ` (${formatNumber(currentFilters.stars_from, 1)}★-${formatNumber(currentFilters.stars_to, 1)}★)`;
+		} else if (currentFilters.stars_from) {
+			title += ` (${formatNumber(currentFilters.stars_from, 1)}★+)`;
+		} else if (currentFilters.stars_to) {
+			title += ` (up to ${formatNumber(currentFilters.stars_to, 1)}★)`;
+		}
+
+		return title;
+	}
+
+	function generateMetaDescription() {
+		let description = '';
+
+		// Base description by type
+		if (currentType === 'ranked') description = 'List of ranked Beat Saber maps';
+		else if (currentType === 'qualified') description = 'List of qualified Beat Saber maps';
+		else if (currentType === 'nominated') description = 'List of nominated Beat Saber maps';
+		else if (currentType === 'ost') description = 'List of Beat Saber OST maps';
+		else description = 'Search for Beat Saber maps';
+
+		// Build filter descriptions
+		let filters = [];
+
+		// Date range
+		if (currentFilters.date_from && currentFilters.date_to) {
+			const fromDate = dateFromUnix(currentFilters.date_from);
+			const toDate = dateFromUnix(currentFilters.date_to);
+			filters.push(`from ${fromDate.toLocaleDateString()} to ${toDate.toLocaleDateString()}`);
+		} else if (currentFilters.date_from) {
+			const fromDate = dateFromUnix(currentFilters.date_from);
+			filters.push(`after ${fromDate.toLocaleDateString()}`);
+		} else if (currentFilters.date_to) {
+			const toDate = dateFromUnix(currentFilters.date_to);
+			filters.push(`before ${toDate.toLocaleDateString()}`);
+		}
+
+		// Star rating
+		if (currentFilters.stars_from && currentFilters.stars_to) {
+			filters.push(
+				`with star rating between ${formatNumber(currentFilters.stars_from, 1)} and ${formatNumber(currentFilters.stars_to, 1)}`
+			);
+		} else if (currentFilters.stars_from) {
+			filters.push(`with star rating above ${formatNumber(currentFilters.stars_from, 1)}`);
+		} else if (currentFilters.stars_to) {
+			filters.push(`with star rating below ${formatNumber(currentFilters.stars_to, 1)}`);
+		}
+
+		// Difficulty
+		if (currentFilters.difficulty) {
+			const difficultyName = difficultyFilterOptions.find(d => d.key === currentFilters.difficulty)?.label;
+			if (difficultyName) filters.push(`on ${difficultyName} difficulty`);
+		}
+
+		// Mode
+		if (currentFilters.mode) {
+			const modeName = modeFilterOptions.find(m => m.key === currentFilters.mode)?.label;
+			if (modeName) filters.push(`in ${modeName} mode`);
+		}
+
+		// Search term
+		if (currentFilters.search) {
+			filters.push(`matching "${currentFilters.search}"`);
+		}
+
+		// Add filters to description
+		if (filters.length > 0) {
+			description += ' ' + filters.join(', ');
+		}
+
+		return description;
 	}
 
 	$: updateProfileSettings($account);
@@ -678,7 +768,8 @@
 			? currentFilters.sortBy
 			: 'stars';
 
-	$: metaDescription = currentType === 'ranked' ? 'List of Beat Saber ranked maps' : 'Search for leaderboards of Beat Saber maps';
+	$: metaTitle = generateMetaTitle();
+	$: metaDescription = generateMetaDescription();
 	$: hasRatingsByDefault = currentType === 'ranked' || currentType === 'nominated' || currentType === 'qualified';
 	$: starFiltersDisabled = !hasRatingsByDefault && !showAllRatings;
 	$: sliderLimits = hasRatingsByDefault ? Ranked_Const : Unranked_Const;
@@ -1262,19 +1353,19 @@
 </section>
 
 <MetaTags
-	title={ssrConfig.name + ' - Leaderboards'}
+	title={metaTitle}
 	description={metaDescription}
 	openGraph={{
-		title: ssrConfig.name + ' - Leaderboards',
+		title: metaTitle,
 		description: metaDescription,
 		images: [{url: CURRENT_URL + '/assets/logo-small.png'}],
-		siteName: ssrConfig.name,
+		siteName: ssrConfig.name + ' - Maps',
 	}}
 	twitter={{
 		handle: '@handle',
 		site: '@beatleader_',
 		cardType: 'summary',
-		title: ssrConfig.name + ' - Leaderboards',
+		title: metaTitle,
 		description: metaDescription,
 		image: CURRENT_URL + '/assets/logo-small.png',
 		imageAlt: ssrConfig.name + "'s logo",
