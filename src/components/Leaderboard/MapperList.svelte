@@ -2,24 +2,36 @@
 	import Mapper from './Mapper.svelte';
 	import {configStore} from '../../stores/config';
 
-	export let song;
+	/**
+	 * @typedef {Object} Props
+	 * @property {any} song
+	 * @property {string} [maxHeight]
+	 * @property {string} [maxWidth]
+	 * @property {string} [fontSize]
+	 * @property {boolean} [noArrow]
+	 * @property {any} rootElement
+	 * @property {boolean} [tooltip]
+	 */
 
-	export let maxHeight = '4.5em';
-	export let maxWidth = 'unset';
+	/** @type {Props} */
+	let {
+		song,
+		maxHeight = '4.5em',
+		maxWidth = 'unset',
+		fontSize = '1em',
+		noArrow = false,
+		rootElement = $bindable(),
+		tooltip = false,
+	} = $props();
 
-	export let fontSize = '1em';
-	export let noArrow = false;
-	export let rootElement;
-	export let tooltip = false;
+	let lessInAuthorName = $state(false);
+	let moreInAuthorName = $state(false);
+	let isVariousMappers = $state(false);
+	let authorNameMockMapper = $state(null);
 
-	let lessInAuthorName = false;
-	let moreInAuthorName = false;
-	let isVariousMappers = false;
-	let authorNameMockMapper = null;
-
-	let badgeContainer;
-	let isExpanded = false;
-	let isOverflowing = false;
+	let badgeContainer = $state();
+	let isExpanded = $state(false);
+	let isOverflowing = $state(false);
 
 	function checkOverflow(badgeContainer) {
 		if (badgeContainer) {
@@ -61,12 +73,18 @@
 		};
 	}
 
-	$: determineMismatches(song.mapper ?? '');
-	$: badgeContainer &&
-		setTimeout(() => {
-			checkOverflow(badgeContainer);
-		}, 400);
-	$: rootElement = badgeContainer;
+	$effect(() => {
+		determineMismatches(song.mapper ?? '');
+	});
+	$effect(() => {
+		badgeContainer &&
+			setTimeout(() => {
+				checkOverflow(badgeContainer);
+			}, 400);
+	});
+	$effect(() => {
+		rootElement = badgeContainer;
+	});
 </script>
 
 {#if song.mappers?.length}
@@ -88,10 +106,10 @@
 			<i
 				class="fa-solid fa-circle-info map-name-info"
 				class:higher-opacity={lessInAuthorName && !isVariousMappers}
-				title="Mapped by: {song.mapper}" />
+				title="Mapped by: {song.mapper}"></i>
 		{/if}
 		{#if !noArrow && (isOverflowing || isExpanded)}
-			<div class="expand-button" class:inverse={isExpanded} on:click={toggleExpansion}>
+			<div class="expand-button" class:inverse={isExpanded} onclick={toggleExpansion}>
 				<i class="fa-solid fa-chevron-down"></i>
 			</div>
 		{/if}

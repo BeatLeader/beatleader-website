@@ -2,14 +2,22 @@
 	import {songStatusesDescription, songStatusesMap} from '../../../utils/beatleader/format';
 	import {dateFromUnix, formatDateRelative} from '../../../utils/date';
 
-	export let songStatus = null;
+	/**
+	 * @typedef {Object} Props
+	 * @property {any} [songStatus]
+	 */
 
-	$: status = songStatus.blstatus ?? Object.entries(songStatusesMap).find(map => map[1] == songStatus.status)[0];
-	$: label = songStatusesDescription?.[status]?.name ?? songStatus.title ?? status;
-	$: color = songStatusesDescription?.[status]?.color ?? songStatus.color ?? 'var(--beatleader-primary)';
-	$: title = (songStatusesDescription?.[status]?.title ?? songStatus.details ?? '').replace(
-		'DATE',
-		songStatus?.timeset ? formatDateRelative(dateFromUnix(songStatus?.timeset)) : ''
+	/** @type {Props} */
+	let {songStatus = null} = $props();
+
+	let status = $derived(songStatus.blstatus ?? Object.entries(songStatusesMap).find(map => map[1] == songStatus.status)[0]);
+	let label = $derived(songStatusesDescription?.[status]?.name ?? songStatus.title ?? status);
+	let color = $derived(songStatusesDescription?.[status]?.color ?? songStatus.color ?? 'var(--beatleader-primary)');
+	let title = $derived(
+		(songStatusesDescription?.[status]?.title ?? songStatus.details ?? '').replace(
+			'DATE',
+			songStatus?.timeset ? formatDateRelative(dateFromUnix(songStatus?.timeset)) : ''
+		)
 	);
 </script>
 

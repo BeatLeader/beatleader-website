@@ -11,20 +11,14 @@
 		userDiffNameForDiff,
 	} from '../../../utils/beatleader/format';
 	import Icons from '../../Song/Icons.svelte';
-	import {decapitalizeFirstLetter} from '../../../utils/js';
 	import SongScoreCompact from './SongScoreCompact.svelte';
 	import SongStatus from './SongStatus.svelte';
 	import {createEventDispatcher} from 'svelte';
 	import FormattedDate from '../../Common/FormattedDate.svelte';
 
-	export let song;
-	export let isHovered;
+	let {song, isHovered, sortValue, sortBy, dateType} = $props();
 
-	export let sortValue;
-	export let sortBy;
-	export let dateType;
-
-	let modes;
+	let modes = $state();
 
 	const dispatch = createEventDispatcher();
 
@@ -85,16 +79,18 @@
 		}
 	}
 
-	$: song?.difficulties && groupDiffs(song);
-	$: songOnly = sortingValueIsSongOnly(sortBy);
+	$effect(() => {
+		song?.difficulties && groupDiffs(song);
+	});
+	let songOnly = $derived(sortingValueIsSongOnly(sortBy));
 </script>
 
 {#if modes?.length}
-	<div class="modes-list" on:scroll={e => dispatch('container-scroll', e)} class:isHovered>
+	<div class="modes-list" onscroll={e => dispatch('container-scroll', e)} class:isHovered>
 		{#each modes as mode}
 			<div class="mode-container" class:isHovered>
 				<div class="mode-icon-name" class:isHovered>
-					<i class="mode-icon {mode.description.icon}" class:isHovered />
+					<i class="mode-icon {mode.description.icon}" class:isHovered></i>
 					{#if isHovered}
 						<span class="mode-name">{mode.modeName}</span>
 					{/if}
@@ -121,7 +117,7 @@
 								{#if isHovered}
 									<a
 										style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;"
-										href={`/leaderboard/global/${diff.leaderboardId}`} />
+										href={`/leaderboard/global/${diff.leaderboardId}`}></a>
 									<span class="diff-name">{userDiffNameForDiff(diff.value)}</span>
 								{/if}
 								{#if diff.stars}

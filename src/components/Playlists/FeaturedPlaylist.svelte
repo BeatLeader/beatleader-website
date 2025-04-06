@@ -2,9 +2,15 @@
 	import ContentBox from '../Common/ContentBox.svelte';
 	import {fade, fly, slide} from 'svelte/transition';
 
-	export let playlist;
-	export let idx = 0;
-	export let animationSign = 1;
+	/**
+	 * @typedef {Object} Props
+	 * @property {any} playlist
+	 * @property {number} [idx]
+	 * @property {number} [animationSign]
+	 */
+
+	/** @type {Props} */
+	let {playlist, idx = 0, animationSign = 1} = $props();
 
 	function maybe(node, options) {
 		if (animationSign) {

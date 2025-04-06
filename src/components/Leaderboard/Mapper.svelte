@@ -4,9 +4,15 @@
 	import Popover from '../Common/Popover.svelte';
 	import MiniProfile from '../Player/Mini/MiniProfile.svelte';
 
-	export let mapper;
-	export let noPopover = false;
-	let referenceElement;
+	/**
+	 * @typedef {Object} Props
+	 * @property {any} mapper
+	 * @property {boolean} [noPopover]
+	 */
+
+	/** @type {Props} */
+	let {mapper, noPopover = false} = $props();
+	let referenceElement = $state();
 
 	function navigateToPlayer(playerId) {
 		if (!playerId) return;
@@ -20,8 +26,11 @@
 		href="/u/{mapper.playerId}"
 		class="mapper-container"
 		bind:this={referenceElement}
-		on:click|preventDefault={() => navigateToPlayer(mapper.playerId)}>
-		<img loading="lazy" class="mapper-avatar" src={mapper.avatar} />
+		onclick={e => {
+			e.preventDefault();
+			navigateToPlayer(mapper.playerId);
+		}}>
+		<img loading="lazy" alt={mapper.name + ' avatar'} class="mapper-avatar" src={mapper.avatar} />
 		<span>{mapper.name}</span>
 	</a>
 	{#if !noPopover}
@@ -34,9 +43,9 @@
 {:else}
 	<div class="mapper-container">
 		{#if mapper.authorName}
-			<i class="fa-solid fa-circle-info map-name-info" title="Missing collaborators were detected. This is the map author name." />
+			<i class="fa-solid fa-circle-info map-name-info" title="Missing collaborators were detected. This is the map author name."></i>
 		{:else}
-			<img loading="lazy" class="mapper-avatar" src={mapper.avatar} />
+			<img loading="lazy" alt={mapper.name + ' avatar'} class="mapper-avatar" src={mapper.avatar} />
 		{/if}
 		<span>{mapper.name}</span>
 	</div>

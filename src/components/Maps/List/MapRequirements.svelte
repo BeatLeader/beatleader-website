@@ -1,15 +1,15 @@
 <script>
 	import {mapRequirementsListFromMask} from '../../../utils/beatleader/format';
 
-	export let type;
+	let {type} = $props();
 
-	$: typeList = mapRequirementsListFromMask(type);
+	let typeList = $derived(mapRequirementsListFromMask(type));
 </script>
 
 {#if type}
 	{#each typeList as type, idx}
 		<span class="requirement-icon">
-			<div class={type.icon} title={type.title} />
+			<div class={type.icon} title={type.title}></div>
 		</span>
 	{/each}
 {/if}

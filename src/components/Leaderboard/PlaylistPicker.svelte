@@ -1,20 +1,19 @@
 <script>
 	import Select from 'svelte-select';
-	import {onMount} from 'svelte';
 	import {createEventDispatcher} from 'svelte';
 	import PlaylistPickerMultiItem from './PlaylistPickerMultiItem.svelte';
 	import PlaylistPickerItem from './PlaylistPickerItem.svelte';
 	import {BL_API_URL} from '../../network/queues/beatleader/api-queue';
 	import createPlaylistStore from '../../stores/playlists';
 
-	export let playlistIds = [];
+	let {playlistIds = []} = $props();
 
 	const dispatch = createEventDispatcher();
 	const playlists = createPlaylistStore();
 
-	let items = [];
+	let items = $state([]);
 	let selectedIds = [];
-	let activeTab = 'featured';
+	let activeTab = $state('featured');
 	let featuredItems = [];
 
 	async function fetchFeaturedPlaylists() {
@@ -91,7 +90,7 @@
 
 	const itemFilter = (label, filterText) => label.toLowerCase().includes(filterText.toLowerCase());
 
-	onMount(() => {
+	$effect(() => {
 		let fetchedBase = false;
 		document.getElementById('playlistsInput').onclick = () => {
 			if (!fetchedBase) {
@@ -101,8 +100,12 @@
 		};
 	});
 
-	$: playlistIds?.length && addItems($playlists);
-	$: value = items?.length && playlistIds?.length && playlistIds != [''] ? items.filter(i => (playlistIds ?? []).includes(i.value)) : null;
+	$effect(() => {
+		playlistIds?.length && addItems($playlists);
+	});
+	let value = $derived(
+		items?.length && playlistIds?.length && playlistIds != [''] ? items.filter(i => (playlistIds ?? []).includes(i.value)) : null
+	);
 
 	function handleTabClick(tab, e) {
 		e.preventDefault();
@@ -116,8 +119,8 @@
 <section>
 	<div class="select-wrapper">
 		<div class="tabs-dropdown">
-			<button class:activetab={activeTab === 'featured'} on:click={e => handleTabClick('featured', e)}> Featured </button>
-			<button class:activetab={activeTab === 'local'} on:click={e => handleTabClick('local', e)}> Local </button>
+			<button class:activetab={activeTab === 'featured'} onclick={e => handleTabClick('featured', e)}> Featured </button>
+			<button class:activetab={activeTab === 'local'} onclick={e => handleTabClick('local', e)}> Local </button>
 		</div>
 		<Select
 			id="playlistsInput"

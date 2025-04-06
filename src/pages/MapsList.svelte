@@ -7,7 +7,6 @@
 	import ssrConfig from '../ssr-config';
 	import Pager from '../components/Common/Pager.svelte';
 	import Spinner from '../components/Common/Spinner.svelte';
-	import ContentBox from '../components/Common/ContentBox.svelte';
 	import RangeSlider from 'svelte-range-slider-pips';
 	import {debounce} from '../utils/debounce';
 	import {formatNumber} from '../utils/format';
@@ -18,7 +17,6 @@
 		processFloatFilter,
 		processStringFilter,
 		processIntFilter,
-		processBoolFilter,
 	} from '../utils/filters';
 	import Button from '../components/Common/Button.svelte';
 	import DateRange from '../components/Common/DateRange.svelte';
@@ -27,7 +25,6 @@
 		typesDescription,
 		requirementsDescription,
 		typesMap,
-		DifficultyStatus,
 		requirementsMap,
 		modeDescriptions,
 		difficultyDescriptions,
@@ -36,34 +33,31 @@
 	} from '../utils/beatleader/format';
 	import {capitalize} from '../utils/js';
 	import {substituteVarsUrl} from '../utils/format';
-	import RankedTimer from '../components/Common/RankedTimer.svelte';
 	import {Ranked_Const, Unranked_Const} from '../utils/beatleader/consts';
 	import {MetaTags} from 'svelte-meta-tags';
 	import {BL_API_MAPS_URL, CURRENT_URL} from '../network/queues/beatleader/api-queue';
-	import BackToTop from '../components/Common/BackToTop.svelte';
-	import {configStore} from '../stores/config';
-	import {produce} from 'immer';
-	import Switch from '../components/Common/Switch.svelte';
 	import Select from '../components/Settings/Select.svelte';
 	import Mappers from '../components/Leaderboard/Mappers.svelte';
 	import MapCard from '../components/Maps/List/MapCard.svelte';
-	import TabSwitcher from '../components/Common/TabSwitcher.svelte';
 	import PlaylistPicker from '../components/Leaderboard/PlaylistPicker.svelte';
 	import {Svrollbar} from 'svrollbar';
 	import {PRIORITY} from '../utils/queue';
 	import {fetchJson} from '../network/fetch';
 	import AsideBox from '../components/Common/AsideBox.svelte';
 
-	export let page = 1;
-	export let type = 'ranked';
-	export let location;
+	/**
+	 * @typedef {Object} Props
+	 * @property {number} [page]
+	 * @property {string} [type]
+	 * @property {any} location
+	 */
+
+	/** @type {Props} */
+	let {page = $bindable(1), type = 'ranked', location} = $props();
 
 	const FILTERS_DEBOUNCE_MS = 500;
 
-	document.body.classList.remove('slim');
-
 	const account = createAccountStore();
-
 	const playlists = createPlaylistStore();
 
 	const params = [
@@ -112,11 +106,10 @@
 	if (page && !Number.isFinite(page)) page = parseInt(page, 10);
 	if (!page || isNaN(page) || page <= 0) page = 1;
 
-	let currentPage = page;
-	console.log('currentPage', currentPage);
+	let currentPage = $state(page);
 	let previousPage = page > 1 ? page - 1 : page;
-	let currentType = type;
-	let currentFilters = buildFiltersFromLocation(location);
+	let currentType = $state(type);
+	let currentFilters = $state(buildFiltersFromLocation(location));
 
 	const typeFilterOptions = [
 		{key: 'all', label: 'All maps', iconFa: 'fa fa-music', color: 'var(--beatleader-primary)'},
@@ -203,13 +196,13 @@
 		})
 	);
 
-	let numOfMaps = null;
+	let numOfMaps = $state(null);
 	let itemsPerPage = 12;
 
 	let isLoading = false;
 	let loadingPage = null;
 
-	let allMaps = [];
+	let allMaps = $state([]);
 	let activeRequests = {};
 
 	function resetCache(resetPages = true) {
@@ -557,8 +550,8 @@
 		{value: 'duration', name: 'Duration', title: 'Sort by the song duration', icon: 'fa-clock'},
 		{value: 'bpm', name: 'BPM', title: 'Sort by the song BPM', icon: 'fa-drum'},
 	];
-	let sortValues = sortValues1;
-	let sortValue = sortValues[0].value;
+	let sortValues = $state(sortValues1);
+	let sortValue = $state(sortValues[0].value);
 
 	function onSortChange(event) {
 		if (!event?.detail?.value || event.detail.value == currentFilters.sortBy) return null;
@@ -574,7 +567,7 @@
 		{value: 'asc', name: 'Ascending', icon: 'fa-arrow-up'},
 		{value: 'desc', name: 'Descending', icon: 'fa-arrow-down'},
 	];
-	let orderValue = orderValues[0].value;
+	let orderValue = $state(orderValues[0].value);
 
 	function onOrderChange(event) {
 		if (!event?.detail?.value || event.detail.value == currentFilters.order) return null;
@@ -591,9 +584,9 @@
 		{value: 'score', name: 'Recent score', icon: 'fa-calculator'},
 	];
 
-	let dateRangeOptions = dateRangeOptions1;
+	let dateRangeOptions = $state(dateRangeOptions1);
 
-	let dateRangeValue = dateRangeOptions[0].value;
+	let dateRangeValue = $state(dateRangeOptions[0].value);
 
 	function onDateRangeChanged(event) {
 		if (!event?.detail?.value || event.detail.value == currentFilters.date_range) return null;
@@ -633,7 +626,7 @@
 		navigateToCurrentPageAndFilters();
 	}
 
-	var showAllRatings = false;
+	var showAllRatings = $state(false);
 
 	function updateProfileSettings(account) {
 		if (account?.player?.profileSettings) {
@@ -643,11 +636,10 @@
 
 	const debouncedOnDateRangeChanged = debounce(onDateRangeChange, FILTERS_DEBOUNCE_MS);
 
-	let searchToPlaylist = false;
-	let makingPlaylist = false;
-	let mapCount = 100;
-	let duplicateDiffs = false;
-	let playlistTitle = 'Search result';
+	let makingPlaylist = $state(false);
+	let mapCount = $state(100);
+	let duplicateDiffs = $state(false);
+	let playlistTitle = $state('Search result');
 	function generatePlaylist() {
 		makingPlaylist = true;
 		playlists.generatePlaylist(mapCount, {...currentFilters, duplicateDiffs, playlistTitle}, () => {
@@ -655,25 +647,28 @@
 		});
 	}
 
-	$: updateProfileSettings($account);
+	$effect(() => {
+		updateProfileSettings($account);
+	});
 
-	$: changePageAndFilters(page, buildFiltersFromLocation(location), false, false);
-
-	$: starsKey =
+	let starsKey = $derived(
 		currentFilters.sortBy == 'accRating' || currentFilters.sortBy == 'passRating' || currentFilters.sortBy == 'techRating'
 			? currentFilters.sortBy
-			: 'stars';
+			: 'stars'
+	);
 
-	$: metaDescription = currentType === 'ranked' ? 'List of Beat Saber ranked maps' : 'Search for leaderboards of Beat Saber maps';
-	$: hasRatingsByDefault = currentType === 'ranked' || currentType === 'nominated' || currentType === 'qualified';
-	$: starFiltersDisabled = !hasRatingsByDefault && !showAllRatings;
-	$: sliderLimits = hasRatingsByDefault ? Ranked_Const : Unranked_Const;
+	let metaDescription = $derived(
+		currentType === 'ranked' ? 'List of Beat Saber ranked maps' : 'Search for leaderboards of Beat Saber maps'
+	);
+	let hasRatingsByDefault = $derived(currentType === 'ranked' || currentType === 'nominated' || currentType === 'qualified');
+	let starFiltersDisabled = $derived(!hasRatingsByDefault && !showAllRatings);
+	let sliderLimits = $derived(hasRatingsByDefault ? Ranked_Const : Unranked_Const);
 
-	let previousPageAnchor;
-	let currentPageAnchor;
+	let previousPageAnchor = $state();
+	let currentPageAnchor = $state();
 
-	let scrollContainer;
-	let asideContainer;
+	let scrollContainer = $state();
+	let asideContainer = $state();
 	function scrollToPage(page) {
 		previousPage = currentPage;
 		currentPage = page + 1;
@@ -688,11 +683,9 @@
 		isAutoScrolling = true;
 		scrollContainer.style.scrollBehavior = options.behavior || 'smooth';
 		scrollContainer.scrollTo(options);
-		requestAnimationFrame(() => {
-			setTimeout(() => {
-				isAutoScrolling = false;
-				scrollContainer.style.scrollBehavior = 'auto';
-			}, 50);
+		tick().then(() => {
+			isAutoScrolling = false;
+			scrollContainer.style.scrollBehavior = 'auto';
 		});
 	}
 
@@ -780,21 +773,25 @@
 	const lastWeek = dateFromUnix(now - 60 * 60 * 24 * 7);
 	const lastYear = dateFromUnix(now - 60 * 60 * 24 * 365);
 
-	let isDateFilterOpen = !!(currentFilters.date_from || currentFilters.date_to);
-	let isCategoryFilterOpen = !!currentFilters.mapType;
-	let isRequirementsFilterOpen = !!currentFilters.mapRequirements;
-	let isStarsFilterOpen = !!(
-		currentFilters.stars_from ||
-		currentFilters.stars_to ||
-		currentFilters.accrating_from ||
-		currentFilters.accrating_to ||
-		currentFilters.passrating_from ||
-		currentFilters.passrating_to ||
-		currentFilters.techrating_from ||
-		currentFilters.techrating_to
+	let isDateFilterOpen = $state(!!(currentFilters.date_from || currentFilters.date_to));
+	let isCategoryFilterOpen = $state(!!currentFilters.mapType);
+	let isRequirementsFilterOpen = $state(!!currentFilters.mapRequirements);
+	let isStarsFilterOpen = $state(
+		!!(
+			currentFilters.stars_from ||
+			currentFilters.stars_to ||
+			currentFilters.accrating_from ||
+			currentFilters.accrating_to ||
+			currentFilters.passrating_from ||
+			currentFilters.passrating_to ||
+			currentFilters.techrating_from ||
+			currentFilters.techrating_to
+		)
 	);
 
-	let isPlaylistOpen = false;
+	let isPlaylistOpen = $state(false);
+
+	changePageAndFilters(page, buildFiltersFromLocation(location), false, false);
 </script>
 
 <svelte:head>
@@ -807,7 +804,7 @@
 			{#if allMaps?.length}
 				<div class="songs-container">
 					<div class="songs-list">
-						<div class="songs" bind:this={scrollContainer} on:scroll={onScroll}>
+						<div class="songs" bind:this={scrollContainer} onscroll={onScroll}>
 							{#each allMaps as song, idx (song.index)}
 								{@const page = Math.floor(idx / itemsPerPage)}
 								{#if idx == 0}
@@ -857,7 +854,7 @@
 			</div>
 			<section class="filter">
 				<input
-					on:input={debounce(onSearchChanged, FILTERS_DEBOUNCE_MS)}
+					oninput={debounce(onSearchChanged, FILTERS_DEBOUNCE_MS)}
 					type="text"
 					class="search"
 					placeholder="Search for a map(Song/Author/Hash)..."
@@ -910,12 +907,12 @@
 					currentFilters.techrating_from ||
 					currentFilters.techrating_to
 				)}>
-				<div class="dropdown-header" on:click={() => (isStarsFilterOpen = !isStarsFilterOpen)}>
+				<div class="dropdown-header" onclick={() => (isStarsFilterOpen = !isStarsFilterOpen)}>
 					<div class="header-content">
-						<i class="fas fa-star" />
+						<i class="fas fa-star"></i>
 						<span>Ratings</span>
 					</div>
-					<i class="fas fa-chevron-{isStarsFilterOpen ? 'up' : 'down'}" />
+					<i class="fas fa-chevron-{isStarsFilterOpen ? 'up' : 'down'}"></i>
 				</div>
 
 				{#if isStarsFilterOpen}
@@ -929,11 +926,11 @@
 									<button
 										class="remove-type"
 										title="Remove"
-										on:click={() => {
+										onclick={() => {
 											currentFilters.stars_from = null;
 											currentFilters.stars_to = null;
 											starsChanged();
-										}}><i class="fas fa-xmark" /></button>
+										}}><i class="fas fa-xmark"></i></button>
 								{/if}
 							</label>
 							<RangeSlider
@@ -963,11 +960,11 @@
 									<button
 										class="remove-type"
 										title="Remove"
-										on:click={() => {
+										onclick={() => {
 											currentFilters.accrating_from = null;
 											currentFilters.accrating_to = null;
 											starsChanged();
-										}}><i class="fas fa-xmark" /></button>
+										}}><i class="fas fa-xmark"></i></button>
 								{/if}
 							</label>
 							<RangeSlider
@@ -997,11 +994,11 @@
 									<button
 										class="remove-type"
 										title="Remove"
-										on:click={() => {
+										onclick={() => {
 											currentFilters.passrating_from = null;
 											currentFilters.passrating_to = null;
 											starsChanged();
-										}}><i class="fas fa-xmark" /></button>
+										}}><i class="fas fa-xmark"></i></button>
 								{/if}
 							</label>
 							<RangeSlider
@@ -1031,11 +1028,11 @@
 									<button
 										class="remove-type"
 										title="Remove"
-										on:click={() => {
+										onclick={() => {
 											currentFilters.techrating_from = null;
 											currentFilters.techrating_to = null;
 											starsChanged();
-										}}><i class="fas fa-xmark" /></button>
+										}}><i class="fas fa-xmark"></i></button>
 								{/if}
 							</label>
 							<RangeSlider
@@ -1060,12 +1057,12 @@
 			</section>
 
 			<section class="filter dropdown-filter" class:has-value={!!(currentFilters.date_from || currentFilters.date_to)}>
-				<div class="dropdown-header" on:click={() => (isDateFilterOpen = !isDateFilterOpen)}>
+				<div class="dropdown-header" onclick={() => (isDateFilterOpen = !isDateFilterOpen)}>
 					<div class="header-content">
-						<i class="fas fa-calendar-alt" />
+						<i class="fas fa-calendar-alt"></i>
 						<span>Date</span>
 					</div>
-					<i class="fas fa-chevron-{isDateFilterOpen ? 'up' : 'down'}" />
+					<i class="fas fa-chevron-{isDateFilterOpen ? 'up' : 'down'}"></i>
 				</div>
 
 				{#if isDateFilterOpen}
@@ -1100,12 +1097,12 @@
 			</section>
 
 			<section class="filter dropdown-filter" class:has-value={!!currentFilters.mapType}>
-				<div class="dropdown-header" on:click={() => (isCategoryFilterOpen = !isCategoryFilterOpen)}>
+				<div class="dropdown-header" onclick={() => (isCategoryFilterOpen = !isCategoryFilterOpen)}>
 					<div class="header-content">
-						<i class="fas fa-tags" />
+						<i class="fas fa-tags"></i>
 						<span>Categories</span>
 					</div>
-					<i class="fas fa-chevron-{isCategoryFilterOpen ? 'up' : 'down'}" />
+					<i class="fas fa-chevron-{isCategoryFilterOpen ? 'up' : 'down'}"></i>
 				</div>
 
 				{#if isCategoryFilterOpen}
@@ -1130,12 +1127,12 @@
 			</section>
 
 			<section class="filter dropdown-filter" class:has-value={!!currentFilters.mapRequirements}>
-				<div class="dropdown-header" on:click={() => (isRequirementsFilterOpen = !isRequirementsFilterOpen)}>
+				<div class="dropdown-header" onclick={() => (isRequirementsFilterOpen = !isRequirementsFilterOpen)}>
 					<div class="header-content">
-						<i class="fas fa-list-check" />
+						<i class="fas fa-list-check"></i>
 						<span>Requirements</span>
 					</div>
-					<i class="fas fa-chevron-{isRequirementsFilterOpen ? 'up' : 'down'}" />
+					<i class="fas fa-chevron-{isRequirementsFilterOpen ? 'up' : 'down'}"></i>
 				</div>
 
 				{#if isRequirementsFilterOpen}
@@ -1186,12 +1183,12 @@
 				</div>
 			</section>
 			<section class="filter dropdown-filter">
-				<div class="dropdown-header" on:click={() => (isPlaylistOpen = !isPlaylistOpen)}>
+				<div class="dropdown-header" onclick={() => (isPlaylistOpen = !isPlaylistOpen)}>
 					<div class="header-content">
-						<i class="fas fa-list" />
+						<i class="fas fa-list"></i>
 						<span>Generate Playlist</span>
 					</div>
-					<i class="fas fa-chevron-{isPlaylistOpen ? 'up' : 'down'}" />
+					<i class="fas fa-chevron-{isPlaylistOpen ? 'up' : 'down'}"></i>
 				</div>
 
 				{#if isPlaylistOpen}

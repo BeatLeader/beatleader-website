@@ -1,12 +1,8 @@
 <script>
 	import ssrConfig from '../ssr-config';
 	import {navigate} from 'svelte-routing';
-	import {scrollToTargetAdjusted} from '../utils/browser';
-	import createPlaylistStore from '../stores/playlists';
 	import createAccountStore from '../stores/beatleader/account';
-	import Playlist from '../components/Playlists/Playlist.svelte';
 	import Pager from '../components/Common/Pager.svelte';
-	import Button from '../components/Common/Button.svelte';
 	import ContentBox from '../components/Common/ContentBox.svelte';
 	import TabSwitcher from '../components/Common/TabSwitcher.svelte';
 	import {MetaTags} from 'svelte-meta-tags';
@@ -14,14 +10,20 @@
 	import FeaturedPlaylist from '../components/Playlists/FeaturedPlaylist.svelte';
 	import FeaturedPlaylistRanked from '../components/Playlists/FeaturedPlaylistRanked.svelte';
 
-	export let page = 1;
+	/**
+	 * @typedef {Object} Props
+	 * @property {number} [page]
+	 */
+
+	/** @type {Props} */
+	let {page = 1} = $props();
 
 	const account = createAccountStore();
 
 	let itemsPerPage = 10;
-	let currentPage = page;
-	let previousPage = 0;
-	let totalItems = 10 * page + 1;
+	let currentPage = $state(page);
+	let previousPage = $state(0);
+	let totalItems = $state(10 * page + 1);
 
 	function onPageChanged(event) {
 		previousPage = currentPage;
@@ -30,7 +32,7 @@
 		navigate(`/playlists/featured/${currentPage}`, {replace: true});
 	}
 
-	var playlists = [];
+	var playlists = $state([]);
 
 	function fetchPlaylists(itemsPerPage, page) {
 		fetch(`${BL_API_URL}playlists/featured/paged?page=${page}&count=${itemsPerPage}`)
@@ -75,11 +77,13 @@
 		},
 	];
 
-	$: itemsPerPage && fetchPlaylists(itemsPerPage, page);
+	$effect(() => {
+		itemsPerPage && fetchPlaylists(itemsPerPage, page);
+	});
 
-	$: metaTitle = `Featured playlists / ${ssrConfig.name}`;
-	$: description = `
-		Beat Saber playlists selection of the community`;
+	let metaTitle = $derived(`Featured playlists / ${ssrConfig.name}`);
+	let description = $derived(`
+		Beat Saber playlists selection of the community`);
 </script>
 
 <svelte:head>

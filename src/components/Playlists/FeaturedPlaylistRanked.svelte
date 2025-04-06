@@ -1,5 +1,5 @@
 <script>
-	export let playlist;
+	let {playlist} = $props();
 </script>
 
 <a href={`/playlist/${playlist.id}`} class="featured-playlist-ranked" style="background-color: {playlist.color}2e;">

@@ -1,20 +1,12 @@
 <script>
-	import {onMount} from 'svelte';
-	import {tweened} from 'svelte/motion';
-	import {cubicOut} from 'svelte/easing';
-	import {createEventDispatcher} from 'svelte';
 	import Button from '../../Common/Button.svelte';
 	import {fade, fly, slide} from 'svelte/transition';
 	import {songPlayerStore, currentTimeStore} from '../../../stores/songPlayer';
 
-	export let song;
+	let {song} = $props();
 
-	$: if (song) {
-		isCurrentSong = $songPlayerStore?.currentHash === song.hash;
-	}
-
-	let isCurrentSong = false;
-	let showVolumeSlider = false;
+	let isCurrentSong = $state(false);
+	let showVolumeSlider = $state(false);
 
 	function handleTogglePlay() {
 		songPlayerStore.togglePlay(song.hash, song.downloadUrl.includes('beatleader'));
@@ -28,7 +20,12 @@
 		showVolumeSlider = !showVolumeSlider;
 	}
 
-	$: currentTime = $songPlayerStore?.currentHash == song.hash ? $currentTimeStore : 0;
+	let currentTime = $derived($songPlayerStore?.currentHash == song.hash ? $currentTimeStore : 0);
+	$effect(() => {
+		if (song) {
+			isCurrentSong = $songPlayerStore?.currentHash === song.hash;
+		}
+	});
 </script>
 
 <div class="player">
@@ -59,7 +56,7 @@
 			on:click={toggleVolumeSlider} />
 		{#if showVolumeSlider}
 			<div class="volume-slider" transition:fade={{duration: 100}}>
-				<input type="range" min="0" max="1" step="0.01" value={$songPlayerStore?.volume} on:input={handleVolumeChange} />
+				<input type="range" min="0" max="1" step="0.01" value={$songPlayerStore?.volume} oninput={handleVolumeChange} />
 			</div>
 		{/if}
 	</div>

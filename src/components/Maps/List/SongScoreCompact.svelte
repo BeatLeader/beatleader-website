@@ -4,10 +4,15 @@
 	import FormattedDate from '../../Common/FormattedDate.svelte';
 	import {badgesDef} from '../../../utils/beatleader/format';
 
-	export let score = null;
-	export let shortdate = true;
+	/**
+	 * @typedef {Object} Props
+	 * @property {any} [score]
+	 * @property {boolean} [shortdate]
+	 * @property {boolean} [showDetails]
+	 */
 
-	export let showDetails = false;
+	/** @type {Props} */
+	let {score = null, shortdate = true, showDetails = false} = $props();
 </script>
 
 {#if score}

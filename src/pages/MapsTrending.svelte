@@ -3,11 +3,11 @@
 	import MapCard from '../components/Maps/List/MapCard.svelte';
 	import {BL_API_URL} from '../network/queues/beatleader/api-queue';
 
-	let topPlayedToday = [];
-	let topPlayedThisWeek = [];
-	let topPlayedNewMaps = [];
-	let topVotedNewMaps = [];
-	let topBeatSaverTrending = [];
+	let topPlayedToday = $state([]);
+	let topPlayedThisWeek = $state([]);
+	let topPlayedNewMaps = $state([]);
+	let topVotedNewMaps = $state([]);
+	let topBeatSaverTrending = $state([]);
 
 	let unixNow = Math.floor(Date.now() / 1000);
 
@@ -115,7 +115,7 @@
 			});
 	}
 
-	$: fetchTrendingMaps();
+	fetchTrendingMaps();
 </script>
 
 <ContentBox cls="maps-trending-container">

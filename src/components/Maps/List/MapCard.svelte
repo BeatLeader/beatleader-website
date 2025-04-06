@@ -1,16 +1,12 @@
 <script>
-	import {createEventDispatcher, getContext, onMount} from 'svelte';
+	import {onMount, tick} from 'svelte';
 	import {fade, fly, slide} from 'svelte/transition';
 
-	import Value from '../../Common/Value.svelte';
-	import Badge from '../../Common/Badge.svelte';
 	import Icons from '../../Song/Icons.svelte';
 	import {formatDiffStatus, DifficultyStatus, wrapBLStatus, getSongSortingValue} from '../../../utils/beatleader/format';
 	import {configStore} from '../../../stores/config';
-	import HashDisplay from '../../Common/HashDisplay.svelte';
 	import SongStatus from './SongStatus.svelte';
 	import MapperList from '../../Leaderboard/MapperList.svelte';
-	import LeaderboardStats from '../../Leaderboard/LeaderboardStats.svelte';
 	import ModesList from './ModesList.svelte';
 	import SongPlayer from './SongPlayer.svelte';
 	import {songPlayerStore} from '../../../stores/songPlayer';
@@ -18,29 +14,28 @@
 	import MapRequirements from './MapRequirements.svelte';
 	import Popover from '../../Common/Popover.svelte';
 
-	export let map;
-	export let sortBy = 'stars';
-	export let forcePlaceholder = false;
-	export let dateType = 'ranked';
+	/**
+	 * @typedef {Object} Props
+	 * @property {any} map
+	 * @property {string} [sortBy]
+	 * @property {boolean} [forcePlaceholder]
+	 * @property {string} [dateType]
+	 */
 
-	const dispatch = createEventDispatcher();
-	const {open, close} = getContext('simple-modal');
+	/** @type {Props} */
+	let {map, sortBy = 'stars', forcePlaceholder = false, dateType = 'ranked'} = $props();
 
-	function onSelectedGroupEntryChanged() {
-		dispatch('group-changed');
-	}
+	let status = $state(null);
+	let requirements = $state(null);
 
-	let status = null;
-	let requirements = null;
+	let isHovered = $state(false);
 
-	let isHovered = false;
+	let mapCardElement = $state();
+	let mapCardWrapper = $state();
+	let mapCardRect = $state();
 
-	let mapCardElement;
-	let mapCardWrapper;
-	let mapCardRect;
-
-	let bottomContainer;
-	let bottomContainerHeight = 0;
+	let bottomContainer = $state();
+	let bottomContainerHeight = $state(0);
 	let bottomContainerObserver;
 
 	function calculateStatus(song) {
@@ -67,11 +62,11 @@
 		return result;
 	}
 
-	let song = null;
-	let hash = null;
-	let name = null;
-	let sortValue = null;
-	let coverUrl = null;
+	let song = $state(null);
+	let hash = $state(null);
+	let name = $state(null);
+	let sortValue = $state(null);
+	let coverUrl = $state(null);
 
 	function getSong(map) {
 		if (!map) return;
@@ -91,39 +86,47 @@
 			name = song.name;
 			coverUrl = song.coverImage;
 			sortValue = getSongSortingValue(song, null, sortBy);
+			if (song.difficulties) {
+				mapLink = `/leaderboard/global/${song.difficulties?.filter(d => d.value && d.applicable).sort((a, b) => b.value - a.value)?.[0]?.leaderboardId}`;
+			} else {
+				mapLink = `/leaderboard/global/${song.id}`;
+			}
 		}
 	}
 
-	$: getSong(map);
+	let cinematicsCanvas = $state();
+	let rootcinematicsCanvas = $state();
 
-	let cinematicsCanvas;
-	let rootcinematicsCanvas;
+	$effect(() => {
+		if (cinematicsCanvas && coverUrl) cinematicsStore.drawCinematics(cinematicsCanvas, coverUrl);
+	});
+	$effect(() => {
+		if (rootcinematicsCanvas && coverUrl) cinematicsStore.drawCinematics(rootcinematicsCanvas, coverUrl);
+	});
 
-	$: if (cinematicsCanvas && coverUrl) cinematicsStore.drawCinematics(cinematicsCanvas, coverUrl);
-	$: if (rootcinematicsCanvas && coverUrl) cinematicsStore.drawCinematics(rootcinematicsCanvas, coverUrl);
-
-	let headerContainer;
-	let headerContainerHeight = 0;
+	let headerContainer = $state();
+	let headerContainerHeight = $state(0);
 
 	function updateHeaderContainerHeight(headerContainer) {
 		headerContainerHeight = headerContainer?.getBoundingClientRect().height ?? 0;
 	}
 
-	$: headerContainer && updateHeaderContainerHeight(headerContainer);
+	$effect(() => {
+		headerContainer && updateHeaderContainerHeight(headerContainer);
+	});
 
 	let hoverTimeout;
 	let playingSong = false;
 	let mouseInside = false;
 
-	let modesListContainer;
+	let modesListContainer = $state();
 	let scrollPosition = 0;
 	let containerHeight = 0;
 	let contentHeight = 0;
 	let currentHeight = 0;
-	let currentTargetHeight = 0;
+	let currentTargetHeight = $state(0);
 
-	let currentAnimation = null;
-	let scheduledAnimation = null;
+	let currentAnimation = $state(null);
 
 	function lerp(start, end, t) {
 		return start * (1 - t) + end * t;
@@ -178,7 +181,6 @@
 		hoverTimeout = setTimeout(() => {
 			if (isHovered == hovering) return;
 
-			clearTimeout(scheduledAnimation);
 			isHovered = hovering;
 			if (hovering) {
 				if (!mapCardWrapper) {
@@ -192,7 +194,7 @@
 				}
 				modesListContainer.style.height = `${currentHeight}px`;
 
-				scheduledAnimation = setTimeout(() => {
+				tick().then(() => {
 					if (modesListContainer) {
 						shouldInit = true;
 						animateHeight(modesListContainer.scrollHeight, () => {
@@ -202,7 +204,7 @@
 							}
 						});
 					}
-				}, 0);
+				});
 			} else {
 				if (modesListContainer) {
 					let callback = () => {
@@ -362,23 +364,19 @@
 		}
 	}
 
-	let mapLink = null;
+	let mapLink = $state(null);
 
-	function getMapLink(song) {
-		if (song.difficulties) {
-			mapLink = `/leaderboard/global/${song.difficulties?.filter(d => d.value && d.applicable).sort((a, b) => b.value - a.value)?.[0]?.leaderboardId}`;
-		} else {
-			mapLink = `/leaderboard/global/${song.id}`;
-		}
-	}
+	$effect(() => {
+		getSong(map);
+	});
 
-	$: getMapLink(song);
+	let titleTextElement = $state();
+	let authorElement = $state();
+	let mappersElement = $state();
 
-	let titleTextElement;
-	let authorElement;
-	let mappersElement;
-
-	$: hash && handlePlay($songPlayerStore?.currentHash, hash);
+	$effect(() => {
+		hash && handlePlay($songPlayerStore?.currentHash, hash);
+	});
 </script>
 
 {#if song}
@@ -410,7 +408,7 @@
 		<div class="map-card-wrapper" class:transparent={song.transparent} class:is-hovered={isHovered} bind:this={mapCardWrapper}>
 			<div class="cinematics root-cinematics" style={isHovered ? `height: ${mapCardRect.height}px;` : ''} class:is-hovered={isHovered}>
 				<div class="cinematics-canvas root-canvas">
-					<canvas bind:this={rootcinematicsCanvas} style="position: absolute; width: 100%; height: 100%; opacity: 0" />
+					<canvas bind:this={rootcinematicsCanvas} style="position: absolute; width: 100%; height: 100%; opacity: 0"></canvas>
 				</div>
 			</div>
 			<div
@@ -421,13 +419,13 @@
 				bind:this={mapCardElement}
 				tabindex="-1"
 				role="button"
-				on:mouseover={() => handleHover(true, true)}
-				on:mouseout={() => handleHover(false, true)}
-				on:focus={() => handleHover(true, true)}
-				on:blur={() => handleHover(false, true)}>
+				onmouseover={() => handleHover(true, true)}
+				onmouseout={() => handleHover(false, true)}
+				onfocus={() => handleHover(true, true)}
+				onblur={() => handleHover(false, true)}>
 				<div class="cinematics">
 					<div class="cinematics-canvas">
-						<canvas bind:this={cinematicsCanvas} style="position: absolute; width: 100%; height: 100%; opacity: 0" />
+						<canvas bind:this={cinematicsCanvas} style="position: absolute; width: 100%; height: 100%; opacity: 0"></canvas>
 					</div>
 				</div>
 				<a class="header-link" href={mapLink}></a>
@@ -503,8 +501,8 @@
 						</div>
 						<div
 							class="mobile-chevron-container hovered mobile-only"
-							on:click={() => handleHover(false, true)}
-							on:keydown={() => handleHover(false, true)}
+							onclick={() => handleHover(false, true)}
+							onkeydown={() => handleHover(false, true)}
 							tabindex="-1"
 							role="button">
 							<i class="fas fa-chevron-up"></i>
@@ -513,7 +511,7 @@
 					<div
 						class="modes-list-container"
 						class:is-hovered={isHovered || currentAnimation}
-						on:scroll={handleScroll}
+						onscroll={handleScroll}
 						bind:this={modesListContainer}>
 						<ModesList {song} isHovered={isHovered || currentAnimation} {sortValue} {sortBy} {dateType} />
 					</div>
