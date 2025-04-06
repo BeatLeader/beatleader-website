@@ -67,7 +67,7 @@
 	import {invertColor} from '../components/Common/utils/badge';
 	import {isPatron} from '../components/Player/Overlay/overlay';
 	import Headsets from '../components/Ranking/Headsets.svelte';
-	import LeaderboardAsideBox from '../components/Leaderboard/LeaderboardAsideBox.svelte';
+	import LeaderboardAsideBox from '../components/Common/AsideBox.svelte';
 	import LeaderboardDevMenu from '../components/Leaderboard/LeaderboardDevMenu.svelte';
 
 	export let leaderboardId;
@@ -801,13 +801,7 @@
 	$: currentType == 'clans' && updateClanOptions($account);
 	$: currentType == 'clans' && currentFilters.clanTag?.length && updateSelectedClan(clanOptions, currentFilters.clanTag);
 
-	$: leaderboardStatsShown = $configStore?.preferences?.leaderboardStatsShown;
-	$: curveShown = $configStore?.preferences?.curveShown;
-	$: attemptsShown = $configStore?.preferences?.attemptsShown;
-	$: qualificationInfoShown = $configStore?.preferences?.qualificationInfoShown;
-	$: commentaryShown = $configStore?.preferences?.commentaryShown;
 	$: leaderboardShowSorting = $configStore?.preferences?.leaderboardShowSorting;
-	$: leaderboardShowPlaylists = $configStore?.preferences?.leaderboardShowPlaylists;
 
 	$: replayEnabled = $configStore?.leaderboardPreferences?.show?.replay ?? false;
 
@@ -1134,7 +1128,7 @@
 	{#if separatePage && type !== 'accsaber'}
 		<aside transition:fade|global>
 			{#if qualification && !isRanked}
-				<LeaderboardAsideBox opened={commentaryShown} title="Quality Votes" faicon="fas fa-comments" boolname="commentaryShown">
+				<LeaderboardAsideBox title="Quality Votes" faicon="fas fa-comments" boolname="commentaryShown">
 					<div>
 						<QualityVoting {qualification} {isNQT} currentPlayerId={$account.id} />
 						{#if isRT || isNQT || generalMapperId}
@@ -1144,11 +1138,7 @@
 				</LeaderboardAsideBox>
 			{/if}
 			{#if (isNominated && qualification) || (leaderboard?.reweight && !leaderboard?.reweight.finished)}
-				<LeaderboardAsideBox
-					opened={qualificationInfoShown}
-					title="Criteria Votes"
-					faicon="fas fa-list-ul"
-					boolname="qualificationInfoShown">
+				<LeaderboardAsideBox title="Criteria Votes" faicon="fas fa-list-ul" boolname="qualificationInfoShown">
 					<div>
 						{#if isNominated && qualification}
 							<QualificationStatus {qualification} {isRanked} />
@@ -1162,11 +1152,7 @@
 				</LeaderboardAsideBox>
 			{/if}
 			{#if featuredPlaylists && featuredPlaylists.length}
-				<LeaderboardAsideBox
-					opened={leaderboardShowPlaylists}
-					title="Featured Playlists"
-					faicon="fas fa-compact-disc"
-					boolname="leaderboardShowPlaylists">
+				<LeaderboardAsideBox title="Featured Playlists" faicon="fas fa-compact-disc" boolname="leaderboardShowPlaylists">
 					<div class="featured-playlists">
 						<span class="featured-playlist-headline">Featured in:</span>
 						{#each featuredPlaylists as featuredPlaylist}
@@ -1179,11 +1165,7 @@
 			{/if}
 
 			{#if showStats}
-				<LeaderboardAsideBox
-					opened={leaderboardStatsShown}
-					title="Map Details"
-					faicon="fas fa-magnifying-glass"
-					boolname="leaderboardStatsShown">
+				<LeaderboardAsideBox title="Map Details" faicon="fas fa-magnifying-glass" boolname="leaderboardStatsShown">
 					{#if leaderboard?.stats}
 						<div class="stats-with-icons">
 							<PredictedAccGraph {leaderboard} {selectedModifiers} />
@@ -1203,13 +1185,13 @@
 			{/if}
 
 			{#if showAttempts}
-				<LeaderboardAsideBox opened={attemptsShown} title="Attempts" faicon="fas fa-chart-simple" boolname="attemptsShown">
+				<LeaderboardAsideBox title="Attempts" faicon="fas fa-chart-simple" boolname="attemptsShown">
 					<AttemptsGraph leaderboardId={currentLeaderboardId} />
 				</LeaderboardAsideBox>
 			{/if}
 
 			{#if showCurve && leaderboard?.stats?.stars}
-				<LeaderboardAsideBox opened={curveShown} title="PP Curve" faicon="fas fa-bezier-curve" boolname="curveShown">
+				<LeaderboardAsideBox title="PP Curve" faicon="fas fa-bezier-curve" boolname="curveShown">
 					<h2 class="title is-5 pp-curve-toggles">
 						<div class="pp-curve-toggle">
 							<span class="pp-curve-toggle-label">Pass:</span>
@@ -1659,10 +1641,5 @@
 
 	.box-with-left-arrow {
 		grid-template-columns: 1fr;
-	}
-
-	aside :global(.content-box) {
-		margin-inline: 0;
-		padding: 0.5rem;
 	}
 </style>

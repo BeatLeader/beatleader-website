@@ -140,6 +140,7 @@
 		flex-wrap: wrap;
 		align-items: center;
 		gap: 0.25rem;
+		flex: 1;
 	}
 
 	.select-wrapper {

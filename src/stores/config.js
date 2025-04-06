@@ -72,6 +72,8 @@ export const DEFAULT_CONFIG = {
 		beastiesNominationsBanner: true,
 
 		playlistOption: 'selected',
+
+		mapsFiltersOpen: false,
 	},
 	scorePreferences: {
 		badgeRows: 2,
@@ -119,6 +121,7 @@ export const DEFAULT_CONFIG = {
 		showClanCaptureInHeader: true,
 		showClanCaptureInList: true,
 		alwaysShowAuthorHint: false,
+		showSubtitleInHeader: true,
 
 		show: {
 			avatar: true,

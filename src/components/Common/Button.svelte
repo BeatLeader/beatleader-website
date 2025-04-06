@@ -273,7 +273,6 @@
 		transform: scale(var(--hovered-scale));
 		opacity: 1;
 		background: var(--btn-bg-color, #3273dc) linear-gradient(0deg, transparent, #ffffff66) !important;
-		border: none;
 	}
 
 	.button:active {
@@ -305,8 +304,8 @@
 	}
 
 	.not-selected {
-		position: relative; 
-		overflow: hidden; 
+		position: relative;
+		overflow: hidden;
 		box-sizing: border-box;
 		border: none;
 	}
@@ -318,13 +317,13 @@
 		left: 0;
 		width: 100%;
 		height: 100%;
-		background-color: rgba(0, 0, 0, 0.5); 
-		z-index: 1; 
-		pointer-events: none; 
+		background-color: rgba(0, 0, 0, 0.5);
+		z-index: 1;
+		pointer-events: none;
 	}
 
 	.not-selected:hover::after {
-		background-color: rgba(0, 0, 0, 0); 
+		background-color: rgba(0, 0, 0, 0);
 	}
 
 	:global(.button.is-loading::after) {

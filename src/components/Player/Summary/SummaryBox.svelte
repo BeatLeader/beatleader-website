@@ -84,6 +84,7 @@
 		background-color: #0000004f;
 		margin-top: 0.5em;
 		border-radius: 0 0 12px 12px;
+		overflow: hidden;
 	}
 
 	.stats-and-summary {

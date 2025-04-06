@@ -44,6 +44,10 @@ nav.ssr-page-container {
     }
 }
 
+.ssr-page-container.svelte-1yd7hvc {
+    min-height: calc(100vh - 10rem);
+}
+
 .is-multiline {
     margin-left: 0 !important;
 }
@@ -461,4 +465,26 @@ select {
     border-bottom: 2px solid var(--spacer-bg-color, #8f48db);
     flex: 1;
     margin-bottom: -6px;
+}
+
+.songs-container .songs-list {
+    .map-card-wrapper {
+        background: transparent !important;
+    }
+
+    .map-card {
+        background: var(--customizable-color-1) !important;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+    }
+
+    .map-card-placeholder {
+        background-color: #0000004a !important;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+    }
+
+    .bottom-container-background.is-hovered {
+        background-color: #0000004a !important;
+    }
 }

@@ -17,6 +17,7 @@
 	export let songScore = null;
 	export let fixedBrowserTitle = null;
 	export let idx = 0;
+	export let animationSign = 1;
 	export let service = null;
 	export let withPlayers = false;
 	export let noIcons = false;
@@ -25,7 +26,6 @@
 	export let inList = true;
 	export let additionalStat = null;
 	export let replayCounter = true;
-	export let animationSign = 1;
 	export let selectedMetric = null;
 
 	let showDetails = false;

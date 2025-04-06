@@ -1,10 +1,9 @@
 <script>
 	import {slide, crossfade} from 'svelte/transition';
-	import ContentBox from '../Common/ContentBox.svelte';
+	import ContentBox from './ContentBox.svelte';
 	import {configStore} from '../../stores/config';
 	import {produce} from 'immer';
 
-	export let opened = false;
 	export let title = 'box';
 	export let faicon = '';
 	export let boolname = null;
@@ -26,9 +25,11 @@
 			draft.preferences[name] = !draft.preferences[name];
 		});
 	}
+
+	$: opened = $configStore.preferences[boolname];
 </script>
 
-<ContentBox cls="leaderboard-aside-box frosted">
+<ContentBox cls="aside-content-box frosted">
 	<div class="box-toggle-section">
 		{#if !opened}
 			<span
@@ -76,7 +77,7 @@
 </ContentBox>
 
 <style>
-	:global(.leaderboard-aside-box) {
+	:global(.aside-content-box) {
 		position: static !important;
 		border-radius: 12px !important;
 		margin-top: 0.36em !important;
@@ -127,5 +128,10 @@
 		justify-content: center;
 		width: 1.2em;
 		height: 1.2em;
+	}
+
+	:global(aside .aside-content-box) {
+		margin-inline: 0 !important;
+		padding: 0.5rem !important;
 	}
 </style>

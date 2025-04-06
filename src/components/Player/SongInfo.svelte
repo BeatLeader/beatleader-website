@@ -40,6 +40,7 @@
 	$: leaderboardUrl = `/leaderboard/${mapServiceToLink(service)}/${leaderboardId}/${page ?? ''}`;
 	$: isPlayerScore = $account?.id && $account?.id === score?.playerId;
 	$: serviceIcon = score?.metadata ?? null;
+	$: console.log(song);
 </script>
 
 {#if song}
@@ -49,11 +50,11 @@
 		<div class="songinfo">
 			{#if notClickable}
 				<span class="name">{song.name} {song.subName}</span>
-				<div class="author"><span class="author-name">{song.authorName}</span> <small>{song.levelAuthorName}</small></div>
+				<div class="author"><span class="author-name">{song.author}</span> <small>{song.mapper}</small></div>
 			{:else}
 				<a href={leaderboardUrl} on:click|preventDefault={() => navigate(leaderboardUrl)}>
 					<span class="name">{song.name} {song.subName}</span>
-					<div class="author"><span class="author-name">{song.authorName}</span> <small>{song.levelAuthorName}</small></div>
+					<div class="author"><span class="author-name">{song.author}</span> <small>{song.mapper}</small></div>
 
 					{#if category}
 						<span class="category">

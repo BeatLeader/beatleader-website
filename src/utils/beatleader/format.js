@@ -1,4 +1,5 @@
 import {CURRENT_URL} from '../../network/queues/beatleader/api-queue';
+import {dateFromUnix, formatDateRelative} from '../date';
 import {formatNumber} from '../format';
 import {capitalize, opt} from '../js';
 
@@ -10,6 +11,15 @@ export const diffColors = {
 	expertPlus: '#8f48db',
 	expertplus: '#8f48db',
 };
+
+export const badgesDef = [
+	{name: 'SS+', min: 95, max: null, color: diffColors.expertPlus},
+	{name: 'SS', min: 90, max: 95, color: diffColors.expert},
+	{name: 'S+', min: 85, max: 90, color: diffColors.hard},
+	{name: 'S', min: 80, max: 85, color: diffColors.normal},
+	{name: 'A', min: 70, max: 80, color: diffColors.easy},
+	{name: '-', min: null, max: 70, color: 'var(--dimmed)'},
+];
 
 export function getDiffNameColor(diffName) {
 	return diffColors[diffName.toLowerCase()] ? diffColors[diffName.toLowerCase()] : null;
@@ -685,6 +695,23 @@ export function diffNameForDiff(diff) {
 	return 'ExpertPlus';
 }
 
+export function userDiffNameForDiff(diff) {
+	switch (diff) {
+		case 1:
+			return 'Easy';
+		case 3:
+			return 'Normal';
+		case 5:
+			return 'Hard';
+		case 7:
+			return 'Expert';
+		case 9:
+			return 'Expert+';
+	}
+
+	return 'Expert+';
+}
+
 export const ModifiersList = [
 	{
 		id: 'NF',
@@ -1094,7 +1121,7 @@ export const requirementsDescription = {
 	vnjs: {
 		title: 'v4.1 Map with variable note speed. Works only on Beat Saber 1.40+',
 		name: 'VNJS',
-		icon: 'fas fa-chart-simple',
+		icon: 'vnjs-icon',
 		color: 'grey',
 		textColor: 'white',
 	},
@@ -1144,16 +1171,17 @@ export const songStatusesDescription = {
 		name: 'Noodle Map Monday',
 		icon: 'cubecommunity-icon',
 		iconFile: '/assets/cubecommunitylogo-smaller.webp',
-		color: 'rgb(164 76 61)',
+		color: '#a44c3d',
 		textColor: 'white',
 	},
 	beastSaberAwarded: {
 		icon: 'beastaward-icon',
 		iconFile: '/assets/beastawardbackground.webp',
 		gradient: 'linear-gradient(rgb(26 26 26 / 8%), rgb(16 16 16 / 12%))',
-		color: 'yellow',
-		textColor: 'yellow',
+		color: '#ffff00',
+		textColor: '#ffff00',
 	},
+
 	buildingBlocksAwarded: {
 		icon: 'buildingblocks-icon',
 		iconFile: '/assets/buildingblockslogo-background.webp',
@@ -1161,43 +1189,52 @@ export const songStatusesDescription = {
 		color: 'yellow',
 		textColor: 'yellow',
 	},
+	ost: {
+		title: 'Beat Saber base game original free maps!',
+		name: 'OST',
+		icon: 'beastsaber-icon',
+		iconFile: '/assets/beastsabericon.webp',
+		color: '#ffffff',
+		textColor: '#ffffff',
+	},
 	ranked: {
 		title: 'Ranked map, gives PP!',
 		name: 'Ranked',
 		icon: 'beastsaber-icon',
 		iconFile: '/assets/logo-small.png',
-		color: 'yellow',
-		textColor: 'white',
+		showIcon: true,
+		color: '#ffff00',
+		textColor: '#ffffff',
 	},
 	qualified: {
 		title: 'Qualified map, as part of the ranking process.',
 		name: 'Qualified',
 		icon: 'beastsaber-icon',
 		iconFile: '/assets/logo-small.png',
-		color: 'yellow',
-		textColor: 'white',
+		color: '#ffff00',
+		textColor: '#ffffff',
 	},
 	nominated: {
 		title: 'Nominated map, as part of the ranking process.',
 		name: 'Nominated',
 		icon: 'beastsaber-icon',
 		iconFile: '/assets/logo-small.png',
-		color: 'yellow',
-		textColor: 'white',
+		color: '#ffff00',
+		textColor: '#ffffff',
 	},
 	inevent: {
 		title: 'Map is featured in the event',
 		name: 'In Event',
 		icon: 'beastsaber-icon',
 		iconFile: '/assets/logo-small.png',
-		color: 'yellow',
-		textColor: 'white',
+		color: '#ffff00',
+		textColor: '#ffffff',
 	},
 	outdated: {
 		title: 'Old version or map was deleted from BeatSaver',
 		name: 'Outdated',
-		color: 'grey',
-		textColor: 'white',
+		color: '#808080',
+		textColor: '#ffffff',
 	},
 };
 
@@ -1343,6 +1380,99 @@ export function describeGraphAxis(axis) {
 	}
 
 	return 'Undefined';
+}
+
+export function getSongSortingValue(song, diff, sortingKey) {
+	if (!song.difficulties?.length) return null;
+
+	if (sortingKey == 'stars' || sortingKey == 'accRating' || sortingKey == 'passRating' || sortingKey == 'techRating') {
+		if (diff) {
+			return diff[sortingKey] ? `${diff[sortingKey].toFixed(2)}★` : null;
+		}
+		return song.difficulties[0][sortingKey] ? `${song.difficulties[0][sortingKey].toFixed(2)}★` : null;
+	}
+
+	if (sortingKey == 'voting') {
+		if (diff) {
+			return `Rating: ${diff.positiveVotes - diff.negativeVotes}`;
+		}
+		const totalPos = song.difficulties.reduce((sum, d) => sum + d.positiveVotes, 0);
+		const totalNeg = song.difficulties.reduce((sum, d) => sum + d.negativeVotes, 0);
+		return `Rating: ${totalPos - totalNeg}`;
+	}
+
+	if (sortingKey == 'voteratio') {
+		if (diff) {
+			return `Ratio: ${formatNumber((diff.positiveVotes / (diff.positiveVotes + diff.negativeVotes)) * 100)}%`;
+		}
+		const totalPos = song.difficulties.reduce((sum, d) => sum + d.positiveVotes, 0);
+		const totalNeg = song.difficulties.reduce((sum, d) => sum + d.negativeVotes, 0);
+		return `Ratio: ${formatNumber((totalPos / (totalPos + totalNeg)) * 100)}%`;
+	}
+
+	if (sortingKey == 'votecount') {
+		if (diff) {
+			const total = diff.positiveVotes + diff.negativeVotes;
+			return `${total} vote${total !== 1 ? 's' : ''}`;
+		}
+		const total = song.difficulties.reduce((sum, d) => sum + d.positiveVotes + d.negativeVotes, 0);
+		return `${total} vote${total !== 1 ? 's' : ''}`;
+	}
+
+	if (sortingKey == 'upvotes') {
+		const upvotes = song.upvotes;
+		return `${upvotes} vote${upvotes !== 1 ? 's' : ''}`;
+	}
+
+	if (sortingKey == 'playcount' || sortingKey == 'plays') {
+		if (diff) {
+			return `${diff.plays} play${diff.plays !== 1 ? 's' : ''}`;
+		}
+		const total = song.difficulties.reduce((sum, d) => sum + d.plays, 0);
+		return `${total} play${total !== 1 ? 's' : ''}`;
+	}
+
+	if (sortingKey == 'duration') {
+		const duration = song.duration;
+		if (!duration) return '';
+		const hours = Math.floor(duration / 3600);
+		const minutes = Math.floor((duration % 3600) / 60);
+		const seconds = duration % 60;
+		if (hours > 0) {
+			return `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+		}
+		return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+	}
+
+	if (sortingKey == 'bpm') {
+		return song.bpm ? `${song.bpm} BPM` : '';
+	}
+
+	if (sortingKey == 'scoreTime') {
+		if (diff) {
+			return formatDateRelative(dateFromUnix(diff.lastScoreTime));
+		}
+		const maxTime = song.difficulties.reduce((max, d) => Math.max(max, d.lastScoreTime), 0);
+		return maxTime ? formatDateRelative(dateFromUnix(maxTime)) : '';
+	}
+
+	if (sortingKey == 'timestamp') {
+		return song.uploaded ? formatDateRelative(dateFromUnix(song.uploaded)) : '';
+	}
+
+	if (sortingKey == 'attempts') {
+		if (diff) {
+			return `${diff.attempts} attempt${diff.attempts !== 1 ? 's' : ''}`;
+		}
+		const total = song.difficulties.reduce((sum, d) => sum + d.attempts, 0);
+		return `${total} attempt${total !== 1 ? 's' : ''}`;
+	}
+
+	return null;
+}
+
+export function sortingValueIsSongOnly(sortingKey) {
+	return sortingKey == 'duration' || sortingKey == 'bpm' || sortingKey == 'timestamp';
 }
 
 export let bestiesCategoriesNames = {

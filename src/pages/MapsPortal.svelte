@@ -257,16 +257,16 @@
 			<h1 class="header">MAPS</h1>
 
 			<div class="categories">
-				<MapsCategoryCard categoryName="Ranked" showRankedCounter bgColor="#2d0c1f" redirectUrl={'/leaderboards'} />
-				<MapsCategoryCard categoryName="Trending" bgColor="#292823" />
-				<MapsCategoryCard categoryName="Curated" bgColor="#15261D" redirectUrl={'/leaderboards/1?type=all&songStatus=6'} />
+				<MapsCategoryCard categoryName="Ranked" showRankedCounter bgColor="#2d0c1f" redirectUrl={'/maps/ranked'} />
+				<MapsCategoryCard categoryName="Trending" bgColor="#292823" redirectUrl={'/maps/trending'} />
+				<MapsCategoryCard categoryName="Curated" bgColor="#15261D" redirectUrl={'/maps/all/1?songStatus=6'} />
 			</div>
 
 			<div class="buttons-container">
 				<div class="buttons">
-					<BigButton label="Leaderboards" destination="/leaderboards/1?type=all" />
+					<BigButton label="All Maps" destination="/maps/all" />
 					<BigButton label="Events" destination="/events" />
-					<BigButton label="Nominated" destination="/leaderboards/1?type=nominated" />
+					<BigButton label="Playlists" destination="/playlists/featured/1" />
 				</div>
 			</div>
 

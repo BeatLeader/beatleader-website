@@ -2,7 +2,6 @@
 	import {tick} from 'svelte';
 	import {navigate} from 'svelte-routing';
 	import {fade, fly} from 'svelte/transition';
-	import createLeaderboardsStore from '../stores/http/http-leaderboards-store';
 	import createAccountStore from '../stores/beatleader/account';
 	import createPlaylistStore from '../stores/playlists';
 	import ssrConfig from '../ssr-config';
@@ -36,20 +35,27 @@
 		songStatusesDescription,
 	} from '../utils/beatleader/format';
 	import {capitalize} from '../utils/js';
+	import {substituteVarsUrl} from '../utils/format';
 	import RankedTimer from '../components/Common/RankedTimer.svelte';
-	import {Ranked_Const, Unranked_Const} from './../utils/beatleader/consts';
+	import {Ranked_Const, Unranked_Const} from '../utils/beatleader/consts';
 	import {MetaTags} from 'svelte-meta-tags';
-	import {CURRENT_URL} from '../network/queues/beatleader/api-queue';
+	import {BL_API_MAPS_URL, CURRENT_URL} from '../network/queues/beatleader/api-queue';
 	import BackToTop from '../components/Common/BackToTop.svelte';
-	import MapCard from '../components/Leaderboards/MapCard.svelte';
 	import {configStore} from '../stores/config';
 	import {produce} from 'immer';
 	import Switch from '../components/Common/Switch.svelte';
 	import Select from '../components/Settings/Select.svelte';
 	import Mappers from '../components/Leaderboard/Mappers.svelte';
+	import MapCard from '../components/Maps/List/MapCard.svelte';
+	import TabSwitcher from '../components/Common/TabSwitcher.svelte';
 	import PlaylistPicker from '../components/Leaderboard/PlaylistPicker.svelte';
+	import {Svrollbar} from 'svrollbar';
+	import {PRIORITY} from '../utils/queue';
+	import {fetchJson} from '../network/fetch';
+	import AsideBox from '../components/Common/AsideBox.svelte';
 
 	export let page = 1;
+	export let type = 'ranked';
 	export let location;
 
 	const FILTERS_DEBOUNCE_MS = 500;
@@ -97,7 +103,6 @@
 
 		if (!filters?.sortBy?.length) filters.sortBy = 'timestamp';
 		if (!filters?.order?.length) filters.order = 'desc';
-		if (!filters?.type?.length) filters.type = 'ranked';
 
 		if (!filters.mapType) filters.mapType = null;
 
@@ -108,8 +113,10 @@
 	if (!page || isNaN(page) || page <= 0) page = 1;
 
 	let currentPage = page;
+	console.log('currentPage', currentPage);
+	let previousPage = page > 1 ? page - 1 : page;
+	let currentType = type;
 	let currentFilters = buildFiltersFromLocation(location);
-	let boxEl = null;
 
 	const typeFilterOptions = [
 		{key: 'all', label: 'All maps', iconFa: 'fa fa-music', color: 'var(--beatleader-primary)'},
@@ -123,6 +130,7 @@
 		{key: '', label: 'All maps', iconFa: 'fa fa-music', color: 'var(--beatleader-primary)'},
 		{key: 'played', label: 'Played', iconFa: 'fa fa-user', color: 'var(--beatleader-primary)'},
 		{key: 'unplayed', label: 'Not played', iconFa: 'fa fa-times', color: 'var(--beatleader-primary)'},
+		{key: 'friendsPlayed', label: 'By friends', iconFa: 'fa fa-users', color: 'var(--beatleader-primary)'},
 	];
 
 	let mytypeFilterOptions = baseMytypeFilterOptions;
@@ -195,7 +203,143 @@
 		})
 	);
 
-	const leaderboardsStore = createLeaderboardsStore(page, currentFilters);
+	let numOfMaps = null;
+	let itemsPerPage = 12;
+
+	let isLoading = false;
+	let loadingPage = null;
+
+	let allMaps = [];
+	let activeRequests = {};
+
+	function resetCache(resetPages = true) {
+		if (resetPages) {
+			previousPage = 1;
+			currentPage = 1;
+		}
+		numOfMaps = 0;
+		allMaps = [];
+
+		// for keys in activeRequests
+		for (let i in activeRequests) {
+			if (activeRequests[i] && activeRequests[i].inProgress) {
+				activeRequests[i].controller.abort('resetCache');
+			}
+		}
+
+		activeRequests = {};
+	}
+
+	function populateMapsList(page = 1, type = 'ranked', filters = {}, priority = PRIORITY.FG_LOW, options = {}) {
+		if (activeRequests[page] && activeRequests[page].inProgress) {
+			return;
+		}
+
+		// Create abort controller for this request
+		const controller = new AbortController();
+		const capturePage = page;
+
+		// Store the request info
+		activeRequests[page] = {
+			controller,
+			inProgress: true,
+		};
+
+		const fetchMaps = () => {
+			fetch(
+				substituteVarsUrl(BL_API_MAPS_URL, {page, count: itemsPerPage, ...filters, type}, true, true),
+				{...options, credentials: 'include', signal: controller.signal},
+				priority
+			)
+				.then(d => {
+					if (d.status == 200) {
+						return d.json();
+					} else if (d.status === 429 && d.headers.get('retry-after')) {
+						const retryAfter = parseInt(d.headers.get('retry-after'));
+						setTimeout(() => {
+							if (activeRequests[capturePage] && activeRequests[capturePage].inProgress) {
+								fetchMaps();
+							}
+						}, retryAfter * 1000);
+						return {};
+					}
+					console.error('Error fetching maps:', d.status);
+					delete activeRequests[capturePage];
+					return {};
+				})
+				.then(response => {
+					let newMaps = response.data;
+
+					if (!newMaps) return;
+					for (let i = 0; i < newMaps.length; i++) {
+						newMaps[i].index = (capturePage - 1) * itemsPerPage + i;
+					}
+
+					for (let i = 0; i < allMaps.length; i++) {
+						const element = allMaps[i];
+						const fetchedMap = newMaps.find(m => m.index == element.index);
+						if (fetchedMap) {
+							if (allMaps[i].placeholder && allMaps[i].updateCallback) {
+								allMaps[i].updateCallback(fetchedMap);
+							}
+							allMaps[i] = fetchedMap;
+						}
+					}
+
+					numOfMaps = response.metadata.total;
+
+					if (allMaps.length > numOfMaps) {
+						allMaps = allMaps.slice(0, numOfMaps);
+					}
+
+					if (activeRequests[capturePage]) {
+						activeRequests[capturePage].inProgress = false;
+					}
+				});
+		};
+
+		fetchMaps();
+	}
+
+	function fetchMaps(page = 1, type = 'ranked', filters = {}, priority = PRIORITY.FG_LOW, options = {}) {
+		if (allMaps.length < (page + 1) * itemsPerPage) {
+			while (allMaps.length < (page + 1) * itemsPerPage) {
+				allMaps.push({
+					index: allMaps.length,
+					name: 'Loading...',
+					artist: 'Unknown Artist',
+					hash: '00000000000000000000000000000000',
+					cover: 'https://via.placeholder.com/150',
+					placeholder: true,
+				});
+			}
+
+			allMaps = allMaps;
+		}
+
+		if (numOfMaps && allMaps.length > numOfMaps) {
+			allMaps = allMaps.slice(0, numOfMaps);
+		}
+
+		if (page > 1) {
+			populateMapsList(page - 1, type, filters, priority, options);
+		}
+
+		populateMapsList(page, type, filters, priority, options);
+
+		if (!numOfMaps || page < Math.ceil(numOfMaps / itemsPerPage)) {
+			populateMapsList(page + 1, type, filters, priority, options);
+		}
+
+		for (let i in activeRequests) {
+			if (i != page && i != page - 1 && i != page + 1 && activeRequests[i].inProgress) {
+				activeRequests[i].controller.abort('fetchMaps');
+				activeRequests[i].inProgress = false;
+			}
+		}
+	}
+
+	let scrollChange = false;
 
 	function changePageAndFilters(newPage, newFilters, replace, setUrl = true) {
 		currentFilters = newFilters;
@@ -207,7 +351,7 @@
 		sortValues = sortValues1.map(v => {
 			let result = {...v};
 			if (result.value == 'timestamp') {
-				switch (currentFilters.type) {
+				switch (currentType) {
 					case 'ranked':
 						result.name = 'Rank date';
 						result.title = 'Sort by the date map become ranked';
@@ -231,7 +375,7 @@
 			return result;
 		});
 
-		switch (currentFilters.type) {
+		switch (currentType) {
 			case 'ranked':
 				dateRangeOptions = [...dateRangeOptions1, {value: 'ranked', name: 'Map ranking', icon: 'fa-star'}];
 				break;
@@ -252,7 +396,7 @@
 
 		if (setUrl) {
 			const query = buildSearchFromFiltersWithDefaults(currentFilters, params);
-			const url = `/leaderboards/${currentPage}${query.length ? '?' + query : ''}`;
+			const url = `/maps/${currentType}/${currentPage}${query.length ? '?' + query : ''}`;
 			if (replace) {
 				window.history.replaceState({}, '', url);
 			} else {
@@ -260,7 +404,21 @@
 			}
 		}
 
-		leaderboardsStore.fetch(currentPage, {...currentFilters});
+		fetchMaps(currentPage, currentType, {...currentFilters});
+
+		if (!scrollChange) {
+			isAutoScrolling = true;
+			requestAnimationFrame(() => {
+				if (previousPageAnchor && currentPage > 1) {
+					const newPosition = previousPageAnchor.offsetTop - 20;
+					safeScrollTo({top: newPosition, behavior: 'instant'});
+				} else {
+					safeScrollTo({top: 0, behavior: 'instant'});
+				}
+			});
+		}
+
+		scrollChange = false;
 	}
 
 	function navigateToCurrentPageAndFilters(replaceState) {
@@ -270,9 +428,13 @@
 	function onPageChanged(event) {
 		if (event.detail.initial || !Number.isFinite(event.detail.page)) return;
 
+		previousPage = currentPage;
 		currentPage = event.detail.page + 1;
 
+		resetCache(false);
 		navigateToCurrentPageAndFilters(true);
+
+		console.log('onPageChanged');
 	}
 
 	function onSearchChanged(e) {
@@ -281,7 +443,7 @@
 		if (search.length > 0 && search.length < 2) return;
 
 		currentFilters.search = search;
-		currentPage = 1;
+		resetCache();
 
 		navigateToCurrentPageAndFilters();
 	}
@@ -289,15 +451,15 @@
 	function onTypeChanged(event) {
 		if (!event?.detail) return;
 
-		currentFilters.type = event.detail.key ?? '';
-		currentPage = 1;
+		currentType = event.detail.key ?? '';
+		resetCache();
 
 		navigateToCurrentPageAndFilters();
 	}
 
 	async function onCategoryModeChanged() {
 		await tick();
-		currentPage = 1;
+		resetCache();
 
 		navigateToCurrentPageAndFilters();
 	}
@@ -312,7 +474,7 @@
 
 		if (!currentFilters.mapType) currentFilters.mapType = null;
 
-		currentPage = 1;
+		resetCache();
 
 		navigateToCurrentPageAndFilters();
 	}
@@ -328,7 +490,7 @@
 
 		if (!currentFilters.mapRequirements) currentFilters.mapRequirements = null;
 
-		currentPage = 1;
+		resetCache();
 
 		navigateToCurrentPageAndFilters();
 	}
@@ -343,7 +505,7 @@
 
 		if (!currentFilters.songStatus) currentFilters.songStatus = null;
 
-		currentPage = 1;
+		resetCache();
 
 		navigateToCurrentPageAndFilters();
 	}
@@ -352,7 +514,7 @@
 		if (!event?.detail) return;
 
 		currentFilters.mytype = event.detail.key ?? '';
-		currentPage = 1;
+		resetCache();
 
 		navigateToCurrentPageAndFilters();
 	}
@@ -360,7 +522,7 @@
 	async function onModeChanged(event) {
 		await tick();
 
-		currentPage = 1;
+		resetCache();
 
 		navigateToCurrentPageAndFilters();
 	}
@@ -368,13 +530,13 @@
 	async function onDifficultyChanged(event) {
 		await tick();
 
-		currentPage = 1;
+		resetCache();
 
 		navigateToCurrentPageAndFilters();
 	}
 
 	function starsChanged() {
-		currentPage = 1;
+		resetCache();
 
 		navigateToCurrentPageAndFilters();
 	}
@@ -417,7 +579,7 @@
 
 		currentFilters.sortBy = event.detail.value;
 
-		currentPage = 1;
+		resetCache();
 
 		navigateToCurrentPageAndFilters();
 	}
@@ -433,7 +595,7 @@
 
 		currentFilters.order = event.detail.value;
 
-		currentPage = 1;
+		resetCache();
 
 		navigateToCurrentPageAndFilters();
 	}
@@ -452,7 +614,7 @@
 
 		currentFilters.date_range = event.detail.value;
 
-		currentPage = 1;
+		resetCache();
 
 		navigateToCurrentPageAndFilters();
 	}
@@ -460,11 +622,11 @@
 		if (!event?.detail) return;
 
 		currentFilters.date_from = event.detail?.from ? parseInt(event.detail.from.getTime() / 1000) : null;
-		currentFilters.date_to = event.detail?.to ? parseInt((event.detail.to.getTime() + DAY) / 1000) : null;
+		currentFilters.date_to = event.detail?.to ? parseInt(event.detail.to.getTime() / 1000) : null;
 
 		currentFilters = currentFilters;
 
-		currentPage = 1;
+		resetCache();
 
 		navigateToCurrentPageAndFilters();
 	}
@@ -472,11 +634,15 @@
 	function onMappersChange(event) {
 		currentFilters.mappers = event.detail.join(',');
 
+		resetCache();
+
 		navigateToCurrentPageAndFilters();
 	}
 
 	function onPlaylistIdsChange(event) {
 		currentFilters.playlistIds = event.detail.join(',');
+
+		resetCache();
 
 		navigateToCurrentPageAndFilters();
 	}
@@ -498,21 +664,100 @@
 	let playlistTitle = 'Search result';
 	function generatePlaylist() {
 		makingPlaylist = true;
+
 		playlists.generatePlaylist(mapCount, {...currentFilters, duplicateDiffs, playlistTitle}, () => {
 			navigate('/playlists');
 		});
 	}
 
-	$: document.body.scrollIntoView({behavior: 'smooth'});
+	function generateMetaTitle() {
+		let title = '';
 
-	$: isLoading = leaderboardsStore.isLoading;
-	$: pending = leaderboardsStore.pending;
-	$: numOfMaps = $leaderboardsStore ? $leaderboardsStore?.metadata?.total : null;
-	$: itemsPerPage = $leaderboardsStore ? $leaderboardsStore?.metadata?.itemsPerPage : 12;
-	$: isRT =
-		$account.player &&
-		$account.player.playerInfo.role &&
-		($account.player.playerInfo.role.includes('admin') || $account.player.playerInfo.role.includes('rankedteam'));
+		// Base title by type
+		if (currentType === 'ranked') title = 'Ranked Maps';
+		else if (currentType === 'qualified') title = 'Qualified Maps';
+		else if (currentType === 'nominated') title = 'Nominated Maps';
+		else if (currentType === 'ost') title = 'OST Maps';
+		else title = 'Maps';
+
+		// Add search term if present
+		if (currentFilters.search) {
+			title = `"${currentFilters.search}" in ${title}`;
+		}
+
+		// Add star rating if present
+		if (currentFilters.stars_from && currentFilters.stars_to) {
+			title += ` (${formatNumber(currentFilters.stars_from, 1)}★-${formatNumber(currentFilters.stars_to, 1)}★)`;
+		} else if (currentFilters.stars_from) {
+			title += ` (${formatNumber(currentFilters.stars_from, 1)}★+)`;
+		} else if (currentFilters.stars_to) {
+			title += ` (up to ${formatNumber(currentFilters.stars_to, 1)}★)`;
+		}
+
+		return title;
+	}
+
+	function generateMetaDescription() {
+		let description = '';
+
+		// Base description by type
+		if (currentType === 'ranked') description = 'List of ranked Beat Saber maps';
+		else if (currentType === 'qualified') description = 'List of qualified Beat Saber maps';
+		else if (currentType === 'nominated') description = 'List of nominated Beat Saber maps';
+		else if (currentType === 'ost') description = 'List of Beat Saber OST maps';
+		else description = 'Search for Beat Saber maps';
+
+		// Build filter descriptions
+		let filters = [];
+
+		// Date range
+		if (currentFilters.date_from && currentFilters.date_to) {
+			const fromDate = dateFromUnix(currentFilters.date_from);
+			const toDate = dateFromUnix(currentFilters.date_to);
+			filters.push(`from ${fromDate.toLocaleDateString()} to ${toDate.toLocaleDateString()}`);
+		} else if (currentFilters.date_from) {
+			const fromDate = dateFromUnix(currentFilters.date_from);
+			filters.push(`after ${fromDate.toLocaleDateString()}`);
+		} else if (currentFilters.date_to) {
+			const toDate = dateFromUnix(currentFilters.date_to);
+			filters.push(`before ${toDate.toLocaleDateString()}`);
+		}
+
+		// Star rating
+		if (currentFilters.stars_from && currentFilters.stars_to) {
+			filters.push(
+				`with star rating between ${formatNumber(currentFilters.stars_from, 1)} and ${formatNumber(currentFilters.stars_to, 1)}`
+			);
+		} else if (currentFilters.stars_from) {
+			filters.push(`with star rating above ${formatNumber(currentFilters.stars_from, 1)}`);
+		} else if (currentFilters.stars_to) {
+			filters.push(`with star rating below ${formatNumber(currentFilters.stars_to, 1)}`);
+		}
+
+		// Difficulty
+		if (currentFilters.difficulty) {
+			const difficultyName = difficultyFilterOptions.find(d => d.key === currentFilters.difficulty)?.label;
+			if (difficultyName) filters.push(`on ${difficultyName} difficulty`);
+		}
+
+		// Mode
+		if (currentFilters.mode) {
+			const modeName = modeFilterOptions.find(m => m.key === currentFilters.mode)?.label;
+			if (modeName) filters.push(`in ${modeName} mode`);
+		}
+
+		// Search term
+		if (currentFilters.search) {
+			filters.push(`matching "${currentFilters.search}"`);
+		}
+
+		// Add filters to description
+		if (filters.length > 0) {
+			description += ' ' + filters.join(', ');
+		}
+
+		return description;
+	}
 
 	$: updateProfileSettings($account);
 
@@ -523,49 +768,122 @@
 			? currentFilters.sortBy
 			: 'stars';
 
-	$: leaderboardsPage = ($leaderboardsStore?.data ?? []).map(m => {
-		return {
-			...m,
-			diffInfo: {diff: m?.difficulty?.difficultyName, type: m?.difficulty?.modeName},
-			stars: m?.difficulty?.stars ?? null,
-		};
-	});
-	$: metaDescription = currentFilters.type === 'ranked' ? 'List of Beat Saber ranked maps' : 'Search for leaderboards of Beat Saber maps';
-	$: hasRatingsByDefault = currentFilters.type === 'ranked' || currentFilters.type === 'nominated' || currentFilters.type === 'qualified';
+	$: metaTitle = generateMetaTitle();
+	$: metaDescription = generateMetaDescription();
+	$: hasRatingsByDefault = currentType === 'ranked' || currentType === 'nominated' || currentType === 'qualified';
 	$: starFiltersDisabled = !hasRatingsByDefault && !showAllRatings;
 	$: sliderLimits = hasRatingsByDefault ? Ranked_Const : Unranked_Const;
 
-	function boolflip(name) {
-		$configStore = produce($configStore, draft => {
-			draft.preferences[name] = !draft.preferences[name];
+	let previousPageAnchor;
+	let currentPageAnchor;
+
+	let scrollContainer;
+	let asideContainer;
+	function scrollToPage(page) {
+		previousPage = currentPage;
+		currentPage = page + 1;
+		scrollChange = true;
+
+		navigateToCurrentPageAndFilters(true);
+	}
+
+	let isAutoScrolling = false;
+
+	function safeScrollTo(options) {
+		isAutoScrolling = true;
+		scrollContainer.style.scrollBehavior = options.behavior || 'smooth';
+		scrollContainer.scrollTo(options);
+		requestAnimationFrame(() => {
+			setTimeout(() => {
+				isAutoScrolling = false;
+				scrollContainer.style.scrollBehavior = 'auto';
+			}, 50);
 		});
 	}
 
-	let viewTypeOptions = [
-		{
-			type: 'maps-cards',
-			title: 'Cards view',
-			iconFa: 'fas fa-table-columns',
-		},
-		{
-			type: 'maps-table',
-			title: 'Table view',
-			iconFa: 'fas fa-table',
-		},
-	];
+	function onScroll() {
+		if (isAutoScrolling) return;
 
-	function onViewTypeChanged(event) {
-		const newType = event?.detail?.type ?? null;
-		if (!newType) return;
+		const containerTop = scrollContainer.scrollTop;
+		if (containerTop < 100) {
+			scrollToPage(0);
+			return;
+		}
 
-		$configStore = produce($configStore, draft => {
-			draft.preferences.mapsViewType = newType;
-		});
+		const containerBottom = containerTop + scrollContainer.offsetHeight;
+
+		// Check if current and previous anchors are outside visible area
+		const currentNotVisible =
+			!currentPageAnchor ||
+			currentPageAnchor.offsetTop > containerBottom ||
+			currentPageAnchor.offsetTop + currentPageAnchor.offsetHeight < containerTop;
+
+		const previousNotVisible =
+			!previousPageAnchor ||
+			previousPageAnchor.offsetTop > containerBottom ||
+			previousPageAnchor.offsetTop + previousPageAnchor.offsetHeight < containerTop;
+
+		if (
+			!previousNotVisible &&
+			previousPageAnchor.offsetTop > scrollContainer.scrollTop + scrollContainer.offsetHeight / 2 &&
+			currentPage > 1
+		) {
+			scrollToPage(currentPage - 2);
+		} else if (!currentNotVisible && currentPageAnchor.offsetTop < scrollContainer.scrollTop + scrollContainer.offsetHeight / 2) {
+			scrollToPage(currentPage);
+		} else if (currentNotVisible && previousNotVisible) {
+			// If neither anchor is visible, look for other page anchors
+			let otherAnchors = Array.from(scrollContainer.querySelectorAll('.other-page-anchor')).sort((a, b) => b.offsetTop - a.offsetTop);
+
+			// First try to find visible anchors
+			let foundVisibleAnchor = false;
+			for (const anchor of otherAnchors) {
+				const anchorTop = anchor.offsetTop;
+				if (anchorTop >= containerTop && anchorTop <= containerBottom) {
+					const page = parseInt(anchor.textContent);
+					if (!isNaN(page)) {
+						scrollToPage(page - 1);
+						foundVisibleAnchor = true;
+						break;
+					}
+				}
+			}
+
+			// If no visible anchors found, find closest anchor below viewport
+			if (!foundVisibleAnchor) {
+				let closestAnchor = null;
+				let closestDistance = Infinity;
+
+				if (previousPageAnchor) {
+					otherAnchors.push(previousPageAnchor);
+				}
+
+				if (currentPageAnchor) {
+					otherAnchors.push(currentPageAnchor);
+				}
+
+				for (const anchor of otherAnchors) {
+					const distance = Math.abs(anchor.offsetTop + anchor.offsetHeight - containerTop);
+					if (distance < closestDistance) {
+						closestDistance = distance;
+						closestAnchor = anchor;
+					}
+				}
+
+				if (closestAnchor && closestAnchor.offsetTop + closestAnchor.offsetHeight < containerTop) {
+					const page = parseInt(closestAnchor.textContent);
+					if (!isNaN(page)) {
+						scrollToPage(page);
+					}
+				}
+			}
+		}
 	}
 
-	const today = new Date(new Date().setHours(0, 0, 0, 0));
-	const lastWeek = new Date(new Date(new Date().setHours(0, 0, 0, 0)).setDate(today.getDate() - 7));
-	const lastYear = new Date(new Date(new Date().setHours(0, 0, 0, 0)).setFullYear(today.getFullYear() - 1));
+	const now = Date.now() / 1000;
+	const today = dateFromUnix(now - 60 * 60 * 24);
+	const lastWeek = dateFromUnix(now - 60 * 60 * 24 * 7);
+	const lastYear = dateFromUnix(now - 60 * 60 * 24 * 365);
 
 	let isDateFilterOpen = !!(currentFilters.date_from || currentFilters.date_to);
 	let isCategoryFilterOpen = !!currentFilters.mapType;
@@ -582,9 +900,6 @@
 	);
 
 	let isPlaylistOpen = false;
-
-	$: viewType = viewTypeOptions.find(vt => vt.type == $configStore?.preferences?.mapsViewType) ?? viewTypeOptions[0];
-	$: maps3D = $configStore?.preferences?.maps3D;
 </script>
 
 <svelte:head>
@@ -593,53 +908,58 @@
 
 <section class="align-content">
 	<article class="page-content" transition:fade|global>
-		<ContentBox cls="maps-box" bind:box={boxEl}>
-			<h1 class="title is-5">
-				Maps
-
-				{#if $isLoading}<Spinner />{/if}
-			</h1>
-
-			<RankedTimer />
-
-			{#if leaderboardsPage?.length}
-				<div class="songs">
-					{#each leaderboardsPage as map, idx (map.id)}
-						<MapCard {map} {idx} {currentFilters} {starsKey} {maps3D} viewType={viewType.type} />
-					{/each}
-				</div>
-
-				<div class="pager-and-switch">
-					<Pager
-						totalItems={numOfMaps}
-						{itemsPerPage}
-						itemsPerPageValues={null}
-						currentPage={currentPage - 1}
-						loadingPage={$pending && $pending.page ? $pending.page - 1 : null}
-						mode={numOfMaps ? 'pages' : 'simple'}
-						on:page-changed={onPageChanged} />
-					<div class="table-switches">
-						<Switcher values={viewTypeOptions} value={viewType} on:change={onViewTypeChanged} />
-						<Switch value={maps3D} label="3D" fontSize={12} design="slider" on:click={() => boolflip('maps3D')} />
+		<div class="maps-box">
+			{#if allMaps?.length}
+				<div class="songs-container">
+					<div class="songs-list">
+						<div class="songs" bind:this={scrollContainer} on:scroll={onScroll}>
+							{#each allMaps as song, idx (song.index)}
+								{@const page = Math.floor(idx / itemsPerPage)}
+								{#if idx == 0}
+									<div class="first-page-spacer"></div>
+								{:else if idx % itemsPerPage == 0}
+									{#if page == currentPage - 1}
+										<div class="page-split page-maker-{currentPage - 1}" bind:this={previousPageAnchor}>
+											{currentPage - 1}
+										</div>
+									{:else if page == currentPage}
+										<div class="page-split page-maker-{currentPage}" bind:this={currentPageAnchor}>
+											{currentPage}
+										</div>
+									{:else}
+										<div class="page-split page-maker-{page} other-page-anchor">
+											{page}
+										</div>
+									{/if}
+								{/if}
+								<MapCard
+									map={song}
+									{starsKey}
+									forcePlaceholder={currentPage != page && currentPage - 1 != page && currentPage - 2 != page}
+									sortBy={currentFilters.sortBy}
+									dateType={currentType} />
+							{/each}
+						</div>
+						<Svrollbar viewport={scrollContainer} />
 					</div>
 				</div>
-			{:else if !$isLoading}
-				<p>No maps found.</p>
+			{:else if isLoading}
+				<Spinner />
+			{:else}
+				<div class="no-maps-found">
+					<p>Can't find any maps.</p>
+					<a href="https://bsmg.wiki/mapping/">Try making a new one!</a>
+				</div>
 			{/if}
-		</ContentBox>
+		</div>
 	</article>
 
-	<aside>
-		<ContentBox>
-			<h2 class="title is-5">Sorting</h2>
-
+	<aside class="maps-aside-container" bind:this={asideContainer}>
+		<AsideBox title="Filters" boolname="mapsFiltersOpen" faicon="fas fa-filter">
 			<div class="sorting-options">
 				<Select bind:value={sortValue} on:change={onSortChange} fontSize="0.8" options={sortValues} />
 				<Select bind:value={orderValue} on:change={onOrderChange} fontSize="0.8" options={orderValues} />
 			</div>
-
-			<h2 class="title is-5">Filters</h2>
-
 			<section class="filter">
 				<input
 					on:input={debounce(onSearchChanged, FILTERS_DEBOUNCE_MS)}
@@ -663,7 +983,7 @@
 			</section>
 
 			<section class="filter">
-				<Switcher values={typeFilterOptions} value={typeFilterOptions.find(o => o.key === currentFilters.type)} on:change={onTypeChanged} />
+				<Switcher values={typeFilterOptions} value={typeFilterOptions.find(o => o.key === currentType)} on:change={onTypeChanged} />
 			</section>
 
 			{#if $account.id}
@@ -970,7 +1290,6 @@
 					</div>
 				</div>
 			</section>
-
 			<section class="filter dropdown-filter">
 				<div class="dropdown-header" on:click={() => (isPlaylistOpen = !isPlaylistOpen)}>
 					<div class="header-content">
@@ -1017,26 +1336,36 @@
 					</div>
 				{/if}
 			</section>
-		</ContentBox>
+			<div class="compact-pager-container">
+				<Pager
+					totalItems={numOfMaps}
+					{itemsPerPage}
+					itemsPerPageValues={null}
+					currentPage={currentPage - 1}
+					{loadingPage}
+					itemWidth={23}
+					mode={numOfMaps ? 'pages' : 'simple'}
+					on:page-changed={onPageChanged} />
+			</div>
+		</AsideBox>
 	</aside>
+	<Svrollbar viewport={asideContainer} />
 </section>
 
-<BackToTop />
-
 <MetaTags
-	title={ssrConfig.name + ' - Leaderboards'}
+	title={metaTitle}
 	description={metaDescription}
 	openGraph={{
-		title: ssrConfig.name + ' - Leaderboards',
+		title: metaTitle,
 		description: metaDescription,
 		images: [{url: CURRENT_URL + '/assets/logo-small.png'}],
-		siteName: ssrConfig.name,
+		siteName: ssrConfig.name + ' - Maps',
 	}}
 	twitter={{
 		handle: '@handle',
 		site: '@beatleader_',
 		cardType: 'summary',
-		title: ssrConfig.name + ' - Leaderboards',
+		title: metaTitle,
 		description: metaDescription,
 		image: CURRENT_URL + '/assets/logo-small.png',
 		imageAlt: ssrConfig.name + "'s logo",
@@ -1049,8 +1378,73 @@
 	}
 
 	.page-content {
-		max-width: 65em;
 		width: 100%;
+	}
+
+	.songs-container {
+		display: flex;
+		height: calc(100% - 1.3em);
+		margin-top: -1em;
+		margin-bottom: -2.9em;
+	}
+
+	.maps-box {
+		position: fixed !important;
+		height: calc(100% - 5em);
+		left: 0;
+		margin-top: -1em !important;
+	}
+
+	:global(.tab-container) {
+		display: none;
+		justify-content: space-between;
+		position: absolute !important;
+		bottom: 4em;
+		left: 0.4em;
+		z-index: 14 !important;
+		border-radius: 12px !important;
+		overflow: hidden;
+		padding: 1.2em 0.7em 0.8em 0.8em !important;
+	}
+
+	.first-page-spacer {
+		height: 2.4em;
+		width: 100%;
+	}
+
+	:global(.compact-pager-container) {
+		padding: 0.5em;
+		border-radius: 12px !important;
+		overflow: hidden;
+		height: 5em;
+	}
+
+	:global(.compact-pager-container .pagination) {
+		flex-direction: column;
+		align-items: center;
+	}
+
+	:global(.compact-pager-container .pagination .position) {
+		display: flex;
+		justify-content: space-between;
+		width: 97%;
+	}
+
+	.filter {
+		flex: 1;
+	}
+
+	:global(.tab-container .switch-types) {
+		flex-grow: 1;
+		margin-top: -1em;
+		margin-bottom: 1.5em;
+	}
+
+	.sorting-options {
+		display: flex;
+		gap: 0.5em;
+		position: relative;
+		margin-bottom: 1.5em;
 	}
 
 	article {
@@ -1059,7 +1453,21 @@
 	}
 
 	aside {
-		width: 25em;
+		position: fixed;
+		right: 1em;
+		width: 26em;
+		padding-left: 0.5em;
+		padding-right: 0.5em;
+		max-height: 90%;
+		overflow: auto;
+		/* hide scrollbar */
+		-ms-overflow-style: none;
+		scrollbar-width: none;
+	}
+
+	aside::-webkit-scrollbar {
+		/* hide scrollbar */
+		display: none;
 	}
 
 	aside .filter {
@@ -1129,13 +1537,74 @@
 		color: var(--faded) !important;
 	}
 
+	.top-container {
+		position: relative;
+		height: 1.6em;
+		backdrop-filter: blur(6px);
+		background-color: #00000094;
+		z-index: 6;
+		margin: -1em;
+	}
+
+	:global(.compact-pager-container .pagination) {
+		flex-grow: 1;
+	}
+
+	.switchers-container {
+		margin-left: 3.4em;
+		position: relative;
+		z-index: 10;
+	}
+
 	.songs {
 		display: flex;
 		flex-wrap: wrap;
 		column-gap: 2em;
-		row-gap: 0.8em;
+		row-gap: 0em;
 		justify-content: center;
-		overflow: visible;
+		align-items: start;
+		align-content: baseline;
+		position: relative;
+		height: 100%;
+		overflow: scroll;
+
+		padding-left: calc(50vw - 52em);
+		padding-right: calc(50vw - 30em);
+
+		/* hide scrollbar */
+		-ms-overflow-style: none;
+		scrollbar-width: none;
+	}
+
+	.songs::-webkit-scrollbar {
+		/* hide scrollbar */
+		display: none;
+	}
+
+	.maps-filters-container {
+		height: 100%;
+		overflow: scroll;
+
+		/* hide scrollbar */
+		-ms-overflow-style: none;
+		scrollbar-width: none;
+	}
+
+	.maps-filters-container::-webkit-scrollbar {
+		/* hide scrollbar */
+		display: none;
+	}
+
+	.top-anchor {
+		width: 100%;
+		margin-top: 1em;
+		margin-bottom: 1.5em;
+	}
+
+	.bottom-anchor {
+		width: 100%;
+		bottom: 0;
+		margin-bottom: 2em;
 	}
 
 	.pager-and-switch {
@@ -1154,12 +1623,33 @@
 		flex-wrap: wrap;
 	}
 
+	.page-split {
+		width: 60%;
+		justify-content: center;
+		display: flex;
+		margin-top: -2.2em;
+		border-bottom: solid 1px white;
+		opacity: 0.4;
+	}
+
 	:global(.pager-and-switch .pagination) {
 		flex-grow: 1;
 	}
 
-	:global(.maps-box) {
-		overflow: hidden;
+	:global(.maps-aside-container .aside-box) {
+		min-width: unset;
+	}
+
+	:global(.mobile-filters-button) {
+		font-size: 0.8em !important;
+		height: 1.6em !important;
+		margin: -0.6em 0.4em 0 0 !important;
+	}
+
+	:global(.maps-filters-box) {
+		position: fixed;
+		height: 89%;
+		overflow: auto;
 	}
 
 	.playlist-buttons {
@@ -1185,14 +1675,6 @@
 		height: 1.6em;
 	}
 
-	.remove-type {
-		border: none;
-		color: rgb(255, 0, 0);
-		background-color: transparent;
-		cursor: pointer;
-		transform: translate(-7px, -2px);
-	}
-
 	.time-presets {
 		display: flex;
 		gap: 0.5em;
@@ -1211,45 +1693,12 @@
 		margin-bottom: 0.5em;
 	}
 
-	@media screen and (max-width: 1275px) {
-		.align-content {
-			flex-direction: column;
-			align-items: center;
-		}
-
-		aside {
-			width: 100%;
-			max-width: 65em;
-		}
-	}
-
-	@media screen and (max-width: 767px) {
-		.icons {
-			margin-bottom: 0.5em;
-			width: 100%;
-		}
-
-		.playlist-buttons {
-			flex-direction: column;
-		}
-
-		.table-switches {
-			flex-direction: column-reverse;
-		}
-	}
-
-	@media screen and (max-width: 520px) {
-		.song-line .main {
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-			justify-content: center;
-			grid-column-gap: 0.75em;
-		}
-
-		.songinfo {
-			text-align: center;
-		}
+	.remove-type {
+		border: none;
+		color: rgb(255, 0, 0);
+		background-color: transparent;
+		cursor: pointer;
+		transform: translate(-7px, -2px);
 	}
 
 	.dropdown-filter {
@@ -1289,5 +1738,155 @@
 
 	.dropdown-filter + .dropdown-filter {
 		margin-top: 1rem;
+	}
+
+	.mobile-switcher {
+		display: none;
+	}
+
+	.no-maps-found {
+		width: 70vw;
+		height: 100%;
+		text-align: center;
+		align-content: center;
+	}
+
+	:global(.maps-type-button, .my-type-button) {
+		margin-bottom: -0.5em !important;
+		height: 3.5em;
+		border-radius: 12px 12px 0 0 !important;
+		width: 7em;
+		flex-direction: column;
+		align-items: center !important;
+		justify-content: center !important;
+	}
+
+	:global(.maps-type-button span, .my-type-button span) {
+		font-weight: 900;
+	}
+
+	:global(.maps-type-button i, .my-type-button i) {
+		margin-right: 0 !important;
+	}
+
+	@media screen and (min-width: 2000px) {
+		aside {
+			left: calc(50vw + 32em);
+			right: unset;
+		}
+
+		.songs {
+			padding-left: calc(50vw - 40em);
+			padding-right: calc(50vw - 32em);
+		}
+	}
+
+	@media screen and (max-width: 1275px) {
+		.songs {
+			padding-left: unset;
+			padding-right: calc(50vw - 8em);
+		}
+		.desktop-switcher {
+			display: none;
+		}
+		.mobile-switcher {
+			display: block;
+		}
+		:global(.my-type-button) {
+			margin-bottom: unset !important;
+			height: unset;
+			border-radius: unset !important;
+			width: unset;
+			flex-direction: unset;
+			align-items: unset !important;
+			justify-content: unset !important;
+		}
+
+		:global(.my-type-button span) {
+			font-weight: unset;
+		}
+
+		:global(.my-type-button i) {
+			margin-right: unset !important;
+		}
+	}
+
+	@media screen and (max-width: 767px) {
+		.songs {
+			margin-left: 0;
+			margin-right: 0;
+			row-gap: 0.2em;
+			padding-right: unset;
+		}
+
+		.filter {
+			margin: 1em 0;
+		}
+
+		.songs-container {
+			margin-bottom: 0;
+			height: 105%;
+		}
+
+		.compact-pager-container {
+			margin: unset;
+		}
+
+		.page-split {
+			margin-top: -1em;
+		}
+
+		.first-page-spacer {
+			height: 5em;
+		}
+
+		:global(.tab-container) {
+			display: flex;
+		}
+
+		:global(.filter .switch-types) {
+			margin-top: -1em;
+			margin-bottom: 0.4em;
+		}
+
+		aside {
+			display: block;
+			position: fixed;
+			top: 4em;
+			padding: 0.5em;
+			left: 0;
+			width: 100%;
+			max-height: 95%;
+		}
+
+		.maps-box {
+			padding: 0 !important;
+			margin-top: 0 !important;
+			width: 100%;
+			height: 100%;
+		}
+
+		:global(.maps-type-button) {
+			margin-bottom: -0.5em !important;
+			height: 3em;
+			padding-top: 0.8em !important;
+			border-radius: 8px 8px 0 0 !important;
+			width: 6em;
+			font-size: 0.7em !important;
+		}
+	}
+
+	@media screen and (max-width: 520px) {
+		.song-line .main {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			grid-column-gap: 0.75em;
+		}
+
+		.songinfo {
+			text-align: center;
+		}
 	}
 </style>

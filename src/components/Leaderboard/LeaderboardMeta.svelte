@@ -12,8 +12,8 @@
 	$: title = song?.name + ' | ' + diffInfo?.fullName + ' | Beat Saber leaderboard';
 	$: description =
 		`
-    Author: ${song?.authorName}
-  	Mapped by: ${song?.levelAuthorName}
+    Author: ${song?.author}
+  	Mapped by: ${song?.mapper}
     Status: ${formatDiffStatus(leaderboard?.stats?.status ?? '')}
 	` +
 		(leaderboard?.stats?.passRating ? `Pass: ${leaderboard?.stats?.passRating.toFixed(2)}★ ` : '') +

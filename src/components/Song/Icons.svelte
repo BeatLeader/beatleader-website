@@ -8,7 +8,7 @@
 	import beatSaverSvg from '../../resources/beatsaver.svg';
 	import Button from '../Common/Button.svelte';
 	import Preview from '../Common/Preview.svelte';
-	import {capitalize, opt} from '../../utils/js';
+	import {capitalize, opt, decapitalizeFirstLetter} from '../../utils/js';
 	import {BL_ANALYZER_URL, BL_API_URL, BL_REPLAYS_URL} from '../../network/queues/beatleader/api-queue';
 	import PinIcon from '../Player/PinIcon.svelte';
 	import ScoreActionButtonsLayout from './ScoreActionButtonsLayout.svelte';
@@ -91,10 +91,6 @@
 	const account = createAccountStore();
 	const playlists = createPlaylistStore();
 
-	function decapitalizeFirstLetter(string) {
-		return string.charAt(0).toLowerCase() + string.slice(1);
-	}
-
 	function updateSongKey(song) {
 		if (!song) {
 			songKey = null;
@@ -113,7 +109,7 @@
 		return {
 			hash,
 			songName,
-			difficulties: [{name: decapitalizeFirstLetter(diffInfo.diff), characteristic: diffInfo.type}],
+			difficulties: diffInfo ? [{name: decapitalizeFirstLetter(diffInfo.diff), characteristic: diffInfo.type}] : [],
 			levelAuthorName,
 		};
 	}
@@ -173,9 +169,8 @@
 	$: selectedPlaylist = $playlists[selectedPlaylistIndex];
 	$: playlistSongs = selectedPlaylist?.songs?.filter(el => el.hash == hash);
 	$: playlistSong = playlistSongs?.length ? playlistSongs[0] : null;
-
 	$: playlistEntries = playlistSong?.difficulties?.map(el => capitalize(el.name) + el.characteristic);
-	$: playlistKey = diffName + charName;
+	$: playlistKey = diffInfo ? diffName + charName : null;
 
 	$: oneclickToPlaylist = $configStore?.preferences?.oneclick == 'playlist';
 	$: ocPlaylistIndex = oneclickToPlaylist ? $playlists.findIndex(p => p.oneclick) : null;
@@ -228,7 +223,7 @@
 			{#if $configStore?.preferences?.playlistOption == 'selected'}
 				{#if selectedPlaylist != null}
 					{#if playlistSong}
-						{#if playlistEntries && playlistEntries.length == 1 && playlistEntries[0] == playlistKey}
+						{#if !diffInfo || (playlistEntries && playlistEntries.length == 1 && playlistEntries[0] == playlistKey)}
 							<Button
 								iconFa="fas fa-list-ul"
 								title="Remove from the {selectedPlaylist.playlistTitle}"
@@ -236,14 +231,7 @@
 								noMargin={true}
 								type="danger"
 								on:click={() => playlists.remove(hash)} />
-						{:else if playlistEntries && (playlistEntries?.length == 1 || !playlistEntries.includes(playlistKey))}
-							<Button
-								iconFa="fas fa-list-ul"
-								title="Add this diff to the {selectedPlaylist.playlistTitle}"
-								animated={true}
-								noMargin={true}
-								on:click={() => playlists.addDiff(hash, diffInfo)} />
-						{:else}
+						{:else if playlistEntries && playlistEntries.includes(playlistKey)}
 							<Button
 								iconFa="fas fa-list-ul"
 								title="Remove this diff from the {selectedPlaylist.playlistTitle}"
@@ -251,6 +239,13 @@
 								noMargin={true}
 								type="lessdanger"
 								on:click={() => playlists.removeDiff(hash, diffInfo)} />
+						{:else}
+							<Button
+								iconFa="fas fa-list-ul"
+								title="Add this diff to the {selectedPlaylist.playlistTitle}"
+								animated={true}
+								noMargin={true}
+								on:click={() => playlists.addDiff(hash, diffInfo)} />
 						{/if}
 					{:else}
 						<Button
@@ -258,9 +253,7 @@
 							title="Add to the {selectedPlaylist.playlistTitle}"
 							animated={true}
 							noMargin={true}
-							on:click={() => {
-								playlists.add(getSongInfo());
-							}} />
+							on:click={() => playlists.add(getSongInfo())} />
 					{/if}
 				{:else}
 					<Button

@@ -104,7 +104,7 @@
 					</h1>
 
 					<div class="title-container">
-						<span class="author" title="Song author name">{song.authorName}</span>
+						<span class="author" title="Song author name">{song.author}</span>
 						<MapperList {song} />
 						<div class="status-and-type">
 							{#if leaderboard.categoryDisplayName}
