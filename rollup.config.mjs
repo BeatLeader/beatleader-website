@@ -43,7 +43,7 @@ function serve() {
 
 	return {
 		writeBundle() {
-			if (server) return;
+			// if (server) return;
 			server = execa('npm', ['run', 'start', '--', '--dev'], {
 				stdio: ['ignore', 'inherit', 'inherit'],
 				shell: true,
@@ -60,35 +60,8 @@ function processHtml() {
 		name: 'process-html',
 		writeBundle() {
 			const html = readFileSync('public/index.template.html', 'utf8');
-			const timestamp = production ? buildTimestamp : '';
-			const processed = production ? html.replace(/BUILD_TIMESTAMP/g, timestamp) : html.replace(/BUILD_TIMESTAMP./g, timestamp);
+			const processed = html.replace(/BUILD_TIMESTAMP/g, buildTimestamp);
 			writeFileSync('public/index.html', processed);
-		},
-	};
-}
-
-function logTime(name, startTime) {
-	const elapsed = Date.now() - startTime;
-	console.log(`[${name}] Took ${elapsed}ms`);
-}
-
-function createLoggingPlugin(name) {
-	return {
-		name: `log-${name}`,
-		buildStart() {
-			console.log(`[${name}] Build starting`);
-			this.startTime = Date.now();
-		},
-		transform(code, id) {
-			const start = Date.now();
-			console.log(`[${name}] Transforming ${id}`);
-			return null;
-		},
-		generateBundle() {
-			console.log(`[${name}] Generating bundle`);
-		},
-		writeBundle() {
-			logTime(name, this.startTime);
 		},
 	};
 }
@@ -97,138 +70,92 @@ export default [
 	{
 		input: 'src/main.js',
 		output: {
-			sourcemap: !production,
+			sourcemap: true,
 			format: 'es',
 			dir: 'public/build',
-			entryFileNames: production ? `[name].${buildTimestamp}.js` : '[name].js',
-			chunkFileNames: production ? '[name].[hash].js' : '[name].js',
+			entryFileNames: `[name].${buildTimestamp}.js`,
+			chunkFileNames: '[name].[hash].js',
 		},
-		cache: true,
-		experimentalCacheExpiry: 5,
-		preserveModules: !production,
 		plugins: [
 			{
-				name: 'build-logger',
+				name: 'log-bundle',
 				buildStart() {
-					console.log('\n=== Build Started ===');
-					this.startTime = Date.now();
-					this.moduleStartTimes = new Map();
-				},
-				resolveId(source, importer) {
-					if (importer) {
-						console.log(`[resolve] ${importer} -> ${source}`);
+					if (!production) {
+						console.log('Build started...');
 					}
-				},
-				load(id) {
-					this.moduleStartTimes.set(id, Date.now());
-					console.log(`[load] Starting ${id}`);
 				},
 				transform(code, id) {
-					const startTime = this.moduleStartTimes.get(id);
-					if (startTime) {
-						logTime(`load ${id}`, startTime);
+					if (!production) {
+						console.log('Processing:', id);
 					}
-					console.log(`[transform] Starting ${id}`);
-					this.moduleStartTimes.set(id, Date.now());
+					return null;
+				},
+				transformBundle(code, id) {
+					if (!production) {
+						console.log('Finished processing:', id);
+					}
 					return null;
 				},
 				buildEnd() {
-					console.log('\n=== Build Completed ===');
-					logTime('Total Build', this.startTime);
+					if (!production) {
+						console.log('Build completed');
+					}
 				},
 			},
-
-			createLoggingPlugin('replace'),
 			replace({
 				'process.env.NODE_ENV': JSON.stringify(production ? 'production' : 'development'),
 				BUILD_TIMESTAMP: buildTimestamp,
 				preventAssignment: true,
 			}),
-
-			createLoggingPlugin('less'),
 			less({
 				include: ['**/*.less'],
 				output: (css, id) => {
-					console.log(`[less] Processing ${id}`);
-					const start = Date.now();
 					const parts = id.replace(/\\/g, '.').replace(/\//g, '.').split('.');
 					const filename = parts[parts.length - 2];
-					const outputPath = `public/build/themes/${filename}.css`;
-
-					if (!fs.existsSync(outputPath) || readFileSync(outputPath, 'utf8') !== css) {
-						console.log(`[less] Content changed for ${filename}, minifying...`);
-						const minified = production ? cssMinifier.minify(css).styles : css;
-						fs.writeFileSync(outputPath, minified);
-					} else {
-						console.log(`[less] Content unchanged for ${filename}, skipping`);
-					}
-					logTime(`less ${filename}`, start);
+					fs.rmSync(`public/build/themes/${filename}.css`, {
+						force: true,
+					});
+					const minified = production ? cssMinifier.minify(css).styles : css;
+					fs.writeFileSync(`public/build/themes/${filename}.css`, minified);
 					return false;
 				},
 				compress: production,
 			}),
-
-			createLoggingPlugin('svelte'),
 			svelte({
-				preprocess: {
-					...sveltePreprocess({sourceMap: !production}),
-					markup: ({content, filename}) => {
-						console.log(`[svelte] Preprocessing markup for ${filename}`);
-						return {code: content};
-					},
-					style: ({content, filename}) => {
-						console.log(`[svelte] Preprocessing style for ${filename}`);
-						return {code: content};
-					},
-					script: ({content, filename}) => {
-						console.log(`[svelte] Preprocessing script for ${filename}`);
-						return {code: content};
-					},
-				},
+				preprocess: sveltePreprocess({sourceMap: !production}),
 				compilerOptions: {
+					// enable run-time checks when not in production
 					dev: !production,
-					warningFilter: warning => false,
 				},
-				emitCss: true,
 			}),
-
-			createLoggingPlugin('css'),
+			// we'll extract any component CSS out into
+			// a separate file - better for performance
 			css({
 				output: function (styles, dependencies) {
-					console.log('[css] Processing bundle CSS');
-					console.log(`[css] Dependencies count: ${dependencies.length}`);
-					const start = Date.now();
-
 					if (!fs.existsSync('public/build')) {
 						fs.mkdirSync('public/build', {recursive: true});
 					}
-					const outputFile = production ? `bundle.${buildTimestamp}.css` : 'bundle.css';
-					const outputPath = `public/build/${outputFile}`;
-
-					if (!fs.existsSync(outputPath) || readFileSync(outputPath, 'utf8') !== styles) {
-						console.log('[css] Content changed, minifying...');
-						const minified = production ? cssMinifier.minify(styles).styles : styles;
-						writeFileSync(outputPath, minified);
-					} else {
-						console.log('[css] Content unchanged, skipping');
-					}
-					logTime('css bundle', start);
+					const minified = production ? cssMinifier.minify(styles).styles : styles;
+					writeFileSync(`public/build/bundle.${buildTimestamp}.css`, minified);
 				},
 			}),
 
-			createLoggingPlugin('svg'),
 			svg(),
 
-			createLoggingPlugin('resolve'),
+			// If you have external dependencies installed from
+			// npm, you'll most likely need these plugins. In
+			// some cases you'll need additional configuration -
+			// consult the documentation for details:
+			// https://github.com/rollup/plugins/tree/master/packages/commonjs
 			resolve({
 				browser: true,
 				dedupe: ['svelte'],
 				exportConditions: ['svelte', 'browser'],
 			}),
-
-			createLoggingPlugin('commonjs'),
 			commonjs(),
 
+			// In dev mode, call `npm run start` once
+			// the bundle has been generated
 			!production && serve(),
 
 			// Create a timestamp file for livereload triggering
@@ -247,11 +174,10 @@ export default [
 				livereload({
 					watch: 'forreload',
 					delay: 50,
-					exclusions: ['**/node_modules/**'],
-					verbose: true,
-					applyCssLive: true,
 				}),
 
+			// If we're building for production (npm run build
+			// instead of npm run dev), minify
 			production && terser(),
 
 			processHtml(),
@@ -259,15 +185,12 @@ export default [
 			{
 				name: 'clean-old-assets',
 				buildStart() {
-					console.log('[clean] Creating necessary directories');
-					const start = Date.now();
+					// Create directories if they don't exist
 					['public/build', 'public/build/themes', 'forreload'].forEach(dir => {
 						if (!fs.existsSync(dir)) {
-							console.log(`[clean] Creating directory: ${dir}`);
 							fs.mkdirSync(dir, {recursive: true});
 						}
 					});
-					logTime('directory setup', start);
 				},
 			},
 		],

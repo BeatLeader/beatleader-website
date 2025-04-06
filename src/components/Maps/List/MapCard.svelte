@@ -1127,7 +1127,7 @@
 		}
 
 		.icons-container {
-			margin-left: unset;
+			margin-left: 2em;
 		}
 
 		:global(.player .clan-badges) {
@@ -1168,7 +1168,7 @@
 		.icons-container {
 			transform: scale(0.75);
 			margin-top: -0.8em;
-			margin-right: -0.2em;
+			margin-right: -2.2em;
 		}
 
 		.main-container {
