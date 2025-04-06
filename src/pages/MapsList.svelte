@@ -223,7 +223,7 @@
 		// for keys in activeRequests
 		for (let i in activeRequests) {
 			if (activeRequests[i] && activeRequests[i].inProgress) {
-				activeRequests[i].controller.abort();
+				activeRequests[i].controller.abort('resetCache');
 			}
 		}
 
@@ -245,46 +245,60 @@
 			inProgress: true,
 		};
 
-		fetchJson(
-			substituteVarsUrl(BL_API_MAPS_URL, {page, count: itemsPerPage, ...filters, type}, true, true),
-			{...options, credentials: 'include', signal: controller.signal},
-			priority
-		)
-			.then(document => {
-				const response = document.body;
-
-				let newMaps = response.data;
-				for (let i = 0; i < newMaps.length; i++) {
-					newMaps[i].index = (capturePage - 1) * itemsPerPage + i;
-				}
-
-				for (let i = 0; i < allMaps.length; i++) {
-					const element = allMaps[i];
-					const fetchedMap = newMaps.find(m => m.index == element.index);
-					if (fetchedMap) {
-						if (allMaps[i].placeholder && allMaps[i].updateCallback) {
-							allMaps[i].updateCallback(fetchedMap);
-						}
-						allMaps[i] = fetchedMap;
+		const fetchMaps = () => {
+			fetch(
+				substituteVarsUrl(BL_API_MAPS_URL, {page, count: itemsPerPage, ...filters, type}, true, true),
+				{...options, credentials: 'include', signal: controller.signal},
+				priority
+			)
+				.then(d => {
+					if (d.status == 200) {
+						return d.json();
+					} else if (d.status === 429 && d.headers.get('retry-after')) {
+						const retryAfter = parseInt(d.headers.get('retry-after'));
+						setTimeout(() => {
+							if (activeRequests[capturePage] && activeRequests[capturePage].inProgress) {
+								fetchMaps();
+							}
+						}, retryAfter * 1000);
+						return {};
 					}
-				}
+					console.error('Error fetching maps:', d.status);
+					delete activeRequests[capturePage];
+					return {};
+				})
+				.then(response => {
+					let newMaps = response.data;
 
-				numOfMaps = response.metadata.total;
+					if (!newMaps) return;
+					for (let i = 0; i < newMaps.length; i++) {
+						newMaps[i].index = (capturePage - 1) * itemsPerPage + i;
+					}
 
-				if (allMaps.length > numOfMaps) {
-					allMaps = allMaps.slice(0, numOfMaps);
-				}
+					for (let i = 0; i < allMaps.length; i++) {
+						const element = allMaps[i];
+						const fetchedMap = newMaps.find(m => m.index == element.index);
+						if (fetchedMap) {
+							if (allMaps[i].placeholder && allMaps[i].updateCallback) {
+								allMaps[i].updateCallback(fetchedMap);
+							}
+							allMaps[i] = fetchedMap;
+						}
+					}
 
-				if (activeRequests[capturePage]) {
-					activeRequests[capturePage].inProgress = false;
-				}
-			})
-			.catch(err => {
-				if (err.name !== 'AbortError') {
-					console.error('Error fetching maps:', err);
-				}
-				delete activeRequests[capturePage];
-			});
+					numOfMaps = response.metadata.total;
+
+					if (allMaps.length > numOfMaps) {
+						allMaps = allMaps.slice(0, numOfMaps);
+					}
+
+					if (activeRequests[capturePage]) {
+						activeRequests[capturePage].inProgress = false;
+					}
+				});
+		};
+
+		fetchMaps();
 	}
 
 	function fetchMaps(page = 1, type = 'ranked', filters = {}, priority = PRIORITY.FG_LOW, options = {}) {
@@ -319,7 +333,7 @@
 
 		for (let i in activeRequests) {
 			if (i != page && i != page - 1 && i != page + 1 && activeRequests[i].inProgress) {
-				activeRequests[i].controller.abort();
+				activeRequests[i].controller.abort('fetchMaps');
 				activeRequests[i].inProgress = false;
 			}
 		}

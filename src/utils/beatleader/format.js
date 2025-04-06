@@ -1450,9 +1450,9 @@ export function getSongSortingValue(song, diff, sortingKey) {
 
 	if (sortingKey == 'scoreTime') {
 		if (diff) {
-			return formatDateRelative(dateFromUnix(diff.scoreTime));
+			return formatDateRelative(dateFromUnix(diff.lastScoreTime));
 		}
-		const maxTime = song.difficulties.reduce((max, d) => Math.max(max, d.scoreTime), 0);
+		const maxTime = song.difficulties.reduce((max, d) => Math.max(max, d.lastScoreTime), 0);
 		return maxTime ? formatDateRelative(dateFromUnix(maxTime)) : '';
 	}
 
