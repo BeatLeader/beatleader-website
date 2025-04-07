@@ -452,26 +452,40 @@ const createMultiplierCounter = () => {
 	const MAX_MULTIPLIER = 8;
 
 	let value = 1;
-	let progress = 1;
+	let progress = 0;
+
+	let maxProgress = 2;
+
+	const reset = () => {
+		value = 1;
+		progress = 0;
+		maxProgress = 2;
+	};
 
 	const inc = () => {
 		if (value >= MAX_MULTIPLIER) return MAX_MULTIPLIER;
 
-		if (progress + 1 >= value * 2) {
+		if (progress < maxProgress) {
+			++progress;
+		}
+
+		if (progress >= maxProgress) {
 			value *= 2;
+			maxProgress = value * 2;
 			progress = 0;
-		} else {
-			progress++;
 		}
 
 		return value;
 	};
 	const dec = () => {
-		if (value > 1) {
-			value /= 2;
+		if (progress > 0) {
+			progress = 0;
 		}
 
-		progress = 1;
+		if (value > 1) {
+			value /= 2;
+			maxProgress = value * 2;
+		}
 
 		return value;
 	};
@@ -552,6 +566,7 @@ export function processUnderswings(replay) {
 				if (noteData < NoteScoringType.Normal) return acc;
 
 				const maxNoteScore = getNoteScore(noteData, {cutDistanceToCenter: 0, beforeCutRating: 1, afterCutRating: 1});
+				acc.fcMultiplier.inc();
 
 				switch (event.eventType) {
 					case NoteEventType.good:
@@ -563,12 +578,13 @@ export function processUnderswings(replay) {
 						});
 
 						acc.count++;
+						acc.multiplier.inc();
 						acc.score += realScore * multiplier.get();
 						acc.noUnderswingsScore += fullSwing * multiplier.get();
 						acc.fcScore += realScore * fcMultiplier.get();
 						acc.noUnderswingsFcScore += fullSwing * fcMultiplier.get();
 						acc.maxCutScore += maxNoteScore * fcMultiplier.get();
-						acc.multiplier.inc();
+
 						break;
 
 					case NoteEventType.bad:
@@ -578,7 +594,6 @@ export function processUnderswings(replay) {
 				}
 
 				acc.maxSongScore += maxNoteScore * fcMultiplier.get();
-				acc.fcMultiplier.inc();
 
 				return acc;
 			},

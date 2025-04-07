@@ -125,40 +125,38 @@
 					<ClanBadges player={score.player} />
 				{/if}
 			</div>
-			{#if !isBot}
-				<div class="timeset">
-					{#if showAdditionalStat}
-						{#if sortBy == 'pauses'}
-							<i class="fa-solid fa-pause" />
-							<Value value={score.score.pauses} digits={0} />
-						{:else if sortBy == 'maxStreak'}
-							<i class="fa-solid fa-crosshairs" />
-							<Value value={score.score.maxStreak} digits={0} />
-						{:else if sortBy == 'weight'}
-							<i class="fa-solid fa-weight-hanging" />
-							<Value value={score.score.weight} digits={2} />
-						{:else if sortBy == 'weightedPp'}
-							<i class="fa-solid fa-cubes" />
-							<Value value={score.score.weight * score.score.pp} digits={2} />
-						{:else if sortBy == 'mistakes'}
-							<i class="icon-mistakes icon-mistakes-mini" />
-							<Value
-								value={(score.score.badCuts ?? 0) +
-									(score.score.missedNotes ?? 0) +
-									(score.score.wallsHit ?? 0) +
-									(score.score.bombCuts ?? 0)}
-								digits={0} />
-						{:else if sortBy === 'acc'}
-							<Value value={score?.score?.acc} suffix="%" />
-						{:else if sortBy === 'date' || $configStore?.leaderboardPreferences?.show?.date === true}
-							<span style="color: {getTimeStringColor(score?.score?.timeSet ?? null)}; ">
-								<span class="above-tablet">{score?.score.timeSetString ?? '-'}</span>
-								<span class="mobile-only">{score?.score.timeSetStringShort ?? '-'}</span>
-							</span>
-						{/if}
+			<div class="timeset">
+				{#if showAdditionalStat}
+					{#if sortBy == 'pauses'}
+						<i class="fa-solid fa-pause" />
+						<Value value={score.score.pauses} digits={0} />
+					{:else if sortBy == 'maxStreak'}
+						<i class="fa-solid fa-crosshairs" />
+						<Value value={score.score.maxStreak} digits={0} />
+					{:else if sortBy == 'weight'}
+						<i class="fa-solid fa-weight-hanging" />
+						<Value value={score.score.weight} digits={2} />
+					{:else if sortBy == 'weightedPp'}
+						<i class="fa-solid fa-cubes" />
+						<Value value={score.score.weight * score.score.pp} digits={2} />
+					{:else if sortBy == 'mistakes'}
+						<i class="icon-mistakes icon-mistakes-mini" />
+						<Value
+							value={(score.score.badCuts ?? 0) +
+								(score.score.missedNotes ?? 0) +
+								(score.score.wallsHit ?? 0) +
+								(score.score.bombCuts ?? 0)}
+							digits={0} />
+					{:else if sortBy === 'acc'}
+						<Value value={score?.score?.acc} suffix="%" />
+					{:else if sortBy === 'date' || $configStore?.leaderboardPreferences?.show?.date === true}
+						<span style="color: {getTimeStringColor(score?.score?.timeSet ?? null)}; ">
+							<span class="above-tablet">{score?.score.timeSetString ?? '-'}</span>
+							<span class="mobile-only">{score?.score.timeSetStringShort ?? '-'}</span>
+						</span>
 					{/if}
-				</div>
-			{/if}
+				{/if}
+			</div>
 		</div>
 		<div class="mobile-second-line">
 			{#if !noReplayInLeaderboard && type !== 'accsaber'}

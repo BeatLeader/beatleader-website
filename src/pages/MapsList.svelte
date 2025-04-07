@@ -190,17 +190,25 @@
 			key: null,
 			label: difficultyNullPlaceholder,
 		},
-	].concat(
-		Object.entries(difficultyDescriptions).map(([key, type]) => {
-			return {
-				key,
-				label: capitalize(difficultyDescriptions?.[key]?.title ?? key),
-				icon: `<span class="${difficultyDescriptions?.[key]?.icon ?? `${key}-icon`}"></span>`,
-				color: difficultyDescriptions?.[key]?.color ?? 'var(--beatleader-primary',
-				textColor: difficultyDescriptions?.[key]?.textColor ?? null,
-			};
-		})
-	);
+	]
+		.concat(
+			Object.entries(difficultyDescriptions).map(([key, type]) => {
+				return {
+					key,
+					label: capitalize(difficultyDescriptions?.[key]?.title ?? key),
+					icon: `<span class="${difficultyDescriptions?.[key]?.icon ?? `${key}-icon`}"></span>`,
+					color: difficultyDescriptions?.[key]?.color ?? 'var(--beatleader-primary',
+					textColor: difficultyDescriptions?.[key]?.textColor ?? null,
+				};
+			})
+		)
+		.concat({
+			key: 'fullspread',
+			label: 'Full Spread',
+			icon: `<span class="fullspread-icon"></span>`,
+			color: 'var(--beatleader-primary)',
+			textColor: null,
+		});
 
 	let numOfMaps = null;
 	let itemsPerPage = 12;
