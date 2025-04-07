@@ -20,7 +20,7 @@
 		href="/u/{mapper.playerId}"
 		class="mapper-container"
 		bind:this={referenceElement}
-		on:click|preventDefault={() => navigateToPlayer(mapper.playerId)}>
+		on:click|preventDefault|stopPropagation={() => navigateToPlayer(mapper.playerId)}>
 		<img loading="lazy" class="mapper-avatar" src={mapper.avatar} />
 		<span>{mapper.name}</span>
 	</a>

@@ -109,6 +109,10 @@
 		width: 0.5em;
 		height: 100px;
 		padding: 0;
+		vertical-align: bottom;
+		writing-mode: vertical-lr;
+		direction: rtl;
+		appearance: slider-vertical;
 	}
 	:global(.song-play-button) {
 		width: 1.4em !important;

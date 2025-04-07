@@ -16,6 +16,7 @@
 	import {songPlayerStore} from '../../../stores/songPlayer';
 	import MapRequirements from './MapRequirements.svelte';
 	import Popover from '../../Common/Popover.svelte';
+	import {navigate} from 'svelte-routing';
 
 	export let map;
 	export let sortBy = 'stars';
@@ -435,7 +436,7 @@
 							style="position: absolute; background-size: cover; background-position: center; background-image: url({coverUrl}); width: 100%; height: 100%" />
 					</div>
 				</div>
-				<a class="header-link" href={mapLink}></a>
+				<a on:click|preventDefault|stopPropagation={() => navigate(mapLink)} class="header-link" href={mapLink}></a>
 				<div class="header" style="height: {headerContainerHeight < 150 ? '100%' : 'unset'};" class:is-hovered={isHovered}>
 					<div
 						class="map-cover"
@@ -450,7 +451,7 @@
 						</div>
 					{/if}
 
-					<a class="main-container" href={mapLink}>
+					<a on:click|preventDefault|stopPropagation={() => navigate(mapLink)} class="main-container" href={mapLink}>
 						<div class="header-container" bind:this={headerContainer}>
 							<div class="header-top-part">
 								<h1 class="song-title">

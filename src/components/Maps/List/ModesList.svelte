@@ -16,6 +16,7 @@
 	import SongStatus from './SongStatus.svelte';
 	import {createEventDispatcher} from 'svelte';
 	import FormattedDate from '../../Common/FormattedDate.svelte';
+	import {navigate} from 'svelte-routing';
 
 	export let song;
 	export let isHovered;
@@ -120,6 +121,7 @@
 								{/if}
 								{#if isHovered}
 									<a
+										on:click|preventDefault|stopPropagation={e => navigate(`/leaderboard/global/${diff.leaderboardId}`)}
 										style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;"
 										href={`/leaderboard/global/${diff.leaderboardId}`} />
 									<span class="diff-name">{userDiffNameForDiff(diff.value)}</span>
@@ -131,7 +133,11 @@
 								{/if}
 							</div>
 							{#if isHovered}
-								<a href={`/leaderboard/global/${diff.leaderboardId}`} class="tail-container">
+								<div
+									on:click={e => {
+										navigate(`/leaderboard/global/${diff.leaderboardId}`);
+									}}
+									class="tail-container">
 									<div class="status-container">
 										{#if diff.status && diff.status != DifficultyStatus.unranked && diff.status != DifficultyStatus.unrankable}
 											<SongStatus songStatus={wrapBLStatus(diff.status)} />
@@ -147,7 +153,7 @@
 										<SongScoreCompact score={diff.myScore} />
 										<Icons {song} diffInfo={{diff: diff.difficultyName, type: diff.modeName}} icons={['playlist']} />
 									</div>
-								</a>
+								</div>
 							{/if}
 						</div>
 					{/each}
@@ -304,6 +310,7 @@
 		align-items: center;
 		gap: 0.2em;
 		color: white;
+		cursor: pointer;
 	}
 
 	.tail-container::before {
