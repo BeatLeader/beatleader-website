@@ -448,7 +448,7 @@
 						{#if clan?.captureLeaderboardsCount > 0}
 							<ClanChart clanId={clan.id} />
 						{:else}
-							<span>Compete on <a href="/leaderboards">ranked maps</a> to see the global map history.</span>
+							<span>Compete on <a href="/maps/ranked">ranked maps</a> to see the global map history.</span>
 						{/if}
 					{:else if currentStat.key == 'triangle'}
 						{#if clan?.playersCount >= 5}

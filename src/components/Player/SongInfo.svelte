@@ -40,7 +40,6 @@
 	$: leaderboardUrl = `/leaderboard/${mapServiceToLink(service)}/${leaderboardId}/${page ?? ''}`;
 	$: isPlayerScore = $account?.id && $account?.id === score?.playerId;
 	$: serviceIcon = score?.metadata ?? null;
-	$: console.log(song);
 </script>
 
 {#if song}

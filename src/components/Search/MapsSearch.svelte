@@ -57,7 +57,7 @@
 	header={MapsHeader}
 	item={MapsItem}
 	noItems="No maps found."
-	url={`/leaderboards?search=${filters.search}&type=${filters.type}`}
+	url={`/maps/${filters.type}?search=${filters.search}`}
 	{priority}
 	on:message={onMessage}
 	on:close />

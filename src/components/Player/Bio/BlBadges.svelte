@@ -163,6 +163,8 @@
 	}
 
 	function handleMouseEnter(event, badgeId) {
+		if (placeholder) return;
+
 		const badge = event.currentTarget;
 		const rect = badge.children[0].getBoundingClientRect();
 

@@ -113,7 +113,6 @@
 	if (!page || isNaN(page) || page <= 0) page = 1;
 
 	let currentPage = page;
-	console.log('currentPage', currentPage);
 	let previousPage = page > 1 ? page - 1 : page;
 	let currentType = type;
 	let currentFilters = buildFiltersFromLocation(location);

@@ -1,5 +1,6 @@
 <script>
 	import {createEventDispatcher} from 'svelte';
+	import {navigate} from 'svelte-routing';
 
 	export let mapperId;
 	export let rankedmaps = null;
@@ -72,7 +73,11 @@
 			<i class="fa-solid fa-star"></i>
 			<span class="maps-title">Ranked Mapper</span>
 		</h3>
-		<a href="/leaderboards?mappers={mapperId}" class="leader-container" style="--image: {topmap.cover};">
+		<a
+			on:click|preventDefault|stopPropagation={e => navigate(`/maps/ranked?mappers=${mapperId}`)}
+			href="/maps/ranked?mappers={mapperId}"
+			class="leader-container"
+			style="--image: {topmap.cover};">
 			<div class="cinematics">
 				<div class="cinematics-canvas">
 					<canvas bind:this={cinematicsCanvas} style="position: absolute; width: 100%; height: 100%; opacity: 0" />

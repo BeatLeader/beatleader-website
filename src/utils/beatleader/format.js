@@ -873,7 +873,7 @@ export function wrapBLStatus(status) {
 	const statusId = Object.entries(DifficultyStatus).find(map => map[1] == status)[0];
 	return {
 		blstatus: statusId,
-		link: CURRENT_URL + '/leaderboards/1?type=' + statusId,
+		link: CURRENT_URL + `/maps/${statusId}`,
 	};
 }
 
