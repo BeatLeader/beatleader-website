@@ -27,6 +27,7 @@
 	import DatePicker from '../components/Common/DatePicker.svelte';
 	import Button from '../components/Common/Button.svelte';
 	import {GLOBAL_LEADERBOARD_TYPE} from '../utils/format';
+	import TabSwitcher from '../components/Common/TabSwitcher.svelte';
 
 	export let page = 1;
 	export let location;
@@ -34,6 +35,16 @@
 	document.body.classList.remove('slim');
 
 	const FILTERS_DEBOUNCE_MS = 500;
+
+	const tabOptions = [
+		{value: 'ranking', label: 'Ranking', iconFa: 'fas fa-hashtag', url: '/ranking/1', cls: 'ranking-tab-button'},
+		{value: 'scores', label: 'Scores', iconFa: 'fas fa-trophy', url: '/scores/1', cls: 'ranking-tab-button'},
+	];
+	const currentTab = tabOptions[0];
+
+	function onTabChanged(e) {
+		navigate(`/scores/1`);
+	}
 
 	const findParam = key => params.find(p => p.key === key);
 
@@ -466,14 +477,11 @@
 			</div>
 		</ContentBox> -->
 
-		<ContentBox bind:box={boxEl}>
-			<div class="ranking-grid-header">
-				<h1 class="title header-title is-5">Ranking</h1>
-				{#if isLoading}
-					<Spinner />
-				{/if}
-			</div>
+		<div class="ranking-switcher">
+			<TabSwitcher values={tabOptions} value={currentTab} on:change={onTabChanged} class="ranking" />
+		</div>
 
+		<ContentBox bind:box={boxEl}>
 			<RankingTable
 				page={currentPage}
 				filters={currentFilters}
@@ -608,6 +616,25 @@
 		border: none;
 		border-bottom: 1px solid var(--faded);
 		outline: none;
+	}
+
+	.ranking-switcher {
+		margin-left: 0.8em;
+	}
+
+	:global(.ranking-tab-button) {
+		margin-bottom: -0.5em !important;
+		height: 3.5em;
+		border-radius: 12px 12px 0 0 !important;
+		min-width: 7em;
+		max-width: 7em;
+	}
+
+	:global(.ranking-tab-button span) {
+		font-weight: 900;
+		text-align: center;
+		white-space: break-spaces;
+		margin-right: -0.3em;
 	}
 
 	aside :global(.switch-types) {

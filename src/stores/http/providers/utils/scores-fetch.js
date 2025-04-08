@@ -2,7 +2,7 @@ import createScoresService from '../../../../services/beatleader/scores';
 import createScoreAttemptsService from '../../../../services/beatleader/score-attempts';
 import createAccSaberService from '../../../../services/accsaber';
 import {capitalize} from '../../../../utils/js';
-import {BL_API_URL, SPECIAL_PLAYER_ID} from '../../../../network/queues/beatleader/api-queue';
+import {BL_API_URL, SPECIAL_PLAYER_ID, ALL_SCORES_PLAYER_ID} from '../../../../network/queues/beatleader/api-queue';
 import {processScore} from '../../../../network/clients/beatleader/scores/utils/processScore';
 import {fetchJson} from '../../../../network/fetch';
 import {getResponseBody} from '../../../../network/queues/queues';
@@ -50,6 +50,14 @@ export default () => {
 		switch (service) {
 			case SPECIAL_PLAYER_ID:
 				return blScoresService.fetchFollowedScores(
+					processedServiceParams,
+					otherParams?.refreshInterval,
+					otherParams?.priority,
+					otherParams?.signal,
+					otherParams?.force
+				);
+			case ALL_SCORES_PLAYER_ID:
+				return blScoresService.fetchAllScoresPage(
 					processedServiceParams,
 					otherParams?.refreshInterval,
 					otherParams?.priority,
