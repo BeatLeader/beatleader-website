@@ -1073,6 +1073,7 @@ export const requirementsMap = {
 	optionalProperties: 1 << 6,
 	vnjs: 1 << 7,
 	vivify: 1 << 8,
+	gls: 1 << 10,
 };
 
 export const requirementsDescription = {
@@ -1123,6 +1124,13 @@ export const requirementsDescription = {
 		name: 'VNJS',
 		icon: 'vnjs-icon',
 		color: 'grey',
+		textColor: 'white',
+	},
+	gls: {
+		title: 'Fancy group lighting (V3|V4 lights)',
+		name: 'GLS',
+		icon: 'gls-icon',
+		color: 'purple',
 		textColor: 'white',
 	},
 };
