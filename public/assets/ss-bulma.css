@@ -11894,6 +11894,15 @@ select {
 	background-image: url('./vnjs.svg') !important;
 }
 
+.gls-icon {
+	width: 75% !important;
+	aspect-ratio: 1;
+	background-size: contain;
+	background-repeat: no-repeat !important;
+	background-position: center;
+	background-image: url('./gls.svg') !important;
+}
+
 /* https://www.vecteezy.com/vector-art/1268644-set-of-fresh-bread */
 .baguette-icon {
 	width: 100%;

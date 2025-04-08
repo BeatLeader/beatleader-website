@@ -467,13 +467,12 @@
 		</ContentBox> -->
 
 		<ContentBox bind:box={boxEl}>
-			<h1 class="title is-5">
-				Ranking
-
+			<div class="ranking-grid-header">
+				<h1 class="title header-title is-5">Ranking</h1>
 				{#if isLoading}
 					<Spinner />
 				{/if}
-			</h1>
+			</div>
 
 			<RankingTable
 				page={currentPage}
@@ -759,6 +758,10 @@
 		text-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 	}
 
+	.header-title {
+		margin-bottom: unset !important;
+	}
+
 	.score-options-section {
 		display: grid;
 		justify-items: center;
@@ -786,6 +789,13 @@
 		background-color: transparent;
 		cursor: pointer;
 		transform: translate(-7px, -2px);
+	}
+
+	.ranking-grid-header {
+		display: flex;
+		justify-content: start;
+		align-items: center;
+		gap: 1em;
 	}
 
 	@media screen and (max-width: 512px) {

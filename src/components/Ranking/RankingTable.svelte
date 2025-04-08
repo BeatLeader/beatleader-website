@@ -495,7 +495,11 @@
 		loadingPage={$pending && $pending.page ? $pending.page - 1 : null}
 		mode={numOfPlayers ? 'pages' : 'simple'}
 		on:page-changed />
-{:else if !$isLoading}
+{:else if $isLoading}
+	<div class="ranking-grid-empty" style="display: flex; justify-content: center; align-items: center; height: {playersPerPage * 2}em;">
+		<Spinner />
+	</div>
+{:else}
 	<p>No players found.</p>
 {/if}
 
