@@ -64,6 +64,7 @@
 		TibytesPresets: () => import('./pages/TibytesPresets.svelte'),
 		BuildingBlocks2024: () => import('./pages/BuildingBlocks2024.svelte'),
 		ProjectTree: () => import('./pages/ProjectTree.svelte'),
+		ScoresPage: () => import('./pages/Scores.svelte'),
 	};
 
 	export let url = '';
@@ -369,6 +370,11 @@
 					</Route>
 					<Route path="/ranking/*page" let:params let:location>
 						{#await pageImports.RankingPage() then module}
+							<svelte:component this={module.default} page={params.page} {location} />
+						{/await}
+					</Route>
+					<Route path="/scores/*page" let:params let:location>
+						{#await pageImports.ScoresPage() then module}
 							<svelte:component this={module.default} page={params.page} {location} />
 						{/await}
 					</Route>
