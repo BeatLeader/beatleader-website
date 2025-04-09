@@ -232,6 +232,9 @@ ${BL_API_URL}players?leaderboardContext=general&page=${page}&count=100&role=supp
 				<img src="https://avatars.akamai.steamstatic.com/2b9951e8e6a9bdcaa6799f6b1a0bc2ba1e95387d_full.jpg" alt="Zana" /><a
 					href="/u/76561198272028078">Zana</a>
 			</div>
+			<div class="member">
+				<img src="https://avatars.steamstatic.com/cc75f8ac925c60d59c5dbada119e1b662015b688_full.jpg" alt="ZeCube" /><a href="/u/zecube">ZeCube</a>
+			</div>
 		</section>
 
 		{#if supporters.length}
