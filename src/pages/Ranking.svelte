@@ -28,6 +28,8 @@
 	import Button from '../components/Common/Button.svelte';
 	import {GLOBAL_LEADERBOARD_TYPE} from '../utils/format';
 	import TabSwitcher from '../components/Common/TabSwitcher.svelte';
+	import AsideBox from '../components/Common/AsideBox.svelte';
+	import CountryCard from '../components/Ranking/CountryCard.svelte';
 
 	export let page = 1;
 	export let location;
@@ -38,6 +40,7 @@
 
 	const tabOptions = [
 		{value: 'ranking', label: 'Ranking', iconFa: 'fas fa-hashtag', url: '/ranking/1', cls: 'ranking-tab-button'},
+		{value: 'countries', label: 'Countries', iconFa: 'fas fa-flag', url: '/countries/1', cls: 'ranking-tab-button'},
 		{value: 'scores', label: 'Scores', iconFa: 'fas fa-trophy', url: '/scores/1', cls: 'ranking-tab-button'},
 	];
 	const currentTab = tabOptions[0];
@@ -477,6 +480,10 @@
 			</div>
 		</ContentBox> -->
 
+		<ContentBox cls="country-card-container">
+			<CountryCard />
+		</ContentBox>
+
 		<div class="ranking-switcher">
 			<TabSwitcher values={tabOptions} value={currentTab} on:change={onTabChanged} class="ranking" />
 		</div>
@@ -497,84 +504,70 @@
 		</ContentBox>
 	</article>
 
-	<aside>
-		<ContentBox cls={!showFilters ? 'show-filters-box' : ''}>
-			{#if !showFilters}
-				<div class="score-options-section">
-					<span class="beat-savior-reveal clickable" on:click={() => boolflip('showFiltersOnRanking')} title="Show filters">
-						<i class="fas fa-filter" />
-						<i class="fas fa-chevron-right" />
-					</span>
-				</div>
-			{:else}
-				<div class="box-with-left-arrow">
-					<div class="score-options-section to-the-left">
-						<span class="beat-savior-reveal clickable" on:click={() => boolflip('showFiltersOnRanking')} title="Hide filters">
-							<i class="fas fa-chevron-left" />
-						</span>
-					</div>
-					<div>
-						<h2 class="title is-5">Filters</h2>
-
-						{#each params as param}
-							{#if param.type}
-								<section class="filter">
-									<label
-										>{param?.label ?? param?.key ?? ''}
-										{#if param?.type === 'slider' && (param.values[0] || param.values[1])}
-											<button
-												class="remove-type"
-												title="Remove"
-												on:click={() => {
-													param.onChange({detail: {values: [null, null]}});
-												}}><i class="fas fa-xmark" /></button>
-										{/if}
-									</label>
-
-									{#if param?.type === 'input'}
-										<input
-											type="text"
-											placeholder={param.placeholder ?? null}
-											value={param.value}
-											on:input={debounce(param.onChange, FILTERS_DEBOUNCE_MS)} />
-									{:else if param?.type === 'switch'}
-										<Switcher values={param.values} value={param.value} multi={!!param?.multi} on:change={param.onChange} />
-									{:else if param?.type === 'countries'}
-										<Countries countries={param.value} on:change={param.onChange} />
-									{:else if param?.type === 'headsets'}
-										<Headsets value={param.value} on:change={param.onChange} />
-									{:else if param?.type === 'slider'}
-										<RangeSlider
-											range
-											min={param.min}
-											max={param.max}
-											step={param.step}
-											values={[
-												Number.isFinite(param.values[0]) ? param.values[0] : Number.NEGATIVE_INFINITY,
-												Number.isFinite(param.values[1]) ? param.values[1] : Number.POSITIVE_INFINITY,
-											]}
-											float
-											hoverable
-											pips
-											pipstep={param.pipstep}
-											all="label"
-											on:change={param.onChange} />
-									{:else if param?.type === 'date'}
-										<DatePicker type="date" date={dateFromUnix(param.value)} on:change={param.onChange} />
-									{/if}
-								</section>
+	<aside class="ranking-aside">
+		<AsideBox title="Filters" boolname="showFiltersOnRanking" faicon="fas fa-filter">
+			{#each params as param}
+				{#if param.type}
+					<section class="filter">
+						<label
+							>{param?.label ?? param?.key ?? ''}
+							{#if param?.type === 'slider' && (param.values[0] || param.values[1])}
+								<button
+									class="remove-type"
+									title="Remove"
+									on:click={() => {
+										param.onChange({detail: {values: [null, null]}});
+									}}><i class="fas fa-xmark" /></button>
 							{/if}
-						{/each}
-					</div>
-				</div>
-			{/if}
-		</ContentBox>
+						</label>
+
+						{#if param?.type === 'input'}
+							<input
+								type="text"
+								placeholder={param.placeholder ?? null}
+								value={param.value}
+								on:input={debounce(param.onChange, FILTERS_DEBOUNCE_MS)} />
+						{:else if param?.type === 'switch'}
+							<Switcher values={param.values} value={param.value} multi={!!param?.multi} on:change={param.onChange} />
+						{:else if param?.type === 'countries'}
+							<Countries countries={param.value} on:change={param.onChange} />
+						{:else if param?.type === 'headsets'}
+							<Headsets value={param.value} on:change={param.onChange} />
+						{:else if param?.type === 'slider'}
+							<RangeSlider
+								range
+								min={param.min}
+								max={param.max}
+								step={param.step}
+								values={[
+									Number.isFinite(param.values[0]) ? param.values[0] : Number.NEGATIVE_INFINITY,
+									Number.isFinite(param.values[1]) ? param.values[1] : Number.POSITIVE_INFINITY,
+								]}
+								float
+								hoverable
+								pips
+								pipstep={param.pipstep}
+								all="label"
+								on:change={param.onChange} />
+						{:else if param?.type === 'date'}
+							<DatePicker type="date" date={dateFromUnix(param.value)} on:change={param.onChange} />
+						{/if}
+					</section>
+				{/if}
+			{/each}
+		</AsideBox>
 	</aside>
 </section>
 
 <BackToTop />
 
 <style>
+	aside {
+		width: 22em;
+	}
+	:global(.ranking-aside .aside-box) {
+		min-width: unset !important;
+	}
 	.align-content {
 		display: flex;
 		justify-content: center;
@@ -823,6 +816,10 @@
 		justify-content: start;
 		align-items: center;
 		gap: 1em;
+	}
+
+	:global(.country-card-container) {
+		padding: 0 !important;
 	}
 
 	@media screen and (max-width: 512px) {
