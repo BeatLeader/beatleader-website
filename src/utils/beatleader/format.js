@@ -1501,7 +1501,7 @@ export function starsToBackgroundColor(diff, config) {
 		const rotation = Math.min(diff.stars, 15) / 15;
 		const hue = rotation <= 0.56 ? 0.56 - rotation : 1.56 - rotation;
 		const saturation = 0.75;
-		const value = diff.stars < 12 ? 0.9 : 0.9 - (diff.stars - 12) * 0.25;
+		const value = diff.stars < 12 ? 0.9 : Math.max(0.9 - (diff.stars - 12) * 0.25, 0.0);
 		return HSVtoRGB(hue, saturation, value);
 	}
 	return diff.color;

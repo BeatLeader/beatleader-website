@@ -92,9 +92,11 @@
 		if (el) el.remove();
 	}}>
 	<div class="profile">
-		{#each maps as map}
-			<MapCard {map} />
-		{/each}
+		<div class="map-list">
+			{#each maps as map}
+				<MapCard {map} />
+			{/each}
+		</div>
 	</div>
 
 	<div class="options">
@@ -120,10 +122,14 @@
 		flex-direction: column;
 	}
 
-	.profile {
+	.map-list {
 		display: flex;
 		gap: 1em;
 		flex-wrap: wrap;
+		justify-content: center;
+	}
+
+	.profile {
 		overflow: auto;
 		max-height: 22.3em;
 		border: 3px dashed var(--textColor);
@@ -208,6 +214,13 @@
 		.switches {
 			display: grid;
 			grid-template-columns: repeat(2, 1fr);
+		}
+
+		.map-list {
+			transform: scale(0.9);
+			margin-left: -1em;
+			margin-right: -1em;
+			margin-top: -3em;
 		}
 
 		:global(.s--slider) {

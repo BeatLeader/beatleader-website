@@ -11701,7 +11701,7 @@ select {
 		display: inline-block;
 		background-color: currentColor;
 		content: '';
-		mask-image: url('./Characteristics/horizontalstandard.webp');
+		mask-image: url('./Characteristics/horizontalstandard.svg');
 		mask-type: alpha;
 		width: 100%;
 		height: 100%;
@@ -11717,7 +11717,7 @@ select {
 		display: inline-block;
 		background-color: currentColor;
 		content: '';
-		mask-image: url('./Characteristics/inversestandard.webp');
+		mask-image: url('./Characteristics/inversestandard.svg');
 		mask-type: alpha;
 		width: 100%;
 		height: 100%;
@@ -11733,7 +11733,7 @@ select {
 		display: inline-block;
 		background-color: currentColor;
 		content: '';
-		mask-image: url('./Characteristics/invertedstandard.webp');
+		mask-image: url('./Characteristics/invertedstandard.svg');
 		mask-type: alpha;
 		width: 100%;
 		height: 100%;
@@ -11749,7 +11749,7 @@ select {
 		display: inline-block;
 		background-color: currentColor;
 		content: '';
-		mask-image: url('./Characteristics/verticalstandard.webp');
+		mask-image: url('./Characteristics/verticalstandard.svg');
 		mask-type: alpha;
 		width: 100%;
 		height: 100%;
@@ -11763,7 +11763,7 @@ select {
 		display: inline-block;
 		background-color: currentColor;
 		content: '';
-		mask-image: url('./Characteristics/rhythmgamestandard.webp');
+		mask-image: url('./Characteristics/rhythmgamestandard.svg');
 		mask-type: alpha;
 		width: 100%;
 		height: 100%;
@@ -11791,7 +11791,7 @@ select {
 		display: inline-block;
 		background-color: currentColor;
 		content: '';
-		mask-image: url('./Characteristics/lawless-controllable-icon.webp');
+		mask-image: url('./Characteristics/lawless-controllable-icon.svg');
 		mask-type: alpha;
 		width: 100%;
 		height: 100%;
@@ -11805,7 +11805,7 @@ select {
 		display: inline-block;
 		background-color: currentColor;
 		content: '';
-		mask-image: url('./Characteristics/standard-controllable-icon.webp');
+		mask-image: url('./Characteristics/standard-controllable-icon.svg');
 		mask-type: alpha;
 		width: 100%;
 		height: 100%;
@@ -11819,7 +11819,7 @@ select {
 		display: inline-block;
 		background-color: currentColor;
 		content: '';
-		mask-image: url('./Characteristics/onesaber-controllable-icon.webp');
+		mask-image: url('./Characteristics/onesaber-controllable-icon.svg');
 		mask-type: alpha;
 		width: 100%;
 		height: 100%;
@@ -11835,7 +11835,7 @@ select {
 		display: inline-block;
 		background-color: currentColor;
 		content: '';
-		mask-image: url('./Characteristics/rebeatstandard.webp');
+		mask-image: url('./Characteristics/rebeatstandard.svg');
 		mask-type: alpha;
 		width: 100%;
 		height: 100%;
@@ -11851,7 +11851,7 @@ select {
 		display: inline-block;
 		background-color: currentColor;
 		content: '';
-		mask-image: url('./Characteristics/rebeatonesaber.webp');
+		mask-image: url('./Characteristics/rebeatonesaber.svg');
 		mask-type: alpha;
 		width: 100%;
 		height: 100%;
@@ -11867,7 +11867,7 @@ select {
 		display: inline-block;
 		background-color: currentColor;
 		content: '';
-		mask-image: url('./Characteristics/rebeat90degree.webp');
+		mask-image: url('./Characteristics/rebeat90degree.svg');
 		mask-type: alpha;
 		width: 100%;
 		height: 100%;
@@ -11883,7 +11883,7 @@ select {
 		display: inline-block;
 		background-color: currentColor;
 		content: '';
-		mask-image: url('./Characteristics/rebeat360degree.webp');
+		mask-image: url('./Characteristics/rebeat360degree.svg');
 		mask-type: alpha;
 		width: 100%;
 		height: 100%;
@@ -11899,7 +11899,7 @@ select {
 		display: inline-block;
 		background-color: currentColor;
 		content: '';
-		mask-image: url('./Characteristics/rebeatnoarrows.webp');
+		mask-image: url('./Characteristics/rebeatnoarrows.svg');
 		mask-type: alpha;
 		width: 100%;
 		height: 100%;
@@ -11915,7 +11915,7 @@ select {
 		display: inline-block;
 		background-color: currentColor;
 		content: '';
-		mask-image: url('./Characteristics/rebeatlawless.webp');
+		mask-image: url('./Characteristics/rebeatlawless.svg');
 		mask-type: alpha;
 		width: 100%;
 		height: 100%;
@@ -11931,7 +11931,7 @@ select {
 		display: inline-block;
 		background-color: currentColor;
 		content: '';
-		mask-image: url('./Characteristics/rebeatlightshow.webp');
+		mask-image: url('./Characteristics/rebeatlightshow.svg');
 		mask-type: alpha;
 		width: 100%;
 		height: 100%;
