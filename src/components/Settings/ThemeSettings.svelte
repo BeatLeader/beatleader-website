@@ -125,48 +125,48 @@
 </script>
 
 <div class="options" in:fly|global={{y: animationSign * 200, duration: 400}} out:fade|global={{duration: 100}}>
-	<section class="option">
+	<section class="option" id="theme-selector">
 		<label title="Choose the theme you want">Theme</label>
 		<Select bind:value={currentTheme} options={themes} />
 	</section>
 	{#if currentTheme != 'default' && currentTheme != 'ree-dark'}
-		<section class="option">
+		<section class="option" id="theme-background">
 			<label title="Input url of the background image you want">Background Image</label>
 			<input type="url" value={currentBGImage} on:input={debounceCurrentBGImage} />
 			<span style="cursor: pointer; font-size: x-small;" on:click={() => (currentBGImage = '/assets/background.jpg')}
 				><u>Reset to default</u></span>
 		</section>
 
-		<section class="option">
+		<section class="option" id="theme-main-color">
 			<label title="Select color for the backgrounds of the elements">Main Color</label>
 			<ColorPicker on:colorChange={debounceCurrentBGColor} startColor={currentBGColor} />
 		</section>
 
-		<section class="option">
+		<section class="option" id="theme-header-color">
 			<label title="Select color for the backgrounds of the elements">Header Color</label>
 			<ColorPicker on:colorChange={debounceCurrentHeaderColor} startColor={currentHeaderColor} />
 		</section>
 
-		<section class="option">
+		<section class="option" id="theme-button-color">
 			<label title="Select color for the backgrounds of the elements">Button Color</label>
 			<ColorPicker on:colorChange={debounceCurrentButtonColor} startColor={currentButtonColor} />
 		</section>
 
-		<section class="option">
+		<section class="option" id="theme-label-color">
 			<label title="Select color for the backgrounds of the elements">Label Color</label>
 			<ColorPicker on:colorChange={debounceCurrentLabelColor} startColor={currentLabelColor} />
 		</section>
-		<section class="option">
+		<section class="option" id="theme-selected-color">
 			<label title="Select color for the backgrounds of the elements">Selected Color</label>
 			<ColorPicker on:colorChange={debounceCurrentSelectedColor} startColor={currentSelectedColor} />
 		</section>
 
-		<section class="option">
+		<section class="option" id="theme-pp-color">
 			<label title="Select color for the backgrounds of the elements">PP Color</label>
 			<ColorPicker on:colorChange={debounceCurrentPpColor} startColor={currentPpColor} />
 		</section>
 
-		<section class="option">
+		<section class="option" id="theme-fonts">
 			<label title="Input url of the background image you want">Fonts (Google Fonts or System)</label>
 			<input type="text" value={currentFontNames} on:input={debounceCurrentFontNames} />
 			<span style="cursor: pointer; font-size: x-small;" on:click={() => (currentFontNames = 'Noto Sans, Microsoft YaHei, sans-serif')}

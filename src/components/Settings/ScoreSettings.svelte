@@ -372,30 +372,30 @@
 <div class="main-container" in:fly|global={{y: animationSign * 200, duration: 400}} out:fade|global={{duration: 100}}>
 	<DemoProfileScore playerId={$account?.player?.playerId} selectedMetric={currentScoreBadgeSelected} on:badge-click={onBadgeClick} />
 	<div class="options">
-		<section class="option full">
+		<section class="option full" id="score-preset">
 			<label title="Determines which metrics are shown at score">Preset:</label>
 			<div class="single">
 				<Select bind:value={currentBadgePreset} options={configPresets} valueSelector={x => x} />
 			</div>
 		</section>
 		{#if currentBadgePreset?.key === 'custom'}
-			<section class="option">
+			<section class="option" id="score-metrics">
 				<label title="Determines which metrics are shown at score">Score metrics settings:</label>
 				<Select bind:value={currentBadgeLayout} options={badgeLayouts} />
 			</section>
-			<section class="option">
+			<section class="option" id="score-comparison">
 				<label title="Determines which metrics are shown when comparing scores">Score comparison settings:</label>
 				<Select bind:value={currentComparisonBadgeLayout} options={badgeLayouts} />
 			</section>
 			{#if currentScoreMetric}
 				<BadgeEdit badge={currentScoreMetric} on:change={updateSelectedBadge} />
 			{:else}
-				<section class="option">
+				<section class="option" id="score-metric-select">
 					<label>Metric</label>
 					<div>Click first on the score metric badge you want to set.</div>
 				</section>
 			{/if}
-			<section class="option full">
+			<section class="option full" id="score-buttons">
 				<label title="Determines which buttons should be displayed at score">Buttons to show:</label>
 				<div class="switches">
 					{#each scoreIcons as key}
@@ -411,7 +411,7 @@
 				</div>
 			</section>
 
-			<section class="option full">
+			<section class="option full" id="score-info">
 				<label title="Determines which info should be displayed at score">Score info to show:</label>
 				<div class="switches">
 					<Switch
@@ -428,7 +428,7 @@
 						on:click={() => (currentShowTriangle = !currentShowTriangle)} />
 				</div>
 			</section>
-			<section class="option full">
+			<section class="option full" id="score-details">
 				<label title="Determines which data should be displayed in score details">Score details settings:</label>
 				<div class="switches">
 					{#each Object.keys(scoreDetailsPreferences).filter(k => !['defaultAccChartIndex', 'showHistory'].includes(k)) as key}
@@ -441,11 +441,11 @@
 					{/each}
 				</div>
 			</section>
-			<section class="option">
+			<section class="option" id="score-acc-chart">
 				<label title="Determines which acc chart displays by default.">Default acc chart in details</label>
 				<Select bind:value={currentAccChartIndex} options={accCharts} />
 			</section>
-			<section class="option">
+			<section class="option" id="score-comparison-method">
 				<label
 					title="Comparison of a current player's score against the main player will be displayed either immediately or after expanding the details"
 					>Score comparison</label>
@@ -453,7 +453,7 @@
 			</section>
 		{/if}
 		{#if $account?.player}
-			<section class="option full">
+			<section class="option full" id="score-history">
 				<label title="Wether to show and make public scores history">Score history:</label>
 				{#if isUpdating}
 					<div class="spinner-container">
@@ -491,29 +491,29 @@
 				</div>
 			</section>
 		{/if}
-		<section class="option">
+		<section class="option" id="score-locale">
 			<label title="All numbers and dates will be formatted according to the rules of the selected locale">Locale</label>
 			<Select bind:value={currentLocale} options={getSupportedLocales()} valueSelector={x => x.id} />
 		</section>
-		<section class="option">
+		<section class="option" id="score-oneclick">
 			<label title="How One-Click button will work">One-click installs</label>
 			<Select bind:value={currentOneclick} options={oneclickOptions} />
 		</section>
 		{#if !visibleScoreIcons['altReplay']}
-			<section class="option">
+			<section class="option" id="score-web-replays">
 				<label title="Which web replay player to use">Web replays</label>
 				<Select bind:value={currentWebPlayer} options={webPlayerOptions} />
 			</section>
 		{/if}
-		<section class="option">
+		<section class="option" id="score-link-option">
 			<label title="Show web replays/previews on PC in a popup or open in the new tab">Open replays/previews in</label>
 			<Select bind:value={currentLinkOption} options={linkOptions} />
 		</section>
-		<section class="option">
+		<section class="option" id="score-date-format">
 			<label title="How to show time for the score">Date Format</label>
 			<Select bind:value={currentTimeFormat} options={timeFormats} />
 		</section>
-		<section class="option">
+		<section class="option" id="score-playlists">
 			<label title="How add to playlists buttons will work">Playlists</label>
 			<Select bind:value={currentPlaylistOption} options={playlistOptions} />
 		</section>

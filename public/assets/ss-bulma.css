@@ -11555,136 +11555,387 @@ select {
 .lawless-icon {
 	width: 100%;
 	height: 100%;
-	background-size: cover;
-	background-repeat: no-repeat;
-	background-image: url('./Characteristics/lawless.svg');
+	&::after {
+		display: inline-block;
+		background-color: currentColor;
+		content: '';
+		mask-image: url('./Characteristics/lawless.svg');
+		mask-type: alpha;
+		width: 100%;
+		height: 100%;
+	}
 }
 
 .standard-icon {
 	width: 100%;
 	height: 100%;
-	background-size: cover;
-	background-repeat: no-repeat;
-	background-image: url('./Characteristics/standard.svg');
+	&::after {
+		display: inline-block;
+		background-color: currentColor;
+		content: '';
+		mask-image: url('./Characteristics/standard.svg');
+		mask-type: alpha;
+		width: 100%;
+		height: 100%;
+	}
 }
 
 .legacy-icon {
 	width: 100%;
 	height: 100%;
-	background-size: cover;
-	background-repeat: no-repeat;
-	background-image: url('./Characteristics/legacy.svg');
+	&::after {
+		display: inline-block;
+		background-color: currentColor;
+		content: '';
+		mask-image: url('./Characteristics/legacy.svg');
+		mask-type: alpha;
+		width: 100%;
+		height: 100%;
+	}
 }
 
 .onesaber-icon {
 	width: 100%;
 	height: 100%;
-	background-size: cover;
-	background-repeat: no-repeat;
-	background-image: url('./Characteristics/onesaber.svg');
+	&::after {
+		display: inline-block;
+		background-color: currentColor;
+		content: '';
+		mask-image: url('./Characteristics/onesaber.svg');
+		mask-type: alpha;
+		width: 100%;
+		height: 100%;
+	}
 }
 
 .noarrows-icon {
 	width: 100%;
 	height: 100%;
-	background-size: cover;
-	background-repeat: no-repeat;
-	background-image: url('./Characteristics/noarrows.svg');
+	&::after {
+		display: inline-block;
+		background-color: currentColor;
+		content: '';
+		mask-image: url('./Characteristics/noarrows.svg');
+		mask-type: alpha;
+		width: 100%;
+		height: 100%;
+	}
 }
 
 .lightshow-icon {
 	width: 100%;
 	height: 100%;
-	background-size: cover;
-	background-repeat: no-repeat;
-	background-image: url('./Characteristics/lightshow.svg');
+	&::after {
+		display: inline-block;
+		background-color: currentColor;
+		content: '';
+		mask-image: url('./Characteristics/lightshow.svg');
+		mask-type: alpha;
+		width: 100%;
+		height: 100%;
+	}
 }
 
 .degree360-icon {
 	width: 100%;
 	height: 100%;
-	background-size: cover;
-	background-repeat: no-repeat;
-	background-image: url('./Characteristics/360degree.svg');
+	&::after {
+		display: inline-block;
+		background-color: currentColor;
+		content: '';
+		mask-image: url('./Characteristics/360degree.svg');
+		mask-type: alpha;
+		width: 100%;
+		height: 100%;
+	}
 }
 
 .degree90-icon {
 	width: 100%;
 	height: 100%;
-	background-size: cover;
-	background-repeat: no-repeat;
-	background-image: url('./Characteristics/90degree.svg');
+	&::after {
+		display: inline-block;
+		background-color: currentColor;
+		content: '';
+		mask-image: url('./Characteristics/90degree.svg');
+		mask-type: alpha;
+		width: 100%;
+		height: 100%;
+	}
 }
+
 .generateddegree360-icon {
 	width: 100%;
 	height: 100%;
-	background-size: cover;
-	background-repeat: no-repeat;
-	background-image: url('./Characteristics/generated360degree.svg');
+	&::after {
+		display: inline-block;
+		background-color: currentColor;
+		content: '';
+		mask-image: url('./Characteristics/generated360degree.svg');
+		mask-type: alpha;
+		width: 100%;
+		height: 100%;
+	}
 }
 
 .generateddegree90-icon {
 	width: 100%;
 	height: 100%;
-	background-size: cover;
-	background-repeat: no-repeat;
-	background-image: url('./Characteristics/generated90degree.svg');
+	&::after {
+		display: inline-block;
+		background-color: currentColor;
+		content: '';
+		mask-image: url('./Characteristics/generated90degree.svg');
+		mask-type: alpha;
+		width: 100%;
+		height: 100%;
+	}
 }
 
 .horizontalstandard-icon {
-	margin-left: 1px;
-	margin-top: 2px;
 	width: 100%;
 	height: 100%;
-	background-size: cover;
-	background-repeat: no-repeat;
-	background-image: url('./Characteristics/horizontalstandard.webp');
+	margin-left: 1px;
+	margin-top: 2px;
+	&::after {
+		display: inline-block;
+		background-color: currentColor;
+		content: '';
+		mask-image: url('./Characteristics/horizontalstandard.webp');
+		mask-type: alpha;
+		width: 100%;
+		height: 100%;
+	}
 }
 
 .inversestandard-icon {
-	margin-left: 1px;
-	margin-top: 2px;
 	width: 100%;
 	height: 100%;
-	background-size: cover;
-	background-repeat: no-repeat;
-	background-image: url('./Characteristics/inversestandard.webp');
+	margin-left: 1px;
+	margin-top: 2px;
+	&::after {
+		display: inline-block;
+		background-color: currentColor;
+		content: '';
+		mask-image: url('./Characteristics/inversestandard.webp');
+		mask-type: alpha;
+		width: 100%;
+		height: 100%;
+	}
 }
 
 .invertedstandard-icon {
-	margin-left: 1px;
-	margin-top: 2px;
 	width: 100%;
 	height: 100%;
-	background-size: cover;
-	background-repeat: no-repeat;
-	background-image: url('./Characteristics/invertedstandard.webp');
+	margin-left: 1px;
+	margin-top: 2px;
+	&::after {
+		display: inline-block;
+		background-color: currentColor;
+		content: '';
+		mask-image: url('./Characteristics/invertedstandard.webp');
+		mask-type: alpha;
+		width: 100%;
+		height: 100%;
+	}
 }
 
 .verticalstandard-icon {
-	margin-left: 1px;
-	margin-top: 1px;
 	width: 100%;
 	height: 100%;
-	background-size: cover;
-	background-repeat: no-repeat;
-	background-image: url('./Characteristics/verticalstandard.webp');
+	margin-left: 1px;
+	margin-top: 1px;
+	&::after {
+		display: inline-block;
+		background-color: currentColor;
+		content: '';
+		mask-image: url('./Characteristics/verticalstandard.webp');
+		mask-type: alpha;
+		width: 100%;
+		height: 100%;
+	}
 }
 
 .rhythmgamestandard-icon {
 	width: 100%;
 	height: 100%;
-	background-size: cover;
-	background-repeat: no-repeat;
-	background-image: url('./Characteristics/rhythmgamestandard.webp');
+	&::after {
+		display: inline-block;
+		background-color: currentColor;
+		content: '';
+		mask-image: url('./Characteristics/rhythmgamestandard.webp');
+		mask-type: alpha;
+		width: 100%;
+		height: 100%;
+	}
 }
 
 .icon115s {
 	width: 100%;
 	height: 100%;
-	background-size: cover;
-	background-repeat: no-repeat;
-	background-image: url('./115s.webp');
+	&::after {
+		display: inline-block;
+		background-color: currentColor;
+		content: '';
+		mask-image: url('./115s.webp');
+		mask-type: alpha;
+		width: 100%;
+		height: 100%;
+	}
+}
+
+.lawless-controllable-icon {
+	width: 100%;
+	height: 100%;
+	&::after {
+		display: inline-block;
+		background-color: currentColor;
+		content: '';
+		mask-image: url('./Characteristics/lawless-controllable-icon.webp');
+		mask-type: alpha;
+		width: 100%;
+		height: 100%;
+	}
+}
+
+.standard-controllable-icon {
+	width: 100%;
+	height: 100%;
+	&::after {
+		display: inline-block;
+		background-color: currentColor;
+		content: '';
+		mask-image: url('./Characteristics/standard-controllable-icon.webp');
+		mask-type: alpha;
+		width: 100%;
+		height: 100%;
+	}
+}
+
+.onesaber-controllable-icon {
+	width: 100%;
+	height: 100%;
+	&::after {
+		display: inline-block;
+		background-color: currentColor;
+		content: '';
+		mask-image: url('./Characteristics/onesaber-controllable-icon.webp');
+		mask-type: alpha;
+		width: 100%;
+		height: 100%;
+	}
+}
+
+.rebeatstandard-icon {
+	width: 100%;
+	height: 100%;
+	margin-left: 1px;
+	margin-top: 2px;
+	&::after {
+		display: inline-block;
+		background-color: currentColor;
+		content: '';
+		mask-image: url('./Characteristics/rebeatstandard.webp');
+		mask-type: alpha;
+		width: 100%;
+		height: 100%;
+	}
+}
+
+.rebeatonesaber-icon {
+	width: 100%;
+	height: 100%;
+	margin-left: 1px;
+	margin-top: 2px;
+	&::after {
+		display: inline-block;
+		background-color: currentColor;
+		content: '';
+		mask-image: url('./Characteristics/rebeatonesaber.webp');
+		mask-type: alpha;
+		width: 100%;
+		height: 100%;
+	}
+}
+
+.rebeat90degree-icon {
+	width: 100%;
+	height: 100%;
+	margin-left: 1px;
+	margin-top: 2px;
+	&::after {
+		display: inline-block;
+		background-color: currentColor;
+		content: '';
+		mask-image: url('./Characteristics/rebeat90degree.webp');
+		mask-type: alpha;
+		width: 100%;
+		height: 100%;
+	}
+}
+
+.rebeat360degree-icon {
+	width: 100%;
+	height: 100%;
+	margin-left: 1px;
+	margin-top: 2px;
+	&::after {
+		display: inline-block;
+		background-color: currentColor;
+		content: '';
+		mask-image: url('./Characteristics/rebeat360degree.webp');
+		mask-type: alpha;
+		width: 100%;
+		height: 100%;
+	}
+}
+
+.rebeatnoarrows-icon {
+	width: 100%;
+	height: 100%;
+	margin-left: 1px;
+	margin-top: 2px;
+	&::after {
+		display: inline-block;
+		background-color: currentColor;
+		content: '';
+		mask-image: url('./Characteristics/rebeatnoarrows.webp');
+		mask-type: alpha;
+		width: 100%;
+		height: 100%;
+	}
+}
+
+.rebeatlawless-icon {
+	width: 100%;
+	height: 100%;
+	margin-left: 1px;
+	margin-top: 2px;
+	&::after {
+		display: inline-block;
+		background-color: currentColor;
+		content: '';
+		mask-image: url('./Characteristics/rebeatlawless.webp');
+		mask-type: alpha;
+		width: 100%;
+		height: 100%;
+	}
+}
+
+.rebeatlightshow-icon {
+	width: 100%;
+	height: 100%;
+	margin-left: 1px;
+	margin-top: 2px;
+	&::after {
+		display: inline-block;
+		background-color: currentColor;
+		content: '';
+		mask-image: url('./Characteristics/rebeatlightshow.webp');
+		mask-type: alpha;
+		width: 100%;
+		height: 100%;
+	}
 }
 
 .icon-mistakes {
@@ -11702,100 +11953,6 @@ select {
 	-webkit-filter: grayscale(100%);
 	filter: grayscale(100%);
 	filter: invert(0.6);
-}
-
-.lawless-controllable-icon {
-	width: 100%;
-	height: 100%;
-	background-size: cover;
-	background-repeat: no-repeat;
-	background-image: url('./Characteristics/lawless-controllable-icon.webp');
-}
-
-.standard-controllable-icon {
-	width: 100%;
-	height: 100%;
-	background-size: cover;
-	background-repeat: no-repeat;
-	background-image: url('./Characteristics/standard-controllable-icon.webp');
-}
-
-.onesaber-controllable-icon {
-	width: 100%;
-	height: 100%;
-	background-size: cover;
-	background-repeat: no-repeat;
-	background-image: url('./Characteristics/onesaber-controllable-icon.webp');
-}
-
-.rebeatstandard-icon {
-	margin-left: 1px;
-	margin-top: 2px;
-	width: 100%;
-	height: 100%;
-	background-size: cover;
-	background-repeat: no-repeat;
-	background-image: url('./Characteristics/rebeatstandard.webp');
-}
-
-.rebeatonesaber-icon {
-	margin-left: 1px;
-	margin-top: 2px;
-	width: 100%;
-	height: 100%;
-	background-size: cover;
-	background-repeat: no-repeat;
-	background-image: url('./Characteristics/rebeatonesaber.webp');
-}
-
-.rebeat90degree-icon {
-	margin-left: 1px;
-	margin-top: 2px;
-	width: 100%;
-	height: 100%;
-	background-size: cover;
-	background-repeat: no-repeat;
-	background-image: url('./Characteristics/rebeat90degree.webp');
-}
-
-.rebeat360degree-icon {
-	margin-left: 1px;
-	margin-top: 2px;
-	width: 100%;
-	height: 100%;
-	background-size: cover;
-	background-repeat: no-repeat;
-	background-image: url('./Characteristics/rebeat360degree.webp');
-}
-
-.rebeatnoarrows-icon {
-	margin-left: 1px;
-	margin-top: 2px;
-	width: 100%;
-	height: 100%;
-	background-size: cover;
-	background-repeat: no-repeat;
-	background-image: url('./Characteristics/rebeatnoarrows.webp');
-}
-
-.rebeatlawless-icon {
-	margin-left: 1px;
-	margin-top: 2px;
-	width: 100%;
-	height: 100%;
-	background-size: cover;
-	background-repeat: no-repeat;
-	background-image: url('./Characteristics/rebeatlawless.webp');
-}
-
-.rebeatlightshow-icon {
-	margin-left: 1px;
-	margin-top: 2px;
-	width: 100%;
-	height: 100%;
-	background-size: cover;
-	background-repeat: no-repeat;
-	background-image: url('./Characteristics/rebeatlightshow.webp');
 }
 
 .content-box.festive {
@@ -11948,6 +12105,24 @@ select {
 	background-size: cover;
 	background-repeat: no-repeat;
 	background-image: url('./cubecommunitylogo.webp');
+}
+
+.maps-icon {
+	display: inline-block;
+	width: 1em;
+	height: 1em;
+	margin-left: -0.1em;
+	margin-right: 0.1em;
+	margin-top: -0.2em;
+	&::after {
+		display: inline-block;
+		background-color: currentColor;
+		content: '';
+		mask-image: url('./maps.svg');
+		mask-type: alpha;
+		width: 120%;
+		height: 120%;
+	}
 }
 
 .dropdown-header {

@@ -223,6 +223,10 @@ export const DEFAULT_CONFIG = {
 	playlist: {
 		itemsPerPage: 5,
 	},
+	mapsOptions: {
+		starDiffColors: false,
+		// wideCards: false,
+	},
 	locale: DEFAULT_LOCALE,
 	selectedPlaylist: {},
 };

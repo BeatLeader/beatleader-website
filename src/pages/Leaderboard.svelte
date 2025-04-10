@@ -30,6 +30,8 @@
 		DifficultyStatus,
 		formatDiffStatus,
 		modeDescriptions,
+		starsToBackgroundColor,
+		starsToColor,
 	} from '../utils/beatleader/format';
 	import {dateFromUnix, formatDateRelative} from '../utils/date';
 	import LeaderboardStats from '../components/Leaderboard/LeaderboardStats.svelte';
@@ -391,6 +393,8 @@
 			if (!diffs.find(m => m.name == d.name) && d.type == currentDiff.type) {
 				diffs.push({
 					...d,
+					color: starsToBackgroundColor(d, $configStore),
+					textColor: starsToColor(d, $configStore),
 					label: d.name + (d.stars ? '\n' + d.stars.toFixed(1) + '★' : ''),
 					cls: 'diff-tab-button',
 					url: `/leaderboard/${currentType}/${d.leaderboardId}`,
@@ -835,7 +839,7 @@
 			</div>
 		{/if}
 		{#if type !== 'accsaber' && !withoutDiffSwitcher}
-			<div class="diff-and-mode-switch" style="--spacer-bg-color: {currentDiff?.color ?? 'transparent'}">
+			<div class="diff-and-mode-switch" style="--spacer-bg-color: {starsToBackgroundColor(currentDiff, $configStore)}">
 				{#if diffs}
 					<TabSwitcher values={diffs} value={currentDiff} on:change={onDiffChange} />
 				{/if}
@@ -847,7 +851,9 @@
 		{/if}
 		<div
 			class="leaderboard"
-			style={!withoutHeader ? `border: 2px solid ${currentDiff?.color ?? 'transparent'};` : 'margin: 0.4em; border-radius: 6px;'}>
+			style={!withoutHeader
+				? `border: 2px solid ${starsToBackgroundColor(currentDiff, $configStore)};`
+				: 'margin: 0.4em; border-radius: 6px;'}>
 			{#if !$leaderboardStore && $isLoading}
 				<div class="align-spinner">
 					<Spinner />

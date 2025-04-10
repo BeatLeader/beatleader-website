@@ -162,7 +162,7 @@
 
 	<div class="options">
 		{#if $account?.player}
-			<section class="option full">
+			<section class="option full" id="profile-followers">
 				<label title="Wether to show and make public followers">Followers:</label>
 				{#if isUpdating}
 					<Spinner />
@@ -178,17 +178,17 @@
 				</div>
 			</section>
 		{/if}
-		<section class="option">
+		<section class="option" id="profile-avatar-icons">
 			<label title="Determines when to show icons on player avatars">Icons on avatars</label>
 			<Select bind:value={currentAvatarIcons} options={avatarIcons} />
 		</section>
 
-		<section class="option">
+		<section class="option" id="profile-sort">
 			<label title="How to sort scores by defauls">Sort scores by</label>
 			<Select bind:value={currentSortOption} options={sortOptions} />
 		</section>
 
-		<section class="option">
+		<section class="option" id="profile-days-compare">
 			<label title="How many days of history to show on the profile">Rank and pp gain</label>
 			<RangeSlider
 				min={1}
@@ -203,7 +203,7 @@
 				on:change={debouncedOnCurrentDaysToCompareChange} />
 		</section>
 
-		<section class="option">
+		<section class="option" id="profile-days-history">
 			<label title="How many days of history to show on the profile">Days of history</label>
 			<RangeSlider
 				min={2}
@@ -218,7 +218,7 @@
 				on:change={debouncedOnDaysOfHistoryChange} />
 		</section>
 
-		<section class="option full">
+		<section class="option full" id="profile-parts">
 			<label title="Determines which parts of the profile to show">Profile parts to show:</label>
 			<div class="switches">
 				{#each profileParts as key}
@@ -232,7 +232,7 @@
 			</div>
 		</section>
 
-		<section class="option full">
+		<section class="option full" id="profile-other-sources">
 			<label title="Determines which parts of the profile to show">Other score sources:</label>
 			<div class="switches">
 				<Switch
@@ -246,7 +246,7 @@
 		</section>
 
 		{#if $configStore.profileParts.graphs}
-			<section class="option">
+			<section class="option" id="profile-graph-height">
 				<label title="How many days of history to show on the profile">Graph height(px):</label>
 				<RangeSlider
 					min={200}
@@ -260,7 +260,7 @@
 					all="label"
 					on:change={debouncedOnGraphHeightChange} />
 			</section>
-			<section class="option full">
+			<section class="option full" id="profile-graph-legend">
 				<label title="Which graph legend elements to show">Graph legend:</label>
 				<div class="switches">
 					{#each graphLegends as key}

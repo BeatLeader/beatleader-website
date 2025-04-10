@@ -11,6 +11,7 @@
 	import LeaderboardSettings from '../components/Settings/LeaderboardSettings.svelte';
 	import AccountSettings from '../components/Settings/AccountSettings.svelte';
 	import RankingSettings from '../components/Settings/RankingSettings.svelte';
+	import MapsSettings from '../components/Settings/MapsSettings.svelte';
 
 	document.body.scrollIntoView({behavior: 'smooth'});
 
@@ -38,12 +39,17 @@
 			icon: 'fas fa-list',
 		},
 		{
+			name: 'Maps',
+			link: '#maps',
+			icon: 'maps-icon',
+		},
+		{
 			name: 'Leaderboard',
 			link: '#leaderboard',
 			icon: 'fas fa-list',
 		},
 	];
-	var selectedNavigationIndex = navigationItems.findIndex(el => el.link == window.location.hash);
+	var selectedNavigationIndex = navigationItems.findIndex(el => el.link == window.location.hash.split(',')[0]);
 	if (selectedNavigationIndex == -1) {
 		selectedNavigationIndex = 0;
 	}
@@ -55,6 +61,19 @@
 		selectedNavigationIndex = index;
 		history.replaceState(undefined, undefined, item.link);
 		document.body.scrollIntoView({behavior: 'smooth'});
+	}
+
+	function higlightElement() {
+		const highlightedElement = window.location.hash.split(',')[1];
+		if (highlightedElement) {
+			setTimeout(() => {
+				const element = document.getElementById(highlightedElement);
+				if (element) {
+					element.scrollIntoView({behavior: 'smooth', block: 'center'});
+					element.classList.add('highlighted-setting');
+				}
+			}, 400); // Wait for tab transition
+		}
 	}
 
 	async function onSave() {
@@ -96,6 +115,7 @@
 	}
 
 	$: checkPlayerPage();
+	$: higlightElement();
 </script>
 
 <svelte:head>
@@ -129,8 +149,10 @@
 						{:else if selectedNavigationIndex == 3}
 							<ScoreSettings {animationSign} />
 						{:else if selectedNavigationIndex == 4}
-							<LeaderboardSettings {animationSign} />
+							<MapsSettings {animationSign} />
 						{:else if selectedNavigationIndex == 5}
+							<LeaderboardSettings {animationSign} />
+						{:else if selectedNavigationIndex == 6}
 							<AccountSettings {animationSign} />
 						{/if}
 					</div>
@@ -155,7 +177,7 @@
 	.tabs-container {
 		display: flex;
 		flex-direction: column;
-		width: clamp(20rem, calc(63rem - 20px), 100%);
+		width: clamp(20rem, calc(70rem - 20px), 100%);
 	}
 
 	.navigation {
@@ -177,6 +199,9 @@
 		min-width: 7.5em;
 		margin-left: 0;
 		user-select: none;
+		display: flex;
+		align-items: center;
+		gap: 0.5em;
 	}
 
 	.navigation-item.selected {
@@ -205,5 +230,22 @@
 			border-right: none;
 			border-bottom: 1px solid #ccc;
 		}
+	}
+
+	@keyframes highlight {
+		0% {
+			border: none;
+		}
+		50% {
+			border: 5px solid #fff;
+		}
+		100% {
+			border: 3px solid #a3a3a397;
+		}
+	}
+
+	:global(.highlighted-setting) {
+		animation: highlight 2s ease-out;
+		border: 3px solid #a3a3a397;
 	}
 </style>

@@ -44,11 +44,11 @@
 </script>
 
 <div class="main-container" in:fly|global={{y: animationSign * 200, duration: 400}} out:fade|global={{duration: 100}}>
-	<div class="profile">
+	<div class="profile" id="ranking-preview">
 		<RankingTable page={1} meta={false} editing={true} />
 	</div>
 
-	<section class="option">
+	<section class="option" id="ranking-options">
 		<label title="Determines when to show the buttons">Options</label>
 		<div class="switches">
 			{#each rankingListKeys as key}

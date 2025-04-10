@@ -9,6 +9,8 @@
 		sortingValueIsSongOnly,
 		badgesDef,
 		userDiffNameForDiff,
+		starsToBackgroundColor,
+		starsToColor,
 	} from '../../../utils/beatleader/format';
 	import Icons from '../../Song/Icons.svelte';
 	import {decapitalizeFirstLetter} from '../../../utils/js';
@@ -17,6 +19,7 @@
 	import {createEventDispatcher} from 'svelte';
 	import FormattedDate from '../../Common/FormattedDate.svelte';
 	import {navigate} from 'svelte-routing';
+	import {configStore} from '../../../stores/config';
 
 	export let song;
 	export let isHovered;
@@ -108,9 +111,10 @@
 								class="diff-orb"
 								class:isHovered
 								class:nonApplicable={!diff.applicable}
-								style="background-color: {diff.color}; margin-right: {!isHovered && idx == mode.diffs.length - 1 && !diff.stars
-									? '0.3em'
-									: '0'};">
+								style="background-color: {starsToBackgroundColor(diff, $configStore)}; color: {starsToColor(
+									diff,
+									$configStore
+								)}; margin-right: {!isHovered && idx == mode.diffs.length - 1 && !diff.stars ? '0.3em' : '0'};">
 								{#if !isHovered && diff.myScore}
 									<div
 										class="my-score"
@@ -251,7 +255,6 @@
 	}
 
 	.diff-orb {
-		color: white;
 		font-weight: 600;
 		padding: 0.15em 0.3em 0.18em 0.4em;
 		font-size: 0.7em;

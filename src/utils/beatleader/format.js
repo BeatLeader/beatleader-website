@@ -1,4 +1,5 @@
 import {CURRENT_URL} from '../../network/queues/beatleader/api-queue';
+import {HSVtoRGB} from '../color';
 import {dateFromUnix, formatDateRelative} from '../date';
 import {formatNumber} from '../format';
 import {capitalize, opt} from '../js';
@@ -1365,6 +1366,17 @@ export function describeProfilePart(part) {
 	return 'Undefined';
 }
 
+export function describeMapsOption(option) {
+	switch (option) {
+		case 'starDiffColors':
+			return 'Diff colors based on stars';
+		case 'wideCards':
+			return 'Wide cards';
+	}
+
+	return 'Undefined';
+}
+
 export function describeGraphAxis(axis) {
 	switch (axis) {
 		case 'y0':
@@ -1481,6 +1493,26 @@ export function getSongSortingValue(song, diff, sortingKey) {
 
 export function sortingValueIsSongOnly(sortingKey) {
 	return sortingKey == 'duration' || sortingKey == 'bpm' || sortingKey == 'timestamp';
+}
+
+export function starsToBackgroundColor(diff, config) {
+	if (!diff) return 'transparent';
+	if (config.mapsOptions.starDiffColors && diff.stars) {
+		const rotation = Math.min(diff.stars, 15) / 15;
+		const hue = rotation <= 0.56 ? 0.56 - rotation : 1.56 - rotation;
+		const saturation = 0.75;
+		const value = diff.stars < 12 ? 0.9 : 0.9 - (diff.stars - 12) * 0.25;
+		return HSVtoRGB(hue, saturation, value);
+	}
+	return diff.color;
+}
+
+export function starsToColor(diff, config) {
+	if (!diff) return 'white';
+	if (config.mapsOptions.starDiffColors && diff.stars) {
+		return diff.stars > 8 ? '#ffffff' : '#000000';
+	}
+	return 'white';
 }
 
 export let bestiesCategoriesNames = {

@@ -317,14 +317,14 @@
 <div class="main-container" in:fly|global={{y: animationSign * 200, duration: 400}} out:fade|global={{duration: 100}}>
 	<DemoLeaderboardScore playerId={$account?.player?.playerId} selectedMetric={currentScoreBadgeSelected} on:badge-click={onBadgeClick} />
 	<div class="options">
-		<section class="option full">
+		<section class="option full" id="leaderboard-preset">
 			<label title="Determines which metrics are shown at score">Preset:</label>
 			<div class="single">
 				<Select bind:value={currentBadgePreset} options={configPresets} valueSelector={x => x} />
 			</div>
 		</section>
 		{#if currentBadgePreset?.key === 'custom'}
-			<section class="option">
+			<section class="option" id="leaderboard-metrics">
 				<label title="Determines which metrics are shown at score">Score metrics settings:</label>
 				<Select bind:value={currentBadgeLayout} options={badgeLayouts} />
 			</section>
@@ -333,12 +333,12 @@
 			{#if currentScoreMetric}
 				<BadgeEdit badge={currentScoreMetric} on:change={updateSelectedBadge} type="leaderboard-score" />
 			{:else}
-				<section class="option">
+				<section class="option" id="leaderboard-metric-select">
 					<label>Metric</label>
 					<div>Click first on the score metric badge you want to set.</div>
 				</section>
 			{/if}
-			<section class="option full">
+			<section class="option full" id="leaderboard-details">
 				<label title="Determines which data should be displayed in score details">Score details settings:</label>
 				<div class="switches">
 					{#each Object.keys(scoreDetailsPreferences) as key}
@@ -353,7 +353,7 @@
 			</section>
 		{/if}
 		{#if $account?.player}
-			<section class="option full">
+			<section class="option full" id="leaderboard-other">
 				<label>Other (saved automatically, account synced):</label>
 				{#if isUpdating}
 					<Spinner />
@@ -385,7 +385,7 @@
 			</section>
 		{/if}
 		{#if leaderboard}
-			<section class="option full">
+			<section class="option full" id="leaderboard-header">
 				<label>Header:</label>
 				<div class="leaderboard-header-box">
 					<LeaderboardHeader {leaderboard} {ratings} latestHash={true} />

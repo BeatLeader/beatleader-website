@@ -1,7 +1,14 @@
 <script>
-	import {getHumanDiffInfo, getIconNameForDiff, getDescriptionForDiff} from '../../utils/beatleader/format';
+	import {
+		getHumanDiffInfo,
+		getIconNameForDiff,
+		getDescriptionForDiff,
+		starsToBackgroundColor,
+		starsToColor,
+	} from '../../utils/beatleader/format';
 	import Value from '../Common/Value.svelte';
 	import {formatNumber} from '../../utils/format';
+	import {configStore} from '../../stores/config';
 
 	export let diff;
 	export let useShortName = false;
@@ -16,7 +23,8 @@
 	export let nameAndStars = false;
 
 	$: diffInfo = diff ? getHumanDiffInfo(diff) : null;
-	$: diffColor = enabled ? diffInfo?.color : 'gray';
+	$: diffColor = enabled ? starsToBackgroundColor({...diffInfo, stars: stars ?? modifiedStars}, $configStore) : 'gray';
+	$: diffTextColor = enabled ? starsToColor({...diffInfo, stars: stars ?? modifiedStars}, $configStore) : 'white';
 	$: areStarsModified = stars && modifiedStars && formatNumber(stars) !== formatNumber(modifiedStars);
 	$: title =
 		(useShortName && diffInfo?.type !== 'Standard' ? diffInfo?.name : diffInfo?.fullName) +
@@ -26,7 +34,7 @@
 {#if diffInfo}
 	<span
 		class={'diff ' + (reverseColors ? 'reversed' : '')}
-		style="color: {reverseColors ? 'white' : diffColor}; background-color: {reverseColors ? diffColor : 'transparent'}; {pointer
+		style="color: {reverseColors ? diffTextColor : diffColor}; background-color: {reverseColors ? diffColor : 'transparent'}; {pointer
 			? 'cursor: pointer !important'
 			: ''}"
 		title={!nameAndStars ? title : null}
