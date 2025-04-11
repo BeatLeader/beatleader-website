@@ -1,5 +1,5 @@
 <script>
-	import {tick} from 'svelte';
+	import {tick, onMount} from 'svelte';
 	import {navigate} from 'svelte-routing';
 	import {fade, fly} from 'svelte/transition';
 	import createAccountStore from '../stores/beatleader/account';
@@ -53,6 +53,7 @@
 	import {PRIORITY} from '../utils/queue';
 	import {fetchJson} from '../network/fetch';
 	import AsideBox from '../components/Common/AsideBox.svelte';
+	import {SORT_BY_VALUES} from '../components/Maps/List/constants';
 
 	export let page = 1;
 	export let type = 'ranked';
@@ -81,7 +82,7 @@
 		{key: 'date_from', default: null, process: processIntFilter},
 		{key: 'date_to', default: null, process: processIntFilter},
 		{key: 'date_range', default: 'upload', process: processStringFilter},
-		{key: 'sortBy', default: 'timestamp', process: processStringFilter},
+		{key: 'sortBy', default: null, process: processStringFilter},
 		{key: 'order', default: 'desc', process: processStringFilter},
 		{key: 'mode', default: null, process: processStringFilter},
 		{key: 'difficulty', default: null, process: processStringFilter},
@@ -101,7 +102,11 @@
 			filters.stars_to = tmp;
 		}
 
-		if (!filters?.sortBy?.length) filters.sortBy = 'timestamp';
+		if (!filters?.sortBy?.length)
+			filters.sortBy =
+				$configStore.mapsListOptions.defaultSortBy == 'last'
+					? ($configStore.mapsListOptions.lastSortBy ?? 'timestamp')
+					: $configStore.mapsListOptions.defaultSortBy;
 		if (!filters?.order?.length) filters.order = 'desc';
 
 		if (!filters.mapType) filters.mapType = null;
@@ -438,10 +443,7 @@
 		previousPage = currentPage;
 		currentPage = event.detail.page + 1;
 
-		resetCache(false);
 		navigateToCurrentPageAndFilters(true);
-
-		console.log('onPageChanged');
 	}
 
 	function onSearchChanged(e) {
@@ -562,22 +564,7 @@
 	}
 	const debouncedOnStarsChanged = debounce(onStarsChanged, FILTERS_DEBOUNCE_MS);
 
-	let sortValues1 = [
-		{value: 'stars', name: 'Star', title: 'Sort by stars', icon: 'fa-star'},
-		{value: 'accRating', name: 'Accability', title: 'Sort by acc rating', icon: 'fa-star'},
-		{value: 'passRating', name: 'Passability', title: 'Sort by pass rating', icon: 'fa-star'},
-		{value: 'techRating', name: 'Tech', title: 'Sort by tech rating', icon: 'fa-star'},
-		{value: 'name', name: 'Name', title: 'Sort by name', icon: 'fa-a'},
-		{value: 'timestamp', name: 'Map date', title: 'Sort by the map date', icon: 'fa-map'},
-		{value: 'voting', name: 'Voting', title: 'Sort by positive minus negative vote count', icon: 'fa-vote-yea'},
-		{value: 'voteratio', name: 'Vote ratio', title: 'Sort by vote ratio', icon: 'fa-smile-beam'},
-		{value: 'votecount', name: 'Vote count', title: 'Sort by amount of votes for the map', icon: 'fa-calculator'},
-		{value: 'playcount', name: 'Plays', title: 'Sort by play count', icon: 'fa-user'},
-		{value: 'scoreTime', name: 'Newest score', title: 'Sort by the last made score', icon: 'fa-leaf'},
-		{value: 'attempts', name: 'Attempts', title: 'Sort by the number of attempts', icon: 'fa-dumbbell'},
-		{value: 'duration', name: 'Duration', title: 'Sort by the song duration', icon: 'fa-clock'},
-		{value: 'bpm', name: 'BPM', title: 'Sort by the song BPM', icon: 'fa-drum'},
-	];
+	let sortValues1 = SORT_BY_VALUES;
 	let sortValues = sortValues1;
 	let sortValue = sortValues[0].value;
 
@@ -585,6 +572,10 @@
 		if (!event?.detail?.value || event.detail.value == currentFilters.sortBy) return null;
 
 		currentFilters.sortBy = event.detail.value;
+
+		$configStore = produce($configStore, draft => {
+			draft.mapsListOptions.lastSortBy = event.detail.value;
+		});
 
 		resetCache();
 
@@ -907,6 +898,7 @@
 	);
 
 	let isPlaylistOpen = false;
+	let lastY = null;
 </script>
 
 <svelte:head>
@@ -961,7 +953,35 @@
 		</div>
 	</article>
 
-	<aside class="maps-aside-container" class:long={$configStore.mapCards.wideCards} bind:this={asideContainer}>
+	<aside
+		class="maps-aside-container"
+		class:long={$configStore.mapCards.wideCards}
+		on:wheel={e => {
+			if (scrollContainer && !$configStore.preferences.mapsFiltersOpen) {
+				e.preventDefault();
+				e.stopImmediatePropagation();
+
+				scrollContainer.scrollTop += e.deltaY;
+				scrollContainer.scrollLeft += e.deltaX;
+			}
+		}}
+		on:touchstart={e => {
+			lastY = e.touches[0].clientY;
+		}}
+		on:touchmove={e => {
+			if (scrollContainer && !$configStore.preferences.mapsFiltersOpen && e.touches.length > 0 && lastY !== null) {
+				e.preventDefault();
+				e.stopImmediatePropagation();
+
+				const newY = e.touches[0].clientY;
+				const delta = lastY - newY;
+				scrollContainer.scrollTop += delta;
+				lastY = newY;
+			}
+		}}
+		on:touchend={() => (lastY = null)}
+		on:touchcancel={() => (lastY = null)}
+		bind:this={asideContainer}>
 		<AsideBox title="Filters" boolname="mapsFiltersOpen" faicon="fas fa-filter">
 			<div class="sorting-options">
 				<Select bind:value={sortValue} on:change={onSortChange} fontSize="0.8" options={sortValues} />

@@ -3,6 +3,7 @@ import deepEqual from 'deep-equal';
 import keyValueRepository from '../db/repository/key-value';
 import {deepClone, opt, optSet} from '../utils/js';
 import {BL_API_URL} from '../network/queues/beatleader/api-queue';
+import {STAR_COLOR_OPTIONS} from '../components/Maps/List/constants';
 
 const STORE_CONFIG_KEY = 'config';
 
@@ -227,10 +228,20 @@ export const DEFAULT_CONFIG = {
 		starDiffColors: false,
 	},
 
+	starColorOptions: STAR_COLOR_OPTIONS,
+
+	mapsListOptions: {
+		defaultSortBy: 'timestamp',
+		lastSortBy: 'timestamp',
+	},
+
 	mapCards: {
 		wideCards: false,
 		cinematics: true,
 		requirements: true,
+		scoresInCard: true,
+		starsInCard: true,
+		mapType: false,
 	},
 	locale: DEFAULT_LOCALE,
 	selectedPlaylist: {},

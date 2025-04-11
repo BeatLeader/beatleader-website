@@ -7,6 +7,8 @@
 	import {BL_ASSETS_CDN} from '../network/queues/beatleader/page-queue';
 	import {BL_API_URL} from '../network/queues/beatleader/api-queue';
 
+	import buildInfo from '../../build-info';
+
 	const account = createAccountStore();
 
 	document.body.classList.add('slim');
@@ -230,7 +232,8 @@ ${BL_API_URL}players?leaderboardContext=general&page=${page}&count=100&role=supp
 					href="/u/76561198272028078">Zana</a>
 			</div>
 			<div class="member">
-				<img src="https://avatars.steamstatic.com/cc75f8ac925c60d59c5dbada119e1b662015b688_full.jpg" alt="ZeCube" /><a href="/u/76561198136823393">ZeCube</a>
+				<img src="https://avatars.steamstatic.com/cc75f8ac925c60d59c5dbada119e1b662015b688_full.jpg" alt="ZeCube" /><a
+					href="/u/76561198136823393">ZeCube</a>
 			</div>
 		</section>
 
@@ -380,6 +383,8 @@ ${BL_API_URL}players?leaderboardContext=general&page=${page}&count=100&role=supp
 			</div>
 		</section>
 
+		<p class="build">Build: {buildInfo.buildVersion} ({buildInfo.buildDate})</p>
+
 		<p class="back"><a href="/" on:click|preventDefault={() => navigate('/')}>Back to Home</a></p>
 	</ContentBox>
 </article>
@@ -441,5 +446,10 @@ ${BL_API_URL}players?leaderboardContext=general&page=${page}&count=100&role=supp
 
 	.role-container img {
 		margin-bottom: 2em;
+	}
+
+	.build {
+		font-size: 0.875em;
+		color: var(--faded);
 	}
 </style>

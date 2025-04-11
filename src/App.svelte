@@ -2,7 +2,6 @@
 	import {onMount, setContext} from 'svelte';
 	import {Router, Route, navigate} from 'svelte-routing';
 	import Notifications from 'svelte-notifications';
-	import buildInfo from '../build-info';
 	import {configStore} from './stores/config';
 	import createAccountStore from './stores/beatleader/account';
 	import {search} from './stores/search';
@@ -578,7 +577,6 @@
 <link rel="stylesheet" href="/build/themes/{$configStore.preferences.theme}.css" />
 
 <footer>
-	<p class="build">Build: {buildInfo.buildVersion} ({buildInfo.buildDate})</p>
 	<ContentBox cls="footer-box">
 		<p>
 			<a href="/about" on:click|preventDefault={() => navigate('/about')}>About</a>
@@ -962,11 +960,6 @@
 
 	.ssr-page-container :global(> *) {
 		grid-area: 1 / 1 / 1 / 1;
-	}
-
-	.build {
-		font-size: 0.875em;
-		color: var(--faded);
 	}
 
 	footer {

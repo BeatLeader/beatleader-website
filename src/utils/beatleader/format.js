@@ -1,5 +1,5 @@
 import {CURRENT_URL} from '../../network/queues/beatleader/api-queue';
-import {HSVtoRGB} from '../color';
+import {HSVtoRGB, HSLtoRGB, rgbToHex} from '../color';
 import {dateFromUnix, formatDateRelative} from '../date';
 import {formatNumber} from '../format';
 import {capitalize, opt} from '../js';
@@ -1383,6 +1383,12 @@ export function describeMapCardsOption(option) {
 			return 'Card background';
 		case 'requirements':
 			return 'Requirements on hover';
+		case 'scoresInCard':
+			return 'Scores in card';
+		case 'starsInCard':
+			return 'Stars in card';
+		case 'mapType':
+			return 'Map type';
 	}
 }
 
@@ -1508,10 +1514,45 @@ export function starsToBackgroundColor(diff, config) {
 	if (!diff) return 'transparent';
 	if (config.mapsOptions.starDiffColors && diff.stars) {
 		const rotation = Math.min(diff.stars, 15) / 15;
-		const hue = rotation <= 0.56 ? 0.56 - rotation : 1.56 - rotation;
-		const saturation = 0.75;
-		const value = diff.stars < 12 ? 0.9 : Math.max(0.9 - (diff.stars - 12) * 0.25, 0.0);
-		return HSVtoRGB(hue, saturation, value);
+		const hue =
+			rotation <= config.starColorOptions.pivot ? config.starColorOptions.pivot - rotation : 1.0 + config.starColorOptions.pivot - rotation;
+		const saturation = config.starColorOptions.component2;
+		const value =
+			diff.stars < config.starColorOptions.darkenTreshold
+				? config.starColorOptions.component3
+				: Math.max(config.starColorOptions.component3 - (diff.stars - config.starColorOptions.darkenTreshold) * 0.25, 0.0);
+
+		switch (config.starColorOptions.range) {
+			case 'hsv':
+				return HSVtoRGB(hue, saturation, value);
+			case 'invertedhsv':
+				return HSVtoRGB(1 - hue, saturation, value);
+			case 'hsl':
+				return HSLtoRGB(hue, saturation, value);
+			case 'custom':
+				const leftColor = config.starColorOptions.rightColor;
+				const centerColor = config.starColorOptions.centerColor;
+				const rightColor = config.starColorOptions.leftColor;
+
+				// Interpolate between colors based on hue
+				let r, g, b;
+				if (hue <= 0.5) {
+					// Interpolate between left and center
+					const t = hue * 2;
+					r = leftColor.r + (centerColor.r - leftColor.r) * t;
+					g = leftColor.g + (centerColor.g - leftColor.g) * t;
+					b = leftColor.b + (centerColor.b - leftColor.b) * t;
+				} else {
+					// Interpolate between center and right
+					const t = (hue - 0.5) * 2;
+					r = centerColor.r + (rightColor.r - centerColor.r) * t;
+					g = centerColor.g + (rightColor.g - centerColor.g) * t;
+					b = centerColor.b + (rightColor.b - centerColor.b) * t;
+				}
+
+				// Apply darkness multiplier
+				return rgbToHex(Math.round(r * value), Math.round(g * value), Math.round(b * value));
+		}
 	}
 	return diff.color;
 }
@@ -1519,7 +1560,7 @@ export function starsToBackgroundColor(diff, config) {
 export function starsToColor(diff, config) {
 	if (!diff) return 'white';
 	if (config.mapsOptions.starDiffColors && diff.stars) {
-		return diff.stars > 8 ? '#ffffff' : '#000000';
+		return diff.stars > config.starColorOptions.whiteTreshold ? '#ffffff' : '#000000';
 	}
 	return 'white';
 }

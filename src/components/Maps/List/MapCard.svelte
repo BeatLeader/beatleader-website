@@ -17,6 +17,7 @@
 	import MapRequirements from './MapRequirements.svelte';
 	import Popover from '../../Common/Popover.svelte';
 	import {navigate} from 'svelte-routing';
+	import MapTypeDescription from './MapTypeDescription.svelte';
 
 	export let map;
 	export let sortBy = 'stars';
@@ -72,6 +73,7 @@
 	let name = null;
 	let sortValue = null;
 	let coverUrl = null;
+	let mapType = null;
 
 	function getSong(map) {
 		if (!map) return;
@@ -86,6 +88,7 @@
 			if (song.difficulties) {
 				status = calculateStatus(song);
 				requirements = calculateRequirements(song);
+				mapType = song.difficulties?.filter(d => d.value && d.applicable).sort((a, b) => b.value - a.value)?.[0]?.type;
 			}
 			hash = song.hash;
 			name = song.name;
@@ -491,6 +494,9 @@
 									{#each song.externalStatuses as songStatus}
 										<SongStatus {songStatus} />
 									{/each}
+								{/if}
+								{#if mapType && $configStore.mapCards.mapType}
+									<MapTypeDescription type={mapType} />
 								{/if}
 							</div>
 						</div>
@@ -909,7 +915,7 @@
 		overflow: hidden;
 	}
 
-	.map-card-wrapper.long {
+	:global(.map-card-wrapper.long) {
 		.header-top-part {
 			flex-direction: row;
 			gap: 0.5em;

@@ -20,6 +20,7 @@
 	import FormattedDate from '../../Common/FormattedDate.svelte';
 	import {navigate} from 'svelte-routing';
 	import {configStore} from '../../../stores/config';
+	import MapTypeDescription from './MapTypeDescription.svelte';
 
 	export let song;
 	export let isHovered;
@@ -115,7 +116,7 @@
 									diff,
 									$configStore
 								)}; margin-right: {!isHovered && idx == mode.diffs.length - 1 && !diff.stars ? '0.3em' : '0'};">
-								{#if !isHovered && diff.myScore}
+								{#if !isHovered && diff.myScore && $configStore.mapCards.scoresInCard}
 									<div
 										class="my-score"
 										style="background-color: {badgesDef.find(
@@ -130,7 +131,7 @@
 										href={`/leaderboard/global/${diff.leaderboardId}`} />
 									<span class="diff-name">{userDiffNameForDiff(diff.value)}</span>
 								{/if}
-								{#if diff.stars}
+								{#if diff.stars && ($configStore.mapCards.starsInCard || isHovered)}
 									<div class="stars-container">
 										<span>{diff.stars.toFixed(isHovered ? 2 : 1)}</span><span>★</span>
 									</div>
@@ -145,6 +146,9 @@
 									<div class="status-container">
 										{#if diff.status && diff.status != DifficultyStatus.unranked && diff.status != DifficultyStatus.unrankable}
 											<SongStatus songStatus={wrapBLStatus(diff.status)} />
+										{/if}
+										{#if $configStore.mapCards.mapType && diff.type}
+											<MapTypeDescription type={diff.type} />
 										{/if}
 										{#if sortBy == 'timestamp' && (diff[dateTypeKey(dateType)] || song[dateTypeKey(dateType)])}
 											<span class="sort-value" style="font-size: 0.8em;">
