@@ -172,7 +172,6 @@
 		display: flex;
 		gap: 0.3em;
 		overflow: hidden;
-		width: 21.5em;
 		overflow: hidden;
 		mask-image: linear-gradient(90deg, white 0%, white 90%, transparent);
 	}
@@ -333,7 +332,6 @@
 
 	@media (max-width: 767px) {
 		.modes-list {
-			width: calc(100vw - 9.7em);
 			font-size: 0.9em;
 		}
 	}

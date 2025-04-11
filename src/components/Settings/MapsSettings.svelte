@@ -11,7 +11,7 @@
 	import createAccountStore from '../../stores/beatleader/account';
 	import {fly, fade} from 'svelte/transition';
 	import CardsCarousel from '../Player/CardsCarousel.svelte';
-	import {describeGraphAxis, describeMapsOption} from '../../utils/beatleader/format';
+	import {describeGraphAxis, describeMapsOption, describeMapCardsOption} from '../../utils/beatleader/format';
 	import PinnedScores from '../Player/PinnedScores.svelte';
 	import {debounce} from '../../utils/debounce';
 	import {BL_API_URL} from '../../network/queues/beatleader/api-queue';
@@ -80,6 +80,7 @@
 	const pinnedScoresStore = createPinnedScoresStore();
 
 	$: mapsOptions = Object.keys($configStore.mapsOptions);
+	$: mapCardsOptions = Object.keys($configStore.mapCards);
 	$: fetchMaps();
 </script>
 
@@ -110,6 +111,22 @@
 						fontSize={12}
 						design="slider"
 						on:click={() => setroottempsetting('mapsOptions', key, !$configStore.mapsOptions[key])} />
+				{/each}
+			</div>
+		</section>
+	</div>
+
+	<div class="options">
+		<section class="option full" id="maps-options">
+			<label title="Options for how cards on the maps list page are displayed">Cards options:</label>
+			<div class="switches">
+				{#each mapCardsOptions as key}
+					<Switch
+						value={$configStore.mapCards[key]}
+						label={describeMapCardsOption(key)}
+						fontSize={12}
+						design="slider"
+						on:click={() => setroottempsetting('mapCards', key, !$configStore.mapCards[key])} />
 				{/each}
 			</div>
 		</section>

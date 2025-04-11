@@ -225,7 +225,12 @@ export const DEFAULT_CONFIG = {
 	},
 	mapsOptions: {
 		starDiffColors: false,
-		// wideCards: false,
+	},
+
+	mapCards: {
+		wideCards: false,
+		cinematics: true,
+		requirements: true,
 	},
 	locale: DEFAULT_LOCALE,
 	selectedPlaylist: {},

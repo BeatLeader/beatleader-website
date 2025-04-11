@@ -919,7 +919,7 @@
 			{#if allMaps?.length}
 				<div class="songs-container">
 					<div class="songs-list">
-						<div class="songs" bind:this={scrollContainer} on:scroll={onScroll}>
+						<div class="songs" class:long={$configStore.mapCards.wideCards} bind:this={scrollContainer} on:scroll={onScroll}>
 							{#each allMaps as song, idx (song.index)}
 								{@const page = Math.floor(idx / itemsPerPage)}
 								{#if idx == 0}
@@ -961,7 +961,7 @@
 		</div>
 	</article>
 
-	<aside class="maps-aside-container" bind:this={asideContainer}>
+	<aside class="maps-aside-container" class:long={$configStore.mapCards.wideCards} bind:this={asideContainer}>
 		<AsideBox title="Filters" boolname="mapsFiltersOpen" faicon="fas fa-filter">
 			<div class="sorting-options">
 				<Select bind:value={sortValue} on:change={onSortChange} fontSize="0.8" options={sortValues} />
@@ -1782,9 +1782,18 @@
 			right: unset;
 		}
 
+		aside.long {
+			left: calc(50vw + 40em);
+		}
+
 		.songs {
 			padding-left: calc(50vw - 40em);
 			padding-right: calc(50vw - 32em);
+		}
+
+		.songs.long {
+			padding-left: calc(50vw - 54em);
+			padding-right: calc(50vw - 42em);
 		}
 	}
 

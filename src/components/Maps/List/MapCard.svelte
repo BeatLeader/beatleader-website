@@ -404,7 +404,12 @@
 				<MapperList {song} maxHeight="unset" maxWidth="25em" fontSize="0.9em" noArrow={true} tooltip={true} />
 			</div>
 		</Popover>
-		<div class="map-card-wrapper" class:transparent={song.transparent} class:is-hovered={isHovered} bind:this={mapCardWrapper}>
+		<div
+			class="map-card-wrapper"
+			class:transparent={song.transparent}
+			class:is-hovered={isHovered}
+			class:long={$configStore.mapCards.wideCards}
+			bind:this={mapCardWrapper}>
 			{#if isHovered}
 				<div
 					transition:fade={{duration: 150}}
@@ -432,10 +437,16 @@
 				on:blur={() => handleHover(false, true)}>
 				<div class="cinematics">
 					<div class="cinematics-canvas">
-						<div
-							style="position: absolute; background-size: cover; background-position: center; background-image: url({coverUrl}); width: 100%; height: 100%" />
+						{#if $configStore.mapCards.cinematics}
+							<div
+								style="position: absolute; background-size: cover; background-position: center; background-image: url({coverUrl}); width: 100%; height: 100%" />
+						{:else}
+							<div
+								style="position: absolute; background-size: cover; background-position: center; background-color: #777777; width: 100%; height: 100%" />
+						{/if}
 					</div>
 				</div>
+
 				<a on:click|preventDefault|stopPropagation={() => navigate(mapLink)} class="header-link" href={mapLink}></a>
 				<div class="header" style="height: {headerContainerHeight < 150 ? '100%' : 'unset'};" class:is-hovered={isHovered}>
 					<div
@@ -445,7 +456,8 @@
 							: ''}>
 						<div class="sort-value-background" class:with-value={sortValue} class:is-hovered={sortValue && isHovered}></div>
 					</div>
-					{#if requirements && isHovered}
+
+					{#if requirements && isHovered && $configStore.mapCards.requirements}
 						<div transition:fly|local={{x: -40, duration: 300, y: 0}} class="requirements-icons">
 							<MapRequirements type={requirements} />
 						</div>
@@ -532,7 +544,7 @@
 			</div>
 		</div>
 	{:else}
-		<div class="map-card-wrapper">
+		<div class="map-card-wrapper" class:long={$configStore.mapCards.wideCards}>
 			<div class="map-card-placeholder">
 				<div class="map-card-loading">Loading...</div>
 			</div>
@@ -549,6 +561,10 @@
 		overflow: visible;
 		background-color: #000000;
 		border-radius: 12px;
+	}
+
+	.map-card-wrapper.long {
+		width: 40em;
 	}
 
 	.map-card-wrapper.is-hovered {
@@ -614,7 +630,7 @@
 		align-items: flex-start;
 		justify-content: start !important;
 		gap: 0.8em;
-		width: 32em;
+		width: 100%;
 		flex: 1;
 	}
 
@@ -708,6 +724,7 @@
 		overflow: scroll;
 		-ms-overflow-style: none;
 		scrollbar-width: none;
+		width: calc(100% - 10.5em);
 	}
 
 	.modes-list-container::-webkit-scrollbar {
@@ -890,6 +907,25 @@
 		z-index: 1;
 		width: 100%;
 		overflow: hidden;
+	}
+
+	.map-card-wrapper.long {
+		.header-top-part {
+			flex-direction: row;
+			gap: 0.5em;
+		}
+
+		.author {
+			margin-top: unset;
+		}
+
+		.title-container {
+			width: unset;
+		}
+
+		.song-title {
+			width: unset;
+		}
 	}
 
 	.header-bottom-part {
@@ -1084,6 +1120,10 @@
 			height: 7.2em;
 		}
 
+		.map-card-wrapper.long {
+			width: 100%;
+		}
+
 		.bottom-container {
 			padding: 0.2em;
 			margin-top: calc(var(--margin-top-value) + 0.8em);
@@ -1190,6 +1230,10 @@
 
 		.bottom-container-background {
 			height: calc(var(--bottom-container-height) + 7px);
+		}
+
+		.modes-list-container {
+			width: calc(100% - 8.3em);
 		}
 
 		:global(.song-statuses .song-status) {

@@ -1370,11 +1370,20 @@ export function describeMapsOption(option) {
 	switch (option) {
 		case 'starDiffColors':
 			return 'Diff colors based on stars';
-		case 'wideCards':
-			return 'Wide cards';
 	}
 
 	return 'Undefined';
+}
+
+export function describeMapCardsOption(option) {
+	switch (option) {
+		case 'wideCards':
+			return 'Wide cards';
+		case 'cinematics':
+			return 'Card background';
+		case 'requirements':
+			return 'Requirements on hover';
+	}
 }
 
 export function describeGraphAxis(axis) {
