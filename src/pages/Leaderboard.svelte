@@ -379,6 +379,8 @@
 
 				modes.push({
 					...d,
+					color: starsToBackgroundColor(d, $configStore),
+					textColor: starsToColor(d, $configStore),
 					label: getDescriptionForDiff(d).title,
 					url: `/leaderboard/${currentType}/${d.leaderboardId}`,
 					cls: 'mode-tab-button',
