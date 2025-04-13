@@ -11,6 +11,10 @@ import {SPECIAL_PLAYER_ID} from '../../network/queues/beatleader/api-queue';
 
 const HISTOGRAM_DATE_PRECISION = 'day';
 const HISTOGRAM_PP_PRECISION = 5;
+const HISTOGRAM_PAUSES_PRECISION = 1;
+const HISTOGRAM_MAX_STREAK_PRECISION = 1;
+const HISTOGRAM_REPLAYS_WATCHED_PRECISION = 1;
+const HISTOGRAM_PLAY_COUNT_PRECISION = 1;
 const HISTOGRAM_RANK_PRECISION = 5;
 const HISTOGRAM_ACC_PRECISION = 0.25;
 const HISTOGRAM_STARS_PRECISION = 0.1;
@@ -44,7 +48,7 @@ export default () => {
 			return scoresObj;
 		}, {});
 
-	const getScoresHistogramDefinition = (serviceParams = {sort: 'date', order: 'desc'}) => {
+	const getScoresHistogramDefinition = (serviceParams = {sort: 'date', order: 'desc'}, configStore) => {
 		const sort = serviceParams?.sort ?? 'date';
 		const order = serviceParams?.order ?? 'desc';
 
@@ -67,27 +71,27 @@ export default () => {
 		let prefixLong = '';
 		let suffix = '';
 		let suffixLong = '';
+		let resetBucketSize = null;
 
 		switch (sort) {
 			case 'date':
 				valFunc = s => dateFromUnix(s);
 				type = 'time';
-				bucketSize = HISTOGRAM_DATE_PRECISION;
+				bucketSize = configStore.histogram.timePrecision;
 				bucketSizeServerConvert = bucketSize => {
 					switch (bucketSize) {
 						case 'year':
 							return (DAY * 365) / 1000;
 						case 'month':
 							return (DAY * 30) / 1000;
-						case 'hour':
-							return HOUR / 1000;
-						case 'minute':
-							return MINUTE / 1000;
 
 						case 'day':
 						default:
 							return DAY / 1000;
 					}
+				};
+				resetBucketSize = () => {
+					bucketSize = HISTOGRAM_DATE_PRECISION;
 				};
 				break;
 
@@ -95,70 +99,88 @@ export default () => {
 				valFunc = s => parseFloat(s);
 				filterFunc = s => (s?.pp ?? 0) > 0 && commonFilterFunc(s);
 				type = 'linear';
-				bucketSize = HISTOGRAM_PP_PRECISION;
+				bucketSize = configStore.histogram.ppPrecision;
 				minBucketSize = 1;
 				maxBucketSize = 100;
 				bucketSizeStep = 1;
 				round = 0;
 				suffix = 'pp';
 				suffixLong = 'pp';
+				resetBucketSize = () => {
+					bucketSize = HISTOGRAM_PP_PRECISION;
+				};
 				break;
 
 			case 'rank':
 				valFunc = s => parseInt(s, 10);
 				type = 'linear';
-				bucketSize = HISTOGRAM_RANK_PRECISION;
+				bucketSize = configStore.histogram.rankPrecision;
 				minBucketSize = 1;
 				maxBucketSize = 100;
 				bucketSizeStep = 1;
 				round = 0;
 				prefixLong = '#';
+				resetBucketSize = () => {
+					bucketSize = HISTOGRAM_RANK_PRECISION;
+				};
 				break;
 			case 'pauses':
 				valFunc = s => parseInt(s, 10);
 				type = 'linear';
-				bucketSize = 1;
+				bucketSize = configStore.histogram.pausesPrecision;
 				minBucketSize = 1;
 				maxBucketSize = 100;
 				bucketSizeStep = 0.1;
 				round = 0;
 				suffixLong = ' pause';
+				resetBucketSize = () => {
+					bucketSize = HISTOGRAM_PAUSES_PRECISION;
+				};
 				break;
 			case 'maxStreak':
 				valFunc = s => parseInt(s, 10);
 				type = 'linear';
-				bucketSize = 1;
+				bucketSize = configStore.histogram.maxStreakPrecision;
 				minBucketSize = 1;
 				maxBucketSize = 100;
 				bucketSizeStep = 0.1;
 				round = 0;
 				suffixLong = ` note`;
+				resetBucketSize = () => {
+					bucketSize = HISTOGRAM_MAX_STREAK_PRECISION;
+				};
 				break;
 			case 'replaysWatched':
 				valFunc = s => parseInt(s, 10);
 				type = 'linear';
-				bucketSize = 5;
+				bucketSize = configStore.histogram.replaysWatchedPrecision;
 				minBucketSize = 1;
 				maxBucketSize = 100;
 				bucketSizeStep = 0.1;
 				round = 0;
 				suffixLong = ` views`;
+				resetBucketSize = () => {
+					bucketSize = HISTOGRAM_REPLAYS_WATCHED_PRECISION;
+				};
 				break;
 			case 'playCount':
 				valFunc = s => parseInt(s, 10);
 				type = 'linear';
-				bucketSize = 5;
+				bucketSize = configStore.histogram.playCountPrecision;
 				minBucketSize = 1;
 				maxBucketSize = 100;
 				bucketSizeStep = 0.1;
 				round = 0;
 				suffixLong = ` attempts`;
+				resetBucketSize = () => {
+					bucketSize = HISTOGRAM_PLAY_COUNT_PRECISION;
+				};
 				break;
 
 			case 'acc':
 				(valFunc = s => parseFloat(s) * 100), (filterFunc = s => (valFunc(s) ?? 0) > 0 && commonFilterFunc(s));
 				type = 'linear';
-				bucketSize = HISTOGRAM_ACC_PRECISION;
+				bucketSize = configStore.histogram.accPrecision;
 				bucketSizeServerConvert = bucketSize => bucketSize / 100;
 				minBucketSize = 0.05;
 				maxBucketSize = 10;
@@ -166,28 +188,37 @@ export default () => {
 				round = 2;
 				suffix = '%';
 				suffixLong = '%';
+				resetBucketSize = () => {
+					bucketSize = HISTOGRAM_ACC_PRECISION;
+				};
 				break;
 
 			case 'stars':
 				(valFunc = s => parseFloat(s)), (filterFunc = s => (s?.leaderboard?.stars ?? 0) > 0 && commonFilterFunc(s));
 				type = 'linear';
-				bucketSize = HISTOGRAM_STARS_PRECISION;
+				bucketSize = configStore.histogram.starsPrecision;
 				minBucketSize = 0.1;
 				maxBucketSize = 10;
 				bucketSizeStep = 0.1;
 				round = 2;
 				suffix = '★';
 				suffixLong = '★';
+				resetBucketSize = () => {
+					bucketSize = HISTOGRAM_STARS_PRECISION;
+				};
 				break;
 			case 'mistakes':
 				valFunc = s => parseInt(s, 10);
 				type = 'linear';
-				bucketSize = HISTOGRAM_MISTAKES_PRECISION;
+				bucketSize = configStore.histogram.mistakesPrecision;
 				minBucketSize = 1;
 				maxBucketSize = 10;
 				bucketSizeStep = 1;
 				round = 0;
 				suffixLong = ` mistakes`;
+				resetBucketSize = () => {
+					bucketSize = HISTOGRAM_MISTAKES_PRECISION;
+				};
 				break;
 		}
 
@@ -213,6 +244,7 @@ export default () => {
 			suffix,
 			suffixLong,
 			order,
+			resetBucketSize,
 		};
 	};
 

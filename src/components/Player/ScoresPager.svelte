@@ -12,6 +12,8 @@
 	import {debounce} from '../../utils/debounce';
 	import stringify from 'json-stable-stringify';
 	import {configStore} from '../../stores/config';
+	import Select from '../Settings/Select.svelte';
+	import {produce} from 'immer';
 
 	export let playerId = null;
 	export let service = null;
@@ -72,7 +74,7 @@
 			}, [])
 			.sort((a, b) => (order === 'asc' ? a.x - b.x : b.x - a.x));
 
-	async function refreshAllPlayerServiceScores(playerId, service, serviceParams) {
+	async function refreshAllPlayerServiceScores(playerId, service, serviceParams, configStore) {
 		if (!playerId) return;
 
 		let serviceObj = null;
@@ -91,7 +93,7 @@
 
 		if (!serviceObj) return;
 
-		playerScoresHistogram = serviceObj.getScoresHistogramDefinition(serviceParams);
+		playerScoresHistogram = serviceObj.getScoresHistogramDefinition(serviceParams, configStore);
 
 		const currentHistogramBucketSizeHash = getHistogramBucketSizeHash(playerId, service, serviceParams);
 		if (playerScoresHistogramBucketSizeHash !== currentHistogramBucketSizeHash) {
@@ -217,8 +219,14 @@
 		}
 	}
 
+	function storeBucketSize(newBucketSize) {
+		$configStore = produce($configStore, draft => {
+			draft.histogram[playerScoresHistogram.type + 'Precision'] = newBucketSize;
+		});
+	}
+
 	$: playerId, service, serviceParams, resetCurrentValues();
-	$: refreshAllPlayerServiceScores(playerId, service, serviceParams);
+	$: refreshAllPlayerServiceScores(playerId, service, serviceParams, $configStore);
 	$: if ($configStore.profileParts.histogram)
 		debouncedRefreshGroupedScores(playerScores, playerScoresHistogram, playerScoresHistogramBucketSize);
 
@@ -244,31 +252,49 @@
 			data={groupedPlayerScores}
 			type={playerScoresHistogram?.type}
 			order={playerScoresHistogram?.order ?? 'desc'}
+			bucketSize={playerScoresHistogramBucketSize}
 			tooltipTitleFunc={chartBrowserTooltipTitle}
 			tooltipLabelFunc={chartBrowserTooltipLabel}
 			tickFormatFunc={chartBrowserTickFormat}
 			on:page-changed />
 	</section>
 
-	{#if playerScoresHistogramBucketSize && playerScoresHistogram?.minBucketSize && playerScoresHistogram?.maxBucketSize && playerScoresHistogram?.bucketSizeStep}
+	{#if playerScoresHistogramBucketSize && ((playerScoresHistogram?.minBucketSize && playerScoresHistogram?.maxBucketSize && playerScoresHistogram?.bucketSizeStep) || playerScoresHistogram?.type === 'time')}
 		<div class="histogram-controls">
 			<div class="range" title="Change histogram bucket size">
-				<input
-					type="range"
-					bind:value={playerScoresHistogramBucketSize}
-					min={playerScoresHistogram.minBucketSize}
-					max={playerScoresHistogram.maxBucketSize}
-					step={playerScoresHistogram.bucketSizeStep} />
+				{#if playerScoresHistogram.type === 'time'}
+					<Select
+						bind:value={playerScoresHistogramBucketSize}
+						fontSize={0.8}
+						fontPadding={0.2}
+						options={[
+							{name: 'Day', value: 'day'},
+							{name: 'Month', value: 'month'},
+							{name: 'Year', value: 'year'},
+						]}
+						on:change={() => storeBucketSize(playerScoresHistogramBucketSize)} />
+				{:else}
+					<input
+						type="range"
+						bind:value={playerScoresHistogramBucketSize}
+						min={playerScoresHistogram.minBucketSize}
+						max={playerScoresHistogram.maxBucketSize}
+						step={playerScoresHistogram.bucketSizeStep}
+						on:change={() => storeBucketSize(playerScoresHistogramBucketSize)} />
 
-				<span
-					>{`${formatNumber(playerScoresHistogramBucketSize, playerScoresHistogram?.round ?? 2)}${
-						playerScoresHistogram.suffixLong ?? playerScoresHistogram.suffix
-					}`}</span>
+					<span
+						>{`${formatNumber(playerScoresHistogramBucketSize, playerScoresHistogram?.round ?? 2)}${
+							playerScoresHistogram.suffixLong ?? playerScoresHistogram.suffix
+						}`}</span>
+				{/if}
 
 				<i
 					class="fa fa-undo"
 					title="Reset bucket size to default value"
-					on:click={() => (playerScoresHistogramBucketSize = playerScoresHistogram.bucketSize)} />
+					on:click={() => {
+						playerScoresHistogram.resetBucketSize();
+						playerScoresHistogramBucketSize = playerScoresHistogram.bucketSize;
+					}} />
 			</div>
 		</div>
 	{/if}
@@ -289,10 +315,8 @@
 
 	.range {
 		display: inline-flex;
-	}
-
-	.range > *:not(:last-child) {
-		margin-right: 0.5em;
+		align-items: center;
+		gap: 0.5em;
 	}
 
 	.range i.fa {

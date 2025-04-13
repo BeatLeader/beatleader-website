@@ -15,7 +15,7 @@
 		cancelButton="Cancel"
 		on:confirm={confirm}
 		on:cancel={cancel}>
-		<div slot="content">Are you sure you want to delete the {playlistName}? This is irreversable.</div>
+		<div slot="content">Are you sure you want to delete <b>{playlistName}</b>? This is irreversible.</div>
 	</DialogContent>
 </div>
 

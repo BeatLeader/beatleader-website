@@ -15,6 +15,7 @@
 	export let displayType = 'bar';
 	export let linearRoundPrecision = 2;
 	export let height = '80px';
+	export let bucketSize = null;
 
 	const dispatch = createEventDispatcher();
 
@@ -40,7 +41,7 @@
 			display: true,
 			offset: true,
 			time: {
-				unit: 'month',
+				unit: bucketSize == 'year' ? 'year' : 'month',
 			},
 			grid: {
 				display: false,

@@ -205,7 +205,19 @@ export function formatDateRelative(val, roundFunc = Math.floor, unit = 'auto', l
 			else if (absDiff < 60 * 60 * 24) return rtf.format(-roundFunc(diffInSecs / (60 * 60)), 'hour');
 			else if (absDiff < 60 * 60 * 24 * 30) return rtf.format(-roundFunc(diffInSecs / (60 * 60 * 24)), 'day');
 			else if (absDiff < 60 * 60 * 24 * 365) return rtf.format(-roundFunc(diffInSecs / (60 * 60 * 24 * 30)), 'month');
-			else return rtf.format(-roundFunc(diffInSecs / (60 * 60 * 24 * 365)), 'year');
+			else if (absDiff < 60 * 60 * 24 * 365 * 2) {
+				const now = new Date();
+				const then = dateFromString(val);
+				if (now.getFullYear() - then.getFullYear() === 2) {
+					const rtfNumeric = new Intl.RelativeTimeFormat(locale, {
+						localeMatcher: 'best fit',
+						numeric: 'always',
+						style: 'long',
+					});
+					return rtfNumeric.format(-1, 'year');
+				}
+				return rtf.format(-roundFunc(diffInSecs / (60 * 60 * 24 * 365)), 'year');
+			} else return rtf.format(-roundFunc(diffInSecs / (60 * 60 * 24 * 365)), 'year');
 
 		default:
 			let unitDivider =

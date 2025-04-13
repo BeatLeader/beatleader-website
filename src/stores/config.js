@@ -243,6 +243,19 @@ export const DEFAULT_CONFIG = {
 		starsInCard: true,
 		mapType: false,
 	},
+
+	histogram: {
+		ppPrecision: 5,
+		rankPrecision: 5,
+		accPrecision: 0.25,
+		starsPrecision: 0.1,
+		mistakesPrecision: 1,
+		pausesPrecision: 1,
+		maxStreakPrecision: 1,
+		replaysWatchedPrecision: 1,
+		playCountPrecision: 1,
+		timePrecision: 'day',
+	},
 	locale: DEFAULT_LOCALE,
 	selectedPlaylist: {},
 };
