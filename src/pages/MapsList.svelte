@@ -1421,6 +1421,9 @@
 	.maps-box {
 		left: 0;
 		margin-top: -1em !important;
+		display: flex;
+		justify-content: center;
+		padding-right: 10em;
 	}
 
 	:global(.tab-container) {
@@ -1436,7 +1439,7 @@
 	}
 
 	.first-page-spacer {
-		height: 2.4em;
+		height: 1.4em;
 		width: 100%;
 	}
 
@@ -1484,14 +1487,17 @@
 		position: fixed;
 		right: 1em;
 		width: 26em;
+		top: 0;
 		padding-left: 0.5em;
 		padding-right: 0.5em;
-		max-height: 90%;
+		padding-top: 5em;
+		max-height: 100%;
 		overflow: auto;
 		/* hide scrollbar */
 		-ms-overflow-style: none;
 		scrollbar-width: none;
 		z-index: 6;
+		overscroll-behavior: none;
 	}
 
 	aside::-webkit-scrollbar {
@@ -1796,12 +1802,23 @@
 		}
 	}
 
+	@media screen and (max-width: 2000px) {
+		.maps-box {
+			padding-right: unset;
+			justify-content: start;
+			padding-left: 2em;
+		}
+	}
+
 	@media screen and (max-width: 1275px) {
 		.desktop-switcher {
 			display: none;
 		}
 		.mobile-switcher {
 			display: block;
+		}
+		.songs {
+			flex: 0;
 		}
 		:global(.my-type-button) {
 			margin-bottom: unset !important;
@@ -1827,6 +1844,7 @@
 			margin-left: 0;
 			margin-right: 0;
 			row-gap: 0.2em;
+			flex: 1;
 		}
 
 		.filter {
@@ -1847,7 +1865,7 @@
 		}
 
 		.first-page-spacer {
-			height: 5em;
+			height: 4em;
 		}
 
 		:global(.tab-container) {
@@ -1871,7 +1889,6 @@
 
 		.maps-box {
 			padding: 0 !important;
-			margin-top: 0 !important;
 			width: 100%;
 			height: 100%;
 		}
@@ -1883,6 +1900,12 @@
 			border-radius: 8px 8px 0 0 !important;
 			width: 6em;
 			font-size: 0.7em !important;
+		}
+	}
+
+	@media (max-width: 600px) {
+		.first-page-spacer {
+			height: 5em;
 		}
 	}
 

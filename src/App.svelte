@@ -819,6 +819,10 @@
 		width: auto !important;
 	}
 
+	:global(.v-scrollbar) {
+		z-index: 1000;
+	}
+
 	:global(.footer-box) {
 		margin: 1em 0 0 0 !important;
 		border-radius: 0 !important;
