@@ -17,6 +17,7 @@
 	import rewindTimer from './stores/rewind-timer';
 	import {padNumber} from './utils/format';
 	import SimpleModal from './components/Common/SimpleModal.svelte';
+	import {Svrollbar} from 'svrollbar';
 	import {produce} from 'immer';
 
 	// Dynamic imports for pages
@@ -569,6 +570,7 @@
 </Router>
 
 <PlaylistCart />
+<Svrollbar />
 
 {#if $search}
 	<Search />

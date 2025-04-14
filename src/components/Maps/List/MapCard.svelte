@@ -501,9 +501,11 @@
 							</div>
 						</div>
 					</a>
-					<div class="icons-container" class:is-hovered={isHovered}>
-						<Icons {song} icons={['preview', 'bsr', 'bs', 'oneclick']} />
-					</div>
+					{#if status != DifficultyStatus.ost}
+						<div class="icons-container" class:is-hovered={isHovered}>
+							<Icons {song} icons={['preview', 'bsr', 'bs', 'oneclick']} />
+						</div>
+					{/if}
 				</div>
 				<div class="bottom-container-background" class:is-hovered={isHovered} style="--bottom-container-height: {bottomContainerHeight}px;">
 				</div>
@@ -977,6 +979,7 @@
 		white-space: normal;
 		width: max-content;
 		max-width: 24vw;
+		z-index: 8;
 	}
 
 	.tooltip-subname {

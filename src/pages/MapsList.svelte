@@ -243,7 +243,7 @@
 	}
 
 	function populateMapsList(page = 1, type = 'ranked', filters = {}, priority = PRIORITY.FG_LOW, options = {}) {
-		if (activeRequests[page] && activeRequests[page].inProgress) {
+		if (activeRequests[page]) {
 			return;
 		}
 
@@ -258,56 +258,63 @@
 		};
 
 		const fetchMaps = () => {
-			fetch(
-				substituteVarsUrl(BL_API_MAPS_URL, {page, count: itemsPerPage, ...filters, type}, true, true),
-				{...options, credentials: 'include', signal: controller.signal},
-				priority
-			)
-				.then(d => {
-					if (d.status == 200) {
-						return d.json();
-					} else if (d.status === 429 && d.headers.get('retry-after')) {
-						const retryAfter = parseInt(d.headers.get('retry-after'));
-						setTimeout(() => {
-							if (activeRequests[capturePage] && activeRequests[capturePage].inProgress) {
-								fetchMaps();
-							}
-						}, retryAfter * 1000);
-						return {};
-					}
-					console.error('Error fetching maps:', d.status);
-					delete activeRequests[capturePage];
-					return {};
-				})
-				.then(response => {
-					let newMaps = response.data;
-
-					if (!newMaps) return;
-					for (let i = 0; i < newMaps.length; i++) {
-						newMaps[i].index = (capturePage - 1) * itemsPerPage + i;
-					}
-
-					for (let i = 0; i < allMaps.length; i++) {
-						const element = allMaps[i];
-						const fetchedMap = newMaps.find(m => m.index == element.index);
-						if (fetchedMap) {
-							if (allMaps[i].placeholder && allMaps[i].updateCallback) {
-								allMaps[i].updateCallback(fetchedMap);
-							}
-							allMaps[i] = fetchedMap;
+			try {
+				fetch(
+					substituteVarsUrl(BL_API_MAPS_URL, {page, count: itemsPerPage, ...filters, type}, true, true),
+					{...options, credentials: 'include', signal: controller.signal},
+					priority
+				)
+					.then(d => {
+						if (d.status == 200) {
+							return d.json();
+						} else if (d.status === 429 && d.headers.get('retry-after')) {
+							const retryAfter = parseInt(d.headers.get('retry-after'));
+							setTimeout(() => {
+								if (activeRequests[capturePage] && activeRequests[capturePage].inProgress) {
+									fetchMaps();
+								}
+							}, retryAfter * 1000);
+							return {};
 						}
-					}
+						console.error('Error fetching maps:', d.status);
+						delete activeRequests[capturePage];
+						return {};
+					})
+					.then(response => {
+						let newMaps = response.data;
 
-					numOfMaps = response.metadata.total;
+						if (!newMaps) return;
+						for (let i = 0; i < newMaps.length; i++) {
+							newMaps[i].index = (capturePage - 1) * itemsPerPage + i;
+						}
 
-					if (allMaps.length > numOfMaps) {
-						allMaps = allMaps.slice(0, numOfMaps);
-					}
+						for (let i = 0; i < allMaps.length; i++) {
+							const element = allMaps[i];
+							const fetchedMap = newMaps.find(m => m.index == element.index);
+							if (fetchedMap) {
+								if (allMaps[i].placeholder && allMaps[i].updateCallback) {
+									allMaps[i].updateCallback(fetchedMap);
+								}
+								allMaps[i] = fetchedMap;
+							}
+						}
 
-					if (activeRequests[capturePage]) {
-						activeRequests[capturePage].inProgress = false;
-					}
-				});
+						numOfMaps = response.metadata.total;
+
+						if (allMaps.length > numOfMaps) {
+							allMaps = allMaps.slice(0, numOfMaps);
+						}
+
+						if (activeRequests[capturePage]) {
+							activeRequests[capturePage].inProgress = false;
+						}
+					})
+					.catch(error => {
+						delete activeRequests[capturePage];
+					});
+			} catch (error) {
+				delete activeRequests[capturePage];
+			}
 		};
 
 		fetchMaps();
@@ -775,7 +782,7 @@
 	let previousPageAnchor;
 	let currentPageAnchor;
 
-	let scrollContainer;
+	let scrollContainer = document.documentElement || document.body;
 	let asideContainer;
 	function scrollToPage(page) {
 		previousPage = currentPage;
@@ -802,42 +809,40 @@
 	function onScroll() {
 		if (isAutoScrolling) return;
 
-		const containerTop = scrollContainer.scrollTop;
+		const containerTop = window.scrollY;
 		if (containerTop < 100) {
 			scrollToPage(0);
 			return;
 		}
 
-		const containerBottom = containerTop + scrollContainer.offsetHeight;
+		const containerBottom = containerTop + window.innerHeight;
 
 		// Check if current and previous anchors are outside visible area
 		const currentNotVisible =
 			!currentPageAnchor ||
-			currentPageAnchor.offsetTop > containerBottom ||
-			currentPageAnchor.offsetTop + currentPageAnchor.offsetHeight < containerTop;
+			currentPageAnchor.getBoundingClientRect().top > window.innerHeight ||
+			currentPageAnchor.getBoundingClientRect().bottom < 0;
 
 		const previousNotVisible =
 			!previousPageAnchor ||
-			previousPageAnchor.offsetTop > containerBottom ||
-			previousPageAnchor.offsetTop + previousPageAnchor.offsetHeight < containerTop;
+			previousPageAnchor.getBoundingClientRect().top > window.innerHeight ||
+			previousPageAnchor.getBoundingClientRect().bottom < 0;
 
-		if (
-			!previousNotVisible &&
-			previousPageAnchor.offsetTop > scrollContainer.scrollTop + scrollContainer.offsetHeight / 2 &&
-			currentPage > 1
-		) {
+		if (!previousNotVisible && previousPageAnchor.getBoundingClientRect().top > window.innerHeight / 2 && currentPage > 1) {
 			scrollToPage(currentPage - 2);
-		} else if (!currentNotVisible && currentPageAnchor.offsetTop < scrollContainer.scrollTop + scrollContainer.offsetHeight / 2) {
+		} else if (!currentNotVisible && currentPageAnchor.getBoundingClientRect().top < window.innerHeight / 2) {
 			scrollToPage(currentPage);
 		} else if (currentNotVisible && previousNotVisible) {
 			// If neither anchor is visible, look for other page anchors
-			let otherAnchors = Array.from(scrollContainer.querySelectorAll('.other-page-anchor')).sort((a, b) => b.offsetTop - a.offsetTop);
+			let otherAnchors = Array.from(document.querySelectorAll('.other-page-anchor')).sort(
+				(a, b) => b.getBoundingClientRect().top - a.getBoundingClientRect().top
+			);
 
 			// First try to find visible anchors
 			let foundVisibleAnchor = false;
 			for (const anchor of otherAnchors) {
-				const anchorTop = anchor.offsetTop;
-				if (anchorTop >= containerTop && anchorTop <= containerBottom) {
+				const rect = anchor.getBoundingClientRect();
+				if (rect.top >= 0 && rect.bottom <= window.innerHeight) {
 					const page = parseInt(anchor.textContent);
 					if (!isNaN(page)) {
 						scrollToPage(page - 1);
@@ -861,14 +866,15 @@
 				}
 
 				for (const anchor of otherAnchors) {
-					const distance = Math.abs(anchor.offsetTop + anchor.offsetHeight - containerTop);
+					const rect = anchor.getBoundingClientRect();
+					const distance = Math.abs(rect.bottom - window.innerHeight);
 					if (distance < closestDistance) {
 						closestDistance = distance;
 						closestAnchor = anchor;
 					}
 				}
 
-				if (closestAnchor && closestAnchor.offsetTop + closestAnchor.offsetHeight < containerTop) {
+				if (closestAnchor && closestAnchor.getBoundingClientRect().bottom < 0) {
 					const page = parseInt(closestAnchor.textContent);
 					if (!isNaN(page)) {
 						scrollToPage(page);
@@ -905,42 +911,39 @@
 	<title>Maps / {currentPage} - {ssrConfig.name}</title>
 </svelte:head>
 
+<svelte:window on:scroll={onScroll} />
+
 <section class="align-content">
 	<article class="page-content" transition:fade|global>
 		<div class="maps-box">
 			{#if allMaps?.length}
-				<div class="songs-container">
-					<div class="songs-list">
-						<div class="songs" class:long={$configStore.mapCards.wideCards} bind:this={scrollContainer} on:scroll={onScroll}>
-							{#each allMaps as song, idx (song.index)}
-								{@const page = Math.floor(idx / itemsPerPage)}
-								{#if idx == 0}
-									<div class="first-page-spacer"></div>
-								{:else if idx % itemsPerPage == 0}
-									{#if page == currentPage - 1}
-										<div class="page-split page-maker-{currentPage - 1}" bind:this={previousPageAnchor}>
-											{currentPage - 1}
-										</div>
-									{:else if page == currentPage}
-										<div class="page-split page-maker-{currentPage}" bind:this={currentPageAnchor}>
-											{currentPage}
-										</div>
-									{:else}
-										<div class="page-split page-maker-{page} other-page-anchor">
-											{page}
-										</div>
-									{/if}
-								{/if}
-								<MapCard
-									map={song}
-									{starsKey}
-									forcePlaceholder={currentPage != page && currentPage - 1 != page && currentPage - 2 != page}
-									sortBy={currentFilters.sortBy}
-									dateType={currentType} />
-							{/each}
-						</div>
-						<Svrollbar viewport={scrollContainer} />
-					</div>
+				<div class="songs" class:long={$configStore.mapCards.wideCards}>
+					{#each allMaps as song, idx (song.index)}
+						{@const page = Math.floor(idx / itemsPerPage)}
+						{#if idx == 0}
+							<div class="first-page-spacer"></div>
+						{:else if idx % itemsPerPage == 0}
+							{#if page == currentPage - 1}
+								<div class="page-split page-maker-{currentPage - 1}" bind:this={previousPageAnchor}>
+									{currentPage - 1}
+								</div>
+							{:else if page == currentPage}
+								<div class="page-split page-maker-{currentPage}" bind:this={currentPageAnchor}>
+									{currentPage}
+								</div>
+							{:else}
+								<div class="page-split page-maker-{page} other-page-anchor">
+									{page}
+								</div>
+							{/if}
+						{/if}
+						<MapCard
+							map={song}
+							{starsKey}
+							forcePlaceholder={currentPage != page && currentPage - 1 != page && currentPage - 2 != page}
+							sortBy={currentFilters.sortBy}
+							dateType={currentType} />
+					{/each}
 				</div>
 			{:else if isLoading}
 				<Spinner />
@@ -1416,8 +1419,6 @@
 	}
 
 	.maps-box {
-		position: fixed !important;
-		height: calc(100% - 5em);
 		left: 0;
 		margin-top: -1em !important;
 	}
@@ -1490,6 +1491,7 @@
 		/* hide scrollbar */
 		-ms-overflow-style: none;
 		scrollbar-width: none;
+		z-index: 6;
 	}
 
 	aside::-webkit-scrollbar {
@@ -1592,20 +1594,7 @@
 		align-items: start;
 		align-content: baseline;
 		position: relative;
-		height: 100%;
-		overflow: scroll;
-
-		padding-left: calc(50vw - 52em);
-		padding-right: calc(50vw - 30em);
-
-		/* hide scrollbar */
-		-ms-overflow-style: none;
-		scrollbar-width: none;
-	}
-
-	.songs::-webkit-scrollbar {
-		/* hide scrollbar */
-		display: none;
+		max-width: 75em;
 	}
 
 	.maps-filters-container {
@@ -1805,23 +1794,9 @@
 		aside.long {
 			left: calc(50vw + 40em);
 		}
-
-		.songs {
-			padding-left: calc(50vw - 40em);
-			padding-right: calc(50vw - 32em);
-		}
-
-		.songs.long {
-			padding-left: calc(50vw - 54em);
-			padding-right: calc(50vw - 42em);
-		}
 	}
 
 	@media screen and (max-width: 1275px) {
-		.songs {
-			padding-left: unset;
-			padding-right: calc(50vw - 8em);
-		}
 		.desktop-switcher {
 			display: none;
 		}
@@ -1852,7 +1827,6 @@
 			margin-left: 0;
 			margin-right: 0;
 			row-gap: 0.2em;
-			padding-right: unset;
 		}
 
 		.filter {

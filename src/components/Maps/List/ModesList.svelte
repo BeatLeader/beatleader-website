@@ -159,7 +159,9 @@
 									</div>
 									<div class="score-and-icons">
 										<SongScoreCompact score={diff.myScore} />
-										<Icons {song} diffInfo={{diff: diff.difficultyName, type: diff.modeName}} icons={['playlist']} />
+										{#if diff.status != DifficultyStatus.ost}
+											<Icons {song} diffInfo={{diff: diff.difficultyName, type: diff.modeName}} icons={['playlist']} />
+										{/if}
 									</div>
 								</div>
 							{/if}
