@@ -961,7 +961,7 @@
 		display: grid;
 		grid-template-columns: 1fr;
 		grid-template-rows: 1fr;
-		min-height: calc(100vh - 9rem);
+		min-height: calc(100vh - 7.7rem);
 	}
 
 	.ssr-page-container :global(> *) {

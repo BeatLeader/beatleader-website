@@ -1409,6 +1409,9 @@
 
 	.page-content {
 		width: 100%;
+		overscroll-behavior: none;
+		-ms-overflow-style: none;
+		scrollbar-width: none;
 	}
 
 	.songs-container {
@@ -1424,6 +1427,7 @@
 		display: flex;
 		justify-content: center;
 		padding-right: 10em;
+		overflow: visible;
 	}
 
 	:global(.tab-container) {
@@ -1601,6 +1605,10 @@
 		align-content: baseline;
 		position: relative;
 		max-width: 75em;
+	}
+
+	.songs.long {
+		max-width: 85em;
 	}
 
 	.maps-filters-container {
