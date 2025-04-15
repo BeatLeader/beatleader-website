@@ -7,28 +7,9 @@
 	import {CURRENT_URL} from '../network/queues/beatleader/api-queue';
 	import BlueSkyTimeline from '../components/Dashboard/BlueSkyTimeline.svelte';
 
-	document.body.scrollIntoView({behavior: 'smooth'});
-
 	$: metaDescription =
 		ssrConfig.name +
 		" is Beat Saber's leaderboard with open code and community. Start posting your scores to compete with others on more than 100,000 different maps.";
-
-	let cinematicsCanvas;
-
-	function drawCinematics(cinematicsCanvas, coverUrl) {
-		if (coverUrl && cinematicsCanvas) {
-			cinematicsCanvas.style.opacity = 1;
-			const context = cinematicsCanvas.getContext('2d');
-
-			const cover = new Image();
-			cover.onload = function () {
-				context.drawImage(cover, 0, 0, cinematicsCanvas.width, cinematicsCanvas.height);
-			};
-			cover.src = coverUrl;
-		}
-	}
-
-	$: drawCinematics(cinematicsCanvas, '/assets/Main/landing.webp');
 </script>
 
 <svelte:head>
@@ -37,10 +18,10 @@
 
 <article class="page-content" transition:fade|global>
 	<div class="sspl-page-container">
-		<div class="big-landing-box">
+		<div class="big-landing-box image-container">
 			<div class="cinematics">
 				<div class="cinematics-canvas">
-					<canvas bind:this={cinematicsCanvas} style="position: absolute; width: 90%; height: 100%; opacity: 0" />
+					<div class="image-container" style="position: absolute; width: 100%; height: 100%;" />
 				</div>
 			</div>
 			<div class="title-and-buttons">
@@ -169,11 +150,14 @@
 	}} />
 
 <style>
-	.big-landing-box {
+	.image-container {
 		background: url('/assets/Main/landing.webp') !important;
 		background-position-y: -2em !important;
 		background-position-x: 0% !important;
 		background-size: 100% !important;
+	}
+
+	.big-landing-box {
 		display: flex;
 		justify-content: flex-start;
 		margin: 4px 10px 18px;
@@ -341,10 +325,12 @@
 	}
 
 	@media screen and (min-width: 1250px) {
-		.big-landing-box {
+		.image-container {
 			background-position-y: -3em !important;
 			background-position-x: 0% !important;
 			background-size: 100% !important;
+		}
+		.big-landing-box {
 			justify-content: flex-end;
 		}
 
@@ -371,7 +357,7 @@
 			transform: none !important;
 		}
 
-		.big-landing-box {
+		.image-container {
 			background-position-y: -0.9em !important;
 			background-position-x: 62.2% !important;
 			background-size: 200% !important;
