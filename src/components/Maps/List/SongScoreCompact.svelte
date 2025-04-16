@@ -12,7 +12,7 @@
 
 {#if score}
 	<div
-		class="song-score"
+		class="song-score-compact"
 		style="background-color: {badgesDef.find(b => (!b.max || score.accuracy * 100 <= b.max) && (!b.min || score.accuracy * 100 > b.min))
 			.color};">
 		<div class="main">
@@ -50,12 +50,12 @@
 		padding: 0.5em 0;
 	}
 
-	.song-score {
+	.song-score-compact {
 		border-radius: 0.8em;
 		padding: 0 0.2em;
 		font-size: 0.9em;
 	}
-	.song-score .main {
+	.song-score-compact .main {
 		display: flex;
 		flex-wrap: nowrap;
 		align-items: center;
@@ -68,28 +68,28 @@
 		font-weight: 600;
 	}
 
-	.song-score.with-details .main {
+	.song-score-compact.with-details .main {
 		border-bottom: none;
 	}
 
-	.song-score .main > *:last-child {
+	.song-score-compact .main > *:last-child {
 		margin-right: 0;
 	}
 
-	.song-score .main :global(.badge) {
+	.song-score-compact .main :global(.badge) {
 		margin: 0 !important;
 		padding: 0.125em 0.25em !important;
 		width: 100%;
 	}
 
-	.song-score .main :global(.badge small) {
+	.song-score-compact .main :global(.badge small) {
 		font-size: 0.7em;
 		font-weight: normal;
 		margin-top: -2px;
 	}
 
-	.song-score .main :global(.inc),
-	.song-score :global(.dec) {
+	.song-score-compact .main :global(.inc),
+	.song-score-compact :global(.dec) {
 		color: inherit;
 	}
 
@@ -206,10 +206,6 @@
 	}
 
 	@media screen and (max-width: 767px) {
-		.song-score .main {
-			flex-wrap: wrap;
-		}
-
 		.rank,
 		.timeset {
 			padding-bottom: 0 !important;

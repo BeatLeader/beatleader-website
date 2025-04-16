@@ -403,7 +403,6 @@
 		// Ensure we're not wildly flipping between hover and unhover
 		referenceUnhoverTimer = setTimeout(() => {
 			isReferenceHovered = false;
-
 			if (!isPopoverHovered) {
 				isPopoverFocused = false;
 			}
@@ -498,7 +497,7 @@
 	}
 
 	.svelte-easy-popover {
-		z-index: var(--z-index, 1);
+		z-index: var(--z-index, 100);
 	}
 
 	:global([data-popper-placement^='top']).svelte-easy-popover .popover-hover-bridge {

@@ -309,6 +309,8 @@
 		display: flex;
 		gap: 0.5em;
 		align-items: center;
+		justify-content: end;
+		flex: 1;
 	}
 
 	.tail-container {
@@ -316,6 +318,7 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
+		flex-wrap: wrap;
 		gap: 0.2em;
 		color: white;
 		cursor: pointer;

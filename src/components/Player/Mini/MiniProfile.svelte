@@ -89,10 +89,6 @@
 		left: -31px !important;
 	}
 
-	:global(.svelte-easy-popover) {
-		--z-index: 4;
-	}
-
 	.avatar-cell {
 		position: relative;
 		width: 150px;

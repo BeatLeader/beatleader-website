@@ -1,5 +1,6 @@
 <script>
 	import {slide, crossfade} from 'svelte/transition';
+	import {cubicOut} from 'svelte/easing';
 	import ContentBox from './ContentBox.svelte';
 	import {configStore} from '../../stores/config';
 	import {produce} from 'immer';
@@ -31,44 +32,26 @@
 
 <ContentBox cls="aside-content-box frosted">
 	<div class="box-toggle-section">
-		{#if !opened}
-			<span
-				class="reveal-button clickable"
-				style="height: 1.5em;"
-				on:click={() => boolflip(boolname)}
-				title="Show {title}"
-				in:receive={{key: 'button'}}
-				out:send={{key: 'button'}}>
-				<div class="left">
-					<div class="icon-container">
-						<i class={faicon} />
-					</div>
-					<span>{title}</span>
+		<span
+			class="reveal-button clickable"
+			style="height: 1.5em;"
+			on:click={() => boolflip(boolname)}
+			title="{opened ? 'Hide' : 'Show'} {title}"
+			in:receive={{key: 'button'}}
+			out:send={{key: 'button'}}>
+			<div class="left">
+				<div class="icon-container">
+					<i class={faicon} />
 				</div>
+				<span>{title}</span>
+			</div>
 
-				<i class="fas fa-chevron-down" />
-			</span>
-		{:else}
-			<span
-				class="reveal-button clickable"
-				on:click={() => boolflip(boolname)}
-				title="Hide {title}"
-				in:receive={{key: 'button'}}
-				out:send={{key: 'button'}}>
-				<div class="left">
-					<div class="icon-container">
-						<i class={faicon} />
-					</div>
-					<span>{title}</span>
-				</div>
-
-				<i class="fas fa-chevron-up" />
-			</span>
-		{/if}
+			<i class="fas fa-chevron-{opened ? 'up' : 'down'}" />
+		</span>
 	</div>
 
 	{#if opened}
-		<div class="aside-box" transition:slide>
+		<div class="aside-box" transition:slide={{duration: 500, easing: cubicOut}}>
 			<div class="darkened-background frosted">
 				<slot class={contentClass}></slot>
 			</div>
@@ -112,7 +95,6 @@
 		display: grid;
 		align-items: center;
 		gap: 0.25em;
-		margin-top: 0.25em;
 		width: 100%;
 		min-width: clamp(0px, 26em, 90vw);
 	}

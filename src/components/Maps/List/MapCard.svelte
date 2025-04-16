@@ -1225,7 +1225,7 @@
 
 		.main-container {
 			font-size: 0.8em;
-			max-width: calc(100vw - 9em);
+			max-width: calc(100vw - 9.5em);
 		}
 
 		.requirements-icons {
