@@ -50,7 +50,15 @@
 
 		{#if leaderboard?.diffInfo?.type != 'Standard'}
 			<div class="mode">
-				<Difficulty diff={leaderboard.diffInfo} pointer={true} hideTitle={true} reverseColors={true} showDiffIcons={true} />
+				<Difficulty
+					diff={leaderboard.diffInfo}
+					pointer={true}
+					hideTitle={true}
+					hideStars={true}
+					reverseColors={true}
+					stars={(leaderboard?.difficulty && leaderboard?.difficulty[starsKey]) ??
+						(leaderboard?.difficultyBl && leaderboard?.difficultyBl[starsKey])}
+					showDiffIcons={true} />
 			</div>
 		{/if}
 

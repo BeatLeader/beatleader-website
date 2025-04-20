@@ -20,11 +20,12 @@
 	export let pointer = false;
 	export let showDiffIcons = false;
 	export let hideTitle = false;
+	export let hideStars = false;
 	export let nameAndStars = false;
 
 	$: diffInfo = diff ? getHumanDiffInfo(diff) : null;
-	$: diffColor = enabled ? starsToBackgroundColor({...diffInfo, stars: stars ?? modifiedStars}, $configStore) : 'gray';
-	$: diffTextColor = enabled ? starsToColor({...diffInfo, stars: stars ?? modifiedStars}, $configStore) : 'white';
+	$: diffColor = enabled ? starsToBackgroundColor({...diffInfo, stars: modifiedStars ?? stars}, $configStore) : 'gray';
+	$: diffTextColor = enabled ? starsToColor({...diffInfo, stars: modifiedStars ?? stars}, $configStore) : 'white';
 	$: areStarsModified = stars && modifiedStars && formatNumber(stars) !== formatNumber(modifiedStars);
 	$: title =
 		(useShortName && diffInfo?.type !== 'Standard' ? diffInfo?.name : diffInfo?.fullName) +
@@ -49,7 +50,7 @@
 			{useShortName ? diffInfo.shortName : diffInfo.fullName}
 		{/if}
 
-		{#if stars}
+		{#if stars && !hideStars}
 			<Value
 				value={modifiedStars ?? stars}
 				suffix={starsSuffix + (areStarsModified ? ' (M)' : '')}
