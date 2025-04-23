@@ -9,7 +9,7 @@
 
 	const dispatch = createEventDispatcher();
 
-	let lastFilterValues = {};
+	let lastFilterValues = currentFilterValues;
 
 	function onFilterChanged(event) {
 		const key = event?.detail?.id ?? null;

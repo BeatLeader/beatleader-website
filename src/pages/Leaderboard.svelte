@@ -5,7 +5,7 @@
 	import createLeaderboardStore from '../stores/http/http-leaderboard-store';
 	import createVotingStore from '../stores/beatleader/rankVoting';
 	import scoreStatisticEnhancer from '../stores/http/enhancers/scores/scoreStatistic';
-	import {opt, capitalize} from '../utils/js';
+	import {capitalize} from '../utils/js';
 	import stringify from 'json-stable-stringify';
 	import ssrConfig from '../ssr-config';
 	import {LEADERBOARD_SCORES_PER_PAGE} from '../utils/beatleader/consts';
@@ -101,8 +101,8 @@
 	const params = [
 		{
 			key: 'countries',
-			default: '',
-			process: processStringFilter,
+			default: [],
+			process: processStringArrayFilter,
 		},
 		{
 			key: 'clanTag',
@@ -131,7 +131,7 @@
 		},
 		{
 			key: 'hmds',
-			default: null,
+			default: [],
 			process: processStringArrayFilter,
 		},
 	];
@@ -325,7 +325,7 @@
 	}
 
 	function onDiffChange(event) {
-		const newLeaderboardId = opt(event, 'detail.leaderboardId');
+		const newLeaderboardId = event?.detail?.leaderboardId ?? null;
 		if (!newLeaderboardId) return;
 
 		changeParams(newLeaderboardId, currentType, 1, currentFilters, !dontNavigate, false);
@@ -412,7 +412,7 @@
 		};
 	}
 
-	function updateTypeOptions(country, playerIsFollowingSomeone, isRanked, showGraphOption, showAccGraph) {
+	function updateTypeOptions(playerIsFollowingSomeone, isRanked, showGraphOption, showAccGraph) {
 		//if (!country?.length && !playerIsFollowingSomeone) return;
 
 		typeOptions = availableTypeOptions
@@ -507,19 +507,6 @@
 							},
 						]
 					: []
-			)
-			.concat(
-				country?.length
-					? [
-							{
-								type: 'global',
-								label: 'Country',
-								icon: `<img src="/assets/flags/${country.toLowerCase()}.png" loading="lazy" class="country">`,
-								url: `/leaderboard/global/${currentLeaderboardId}/1?countries=${country}`,
-								filters: {countries: country, clanTag: '', hmds: ''},
-							},
-						]
-					: []
 			);
 
 		const newCurrentTypeOption = findCurrentTypeOption(currentType, currentFilters);
@@ -591,7 +578,8 @@
 					title: 'Search by country',
 					placeholder: 'Select or enter country...',
 					value: currentFilters.countries,
-					open: currentFilters.countries?.length && currentFilters.countries?.toLowerCase() != mainPlayerCountry?.toLowerCase(),
+					mainPlayerCountry: mainPlayerCountry,
+					open: currentFilters.countries?.length,
 				},
 			},
 			{
@@ -619,6 +607,8 @@
 		currentFilters.search = newFilters.search;
 		currentFilters.countries = newFilters.countries;
 		currentFilters.hmds = newFilters.hmds;
+
+		makeComplexFilters(currentFilters, mainPlayerCountry);
 
 		changeParams(currentLeaderboardId, currentType, 1, currentFilters, !dontNavigate, true);
 	}
@@ -749,15 +739,15 @@
 	$: updateFilters(buildFiltersFromLocation(location));
 
 	$: scores = $leaderboardStore?.scores?.map(s => ({...s, leaderboard: $leaderboardStore?.leaderboard})) ?? null;
-	$: clanRankingList = opt($leaderboardStore, 'clanRanking', null);
+	$: clanRankingList = $leaderboardStore?.clanRanking;
 	$: leaderboard = $leaderboardStore?.leaderboard;
-	$: song = opt($leaderboardStore, 'leaderboard.song', null);
+	$: song = $leaderboardStore?.leaderboard?.song;
 	$: initRatings(leaderboard);
 
 	$: ({diffs, modes, currentDiff, currentMode} = processDiffs($leaderboardStore?.diffs ?? [], song, currentLeaderboardId));
 
-	$: hash = opt($leaderboardStore, 'leaderboard.song.hash');
-	$: diffInfo = opt($leaderboardStore, 'leaderboard.diffInfo');
+	$: hash = $leaderboardStore?.leaderboard?.song?.hash;
+	$: diffInfo = $leaderboardStore?.leaderboard?.diffInfo;
 
 	$: isRanked = leaderboard?.stats?.status === DifficultyStatus.ranked;
 	$: isQualified = leaderboard?.stats?.status === DifficultyStatus.qualified;
@@ -778,7 +768,7 @@
 	$: playerIsFollowingSomeone = !!$account?.followed?.length;
 	$: showGraphOption = $configStore?.leaderboardPreferences?.showGraphOption;
 	$: showAccGraph = $configStore?.leaderboardPreferences?.showAccGraph;
-	$: updateTypeOptions(mainPlayerCountry, playerIsFollowingSomeone, isRanked, showGraphOption, showAccGraph);
+	$: updateTypeOptions(playerIsFollowingSomeone, isRanked, showGraphOption, showAccGraph);
 	$: leaderboard?.stats?.status !== undefined &&
 		refreshSortValues(allSortValues, currentFilters, formatDiffStatus(leaderboard?.stats?.status));
 	$: generalMapperId = song?.mapperId == $account?.player?.playerInfo.mapperId ? $account?.player?.playerInfo.mapperId : null;
@@ -823,7 +813,7 @@
 	<title
 		>{fixedBrowserTitle
 			? fixedBrowserTitle
-			: `${opt(song, 'name', 'Leaderboard')} / ${currentDiff ? currentDiff.name + ' / ' : ''} ${page} - ${ssrConfig.name}`}</title>
+			: `${song?.name ? song.name + ' / ' : ''} ${currentDiff ? currentDiff.name + ' / ' : ''} ${page} - ${ssrConfig.name}`}</title>
 </svelte:head>
 
 <section class="align-content">
@@ -1003,7 +993,7 @@
 													</div>
 												{/if}
 											</div>
-											{#if opt(score, 'player.playerId') != $account?.id}
+											{#if score?.player?.playerId != $account?.id}
 												<div class="voter-feedback">
 													{#if score.score.rankVoting.feedbacks && score.score.rankVoting.feedbacks.filter(f => f.rtMember == $account.id).length}
 														{score.score.rankVoting.feedbacks.filter(f => f.rtMember == $account.id)[0].value ? 'Good voter' : 'Bad voter'}
@@ -1046,7 +1036,7 @@
 					<ScoresAccGraph {leaderboard} page={currentPage} />
 				{:else if clanRankingList?.length}
 					<div class="scores-grid grid-transition-helper">
-						{#each clanRankingList as cr, idx (opt(cr, 'clan.tag', ''))}
+						{#each clanRankingList as cr, idx (cr?.clan?.tag ?? '')}
 							<div
 								class={`row-${idx}`}
 								in:fly={{x: 200, delay: idx * 20, duration: 500}}
