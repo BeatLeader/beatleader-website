@@ -374,6 +374,7 @@
 		display: flex;
 		flex-direction: column;
 		justify-content: flex-start;
+		align-items: center;
 		flex: 1;
 		z-index: 1;
 	}
@@ -461,7 +462,7 @@
 		row-gap: 0.5em;
 		padding-top: 0.7em;
 		padding-bottom: 0.7em;
-		max-width: 10em;
+		max-width: 11em;
 	}
 
 	header small {

@@ -275,15 +275,14 @@
 		},
 	];
 
-	const stringifyFilters = (query, keys) =>
-		stringify((keys ?? Object.keys(query)).reduce((obj, k) => ({...obj, [k]: query?.[k] ?? ''}), {})).toLowerCase();
-
 	const findCurrentTypeOption = (type, filters) => {
-		const exactMatch = typeOptions.find(
-			to => to?.type === type && stringifyFilters(to?.filters ?? {}) === stringifyFilters(filters, Object.keys(to?.filters ?? []))
-		);
-		if (exactMatch) return exactMatch;
-
+		if (
+			type === 'global' &&
+			filters?.countries &&
+			(filters?.countries == mainPlayerCountry || (filters?.countries?.length == 1 && filters?.countries[0] == mainPlayerCountry))
+		) {
+			return typeOptions.find(to => to?.label === 'Country') ?? null;
+		}
 		return typeOptions.find(to => to?.type === type) ?? null;
 	};
 
@@ -338,6 +337,7 @@
 		const newFilters = {...currentFilters, ...(event?.detail?.filters ?? null)};
 
 		currentFilters = newFilters;
+		makeComplexFilters(currentFilters, mainPlayerCountry);
 		changeParams(currentLeaderboardId, newType, 1, newFilters, !dontNavigate, true);
 
 		dispatch('type-changed', {leaderboardId: currentLeaderboardId, type: newType, page: currentPage, filters: newFilters});
@@ -412,7 +412,7 @@
 		};
 	}
 
-	function updateTypeOptions(playerIsFollowingSomeone, isRanked, showGraphOption, showAccGraph) {
+	function updateTypeOptions(country, playerIsFollowingSomeone, isRanked, showGraphOption, showAccGraph) {
 		//if (!country?.length && !playerIsFollowingSomeone) return;
 
 		typeOptions = availableTypeOptions
@@ -507,6 +507,19 @@
 							},
 						]
 					: []
+			)
+			.concat(
+				country?.length
+					? [
+							{
+								type: 'global',
+								label: 'Country',
+								icon: `<img src="/assets/flags/${country.toLowerCase()}.png" loading="lazy" class="country">`,
+								url: `/leaderboard/global/${currentLeaderboardId}/1?countries=${country}`,
+								filters: {countries: country, clanTag: '', hmds: ''},
+							},
+						]
+					: []
 			);
 
 		const newCurrentTypeOption = findCurrentTypeOption(currentType, currentFilters);
@@ -579,7 +592,12 @@
 					placeholder: 'Select or enter country...',
 					value: currentFilters.countries,
 					mainPlayerCountry: mainPlayerCountry,
-					open: currentFilters.countries?.length,
+					open:
+						currentFilters.countries?.length &&
+						!(
+							currentFilters?.countries == mainPlayerCountry ||
+							(currentFilters?.countries?.length == 1 && currentFilters?.countries[0] == mainPlayerCountry)
+						),
 				},
 			},
 			{
@@ -623,7 +641,7 @@
 	let battleRoyaleDraftList = [];
 
 	function startBattleRoyale() {
-		let link = `https://royale.beatleader.com/?hash=${hash}&difficulty=${capitalize(diffInfo.diff)}&players=${battleRoyaleDraftList
+		let link = `https://royale.beatleader.com/?hash=${hash}&difficulty=${capitalize(diffInfo.diff)}&mode=${diffInfo.type}&players=${battleRoyaleDraftList
 			.map(br => br.playerId)
 			.join(',')}`;
 		window.open(link, '_blank');
@@ -757,7 +775,7 @@
 
 	$: currentPlayerId = $account?.id;
 	$: higlightedPlayerId = higlightedScore?.playerId ?? currentPlayerId;
-	$: mainPlayerCountry = $account?.player?.playerInfo?.country?.country ?? null;
+	$: mainPlayerCountry = $account?.player?.playerInfo?.country?.country?.toLowerCase() ?? null;
 
 	$: makeComplexFilters(buildFiltersFromLocation(location), mainPlayerCountry);
 
@@ -768,7 +786,7 @@
 	$: playerIsFollowingSomeone = !!$account?.followed?.length;
 	$: showGraphOption = $configStore?.leaderboardPreferences?.showGraphOption;
 	$: showAccGraph = $configStore?.leaderboardPreferences?.showAccGraph;
-	$: updateTypeOptions(playerIsFollowingSomeone, isRanked, showGraphOption, showAccGraph);
+	$: updateTypeOptions(mainPlayerCountry, playerIsFollowingSomeone, isRanked, showGraphOption, showAccGraph);
 	$: leaderboard?.stats?.status !== undefined &&
 		refreshSortValues(allSortValues, currentFilters, formatDiffStatus(leaderboard?.stats?.status));
 	$: generalMapperId = song?.mapperId == $account?.player?.playerInfo.mapperId ? $account?.player?.playerInfo.mapperId : null;
