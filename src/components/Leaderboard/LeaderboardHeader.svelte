@@ -129,16 +129,18 @@
 						{/if}
 					</div>
 				</div>
-				{#if song.externalStatuses}
-					<div class="song-statuses">
-						{#if leaderboard.stats && leaderboard.stats.status != DifficultyStatus.unranked}
-							<SongStatus songStatus={wrapBLStatus(leaderboard.stats.status)} />
-						{/if}
-						{#each leaderboard.song.externalStatuses as songStatus}
-							<SongStatus {songStatus} />
-						{/each}
-					</div>
-				{/if}
+				<div class="header-middle-part">
+					{#if song.externalStatuses}
+						<div class="song-statuses">
+							{#if leaderboard.stats && leaderboard.stats.status != DifficultyStatus.unranked}
+								<SongStatus songStatus={wrapBLStatus(leaderboard.stats.status)} />
+							{/if}
+							{#each leaderboard.song.externalStatuses as songStatus}
+								<SongStatus {songStatus} />
+							{/each}
+						</div>
+					{/if}
+				</div>
 				<div class="header-bottom-part desktop-only">
 					<div class="icons-container">
 						<Icons {song} {diffInfo} mapCheck={true} {batleRoyale} bind:battleRoyaleDraft />
@@ -146,7 +148,7 @@
 				</div>
 			</div>
 			<div class="title-and-buttons desktop-only">
-				<div class="header-top-part">
+				<div class="header-triangle-part">
 					<h2 class="title is-6" style="display: contents;">
 						{#if leaderboard.stats && leaderboard.stats.passRating}
 							<MapTriangle width="8em" height="8em" mapRating={ratings ?? leaderboard.stats} showRatings={true} />
@@ -284,7 +286,7 @@
 		transform: scale(1.15);
 		width: fit-content;
 		margin-left: 0.8em;
-		margin-bottom: 0.1em;
+		margin-bottom: 0.11em;
 	}
 
 	.version-selector-container {
@@ -367,16 +369,31 @@
 		justify-content: space-between;
 		flex-direction: column;
 		min-height: 14em;
-		gap: 1em;
 	}
 
-	.header-top-part {
+	.header-triangle-part {
 		display: flex;
 		flex-direction: column;
 		justify-content: flex-start;
 		align-items: center;
 		flex: 1;
 		z-index: 1;
+	}
+
+	.header-top-part {
+		display: flex;
+		flex-direction: column;
+		justify-content: flex-start;
+		z-index: 1;
+	}
+
+	.header-middle-part {
+		display: flex;
+		flex-direction: column;
+		justify-content: flex-end;
+		z-index: 1;
+		flex: 1;
+		padding-bottom: 0.7em;
 	}
 
 	.header-bottom-part {
