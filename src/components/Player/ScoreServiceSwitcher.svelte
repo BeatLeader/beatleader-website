@@ -32,14 +32,14 @@
 	let accSaberCategories = null;
 
 	let allServices = [];
-	function updateAllServices(playerAlias) {
+	function updateAllServices(playerAlias, serviceParams) {
 		allServices = [
 			{
 				id: 'scores',
 				label: 'Scores',
 				icon: '<div class="beatleader-icon"></div>',
 				cls: 'service-tab-button',
-				url: `/u/${playerAlias}`,
+				url: serviceParams?.sort ? `/u/${playerAlias}/scores/${serviceParams?.sort}/1` : `/u/${playerAlias}`,
 				switcherComponents: [
 					{
 						component: Switcher,
@@ -134,7 +134,7 @@
 				label: 'Attempts',
 				icon: '<div class="beatleader-icon"></div>',
 				cls: 'service-tab-button',
-				url: `/u/${playerAlias}/attempts/date/1`,
+				url: serviceParams?.sort ? `/u/${playerAlias}/attempts/${serviceParams?.sort}/1` : `/u/${playerAlias}/attempts/date/1`,
 				availabilityTitle: `This player's attempts are private`,
 				switcherComponents: [
 					{
@@ -386,7 +386,6 @@
 											hidden: !sortingOrFilteringAppearance.includes(`sf-search`) && !serviceParams?.filters?.search,
 											open: !!serviceParams?.filters?.search,
 											value: serviceParams?.filters?.search ?? null,
-											debounce: true,
 											placeholder: 'Enter song name...',
 										},
 									},
@@ -646,8 +645,9 @@
 
 	$: profileAppearance = $editModel?.data?.profileAppearance ?? $account?.player?.profileSettings?.profileAppearance ?? null;
 
-	$: updateAllServices(playerAlias);
+	$: updateAllServices(playerAlias, serviceParams);
 	$: updateAvailableServiceNames(player, service, $account);
+
 	$: availableServices = updateAvailableServices(
 		availableServiceNames,
 		service,

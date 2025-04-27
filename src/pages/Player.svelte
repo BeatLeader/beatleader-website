@@ -128,8 +128,6 @@
 		const newService = event?.detail ?? null;
 		if (!newService) return;
 
-		if (newService !== serviceParamsManager.getService()) serviceParamsManager.clearServiceParams();
-
 		serviceParamsManager.update({}, newService);
 		updateUrl();
 	}

@@ -20,8 +20,11 @@
 		return false;
 	}
 
+	let lastKeyUpTime = 0;
+
 	function onKeyUp(e) {
 		const value = e?.target?.value ?? null;
+		lastKeyUpTime = Date.now();
 
 		if (e.key === 'Enter') {
 			e.preventDefault();
@@ -39,11 +42,20 @@
 		}
 	}
 
+	let internalValue = null;
+	function updateInternalValue(value) {
+		if (Date.now() - lastKeyUpTime >= 1000) {
+			internalValue = value;
+		}
+	}
+
+	$: updateInternalValue(value);
+
 	$: open && filterEl && onOpen(filterEl, open);
 </script>
 
 <form on:submit={onSubmit}>
-	<input type="text" {placeholder} {value} class:open bind:this={filterEl} on:keyup={onKeyUp} />
+	<input type="text" {placeholder} value={internalValue} class:open bind:this={filterEl} on:keyup={onKeyUp} />
 </form>
 
 <style>
