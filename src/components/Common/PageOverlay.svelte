@@ -30,7 +30,7 @@
 			node.style.position = 'fixed';
 		} else {
 			// If no fixed parent, use absolute position relative to viewport
-			node.style.transform = 'translate(' + targetRect.left + 'px, ' + targetRect.top + 'px)';
+			node.style.transform = 'translate(' + targetRect.left + 'px, ' + (window.scrollY + targetRect.top) + 'px)';
 			node.style.position = 'absolute';
 		}
 
