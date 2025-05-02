@@ -795,7 +795,7 @@
 	$: fetchUserScore(higlightedPlayerId, song?.hash, leaderboard?.diffInfo?.diff, leaderboard?.diffInfo?.type, userScoreOnCurrentPage);
 	$: updateScoresWithUser(userScoreOnCurrentPage, scores, userScore);
 
-	$: votingStore.fetchStatus(hash, diffInfo?.diff, diffInfo?.type);
+	$: if (currentPlayerId) votingStore.fetchStatus(hash, diffInfo?.diff, diffInfo?.type);
 
 	$: modifiers = $leaderboardStore?.leaderboard?.difficultyBl?.modifierValues ?? null;
 	$: featuredPlaylists = leaderboard?.stats?.featuredPlaylists;

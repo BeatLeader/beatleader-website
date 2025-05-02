@@ -62,6 +62,9 @@
 
 	$: isFollowed = !!$followed?.find(f => f?.playerId === follower.id);
 	$: follower && refreshMutual(follower);
+	$: avatartUrl = follower.avatar?.includes('beatleader')
+		? follower.avatar.replace(follower.avatar.split('.')[follower.avatar.split('.').length - 1], 'webp')
+		: follower.avatar;
 </script>
 
 <a
@@ -71,7 +74,7 @@
 	on:click|preventDefault|stopPropagation={() => navigate(`/u/${follower.alias ?? follower.id}`)}
 	in:fly|global={{delay: idx * 10, x: animationSign * 100}}>
 	{#if !loading}
-		<img class="avatar" src={follower.avatar} />
+		<img class="avatar" src={avatartUrl} />
 	{:else}
 		<div class="avatar-placeholder">
 			<Spinner />

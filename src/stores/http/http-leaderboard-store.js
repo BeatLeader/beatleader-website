@@ -13,54 +13,11 @@ export default (leaderboardId, type = 'global', page = 1, filters = {}, initialS
 
 	const {subscribe: subscribeEnhanced, set: setEnhanced} = writable(null);
 
-	const getCurrentEnhanceTaskId = () => `${currentLeaderboardId}/${currentPage}/${currentType}`;
-	const getPatchId = (leaderboardId, scoreRow) => `${leaderboardId}/${scoreRow?.player?.playerId}`;
-
-	let enhancePatches = {};
-	let currentEnhanceTaskId = null;
-
 	const onNewData = ({fetchParams, state, set}) => {
 		currentLeaderboardId = fetchParams?.leaderboardId ?? null;
 		currentType = fetchParams?.type ?? 'global';
 		currentPage = fetchParams?.page ?? 1;
 		currentFilters = fetchParams?.filters ?? {};
-
-		if (!state) return;
-
-		const enhanceTaskId = getCurrentEnhanceTaskId();
-		if (currentEnhanceTaskId !== enhanceTaskId) {
-			enhancePatches = {};
-			currentEnhanceTaskId = enhanceTaskId;
-		}
-
-		const stateProduce = (state, patchId, producer) =>
-			produce(state, producer, patches => {
-				if (!enhancePatches[patchId]) enhancePatches[patchId] = [];
-
-				enhancePatches[patchId].push(...patches);
-			});
-
-		const debouncedSetState = debounce((enhanceTaskId, state) => {
-			if (currentEnhanceTaskId !== enhanceTaskId) return;
-
-			set(state);
-		}, 100);
-
-		const newState = {...state};
-
-		const setStateRow = (enhanceTaskId, scoreRow) => {
-			if (currentEnhanceTaskId !== enhanceTaskId) return null;
-
-			const patchId = getPatchId(currentLeaderboardId, scoreRow);
-			const stateRowIdx = newState.scores.findIndex(s => getPatchId(currentLeaderboardId, s) === patchId);
-			if (stateRowIdx < 0) return;
-
-			newState.scores[stateRowIdx] = applyPatches(newState.scores[stateRowIdx], enhancePatches[patchId]);
-
-			debouncedSetState(enhanceTaskId, newState);
-
-			return newState.scores[stateRowIdx];
-		};
 	};
 
 	const provider = createLeaderboardPageProvider();
