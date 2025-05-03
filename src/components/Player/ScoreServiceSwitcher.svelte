@@ -14,6 +14,7 @@
 	import {BL_API_URL, SPECIAL_PLAYER_ID} from '../../network/queues/beatleader/api-queue';
 	import TabSwitcher from '../Common/TabSwitcher.svelte';
 	import {ATTEMPT_END_TYPE, titleForEndType} from '../../utils/attempts';
+	import createServiceParamsManager from './utils/service-param-manager';
 
 	export let playerId = null;
 	export let playerAlias = null;
@@ -26,6 +27,7 @@
 	const dispatch = createEventDispatcher();
 	const accSaberService = createAccSaberService();
 	const account = createAccountStore();
+	const serviceParamsManager = createServiceParamsManager();
 
 	let availableServiceNames = ['scores'];
 	let strictlyAvailableServiceNames = ['scores'];
@@ -33,45 +35,52 @@
 
 	let allServices = [];
 	function updateAllServices(playerAlias, serviceParams) {
+		const buildUrl = (serviceId, params = {}, noPage = false) => {
+			const mergedParams = {...serviceParamsManager.getDefaultParams(serviceId), ...serviceParams, ...params};
+			const servicePath = serviceParamsManager.getUrl(serviceId, mergedParams, noPage);
+			const prefix = `/u/${playerAlias}`;
+			return servicePath.length ? `${prefix}/${servicePath}` : prefix;
+		};
+
 		allServices = [
 			{
 				id: 'scores',
 				label: 'Scores',
 				icon: '<div class="beatleader-icon"></div>',
 				cls: 'service-tab-button',
-				url: serviceParams?.sort ? `/u/${playerAlias}/scores/${serviceParams?.sort}/1` : `/u/${playerAlias}`,
+				url: buildUrl('scores', {}),
 				switcherComponents: [
 					{
 						component: Switcher,
 						props: {
 							class: 'score-sorting',
 							values: [
-								{id: 'pp', label: 'PP', title: 'Sort by PP', iconFa: 'fa fa-cubes', url: `/u/${playerAlias}/scores/pp/1`},
+								{id: 'pp', label: 'PP', title: 'Sort by PP', iconFa: 'fa fa-cubes', url: buildUrl('scores', {sort: 'pp'})},
 								{
 									id: 'accPP',
 									label: 'Acc PP',
 									title: 'Sort by acc PP',
 									iconFa: 'fa fa-arrows-to-dot',
-									url: `/u/${playerAlias}/scores/accPP/1`,
+									url: buildUrl('scores', {sort: 'accPP'}),
 								},
 								{
 									id: 'passPP',
 									label: 'Pass PP',
 									title: 'Sort by pass PP',
 									iconFa: 'fa fa-person-walking-dashed-line-arrow-right',
-									url: `/u/${playerAlias}/scores/passPP/1`,
+									url: buildUrl('scores', {sort: 'passPP'}),
 								},
 								{
 									id: 'techPP',
 									label: 'Tech PP',
 									title: 'Sort by tech PP',
 									iconFa: 'fa fa-arrows-split-up-and-left',
-									url: `/u/${playerAlias}/scores/techPP/1`,
+									url: buildUrl('scores', {sort: 'techPP'}),
 								},
-								{id: 'date', label: 'Date', title: 'Sort by date', iconFa: 'fa fa-clock', url: `/u/${playerAlias}/scores/date/1`},
-								{id: 'acc', label: 'Acc', title: 'Sort by accuracy', iconFa: 'fa fa-crosshairs', url: `/u/${playerAlias}/scores/acc/1`},
-								{id: 'rank', label: 'Rank', title: 'Sort by rank', iconFa: 'fa fa-list-ol', url: `/u/${playerAlias}/scores/rank/1`},
-								{id: 'stars', label: 'Stars', title: 'Sort by song stars', iconFa: 'fa fa-star', url: `/u/${playerAlias}/scores/stars/1`},
+								{id: 'date', label: 'Date', title: 'Sort by date', iconFa: 'fa fa-clock', url: buildUrl('scores', {sort: 'date'})},
+								{id: 'acc', label: 'Acc', title: 'Sort by accuracy', iconFa: 'fa fa-crosshairs', url: buildUrl('scores', {sort: 'acc'})},
+								{id: 'rank', label: 'Rank', title: 'Sort by rank', iconFa: 'fa fa-list-ol', url: buildUrl('scores', {sort: 'rank'})},
+								{id: 'stars', label: 'Stars', title: 'Sort by song stars', iconFa: 'fa fa-star', url: buildUrl('scores', {sort: 'stars'})},
 								{
 									id: 'playCount',
 									label: 'Plays',
@@ -79,30 +88,30 @@
 										player?.profileSettings?.showStatsPublic == false ? ' (this player has attempts hidden)' : ''
 									}`,
 									iconFa: 'fa fa-repeat',
-									url: `/u/${playerAlias}/scores/playCount/1`,
+									url: buildUrl('scores', {sort: 'playCount'}),
 									disabled: player?.profileSettings?.showStatsPublic == false,
 								},
-								{id: 'pauses', label: 'Pauses', title: 'Sort by pauses', iconFa: 'fa fa-pause', url: `/u/${playerAlias}/scores/pauses/1`},
+								{id: 'pauses', label: 'Pauses', title: 'Sort by pauses', iconFa: 'fa fa-pause', url: buildUrl('scores', {sort: 'pauses'})},
 								{
 									id: 'maxStreak',
 									label: 'Streak',
 									title: 'Sort by 115 streak',
 									iconFa: 'icon115s',
-									url: `/u/${playerAlias}/scores/maxStreak/1`,
+									url: buildUrl('scores', {sort: 'maxStreak'}),
 								},
 								{
 									id: 'replaysWatched',
 									label: 'Watched',
 									title: 'Sort by replay watched',
 									iconFa: 'fa fa-eye',
-									url: `/u/${playerAlias}/scores/replaysWatched/1`,
+									url: buildUrl('scores', {sort: 'replaysWatched'}),
 								},
 								{
 									id: 'mistakes',
 									label: 'Mistakes',
 									title: 'Sort by mistakes',
 									iconFa: 'icon-mistakes',
-									url: `/u/${playerAlias}/scores/mistakes/1`,
+									url: buildUrl('scores', {sort: 'mistakes'}),
 								},
 							],
 						},
@@ -134,7 +143,7 @@
 				label: 'Attempts',
 				icon: '<div class="beatleader-icon"></div>',
 				cls: 'service-tab-button',
-				url: serviceParams?.sort ? `/u/${playerAlias}/attempts/${serviceParams?.sort}/1` : `/u/${playerAlias}/attempts/date/1`,
+				url: buildUrl('attempts', {}),
 				availabilityTitle: `This player's attempts are private`,
 				switcherComponents: [
 					{
@@ -142,31 +151,37 @@
 						props: {
 							class: 'score-sorting',
 							values: [
-								{id: 'pp', label: 'PP', title: 'Sort by PP', iconFa: 'fa fa-cubes', url: `/u/${playerAlias}/attempts/pp/1`},
-								{id: 'date', label: 'Date', title: 'Sort by date', iconFa: 'fa fa-clock', url: `/u/${playerAlias}/attempts/date/1`},
-								{id: 'acc', label: 'Acc', title: 'Sort by accuracy', iconFa: 'fa fa-crosshairs', url: `/u/${playerAlias}/attempts/acc/1`},
-								{id: 'rank', label: 'Rank', title: 'Sort by rank', iconFa: 'fa fa-list-ol', url: `/u/${playerAlias}/attempts/rank/1`},
+								{id: 'pp', label: 'PP', title: 'Sort by PP', iconFa: 'fa fa-cubes', url: buildUrl('attempts', {sort: 'pp'})},
+								{id: 'date', label: 'Date', title: 'Sort by date', iconFa: 'fa fa-clock', url: buildUrl('attempts', {sort: 'date'})},
+								{id: 'acc', label: 'Acc', title: 'Sort by accuracy', iconFa: 'fa fa-crosshairs', url: buildUrl('attempts', {sort: 'acc'})},
+								{id: 'rank', label: 'Rank', title: 'Sort by rank', iconFa: 'fa fa-list-ol', url: buildUrl('attempts', {sort: 'rank'})},
 								{
 									id: 'playCount',
 									label: 'Plays',
 									title: `Sort by attempt count`,
 									iconFa: 'fa fa-repeat',
-									url: `/u/${playerAlias}/attempts/playCount/1`,
+									url: buildUrl('attempts', {sort: 'playCount'}),
 								},
-								{id: 'pauses', label: 'Pauses', title: 'Sort by pauses', iconFa: 'fa fa-pause', url: `/u/${playerAlias}/attempts/pauses/1`},
+								{
+									id: 'pauses',
+									label: 'Pauses',
+									title: 'Sort by pauses',
+									iconFa: 'fa fa-pause',
+									url: buildUrl('attempts', {sort: 'pauses'}),
+								},
 								{
 									id: 'maxStreak',
 									label: 'Streak',
 									title: 'Sort by 115 streak',
 									iconFa: 'icon115s',
-									url: `/u/${playerAlias}/attempts/maxStreak/1`,
+									url: buildUrl('attempts', {sort: 'maxStreak'}),
 								},
 								{
 									id: 'mistakes',
 									label: 'Mistakes',
 									title: 'Sort by mistakes',
 									iconFa: 'icon-mistakes',
-									url: `/u/${playerAlias}/attempts/mistakes/1`,
+									url: buildUrl('attempts', {sort: 'mistakes'}),
 								},
 							],
 						},
@@ -198,15 +213,15 @@
 				label: 'Beat Savior',
 				cls: 'mode-tab-button',
 				icon: '<div class="beatsavior-icon"></div>',
-				url: `/u/${playerAlias}/beatsavior/date/1`,
+				url: buildUrl('beatsavior', {}),
 				switcherComponents: [
 					{
 						component: Switcher,
 						props: {
 							values: [
-								{id: 'date', label: 'Date', iconFa: 'fa fa-clock', url: `/u/${playerAlias}/beatsavior/date/1`},
-								{id: 'acc', label: 'Acc', iconFa: 'fa fa-crosshairs', url: `/u/${playerAlias}/beatsavior/acc/1`},
-								{id: 'mistakes', label: 'Mistakes', iconFa: 'fa fa-times', url: `/u/${playerAlias}/beatsavior/mistake/1`},
+								{id: 'date', label: 'Date', iconFa: 'fa fa-clock', url: buildUrl('beatsavior', {sort: 'date'})},
+								{id: 'acc', label: 'Acc', iconFa: 'fa fa-crosshairs', url: buildUrl('beatsavior', {sort: 'acc'})},
+								{id: 'mistakes', label: 'Mistakes', iconFa: 'fa fa-times', url: buildUrl('beatsavior', {sort: 'mistake'})},
 							],
 						},
 						key: 'sort',
@@ -226,7 +241,7 @@
 				label: 'AccSaber',
 				cls: 'service-tab-button',
 				icon: '<div class="accsaber-icon"></div>',
-				url: `/u/${playerAlias}/accsaber/date/1`,
+				url: buildUrl('accsaber', {}),
 				availabilityTitle: `AccSaber info is not available for this player`,
 				switcherComponents: [
 					{
@@ -243,10 +258,10 @@
 						key: 'sort',
 						props: {
 							values: [
-								{id: 'ap', label: 'AP', iconFa: 'fa fa-cubes'},
-								{id: 'date', label: 'Date', iconFa: 'fa fa-clock'},
-								{id: 'acc', label: 'Acc', iconFa: 'fa fa-crosshairs'},
-								{id: 'rank', label: 'Rank', iconFa: 'fa fa-list-ol'},
+								{id: 'ap', label: 'AP', iconFa: 'fa fa-cubes', url: buildUrl('accsaber', {sort: 'ap'})},
+								{id: 'date', label: 'Date', iconFa: 'fa fa-clock', url: buildUrl('accsaber', {sort: 'date'})},
+								{id: 'acc', label: 'Acc', iconFa: 'fa fa-crosshairs', url: buildUrl('accsaber', {sort: 'acc'})},
+								{id: 'rank', label: 'Rank', iconFa: 'fa fa-list-ol', url: buildUrl('accsaber', {sort: 'rank'})},
 							],
 						},
 						onChange: event => {
@@ -545,7 +560,6 @@
 												{id: ATTEMPT_END_TYPE.Restart, name: titleForEndType(ATTEMPT_END_TYPE.Restart)},
 												{id: ATTEMPT_END_TYPE.Quit, name: titleForEndType(ATTEMPT_END_TYPE.Quit)},
 												{id: ATTEMPT_END_TYPE.Practice, name: titleForEndType(ATTEMPT_END_TYPE.Practice)},
-												,
 											],
 											open: !!serviceParams?.filters?.endType,
 											defaultValue: serviceParams?.filters?.endType ? parseInt(serviceParams?.filters?.endType) : null,
@@ -572,7 +586,7 @@
 									values: accSaberCategories.map(c => ({
 										id: c.name,
 										label: c.displayName ?? c.name,
-										url: `/u/${playerAlias}/${service}/${c.name}/date/1`,
+										url: buildUrl('accsaber', {type: c.name}),
 									})),
 								};
 						}

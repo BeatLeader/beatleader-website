@@ -176,9 +176,11 @@ export default () => {
 	return {
 		getAvailableServices: getAllServices,
 		initFromUrl,
+		getDefaultParams,
 		getDefaultServiceUrl,
 		getCurrentServiceUrl,
 		getCurrentServiceUrlWithoutPage,
+		getUrl,
 		get,
 		getService: () => currentService,
 		getParams: () => currentServiceParams,
