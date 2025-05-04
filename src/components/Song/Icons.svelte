@@ -135,17 +135,17 @@
 		successToast(text + ' Copied to Clipboard!');
 	}
 
-	function webPlayerLink(replayLink, scoreId, webPlayer) {
+	function webPlayerLink(replayLink, scoreId, webPlayer, attempt) {
 		if (webPlayer == 'arcviewer') {
 			if (replayLink?.length) {
 				return `https://allpoland.github.io/ArcViewer/?replayURL=${replayLink}`;
-			} else if (scoreId) {
+			} else if (scoreId && !attempt) {
 				return `https://allpoland.github.io/ArcViewer/?scoreID=${scoreId}`;
 			}
 		} else {
 			if (replayLink?.length) {
 				return `${BL_REPLAYS_URL}?link=${replayLink}`;
-			} else if (scoreId) {
+			} else if (scoreId && !attempt) {
 				return `${BL_REPLAYS_URL}?scoreId=${scoreId}`;
 			}
 		}
@@ -180,8 +180,8 @@
 	$: ocdifficulties = ocplaylistSong?.difficulties?.map(el => capitalize(el.name) + el.characteristic);
 
 	$: isAdmin = $account.player && $account.player.playerInfo.role && $account.player.playerInfo.role.includes('admin');
-	$: replayUrl = webPlayerLink(replayLink, scoreId, !shownIcons.includes('altReplay') && $configStore.preferences.webPlayer);
-	$: altReplayUrl = webPlayerLink(replayLink, scoreId, 'arcviewer');
+	$: replayUrl = webPlayerLink(replayLink, scoreId, !shownIcons.includes('altReplay') && $configStore.preferences.webPlayer, attempt);
+	$: altReplayUrl = webPlayerLink(replayLink, scoreId, 'arcviewer', attempt);
 	$: analyzerUrl = analyzerLink(replayLink, scoreId);
 	$: previewUrl = `https://allpoland.github.io/ArcViewer/?id=${songKey}${diffName ? `&difficulty=${diffName}` : ''}${
 		charName ? `&mode=${charName}` : ''
