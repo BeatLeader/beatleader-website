@@ -113,7 +113,6 @@
 	<div
 		class={`song-score row-${idx} ${inList ? 'score-in-list' : ''}`}
 		in:maybe|global={{fn: fly, x: animationSign * 300, delay: idx * 30, duration: 300}}
-		out:maybe|global={{fn: fade, duration: 100}}
 		class:with-details={showDetails}>
 		{#if service == 'attempts'}
 			<header>

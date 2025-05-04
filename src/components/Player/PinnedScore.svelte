@@ -291,5 +291,6 @@
 
 	.pin-description {
 		overflow-wrap: anywhere;
+		overflow: hidden;
 	}
 </style>
