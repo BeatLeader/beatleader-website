@@ -169,6 +169,12 @@ export const HMDs = {
 		color: 'invert(99%) sepia(3%) saturate(82%) hue-rotate(58deg) brightness(118%) contrast(100%)',
 		priority: 16,
 	},
+	62: {
+		name: 'Pimax Crystal',
+		icon: 'pimax.webp',
+		color: 'invert(25%) sepia(89%) saturate(5057%) hue-rotate(186deg) brightness(163%) contrast(85%)',
+		priority: 16,
+	},
 	40: {
 		name: 'Pimax Artisan',
 		icon: 'pimax.webp',
@@ -251,6 +257,18 @@ export const HMDs = {
 	71: {
 		name: 'MeganeX VG1',
 		icon: 'meganex.svg',
+		color: '',
+		priority: 26,
+	},
+	73: {
+		name: 'MeganeX Superlight',
+		icon: 'meganex.svg',
+		color: '',
+		priority: 26,
+	},
+	74: {
+		name: 'Somnium VR-1',
+		icon: 'somnium.svg',
 		color: '',
 		priority: 26,
 	},
