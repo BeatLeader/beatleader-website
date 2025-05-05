@@ -131,37 +131,41 @@ export default () => {
 
 	const isDataForPlayerAvailable = async playerData => {
 		if (!playerData?.playerId || !parseInt(playerData.playerId) || !configStore.get('preferences').showAccSaber) return false;
-		if (playersMap[playerData.playerId] === undefined) {
-			const ids = playerData.linkedIds?.oculusPCId?.length
-				? [playerData.linkedIds.steamId, playerData.linkedIds.oculusPCId]
-				: [playerData.playerId];
-			for (let i = 0; i < ids.length; i++) {
-				const playerId = ids[i];
-				const available = await fetchGraphQL(
-					`
+		try {
+			if (playersMap[playerData.playerId] === undefined) {
+				const ids = playerData.linkedIds?.oculusPCId?.length
+					? [playerData.linkedIds.steamId, playerData.linkedIds.oculusPCId]
+					: [playerData.playerId];
+				for (let i = 0; i < ids.length; i++) {
+					const playerId = ids[i];
+					const available = await fetchGraphQL(
+						`
 			query FindPlayer($playerId: BigInt) {
 				players: overallAccSaberPlayers(condition: {playerId: $playerId}) {
 					totalCount
 				}
 			}
 			`,
-					{playerId}
-				).then(r => r.data?.players?.totalCount > 0);
+						{playerId}
+					).then(r => r.data?.players?.totalCount > 0);
 
-				if (available) {
-					playersMap[playerData.playerId] = true;
-					playerLinkMap[playerData.playerId] = playerId;
-					if (playerData.alias) {
-						playerLinkMap[playerData.alias] = playerId;
+					if (available) {
+						playersMap[playerData.playerId] = true;
+						playerLinkMap[playerData.playerId] = playerId;
+						if (playerData.alias) {
+							playerLinkMap[playerData.alias] = playerId;
+						}
+						break;
 					}
-					break;
 				}
 			}
+			if (playerData.alias && playersMap[playerData.alias] === undefined) {
+				playerLinkMap[playerData.alias] = playerLinkMap[playerData.playerId];
+			}
+			return await playersMap[playerData.playerId];
+		} catch {
+			return false;
 		}
-		if (playerData.alias && playersMap[playerData.alias] === undefined) {
-			playerLinkMap[playerData.alias] = playerLinkMap[playerData.playerId];
-		}
-		return await playersMap[playerData.playerId];
 	};
 
 	const getPlayerGain = (playerHistory, daysAgo = 1, maxDaysAgo = 7) =>

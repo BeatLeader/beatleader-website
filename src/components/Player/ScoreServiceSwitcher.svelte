@@ -33,15 +33,22 @@
 	let strictlyAvailableServiceNames = ['scores'];
 	let accSaberCategories = null;
 
+	const buildUrl = (serviceId, params = {}, noPage = false) => {
+		const defaultParams = serviceParamsManager.getDefaultParams(serviceId);
+		let mergedParams = {...defaultParams, ...serviceParams, ...params};
+
+		// Ensure type is handled correctly for accsaber (use current if not explicitly changing)
+		if (serviceId === 'accsaber' && !params.type) {
+			mergedParams.type = serviceParams?.type ?? defaultParams.type;
+		}
+
+		const servicePath = serviceParamsManager.getUrl(serviceId, mergedParams, noPage);
+		const prefix = `/u/${playerAlias}`;
+		return servicePath.length ? `${prefix}/${servicePath}` : prefix;
+	};
+
 	let allServices = [];
 	function updateAllServices(playerAlias, serviceParams) {
-		const buildUrl = (serviceId, params = {}, noPage = false) => {
-			const mergedParams = {...serviceParamsManager.getDefaultParams(serviceId), ...serviceParams, ...params};
-			const servicePath = serviceParamsManager.getUrl(serviceId, mergedParams, noPage);
-			const prefix = `/u/${playerAlias}`;
-			return servicePath.length ? `${prefix}/${servicePath}` : prefix;
-		};
-
 		allServices = [
 			{
 				id: 'scores',
@@ -221,7 +228,7 @@
 							values: [
 								{id: 'date', label: 'Date', iconFa: 'fa fa-clock', url: buildUrl('beatsavior', {sort: 'date'})},
 								{id: 'acc', label: 'Acc', iconFa: 'fa fa-crosshairs', url: buildUrl('beatsavior', {sort: 'acc'})},
-								{id: 'mistakes', label: 'Mistakes', iconFa: 'fa fa-times', url: buildUrl('beatsavior', {sort: 'mistake'})},
+								{id: 'mistakes', label: 'Mistakes', iconFa: 'fa fa-times', url: buildUrl('beatsavior', {sort: 'mistakes'})},
 							],
 						},
 						key: 'sort',

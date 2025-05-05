@@ -1,6 +1,28 @@
 const STORE_SORTING_KEY = 'PlayerScoreSorting';
 const STORE_ORDER_KEY = 'PlayerScoreOrder';
 
+// Define valid sort keys for each service
+const validSorts = {
+	scores: [
+		'pp',
+		'accPP',
+		'passPP',
+		'techPP',
+		'date',
+		'acc',
+		'rank',
+		'stars',
+		'playCount',
+		'pauses',
+		'maxStreak',
+		'replaysWatched',
+		'mistakes',
+	],
+	attempts: ['pp', 'date', 'acc', 'rank', 'playCount', 'pauses', 'maxStreak', 'mistakes'],
+	beatsavior: ['date', 'acc', 'mistakes'],
+	accsaber: ['ap', 'date', 'acc', 'rank'],
+};
+
 export default () => {
 	let currentService = null;
 	let currentServiceParams = {};
@@ -42,6 +64,15 @@ export default () => {
 
 		currentService = service;
 		currentServiceParams = {...defaultServiceParams, ...currentServiceParams, ...serviceParams};
+
+		// Validate incoming sort parameter BEFORE merging
+		if (currentServiceParams?.sort) {
+			const serviceValidSorts = validSorts[service] ?? [];
+			if (!serviceValidSorts.includes(currentServiceParams.sort)) {
+				// If invalid, revert to the default sort for this service
+				currentServiceParams.sort = defaultServiceParams.sort;
+			}
+		}
 
 		if (!init && currentService === 'scores') {
 			localStorage.setItem(STORE_SORTING_KEY, currentServiceParams.sort);
@@ -138,34 +169,41 @@ export default () => {
 
 		const serviceDefaultParams = getDefaultParams(service);
 
+		// Create a working copy of params merged with defaults
+		let effectiveParams = {...serviceDefaultParams, ...params};
+
+		// Validate sort parameter for the URL generation
+		const intendedSort = effectiveParams.sort;
+		const serviceValidSorts = validSorts[service] ?? [];
+		if (intendedSort && !serviceValidSorts.includes(intendedSort)) {
+			// If invalid for this service, use the service's default sort for the URL
+			effectiveParams.sort = serviceDefaultParams.sort;
+		}
+
 		switch (service) {
 			case 'beatsavior':
-				return `${service}/${params?.sort ?? serviceDefaultParams?.sort}${noPage ? '' : `/${params?.page ?? serviceDefaultParams?.page}`}`;
+				return `${service}/${effectiveParams.sort}${noPage ? '' : `/${effectiveParams.page}`}`;
 
 			case 'accsaber':
-				return `${service}/${params?.type ?? serviceDefaultParams?.type}/${params?.sort ?? serviceDefaultParams?.sort}${
-					noPage ? '' : `/${params?.page ?? serviceDefaultParams?.page}`
-				}`;
+				return `${service}/${effectiveParams.type}/${effectiveParams.sort}${noPage ? '' : `/${effectiveParams.page}`}`;
 
 			case 'scores':
-				const sort = params?.sort ?? serviceDefaultParams?.sort;
-				const order = params?.order ?? serviceDefaultParams?.order;
-				const page = params?.page ?? serviceDefaultParams?.page;
+				const sort = effectiveParams.sort;
+				const order = effectiveParams.order;
+				const page = effectiveParams.page;
 
 				let result = '';
 				if (
-					service != 'scores' ||
+					service != 'scores' || // This condition seems redundant as we are in the 'scores' case
 					sort != serviceDefaultParams?.sort ||
 					order != serviceDefaultParams?.order ||
 					page != serviceDefaultParams?.page
 				) {
 					result = `${service}/${sort}/${order}${noPage ? '' : `/${page}`}`;
 				}
-				return `${result}${params?.filters ? buildSearchFromFilters(getDefaultParams(service)?.filters, params?.filters) : ''}`;
+				return `${result}${effectiveParams?.filters ? buildSearchFromFilters(getDefaultParams(service)?.filters, effectiveParams.filters) : ''}`;
 			case 'attempts':
-				return `${service}/${params?.sort ?? serviceDefaultParams?.sort}/${params?.order ?? serviceDefaultParams?.order}${
-					noPage ? '' : `/${params?.page ?? serviceDefaultParams?.page}`
-				}`;
+				return `${service}/${effectiveParams.sort}/${effectiveParams.order}${noPage ? '' : `/${effectiveParams.page}`}`;
 		}
 	};
 
