@@ -44,7 +44,7 @@ export default (
 
 		try {
 			// abort previous pending fetch if needed
-			// if (pendingAbortController) pendingAbortController.abort();
+			if (pendingAbortController) pendingAbortController.abort();
 
 			const finalParams = getFinalParams(fetchParams);
 
