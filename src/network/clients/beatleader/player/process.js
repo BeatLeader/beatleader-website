@@ -35,6 +35,9 @@ export default response => {
 		profileSettings,
 		changes,
 		clanOrder,
+		level,
+		prestige,
+		experience,
 	} = response;
 
 	let profilePicture = avatar;
@@ -119,6 +122,9 @@ export default response => {
 			changes,
 			clans,
 			clanOrder,
+			level,
+			prestige,
+			experience,
 			horizontalRichBio: profileSettings?.horizontalRichBio,
 		},
 		profileSettings: profileSettings
