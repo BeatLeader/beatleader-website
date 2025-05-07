@@ -73,6 +73,16 @@
 	</ContentBox>
 {/if}
 
+{#if playerData?.playerInfo?.level || playerData?.playerInfo?.experience || playerData?.playerInfo?.prestige}
+	<ContentBox cls="stats-and-summary-box frosted">
+		<div class="experience-container">
+			<span>Level: <b>{playerData?.playerInfo?.level}</b></span>
+			<span>Experience: <b>{playerData?.playerInfo?.experience}</b></span>
+			<span>Prestige: <b>{playerData?.playerInfo?.prestige}</b></span>
+		</div>
+	</ContentBox>
+{/if}
+
 <style>
 	.badges-footer {
 		display: flex;
@@ -110,6 +120,12 @@
 
 	.pp-and-platform {
 		flex: 0;
+	}
+
+	.experience-container {
+		display: flex;
+		justify-content: center;
+		gap: 1em;
 	}
 
 	:global(.stats-and-summary-box) {

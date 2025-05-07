@@ -480,9 +480,9 @@
 			</div>
 		</ContentBox> -->
 
-		<ContentBox cls="country-card-container">
+		<!-- <ContentBox cls="country-card-container">
 			<CountryCard />
-		</ContentBox>
+		</ContentBox> -->
 
 		<div class="ranking-switcher">
 			<TabSwitcher values={tabOptions} value={currentTab} on:change={onTabChanged} class="ranking" />
