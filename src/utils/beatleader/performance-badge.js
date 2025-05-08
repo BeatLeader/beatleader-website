@@ -150,6 +150,7 @@ const availableMetrics = [
 	{metric: 'improvedTotalRank', name: 'Total rank improved'},
 	{metric: 'replaysWatched', name: 'Replays watched', available: ['profile-score']},
 	{metric: 'mods', name: 'Modifiers'},
+	{metric: 'experience', name: 'Experience'},
 ];
 
 export const getAvailableMetrics = (type = 'profile-score') =>
@@ -392,6 +393,26 @@ export const getPerformanceBadge = (def, score, improvements, beatSavior, modifi
 			title = isDemo ? 'Click to setup' : `${score?.[metric] ?? 0} attempts`;
 			className = 'beatSavior';
 			icon = 'fa-solid fa-repeat';
+
+			componentProps = {
+				onlyLabel: true,
+				color: 'white',
+				bgColor: 'var(--dimmed)',
+				title,
+			};
+
+			slotComponentProps = {
+				value: score?.[metric],
+				inline: true,
+				digits: 0,
+				suffix: ``,
+			};
+			break;
+
+		case 'experience':
+			title = isDemo ? 'Click to setup' : `${score?.[metric] ?? 0} experience`;
+			className = 'beatSavior';
+			icon = 'fa-solid fa-award';
 
 			componentProps = {
 				onlyLabel: true,
