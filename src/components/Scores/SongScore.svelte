@@ -122,8 +122,10 @@
 		out:maybe|global={{fn: fade, duration: 100}}
 		class:with-details={showDetails}>
 		{#if withPlayers}
-			<div class="player">
-				<PlayerName player={songScore.player} on:click={() => navigateToPlayer(songScore.player.alias ?? songScore.player.playerId)} />
+			<div class="top-container">
+				<div class="player">
+					<PlayerName player={songScore.player} on:click={() => navigateToPlayer(songScore.player.alias ?? songScore.player.playerId)} />
+				</div>
 			</div>
 		{/if}
 		{#if service == 'attempts'}
