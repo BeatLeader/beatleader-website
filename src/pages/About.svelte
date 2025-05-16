@@ -156,12 +156,6 @@ ${BL_API_URL}players?leaderboardContext=general&page=${page}&count=100&role=supp
 					href="/u/76561198307061479">Cratornugget</a>
 			</div>
 			<div class="member">
-				<img src="https://cdn.assets.beatleader.com/76561198831724075R12.png" alt="edgii" /><a href="/u/76561198831724075">edgii</a>
-			</div>
-			<div class="member">
-				<img src="https://cdn.assets.beatleader.com/76561198965889412R36.png" alt="Emy" /><a href="/u/76561198965889412">Emy</a>
-			</div>
-			<div class="member">
 				<img src="https://cdn.assets.beatleader.com/76561198072855418R4.png" alt="LackWiz" /><a href="/u/76561198072855418">LackWiz</a>
 			</div>
 			<div class="member">
@@ -200,9 +194,6 @@ ${BL_API_URL}players?leaderboardContext=general&page=${page}&count=100&role=supp
 				<img src="https://cdn.assets.beatleader.com/76561198831724075R12.png" alt="edgii" /><a href="/u/76561198831724075">edgii</a>
 			</div>
 			<div class="member">
-				<img src="https://cdn.assets.beatleader.com/76561198143307741R1.png" alt="Emy" /><a href="/u/76561198965889412">Emy</a>
-			</div>
-			<div class="member">
 				<img src="https://avatars.akamai.steamstatic.com/fede1355e88a5ffae6e9bfc20de4ec33a18ef5d1_full.jpg" alt="GalaxyMaster" /><a
 					href="/u/76561198075923914">GalaxyMaster</a>
 			</div>
@@ -226,10 +217,6 @@ ${BL_API_URL}players?leaderboardContext=general&page=${page}&count=100&role=supp
 			</div>
 			<div class="member">
 				<img src="https://cdn.assets.beatleader.com/76561199001767132R45.png" alt="ViSi" /><a href="/u/76561199001767132">ViSi</a>
-			</div>
-			<div class="member">
-				<img src="https://avatars.akamai.steamstatic.com/2b9951e8e6a9bdcaa6799f6b1a0bc2ba1e95387d_full.jpg" alt="Zana" /><a
-					href="/u/76561198272028078">Zana</a>
 			</div>
 			<div class="member">
 				<img src="https://avatars.steamstatic.com/cc75f8ac925c60d59c5dbada119e1b662015b688_full.jpg" alt="ZeCube" /><a
@@ -359,6 +346,9 @@ ${BL_API_URL}players?leaderboardContext=general&page=${page}&count=100&role=supp
 					href="https://www.beatleader.com/u/76561198014681219">BigSlick</a>
 			</div>
 			<div class="member">
+				<img src="https://cdn.assets.beatleader.com/76561198965889412R36.png" alt="Emy" /><a href="/u/76561198965889412">Emy</a>
+			</div>
+			<div class="member">
 				<img src="https://avatars.akamai.steamstatic.com/9f79be6c488ebc966eabc82bbdca1287499d551a_full.jpg" alt="FentonVR" /><a
 					href="https://www.beatleader.com/u/76561198105616734">FentonVR</a>
 			</div>
@@ -380,6 +370,10 @@ ${BL_API_URL}players?leaderboardContext=general&page=${page}&count=100&role=supp
 			<div class="member">
 				<img src="https://cdn.assets.beatleader.com/76561198044544317.png" alt="TG90" /><a
 					href="https://www.beatleader.com/u/76561198044544317">TG90</a>
+			</div>
+			<div class="member">
+				<img src="https://avatars.akamai.steamstatic.com/2b9951e8e6a9bdcaa6799f6b1a0bc2ba1e95387d_full.jpg" alt="Zana" /><a
+					href="/u/76561198272028078">Zana</a>
 			</div>
 		</section>
 
