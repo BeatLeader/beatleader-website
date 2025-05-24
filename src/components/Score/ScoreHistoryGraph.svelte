@@ -14,6 +14,7 @@
 	import CompactPagination from './CompactPagination.svelte';
 	import ScoreHistoryAccGraph from './ScoreHistoryAccGraph.svelte';
 	import {Svrollbar} from 'svrollbar';
+	import {GLOBAL_LEADERBOARD_TYPE} from '../../utils/format';
 
 	export let score;
 	export let leaderboard;
@@ -119,7 +120,7 @@
 	let battleRoyaleDraftList = [];
 
 	function startBattleRoyale() {
-		let link = `https://royale.beatleader.com/?links=${battleRoyaleDraftList.join(',')}&noRoyale=true`;
+		let link = `https://royale.beatleader.com/?links=${battleRoyaleDraftList.join(',')}&noRoyale=true&context=${GLOBAL_LEADERBOARD_TYPE}`;
 		window.open(link, '_blank');
 	}
 

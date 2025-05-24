@@ -71,6 +71,7 @@
 	import Headsets from '../components/Ranking/Headsets.svelte';
 	import LeaderboardAsideBox from '../components/Common/AsideBox.svelte';
 	import LeaderboardDevMenu from '../components/Leaderboard/LeaderboardDevMenu.svelte';
+	import {GLOBAL_LEADERBOARD_TYPE} from '../utils/format';
 
 	export let leaderboardId;
 	export let type = 'global';
@@ -643,7 +644,7 @@
 	function startBattleRoyale() {
 		let link = `https://royale.beatleader.com/?hash=${hash}&difficulty=${capitalize(diffInfo.diff)}&mode=${diffInfo.type}&players=${battleRoyaleDraftList
 			.map(br => br.playerId)
-			.join(',')}`;
+			.join(',')}&context=${GLOBAL_LEADERBOARD_TYPE}`;
 		window.open(link, '_blank');
 	}
 
