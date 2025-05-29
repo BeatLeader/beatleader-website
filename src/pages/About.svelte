@@ -171,7 +171,13 @@ ${BL_API_URL}players?leaderboardContext=general&page=${page}&count=100&role=supp
 		<h1 class="title is-5">Junior RT</h1>
 		<section class="content center">
 			<div class="member">
+				<img src="https://cdn.assets.beatleader.com/76561199125063205R7.png" alt="azu" /><a href="/u/76561199125063205">azu</a>
+			</div>
+			<div class="member">
 				<img src="https://cdn.assets.beatleader.com/76561198143307741R1.png" alt="shrado" /><a href="/u/76561198143307741">shrado</a>
+			</div>
+			<div class="member">
+				<img src="https://cdn.assets.beatleader.com/76561199108348236R2.png" alt="UglyApe" /><a href="/u/76561199108348236">UglyApe</a>
 			</div>
 		</section>
 
@@ -180,7 +186,7 @@ ${BL_API_URL}players?leaderboardContext=general&page=${page}&count=100&role=supp
 		<h1 class="title is-5">Core NQT</h1>
 		<section class="content center">
 			<div class="member">
-				<img src="https://cdn.assets.beatleader.com/76561199125063205R3.png" alt="azu" /><a href="/u/76561199125063205">azu</a>
+				<img src="https://cdn.assets.beatleader.com/76561199125063205R7.png" alt="azu" /><a href="/u/76561199125063205">azu</a>
 			</div>
 			<div class="member">
 				<img src="https://cdn.assets.beatleader.com/76561198147746455R10.png" alt="CookedChili" /><a href="/u/76561198147746455"
