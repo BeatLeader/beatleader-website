@@ -28,30 +28,12 @@
 		{
 			component: CarouselCard,
 			props: {
-				title: 'CC Rewind 2024 Map Released',
+				title: 'Cube Community Winter Highlights',
 				body: '',
-				imageUrl: '/assets/Discover/cc-rewind-2024-map.jpg',
-				targetUrl: 'https://www.youtube.com/watch?v=Z4FXyArnA0M',
+				imageUrl: '/assets/Discover/cc-winter-highlights.jpg',
+				targetUrl: 'https://www.youtube.com/watch?v=DwP33HzBFd4',
 				linkName: 'YouTube',
-				forcedColor: 'rgb(141 141 141)',
-				buttons: [
-					{
-						text: 'Play!',
-						type: 'primary',
-						url: 'https://beatsaver.com/maps/45629',
-					},
-				],
-			},
-		},
-		{
-			component: CarouselCard,
-			props: {
-				title: 'Cube Community Fall Highlights',
-				body: '',
-				imageUrl: '/assets/Discover/cc-fall-highlights.jpg',
-				targetUrl: 'https://youtu.be/xtsXijKAHcs',
-				linkName: 'YouTube',
-				forcedColor: 'rgb(56, 154, 133)',
+				forcedColor: 'rgb(108, 136, 164)',
 			},
 		},
 		{
@@ -79,24 +61,24 @@
 	];
 
 	let tournamentCards = [
-		{
-			component: CarouselCard,
-			props: {
-				title: 'Beat Saber Elites!',
-				body: 'An exclusive, invite-only tournament, for the top 25 ScoreSaber players. \nSignups are open!',
-				imageUrl: '/assets/Discover/BSE_2025.webp',
-				targetUrl: 'https://beatkhana.com/tournaments/bse/general',
-				linkName: 'contest info page',
-				forcedColor: 'rgb(0 1 24)',
-				buttons: [
-					{
-						text: 'Sign up!',
-						type: 'primary',
-						url: 'https://beatkhana.com/tournaments/bse/general',
-					},
-				],
-			},
-		},
+		// {
+		// 	component: CarouselCard,
+		// 	props: {
+		// 		title: 'Beat Saber Elites!',
+		// 		body: 'An exclusive, invite-only tournament, for the top 25 ScoreSaber players. \nSignups are open!',
+		// 		imageUrl: '/assets/Discover/BSE_2025.webp',
+		// 		targetUrl: 'https://beatkhana.com/tournaments/bse/general',
+		// 		linkName: 'contest info page',
+		// 		forcedColor: 'rgb(0 1 24)',
+		// 		buttons: [
+		// 			{
+		// 				text: 'Sign up!',
+		// 				type: 'primary',
+		// 				url: 'https://beatkhana.com/tournaments/bse/general',
+		// 			},
+		// 		],
+		// 	},
+		// },
 		// {
 		// 	component: CarouselCard,
 		// 	props: {
@@ -133,24 +115,24 @@
 		// 		],
 		// 	},
 		// },
-		{
-			component: CarouselCard,
-			props: {
-				title: 'Beat Saber Canadian Tournament 2025',
-				body: 'The Canadian Beat Saber Tournament is a CANADIAN ONLY double elimination tournament, featuring 2 divisions. Sign Ups are open!',
-				imageUrl: '/assets/Discover/beatsabercanada2025.png',
-				targetUrl: 'https://beatkhana.com/tournaments/CBST2025/general',
-				forcedColor: 'rgb(255, 99, 99)',
-				linkName: 'Official Website',
-				buttons: [
-					{
-						text: 'Sign Up',
-						type: 'primary',
-						url: 'https://beatkhana.com/tournaments/CBST2025/general',
-					},
-				],
-			},
-		},
+		// {
+		// 	component: CarouselCard,
+		// 	props: {
+		// 		title: 'Beat Saber Canadian Tournament 2025',
+		// 		body: 'The Canadian Beat Saber Tournament is a CANADIAN ONLY double elimination tournament, featuring 2 divisions. Sign Ups are open!',
+		// 		imageUrl: '/assets/Discover/beatsabercanada2025.png',
+		// 		targetUrl: 'https://beatkhana.com/tournaments/CBST2025/general',
+		// 		forcedColor: 'rgb(255, 99, 99)',
+		// 		linkName: 'Official Website',
+		// 		buttons: [
+		// 			{
+		// 				text: 'Sign Up',
+		// 				type: 'primary',
+		// 				url: 'https://beatkhana.com/tournaments/CBST2025/general',
+		// 			},
+		// 		],
+		// 	},
+		// },
 		{
 			component: CarouselCard,
 			props: {
