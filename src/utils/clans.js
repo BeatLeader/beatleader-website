@@ -297,3 +297,74 @@ export function toggleRandomImageOnHover(playerPage, enable) {
 		}
 	}
 }
+
+export function toggleEffectImageOnClick(playerPage, enable) {
+	const onChange = () => {
+		const contentBoxes = playerPage.querySelectorAll('.content-box:not(.profile-box)');
+		const sortedBoxes = Array.from(contentBoxes)
+			.sort((a, b) => a.getBoundingClientRect().y - b.getBoundingClientRect().y)
+			.slice(0, 3);
+		const randomBox = sortedBoxes[Math.floor(Math.random() * sortedBoxes.length)];
+		showEffectImage(randomBox);
+
+		// const effectImages = playerPage.querySelectorAll('.effect-image');
+		// effectImages.forEach(effectImage => {
+		// 	effectImage.parentElement.removeChild(effectImage);
+		// });
+	};
+
+	var changeTimeout = null;
+
+	if (!playerPage.observerEffect) {
+		playerPage.observerEffect = new MutationObserver(mutations => {
+			const shouldUpdate = mutations.some(
+				mutation =>
+					mutation.type === 'childList' &&
+					!Array.from(mutation.addedNodes)
+						.concat(Array.from(mutation.removedNodes))
+						.some(node => node.nodeType === Node.ELEMENT_NODE && node.tagName.toLowerCase() === 'svg')
+			);
+			if (shouldUpdate) {
+				clearTimeout(changeTimeout);
+				changeTimeout = setTimeout(() => {
+					onChange();
+				}, 1000);
+			}
+		});
+
+		playerPage.observerEffect.observe(playerPage, {childList: true, subtree: false});
+	}
+
+	playerPage.effectEnable = enable;
+
+	function handleMouseEnter(event) {
+		if (event.currentTarget.parentElement.effectEnable && !event.currentTarget.showingEffect) {
+			showEffectImage(event.currentTarget, false);
+		}
+	}
+
+	function handleTouchStart(event) {
+		if (event.currentTarget.parentElement.effectEnable && !event.currentTarget.showingEffect) {
+			showEffectImage(event.currentTarget, true);
+		}
+	}
+
+	function showEffectImage(box) {
+		box.showingEffect = true;
+
+		const effectImage = document.createElement('img');
+		effectImage.src = '/assets/clans/GENX-in-1.webp';
+		effectImage.classList.add('effect-image');
+		effectImage.style.position = 'absolute';
+		effectImage.style.top = '-630px';
+		effectImage.style.right = 10 - Math.random() * (box.clientWidth - 100) + 'px';
+		effectImage.style.width = '1920px';
+		effectImage.style.height = '1080px';
+		effectImage.style.objectFit = 'cover';
+		effectImage.style.pointerEvents = 'none';
+		effectImage.style.filter = 'drop-shadow(1px 1px 0 white) drop-shadow(1px -1px 0 white)';
+		effectImage.style.maxWidth = 'unset';
+
+		box.appendChild(effectImage);
+	}
+}

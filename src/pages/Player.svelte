@@ -26,7 +26,7 @@
 	import createAccountStore from '../stores/beatleader/account';
 	import {BL_API_URL} from '../network/queues/beatleader/api-queue';
 	import {fetchJson} from '../network/fetch';
-	import {toggleRandomImageOnHover} from '../utils/clans';
+	import {toggleRandomImageOnHover, toggleEffectImageOnClick} from '../utils/clans';
 
 	const STORE_SORTING_KEY = 'PlayerScoreSorting';
 	const STORE_ORDER_KEY = 'PlayerScoreOrder';
@@ -233,6 +233,7 @@
 
 	$: editing = new URLSearchParams(location?.search).get('edit') ?? null;
 	$: playerPage && toggleRandomImageOnHover(playerPage, playerInfo?.clans?.filter(cl => cl.tag == 'SABA').length);
+	$: playerPage && toggleEffectImageOnClick(playerPage, playerInfo?.clans?.filter(cl => cl.tag == 'GENX').length);
 </script>
 
 <svelte:head>
