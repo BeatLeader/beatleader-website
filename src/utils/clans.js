@@ -365,6 +365,10 @@ export function toggleEffectImageOnClick(playerPage, enable) {
 		effectImage.style.filter = 'drop-shadow(1px 1px 0 white) drop-shadow(1px -1px 0 white)';
 		effectImage.style.maxWidth = 'unset';
 
+		setTimeout(() => {
+			effectImage.src = '/assets/clans/GENX-idle-1.webp';
+		}, 5080);
+
 		box.appendChild(effectImage);
 	}
 }
