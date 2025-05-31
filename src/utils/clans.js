@@ -307,7 +307,7 @@ export function toggleEffectImageOnClick(playerPage, enable) {
 		const randomBox = sortedBoxes[Math.floor(Math.random() * sortedBoxes.length)];
 		showEffectImage(randomBox);
 
-		// const effectImages = playerPage.querySelectorAll('.effect-image');
+		// const effectImages = playerPage.querySelectorAll('.effect-image-genx');
 		// effectImages.forEach(effectImage => {
 		// 	effectImage.parentElement.removeChild(effectImage);
 		// });
@@ -352,23 +352,106 @@ export function toggleEffectImageOnClick(playerPage, enable) {
 	function showEffectImage(box) {
 		box.showingEffect = true;
 
-		const effectImage = document.createElement('img');
-		effectImage.src = '/assets/clans/GENX-in-1.webp';
-		effectImage.classList.add('effect-image');
-		effectImage.style.position = 'absolute';
-		effectImage.style.top = '-630px';
-		effectImage.style.right = 10 - Math.random() * (box.clientWidth - 100) + 'px';
-		effectImage.style.width = '1920px';
-		effectImage.style.height = '1080px';
-		effectImage.style.objectFit = 'cover';
-		effectImage.style.pointerEvents = 'none';
-		effectImage.style.filter = 'drop-shadow(1px 1px 0 white) drop-shadow(1px -1px 0 white)';
-		effectImage.style.maxWidth = 'unset';
+		// Cache for base64 encoded images
+		const imageCache = {};
+		const imagePaths = [
+			'/assets/clans/GENX-in-1.webp',
+			'/assets/clans/GENX-out-1.webp',
+			'/assets/clans/GENX-scroll-1.webp',
+			'/assets/clans/GENX-scroll-2.webp',
+			...Array.from({length: 5}, (_, i) => `/assets/clans/GENX-idle-${i + 1}.webp`),
+		];
 
-		setTimeout(() => {
-			effectImage.src = '/assets/clans/GENX-idle-1.webp';
-		}, 5080);
+		Promise.all(
+			imagePaths.map(path => {
+				return new Promise((resolve, reject) => {
+					fetch(path)
+						.then(response => response.blob())
+						.then(blob => {
+							const reader = new FileReader();
+							reader.onloadend = () => {
+								imageCache[path] = reader.result;
+								resolve();
+							};
+							reader.onerror = reject;
+							reader.readAsDataURL(blob);
+						})
+						.catch(reject);
+				});
+			})
+		)
+			.then(() => {
+				const effectImage = document.createElement('img');
+				effectImage.src = imageCache['/assets/clans/GENX-in-1.webp'];
+				effectImage.classList.add('effect-image-genx');
+				effectImage.style.position = 'absolute';
+				effectImage.style.top = '-630px';
+				effectImage.style.right = 10 - Math.random() * (box.clientWidth - 100) + 'px';
+				effectImage.style.width = '1920px';
+				effectImage.style.height = '1080px';
+				effectImage.style.objectFit = 'cover';
+				effectImage.style.pointerEvents = 'none';
+				effectImage.style.filter = 'drop-shadow(1px 1px 0 white) drop-shadow(1px -1px 0 white)';
+				effectImage.style.maxWidth = 'unset';
 
-		box.appendChild(effectImage);
+				let idleAnimationTimeout;
+				let currentIdleIndex = 0;
+
+				function pickRandomIdleAnimation() {
+					currentIdleIndex = Math.floor(Math.random() * 5) + 1;
+					effectImage.src = imageCache[`/assets/clans/GENX-idle-${currentIdleIndex}.webp`];
+					idleAnimationTimeout = setTimeout(pickRandomIdleAnimation, 4200);
+				}
+
+				let scrolling = false;
+
+				function handleScroll() {
+					if (currentIdleIndex !== 4 && currentIdleIndex !== 0 && !scrolling) {
+						scrolling = true;
+						const randomInIndex = Math.floor(Math.random() * 2) + 1;
+						effectImage.src = imageCache[`/assets/clans/GENX-scroll-${randomInIndex}.webp`];
+						clearTimeout(idleAnimationTimeout);
+
+						setTimeout(
+							() => {
+								pickRandomIdleAnimation();
+								scrolling = false;
+							},
+							randomInIndex == 1 ? 1000 : 1500
+						);
+					}
+				}
+
+				function handleBoxMouseMove(event) {
+					const rect = effectImage.getBoundingClientRect();
+					const centerX = rect.left + rect.width / 2;
+					const centerY = rect.top + rect.height / 2;
+
+					const distanceFromCenter = Math.sqrt(Math.pow(event.clientX - centerX, 2) + Math.pow(event.clientY - centerY, 2));
+
+					if (distanceFromCenter < 130) {
+						clearTimeout(idleAnimationTimeout);
+						window.removeEventListener('scroll', handleScroll);
+						effectImage.src = imageCache['/assets/clans/GENX-out-1.webp'];
+						box.removeEventListener('mousemove', handleBoxMouseMove);
+
+						setTimeout(() => {
+							box.removeChild(effectImage);
+						}, 4200);
+					}
+				}
+
+				setTimeout(() => {
+					pickRandomIdleAnimation();
+					box.addEventListener('mousemove', handleBoxMouseMove);
+					window.addEventListener('scroll', handleScroll);
+				}, 5080);
+
+				box.appendChild(effectImage);
+			})
+			.catch(error => {
+				console.error('Failed to preload images:', error);
+				box.showingEffect = false;
+			});
 	}
 }
