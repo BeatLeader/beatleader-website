@@ -307,7 +307,7 @@ export function toggleEffectImageOnClick(playerPage, enable) {
 		const randomBox = sortedBoxes[Math.floor(Math.random() * sortedBoxes.length)];
 		showEffectImage(randomBox);
 
-		// const effectImages = playerPage.querySelectorAll('.effect-image');
+		// const effectImages = playerPage.querySelectorAll('.effect-image-genx');
 		// effectImages.forEach(effectImage => {
 		// 	effectImage.parentElement.removeChild(effectImage);
 		// });
@@ -354,7 +354,7 @@ export function toggleEffectImageOnClick(playerPage, enable) {
 
 		const effectImage = document.createElement('img');
 		effectImage.src = '/assets/clans/GENX-in-1.webp';
-		effectImage.classList.add('effect-image');
+		effectImage.classList.add('effect-image-genx');
 		effectImage.style.position = 'absolute';
 		effectImage.style.top = '-630px';
 		effectImage.style.right = 10 - Math.random() * (box.clientWidth - 100) + 'px';
@@ -365,8 +365,57 @@ export function toggleEffectImageOnClick(playerPage, enable) {
 		effectImage.style.filter = 'drop-shadow(1px 1px 0 white) drop-shadow(1px -1px 0 white)';
 		effectImage.style.maxWidth = 'unset';
 
+		let idleAnimationTimeout;
+		let currentIdleIndex = 0;
+
+		function pickRandomIdleAnimation() {
+			currentIdleIndex = Math.floor(Math.random() * 5) + 1;
+			effectImage.src = `/assets/clans/GENX-idle-${currentIdleIndex}.webp`;
+			idleAnimationTimeout = setTimeout(pickRandomIdleAnimation, 4200);
+		}
+
+		let scrolling = false;
+
+		function handleScroll() {
+			if (currentIdleIndex !== 4 && currentIdleIndex !== 0 && !scrolling) {
+				scrolling = true;
+				const randomInIndex = Math.floor(Math.random() * 2) + 1;
+				effectImage.src = `/assets/clans/GENX-scroll-${randomInIndex}.webp`;
+				clearTimeout(idleAnimationTimeout);
+
+				setTimeout(
+					() => {
+						pickRandomIdleAnimation();
+						scrolling = false;
+					},
+					randomInIndex == 1 ? 1000 : 1500
+				);
+			}
+		}
+
+		function handleBoxMouseMove(event) {
+			const rect = effectImage.getBoundingClientRect();
+			const centerX = rect.left + rect.width / 2;
+			const centerY = rect.top + rect.height / 2;
+
+			const distanceFromCenter = Math.sqrt(Math.pow(event.clientX - centerX, 2) + Math.pow(event.clientY - centerY, 2));
+
+			if (distanceFromCenter < 130) {
+				clearTimeout(idleAnimationTimeout);
+				window.removeEventListener('scroll', handleScroll);
+				effectImage.src = '/assets/clans/GENX-out-1.webp';
+				box.removeEventListener('mousemove', handleBoxMouseMove);
+
+				setTimeout(() => {
+					box.removeChild(effectImage);
+				}, 4200);
+			}
+		}
+
 		setTimeout(() => {
-			effectImage.src = '/assets/clans/GENX-idle-1.webp';
+			pickRandomIdleAnimation();
+			box.addEventListener('mousemove', handleBoxMouseMove);
+			window.addEventListener('scroll', handleScroll);
 		}, 5080);
 
 		box.appendChild(effectImage);
