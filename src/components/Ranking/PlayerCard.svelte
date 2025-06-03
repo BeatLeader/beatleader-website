@@ -172,7 +172,7 @@
 			</div>
 		{/if}
 		{#if !noImprovements && $configStore.rankingList.showCountryDifference}
-			<span class="change" title="Cuntry rank compared to the last week">
+			<span class="change" title="Country rank compared to the last week">
 				<Change value={opt(player, 'others.countryDifference')} digits={0} />
 			</span>
 		{/if}

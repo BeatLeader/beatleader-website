@@ -129,13 +129,24 @@
 				{/if}
 				{#if score.endType > 1}
 					{#if score.startTime}
-						<h3 class="pin-description" title="Attempt start time">
+						<h3 class="pin-description" title="Practice start time">
 							{timeToLabel(score.startTime, 'from')}
 						</h3>
 					{/if}
-					<h3 class="pin-description" title="Attempt finish time">
-						{timeToLabel(score.time, 'at')}
-					</h3>
+					{#if score.endType == 5}
+						<h3 class="pin-description" title="Practice finish time">
+							{timeToLabel(score.time, 'to')}
+						</h3>
+						{#if score.speed && score.speed != 1}
+							<h3 class="pin-description" title="Practice speed">
+								{score.speed.toFixed(1)}x
+							</h3>
+						{/if}
+					{:else}
+						<h3 class="pin-description" title="Attempt finish time">
+							{timeToLabel(score.time, 'at')}
+						</h3>
+					{/if}
 				{/if}
 			</header>
 		{/if}
