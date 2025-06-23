@@ -273,6 +273,21 @@
 				<Button type="twitter" iconFa="fab fa-twitter" label="Link Twitter" />
 			</form>
 		{/if}
+		{#if socials && socials.find(s => s.service == 'BlueSky')}
+			<form action={BL_API_URL + 'user/unlink'} method="post">
+				<input type="hidden" name="Provider" value="BlueSky" />
+				<input type="hidden" name="ReturnUrl" value={CURRENT_URL + '/signin/addHome'} />
+
+				<Button iconFa="fab fa-bluesky" label="Unlink BlueSky" type="danger" />
+			</form>
+		{:else}
+			<form class="twitter" action={BL_API_URL + 'signin'} method="post">
+				<input type="hidden" name="Provider" value="BlueSky" />
+				<input type="hidden" name="ReturnUrl" value={CURRENT_URL + '/signin/addHome'} />
+
+				<Button type="twitter" iconFa="fab fa-bluesky" label="Link BlueSky" />
+			</form>
+		{/if}
 		{#if socials && socials.find(s => s.service == 'GitHub')}
 			<form action={BL_API_URL + 'user/unlink'} method="post">
 				<input type="hidden" name="Provider" value="GitHub" />

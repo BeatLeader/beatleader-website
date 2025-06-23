@@ -15,6 +15,7 @@
 	$: steamLink = playerInfo.externalProfileUrl;
 	$: twitchSocial = playerInfo.socials?.find(s => s?.service === 'Twitch');
 	$: twitterSocial = playerInfo.socials?.find(s => s?.service === 'Twitter');
+	$: blueskySocial = playerInfo.socials?.find(s => s?.service === 'BlueSky');
 	$: discordSocial = playerInfo.socials?.find(s => s?.service === 'Discord');
 	$: beatsaverSocial = playerInfo.socials?.find(s => s?.service === 'BeatSaver');
 	$: youtubeSocial = playerInfo.socials?.find(s => s?.service === 'YouTube');
@@ -75,6 +76,18 @@
 		type="twitter"
 		iconFa="fab fa-twitter"
 		title="{twitterSocial.user} drama starter" />
+{/if}
+
+{#if blueskySocial}
+	<Button
+		url={blueskySocial.link}
+		cls="socials-btn"
+		onlyurl={true}
+		animated={true}
+		animationOpacity={0.8}
+		type="twitter"
+		iconFa="fab fa-bluesky"
+		title="{blueskySocial.user} drama starter" />
 {/if}
 
 {#if youtubeSocial}
