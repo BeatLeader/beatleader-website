@@ -244,7 +244,7 @@
 
 							{#if showOtherVersions}
 								<a href={BL_API_URL + 'reesabersversion?version=1.37.5'}> Version for PC 1.37.4-1.37.5 (v0.3.9)</a>
-								<a href={BL_API_URL + 'reesabersversion?version=1.37.5'}> Version for PC 1.35.0-1.37.3 (v0.3.11)</a>
+								<a href={BL_API_URL + 'reesabersversion?version=1.35.0'}> Version for PC 1.35.0-1.37.3 (v0.3.11)</a>
 								<a href={BL_API_URL + 'reesabersversion?version=1.34.0'}> Version for PC 1.34.2 (v0.3.8)</a>
 								<a href={BL_API_URL + 'questreesabersversion?version=1.40.4'}> Version for Quest 1.40.4 (v0.3.13)</a>
 								<a href={BL_API_URL + 'questreesabersversion?version=1.35.0'}> Version for Quest 1.35.0 (v0.3.9)</a>
