@@ -350,6 +350,29 @@
 			return teamNames.includes(team.name) ? '-eligible' : '';
 		}
 
+		if (eventId == 69) {
+			const teamNames = [
+				'Israel',
+				'France',
+				'Finland',
+				'Switzerland',
+				'Poland',
+				'Denmark',
+				'Norway',
+				'United Kingdom',
+				'Canada',
+				'Sweden',
+				'Italy',
+				'Germany',
+				'Netherlands',
+				'Japan',
+				'Australia',
+				'United States',
+			];
+
+			return !teamNames.includes(team.name) ? '-eligible' : '';
+		}
+
 		if (eventId == 55) {
 			const teamNames = ['United States', 'United Kingdom', 'Denmark', 'Israel', 'Canada', 'Germany'];
 
