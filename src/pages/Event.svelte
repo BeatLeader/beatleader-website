@@ -518,6 +518,38 @@
 				</span>
 			</ContentBox>
 		{/if}
+		{#if eventId == 69}
+			<ContentBox cls={(modalShown ? 'inner-modal' : '') + 'bswc-box'}>
+				<div class="bswcbg" style="background-image: url(/assets/bswc2025background.webp) !important" />
+				<div class="bswcbgblur" style="filter: brightness(0.9);" />
+				<div class="bswc-container" style="color: black">
+					<span>
+						<b>Beat Saber World Cup 2025 has started!</b> Make a reminder for a match of your favorite team and while waiting try your own
+						skill on the maps for champions.<br /><br />
+					</span>
+					<span style="margin-bottom: 0.5em;">
+						On the first week of the tournament 16 teams from different countries will fight for the place in the next round.
+					</span>
+
+					<div class="downloadButtons bswc-2025-buttons">
+						<a href="https://www.twitch.tv/CubeCommunity" target="_blank">
+							<Button iconFa="fab fa-twitch" type="twitch" label="Watch matches" />
+						</a>
+						<a href="https://cube.community/tournaments/bswc-2025" target="_blank">
+							<Button iconFa="fas fa-circle-info" label="BSWC Info" />
+						</a>
+						<a href="https://cube.community/tournaments/bswc-2025/bracket" target="_blank">
+							<Button iconFa="fas fa-diagram-project" label="Bracket" />
+						</a>
+					</div>
+
+					<span>
+						<br />
+						<b>Good luck to the teams! Let the strongest win and everyone have fun! </b>
+					</span>
+				</div>
+			</ContentBox>
+		{/if}
 		<ContentBox cls={modalShown ? 'inner-modal' : ''}>
 			{#each params as param}
 				{#if param.type}
@@ -642,6 +674,10 @@
 		display: flex;
 		flex-direction: column;
 		z-index: 3;
+	}
+
+	:global(.bswc-2025-buttons button) {
+		box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4) !important;
 	}
 
 	input::placeholder {

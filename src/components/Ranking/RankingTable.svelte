@@ -18,7 +18,8 @@
 	import {GLOBAL_LEADERBOARD_TYPE} from '../../utils/format';
 	import Spinner from '../Common/Spinner.svelte';
 
-	const participantsImport = () => import('../../others/bswc2024').then(m => m.participants);
+	const participantsImport24 = () => import('../../others/bswc2024').then(m => m.participants);
+	const participantsImport25 = () => import('../../others/bswc2025').then(m => m.participants);
 
 	export let type = 'global';
 	export let page = 1;
@@ -444,7 +445,9 @@
 
 	<section class="ranking-grid">
 		{#each $rankingStore.data as player, idx (player?.playerId)}
-			{@const showFlags = eventId == 52 || eventId == 53 || eventId == 54 || eventId == 55 || eventId == 56}
+			{@const bswc2024 = eventId == 52 || eventId == 53 || eventId == 54 || eventId == 55 || eventId == 56}
+			{@const bswc2025 = eventId == 69}
+			{@const showFlags = bswc2024 || bswc2025}
 			<div
 				class="ranking-grid-row {showFlags || (!noIcons && $configStore.rankingList.showFriendsButton)
 					? 'with-friends-button'
@@ -466,12 +469,12 @@
 						: (sortValue?.props ?? {})}
 					on:filters-updated />
 				{#if showFlags}
-					{#await participantsImport()}
+					{#await bswc2025 ? participantsImport25() : participantsImport24()}
 						<Spinner />
 					{:then participants}
 						{@const team = participants.find(t =>
 							t.players.find(p =>
-								p.player.user.playableAccounts.find(
+								p.user.playableAccounts.find(
 									pa => pa.id == player?.playerId || pa.avatar.includes('cdn.assets.beatleader.com/' + player?.playerId)
 								)
 							)

@@ -4,64 +4,60 @@
 	import {fetchJson} from '../../network/fetch';
 
 	let ongoing = null;
-	
-	const tournamentId = 'bswc-2024'
-	const tournamentName = "BSWC 2024"
 
-	// Initialize bswc2024 if it doesn't exist
-	$configStore.preferences.bswc2024 ??= [];
-	
+	const tournamentId = 'bswc-2025';
+	const tournamentName = 'BSWC 2025';
+
+	// Initialize bswc2025 if it doesn't exist
+	$configStore.preferences.bswc2025 ??= [];
+
 	function getOngoing() {
-		fetchJson(`https://api.cube.community/rest/bracket/ongoing?tournamentId=${tournamentId}`)
-			.then(response => {
-				if (response.body?.live) {
-					ongoing = response.body;
-				}
-				else {
-					ongoing = null;
-				}
-			})
+		fetchJson(`https://api.cube.community/rest/bracket/ongoing?tournamentId=${tournamentId}`).then(response => {
+			if (response.body?.live) {
+				ongoing = response.body;
+			} else {
+				ongoing = null;
+			}
+		});
 	}
-	
+
 	$: getOngoing();
 </script>
 
-{#if ongoing && !$configStore.preferences?.bswc2024.some(el => el === ongoing.matchId) && !$configStore.preferences?.bswc2024.some(el => el === "all")}
-<div class="tournament-banner">
-	
-	<button
-		class="close-all-future"
-		title="Hide all BSWC banners"
-		on:click|preventDefault|stopPropagation={() => {
+{#if ongoing && !$configStore.preferences?.bswc2025.some(el => el === ongoing.matchId) && !$configStore.preferences?.bswc2025.some(el => el === 'all')}
+	<div class="tournament-banner">
+		<div class="tournament-banner-background"></div>
+		<button
+			class="close-all-future"
+			title="Hide all BSWC banners"
+			on:click|preventDefault|stopPropagation={() => {
 				$configStore = produce($configStore, draft => {
-					draft.preferences.bswc2024.push("all");
+					draft.preferences.bswc2025.push('all');
 				});
 			}}><i class="fas fa-xmark" /> Hide All</button>
-	
+
 		<div class="banner-center-text">
-			<img class="bswc-logo" src="/assets/bswc-2024-logo.svg" alt="" />
 			<a class="center-content-in-a" href="https://www.twitch.tv/cubecommunity?utm_source=BeatLeader">
-				<span class="replayed-link-text-desktop">{tournamentName} {ongoing.currRound} - {ongoing.team1} vs. {ongoing.team2} is Live! 🔴</span>
+				<span class="replayed-link-text-desktop"
+					>{tournamentName} {ongoing.currRound} - {ongoing.team1} vs. {ongoing.team2} is Live! 🔴</span>
 				<span class="replayed-link-text-mobile">{tournamentName} {ongoing.currRound}</span>
 				<span class="replayed-link-text-mobile">{ongoing.team1} vs. {ongoing.team2} is Live! 🔴</span>
 			</a>
 		</div>
-	
 
-	<button
-		class="close-banner"
-		title="Dismiss this match alert"
-		on:click|preventDefault|stopPropagation={() => {
+		<button
+			class="close-banner"
+			title="Dismiss this match alert"
+			on:click|preventDefault|stopPropagation={() => {
 				$configStore = produce($configStore, draft => {
-					draft.preferences.bswc2024.push(ongoing.matchId);
+					draft.preferences.bswc2025.push(ongoing.matchId);
 				});
 			}}><i class="fas fa-xmark" /></button>
-</div>
+	</div>
 {/if}
 
 <style>
 	.tournament-banner {
-		background-color: #761cbe;
 		color: white;
 		font-size: large;
 		height: 3em;
@@ -74,10 +70,28 @@
 
 		overflow: visible;
 		pointer-events: none;
+		position: relative;
 	}
-	
-	.bswc-logo {
-		height: 80%;
+
+	.tournament-banner-background {
+		position: absolute;
+		left: 0;
+		right: 0;
+		top: 0;
+		bottom: 3px;
+		background-image: repeating-linear-gradient(
+			/* angle */ 150deg,
+			/* line color & thickness */ #7ac943 0px 0px,
+			/* gap color & width */ transparent 2px 1px
+		);
+		mask-image: url(/assets/bswc-2025-logo.png);
+		mask-repeat: repeat;
+		mask-size: 3em;
+		mask-position: center;
+		-webkit-mask-image: url(/assets/bswc-2025-logo.png);
+		-webkit-mask-repeat: repeat;
+		-webkit-mask-size: 3em;
+		-webkit-mask-position: center;
 	}
 
 	.close-banner {
@@ -89,7 +103,7 @@
 		z-index: 104;
 		pointer-events: auto;
 	}
-	
+
 	.close-all-future {
 		margin-left: 0.25em;
 		border: none;
@@ -122,25 +136,21 @@
 		font-weight: 800;
 		color: rgba(255, 255, 255, 0.95);
 	}
-	
+
 	.center-content-in-a {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		pointer-events: auto;
 	}
-	
+
 	@media (max-width: 1000px) {
 		.banner-center-text {
 			flex-direction: column;
 			align-items: center;
 			gap: 0;
 		}
-		
-		.bswc-logo {
-			display: none;
-		}
-		
+
 		.close-all-future {
 			font-size: 0.5em;
 		}
@@ -148,7 +158,7 @@
 		.replayed-link-text-desktop {
 			display: none;
 		}
-		
+
 		.replayed-link-text-mobile {
 			display: flex;
 		}

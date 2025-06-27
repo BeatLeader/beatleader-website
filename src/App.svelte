@@ -19,6 +19,7 @@
 	import SimpleModal from './components/Common/SimpleModal.svelte';
 	import {Svrollbar} from 'svrollbar';
 	import {produce} from 'immer';
+	import TournamentTopBanner from './components/Common/TournamentTopBanner.svelte';
 
 	// Dynamic imports for pages
 	const pageImports = {
@@ -142,7 +143,7 @@
 
 <div bind:this={mobileTooltip} class="mobile-tooltip" />
 <div class="main-background" />
-<!-- <TournamentTopBanner /> -->
+<TournamentTopBanner />
 <!-- <BeatCancerTopBanner /> -->
 <!-- {#if $account?.player && $configStore.preferences.followersBecomingPublic}
 	<div class="reebanner">
