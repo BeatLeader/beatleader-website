@@ -116,7 +116,7 @@
 		animation: baguette 2s linear infinite;
 		background-size: cover;
 		background-repeat: no-repeat;
-		background-image: url('https://cdn.assets.beatleader.xyz/SOUPclan.png');
+		background-image: url('https://cdn.assets.beatleader.com/SOUPclan.png');
 		pointer-events: none;
 	}
 

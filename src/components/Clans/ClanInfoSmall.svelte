@@ -1,7 +1,20 @@
 <script>
 	import {fade} from 'svelte/transition';
 	import Badge from '../Common/Badge.svelte';
-	import {playersTitle, rankLabel, accLabel, ppLabel, capturesLabel, rankedPoolPercentLabel, rankValue, accValue, ppValue, capturesValue, rankedPoolPercentValue, ppIcon} from '../../utils/clans';
+	import {
+		playersTitle,
+		rankLabel,
+		accLabel,
+		ppLabel,
+		capturesLabel,
+		rankedPoolPercentLabel,
+		rankValue,
+		accValue,
+		ppValue,
+		capturesValue,
+		rankedPoolPercentValue,
+		ppIcon,
+	} from '../../utils/clans';
 
 	export let clan;
 
@@ -18,7 +31,7 @@
 		name = clan?.name ?? '';
 		tag = clan?.tag ?? '';
 		color = clan?.color ?? '#ff0000';
-		iconUrl = clan?.icon ?? 'https://cdn.assets.beatleader.xyz/NTG.png';
+		iconUrl = clan?.icon ?? 'https://cdn.assets.beatleader.com/NTG.png';
 		iconData = clan?.icon ?? null;
 		description = clan?.description ?? '';
 	}
@@ -63,11 +76,45 @@
 
 					{#if clan}
 						<section class="clan-stats" on:pointerover={() => hoverStats()}>
-							<Badge label={rankedPoolPercentLabel(tag)} value={rankedPoolPercent} suffix="%" withZeroSuffix={true} digits={1} fluid={true} bgColor="var(--rankedPoolColor)" styling="clanInfo"/>
-							<Badge label={capturesLabel(tag)} value={clanCapturedMaps} digits={0} fluid={true} bgColor="var(--capturedColor)" styling="clanInfo"/>
-							<Badge label={rankLabel(tag)} value={clanAverageRank} prefix="#" digits={0} fluid={true} bgColor="var(--decrease)" styling="clanInfo"/>
-							<Badge label={accLabel(tag)} value={clanAverageAccuracy} suffix="%" fluid={true} bgColor="var(--selected)" styling="clanInfo"/>
-							<Badge label={ppLabel(tag)} iconClass={ppIcon(tag)} value={clanPp} suffix="pp" fluid={true} bgColor="var(--ppColour)" styling="clanInfo"/>
+							<Badge
+								label={rankedPoolPercentLabel(tag)}
+								value={rankedPoolPercent}
+								suffix="%"
+								withZeroSuffix={true}
+								digits={1}
+								fluid={true}
+								bgColor="var(--rankedPoolColor)"
+								styling="clanInfo" />
+							<Badge
+								label={capturesLabel(tag)}
+								value={clanCapturedMaps}
+								digits={0}
+								fluid={true}
+								bgColor="var(--capturedColor)"
+								styling="clanInfo" />
+							<Badge
+								label={rankLabel(tag)}
+								value={clanAverageRank}
+								prefix="#"
+								digits={0}
+								fluid={true}
+								bgColor="var(--decrease)"
+								styling="clanInfo" />
+							<Badge
+								label={accLabel(tag)}
+								value={clanAverageAccuracy}
+								suffix="%"
+								fluid={true}
+								bgColor="var(--selected)"
+								styling="clanInfo" />
+							<Badge
+								label={ppLabel(tag)}
+								iconClass={ppIcon(tag)}
+								value={clanPp}
+								suffix="pp"
+								fluid={true}
+								bgColor="var(--ppColour)"
+								styling="clanInfo" />
 						</section>
 					{/if}
 				</section>

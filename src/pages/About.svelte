@@ -86,7 +86,7 @@ ${BL_API_URL}players?leaderboardContext=general&page=${page}&count=100&role=supp
 				<p class="memberDescription">Ranking AI developer and biggest supporter</p>
 			</div>
 			<div class="member">
-				<img src="https://cdn.assets.beatleader.xyz/76561198072855418.gif" alt="LackWiz" /><a href="https://github.com/LackWiz">LackWiz</a>
+				<img src="https://cdn.assets.beatleader.com/76561198072855418.gif" alt="LackWiz" /><a href="https://github.com/LackWiz">LackWiz</a>
 				<p class="memberTitle">soft leader</p>
 				<p class="memberDescription">Founding ranking and rating system dev. Loves cat notes</p>
 			</div>
@@ -103,20 +103,20 @@ ${BL_API_URL}players?leaderboardContext=general&page=${page}&count=100&role=supp
 				<p class="memberDescription">Made theme system on the website</p>
 			</div>
 			<div class="member">
-				<img src="https://cdn.assets.beatleader.xyz/76561198133201952.png" alt="Tatenshi" /><a href="https://github.com/Tatenshi"
+				<img src="https://cdn.assets.beatleader.com/76561198133201952.png" alt="Tatenshi" /><a href="https://github.com/Tatenshi"
 					>Tatenshi</a>
 				<p class="memberTitle">distracted from the master's thesis</p>
 				<p class="memberDescription">Quest mod and server contributor</p>
 			</div>
 			<div class="member">
-				<img src="https://cdn.assets.beatleader.xyz/76561198073989976R47.png" alt="Loloppe" /><a
-					href="https://www.beatleader.xyz/u/76561198073989976">Loloppe</a>
+				<img src="https://cdn.assets.beatleader.com/76561198073989976R47.png" alt="Loloppe" /><a
+					href="https://www.beatleader.com/u/76561198073989976">Loloppe</a>
 				<p class="memberTitle">not to be confused with notes</p>
 				<p class="memberDescription">Map rating and review specialist</p>
 			</div>
 			<div class="member">
-				<img src="https://cdn.assets.beatleader.xyz/76561198051924392R48.png" alt="Light Ai" /><a
-					href="https://www.beatleader.xyz/u/76561198051924392">Light Ai</a>
+				<img src="https://cdn.assets.beatleader.com/76561198051924392R48.png" alt="Light Ai" /><a
+					href="https://www.beatleader.com/u/76561198051924392">Light Ai</a>
 				<p class="memberTitle">absolutely not a vocaloid addict</p>
 				<p class="memberDescription">Quality specialist and rePlayed creator</p>
 			</div>
@@ -127,47 +127,47 @@ ${BL_API_URL}players?leaderboardContext=general&page=${page}&count=100&role=supp
 		<h1 class="title is-5">Core RT</h1>
 		<section class="content center">
 			<div class="member">
-				<img src="https://cdn.assets.beatleader.xyz/76561198125474611.png" alt="AntiLink" /><a
-					href="https://www.beatleader.xyz/u/76561198125474611">AntiLink</a>
+				<img src="https://cdn.assets.beatleader.com/76561198125474611.png" alt="AntiLink" /><a
+					href="https://www.beatleader.com/u/76561198125474611">AntiLink</a>
 			</div>
 			<div class="member">
 				<img src="https://avatars.akamai.steamstatic.com/9eac1ff637afdcb6de7062b41ee1db567b8e8766_full.jpg" alt="CookedChili" /><a
-					href="https://www.beatleader.xyz/u/76561198147746455">CookedChili</a>
+					href="https://www.beatleader.com/u/76561198147746455">CookedChili</a>
 			</div>
 			<div class="member">
-				<img src="https://cdn.assets.beatleader.xyz/76561198965889412.gif" alt="Emy" /><a
-					href="https://www.beatleader.xyz/u/76561198965889412">Emy</a>
+				<img src="https://cdn.assets.beatleader.com/76561198965889412.gif" alt="Emy" /><a
+					href="https://www.beatleader.com/u/76561198965889412">Emy</a>
 			</div>
 			<div class="member">
-				<img src="https://cdn.assets.beatleader.xyz/76561198072855418.gif" alt="LackWiz" /><a
-					href="https://www.beatleader.xyz/u/76561198072855418">LackWiz</a>
+				<img src="https://cdn.assets.beatleader.com/76561198072855418.gif" alt="LackWiz" /><a
+					href="https://www.beatleader.com/u/76561198072855418">LackWiz</a>
 			</div>
 			<div class="member">
-				<img src="https://cdn.assets.beatleader.xyz/76561198051924392R48.png" alt="Light Ai" /><a
-					href="https://www.beatleader.xyz/u/76561198051924392">Light Ai</a>
+				<img src="https://cdn.assets.beatleader.com/76561198051924392R48.png" alt="Light Ai" /><a
+					href="https://www.beatleader.com/u/76561198051924392">Light Ai</a>
 			</div>
 			<div class="member">
-				<img src="https://cdn.assets.beatleader.xyz/76561198073989976R47.png" alt="Loloppe" /><a
-					href="https://www.beatleader.xyz/u/76561198073989976">Loloppe</a>
+				<img src="https://cdn.assets.beatleader.com/76561198073989976R47.png" alt="Loloppe" /><a
+					href="https://www.beatleader.com/u/76561198073989976">Loloppe</a>
 			</div>
 			<div class="member">
 				<img src="https://avatars.akamai.steamstatic.com/d8b164d60e9c21a3d3487ffa537b5b176c9ae8c7_full.jpg" alt="nucleii" /><a
-					href="https://www.beatleader.xyz/u/76561199050525271">nucleii</a>
+					href="https://www.beatleader.com/u/76561199050525271">nucleii</a>
 			</div>
 			<div class="member">
-				<img src="https://cdn.assets.beatleader.xyz/76561199257569878.gif" alt="Uragirimono" /><a
-					href="https://www.beatleader.xyz/u/76561199257569878">Uragirimono</a>
+				<img src="https://cdn.assets.beatleader.com/76561199257569878.gif" alt="Uragirimono" /><a
+					href="https://www.beatleader.com/u/76561199257569878">Uragirimono</a>
 			</div>
 		</section>
 		<h1 class="title is-5">Junior RT</h1>
 		<section class="content center">
 			<div class="member">
-				<img src="https://cdn.assets.beatleader.xyz/76561199146457878.png" alt="Mewtex" /><a
-					href="https://www.beatleader.xyz/u/76561199146457878">Mewtex</a>
+				<img src="https://cdn.assets.beatleader.com/76561199146457878.png" alt="Mewtex" /><a
+					href="https://www.beatleader.com/u/76561199146457878">Mewtex</a>
 			</div>
 			<div class="member">
 				<img src="https://avatars.akamai.steamstatic.com/ccc9d6659a0c7fc6fed6a5c6afc2e837eb3fa674_full.jpg" alt="Cratornugget" /><a
-					href="https://www.beatleader.xyz/u/76561198307061479">Cratornugget</a>
+					href="https://www.beatleader.com/u/76561198307061479">Cratornugget</a>
 			</div>
 		</section>
 
@@ -176,7 +176,7 @@ ${BL_API_URL}players?leaderboardContext=general&page=${page}&count=100&role=supp
 		<section class="content center">
 			<div class="member">
 				<img src="https://avatars.akamai.steamstatic.com/9eac1ff637afdcb6de7062b41ee1db567b8e8766_full.jpg" alt="CookedChili" /><a
-					href="https://www.beatleader.xyz/u/76561198147746455">CookedChili</a>
+					href="https://www.beatleader.com/u/76561198147746455">CookedChili</a>
 			</div>
 		</section>
 
@@ -184,48 +184,48 @@ ${BL_API_URL}players?leaderboardContext=general&page=${page}&count=100&role=supp
 		<section class="content center">
 			<div class="member">
 				<img src="https://avatars.akamai.steamstatic.com/29c58b769f3cfb0fa3bf330b0e33bcead6b8d4ac_full.jpg" alt="ComplexFrequency" /><a
-					href="https://www.beatleader.xyz/u/76561198285246326">ComplexFrequency</a>
+					href="https://www.beatleader.com/u/76561198285246326">ComplexFrequency</a>
 			</div>
 			<div class="member">
-				<img src="https://cdn.assets.beatleader.xyz/76561198965889412.gif" alt="Emy" /><a
-					href="https://www.beatleader.xyz/u/76561198965889412">Emy</a>
+				<img src="https://cdn.assets.beatleader.com/76561198965889412.gif" alt="Emy" /><a
+					href="https://www.beatleader.com/u/76561198965889412">Emy</a>
 			</div>
 			<div class="member">
-				<img src="https://cdn.assets.beatleader.xyz/76561198051924392R48.png" alt="Light Ai" /><a
-					href="https://www.beatleader.xyz/u/76561198051924392">Light Ai</a>
+				<img src="https://cdn.assets.beatleader.com/76561198051924392R48.png" alt="Light Ai" /><a
+					href="https://www.beatleader.com/u/76561198051924392">Light Ai</a>
 			</div>
 
 			<div class="member">
-				<img src="https://cdn.assets.beatleader.xyz/76561198073989976R47.png" alt="Loloppe" /><a
-					href="https://www.beatleader.xyz/u/76561198073989976">Loloppe</a>
+				<img src="https://cdn.assets.beatleader.com/76561198073989976R47.png" alt="Loloppe" /><a
+					href="https://www.beatleader.com/u/76561198073989976">Loloppe</a>
 			</div>
 			<div class="member">
-				<img src="https://cdn.assets.beatleader.xyz/76561199081029968R37.png" alt="thinking" /><a
-					href="https://www.beatleader.xyz/u/76561199081029968">thinking</a>
+				<img src="https://cdn.assets.beatleader.com/76561199081029968R37.png" alt="thinking" /><a
+					href="https://www.beatleader.com/u/76561199081029968">thinking</a>
 			</div>
 			<div class="member">
-				<img src="https://cdn.assets.beatleader.xyz/76561198831724075.png" alt="edgii" /><a
-					href="https://www.beatleader.xyz/u/76561198831724075">edgii</a>
+				<img src="https://cdn.assets.beatleader.com/76561198831724075.png" alt="edgii" /><a
+					href="https://www.beatleader.com/u/76561198831724075">edgii</a>
 			</div>
 			<div class="member">
-				<img src="https://cdn.assets.beatleader.xyz/76561198072855418.gif" alt="LackWiz" /><a
-					href="https://www.beatleader.xyz/u/76561198072855418">LackWiz</a>
+				<img src="https://cdn.assets.beatleader.com/76561198072855418.gif" alt="LackWiz" /><a
+					href="https://www.beatleader.com/u/76561198072855418">LackWiz</a>
 			</div>
 			<div class="member">
 				<img src="https://avatars.akamai.steamstatic.com/fede1355e88a5ffae6e9bfc20de4ec33a18ef5d1_full.jpg" alt="GalaxyMaster" /><a
-					href="https://www.beatleader.xyz/u/76561198075923914">GalaxyMaster</a>
+					href="https://www.beatleader.com/u/76561198075923914">GalaxyMaster</a>
 			</div>
 			<div class="member">
-				<img src="https://cdn.assets.beatleader.xyz/76561198273286768R27.png" alt="Marsh" /><a
-					href="https://www.beatleader.xyz/u/76561198273286768">Marsh</a>
+				<img src="https://cdn.assets.beatleader.com/76561198273286768R27.png" alt="Marsh" /><a
+					href="https://www.beatleader.com/u/76561198273286768">Marsh</a>
 			</div>
 			<div class="member">
 				<img src="https://avatars.akamai.steamstatic.com/ccc9d6659a0c7fc6fed6a5c6afc2e837eb3fa674_full.jpg" alt="Cratornugget" /><a
-					href="https://www.beatleader.xyz/u/76561198307061479">Cratornugget</a>
+					href="https://www.beatleader.com/u/76561198307061479">Cratornugget</a>
 			</div>
 			<div class="member">
 				<img src="https://avatars.akamai.steamstatic.com/66b82be1c041733bbb4fdbfd79be8e3c3a02b989_full.jpg" alt="Jojobanana" /><a
-					href="https://www.beatleader.xyz/u/76561198294659898">Jojobanana</a>
+					href="https://www.beatleader.com/u/76561198294659898">Jojobanana</a>
 			</div>
 		</section>
 
@@ -238,7 +238,7 @@ ${BL_API_URL}players?leaderboardContext=general&page=${page}&count=100&role=supp
 			<section class="content center">
 				{#each supporters.filter(p => p.role.includes('sponsor')) as player, idx (player?.id)}
 					<div class="member">
-						<img src={player.avatar} alt={player.name} /><a href="https://www.beatleader.xyz/u/{player.id}">{player.name}</a>
+						<img src={player.avatar} alt={player.name} /><a href="https://www.beatleader.com/u/{player.id}">{player.name}</a>
 					</div>
 				{/each}
 			</section>
@@ -249,7 +249,7 @@ ${BL_API_URL}players?leaderboardContext=general&page=${page}&count=100&role=supp
 			<section class="content center">
 				{#each supporters.filter(p => p.role.includes('supporter')) as player, idx (player?.id)}
 					<div class="member">
-						<img src={player.avatar} alt={player.name} /><a href="https://www.beatleader.xyz/u/{player.id}">{player.name}</a>
+						<img src={player.avatar} alt={player.name} /><a href="https://www.beatleader.com/u/{player.id}">{player.name}</a>
 					</div>
 				{/each}
 			</section>
@@ -260,7 +260,7 @@ ${BL_API_URL}players?leaderboardContext=general&page=${page}&count=100&role=supp
 			<section class="content center">
 				{#each supporters.filter(p => p.role.includes('tipper')) as player, idx (player?.id)}
 					<div class="member">
-						<img src={player.avatar} alt={player.name} /><a href="https://www.beatleader.xyz/u/{player.id}">{player.name}</a>
+						<img src={player.avatar} alt={player.name} /><a href="https://www.beatleader.com/u/{player.id}">{player.name}</a>
 					</div>
 				{/each}
 			</section>
@@ -271,7 +271,7 @@ ${BL_API_URL}players?leaderboardContext=general&page=${page}&count=100&role=supp
 			<section class="content single">
 				<div class="member">
 					<img src={$account.player.playerInfo.avatar} alt={$account.player.name} /><a
-						href={`https://www.beatleader.xyz/u/${$account.player.playerId}`}>{$account.player.name}</a>
+						href={`https://www.beatleader.com/u/${$account.player.playerId}`}>{$account.player.name}</a>
 					<p class="memberDescription">Thank you for using BeatLeader and believing in the open-source!</p>
 				</div>
 			</section>
@@ -343,36 +343,36 @@ ${BL_API_URL}players?leaderboardContext=general&page=${page}&count=100&role=supp
 
 		<section class="content center">
 			<div class="member">
-				<img src="https://cdn.assets.beatleader.xyz/76561198143307741.png" alt="shrado" /><a
-					href="https://www.beatleader.xyz/u/76561198143307741">shrado</a>
+				<img src="https://cdn.assets.beatleader.com/76561198143307741.png" alt="shrado" /><a
+					href="https://www.beatleader.com/u/76561198143307741">shrado</a>
 			</div>
 			<div class="member">
 				<img src="https://avatars.akamai.steamstatic.com/9f79be6c488ebc966eabc82bbdca1287499d551a_full.jpg" alt="FentonVR" /><a
-					href="https://www.beatleader.xyz/u/76561198105616734">FentonVR</a>
+					href="https://www.beatleader.com/u/76561198105616734">FentonVR</a>
 			</div>
 			<div class="member">
 				<img src="https://avatars.akamai.steamstatic.com/c27d8365b40b11235ac6d248c89ab63b612e5372_full.jpg" alt="iPixelGalaxy" /><a
-					href="https://www.beatleader.xyz/u/76561198967815164">iPixelGalaxy</a>
+					href="https://www.beatleader.com/u/76561198967815164">iPixelGalaxy</a>
 			</div>
 			<div class="member">
-				<img src="https://cdn.assets.beatleader.xyz/76561198044544317.png" alt="TG90" /><a
-					href="https://www.beatleader.xyz/u/76561198044544317">TG90</a>
+				<img src="https://cdn.assets.beatleader.com/76561198044544317.png" alt="TG90" /><a
+					href="https://www.beatleader.com/u/76561198044544317">TG90</a>
 			</div>
 			<div class="member">
-				<img src="https://cdn.assets.beatleader.xyz/76561198960449289.png" alt="Aquaflee" /><a
-					href="https://www.beatleader.xyz/u/76561198960449289">Aquaflee</a>
+				<img src="https://cdn.assets.beatleader.com/76561198960449289.png" alt="Aquaflee" /><a
+					href="https://www.beatleader.com/u/76561198960449289">Aquaflee</a>
 			</div>
 			<div class="member">
 				<img src="https://avatars.akamai.steamstatic.com/2b9951e8e6a9bdcaa6799f6b1a0bc2ba1e95387d_full.jpg" alt="Zana" /><a
-					href="https://www.beatleader.xyz/u/76561198272028078">Zana</a>
+					href="https://www.beatleader.com/u/76561198272028078">Zana</a>
 			</div>
 			<div class="member">
 				<img src="https://avatars.akamai.steamstatic.com/1ae4cec7a3ffd6f9952d5495d9c79f7cdc154e12_full.jpg" alt="Kansas" /><a
-					href="https://www.beatleader.xyz/u/76561198042527254">Kansas</a>
+					href="https://www.beatleader.com/u/76561198042527254">Kansas</a>
 			</div>
 			<div class="member">
 				<img src="https://avatars.akamai.steamstatic.com/82239b5edc08f1d40117502a99129c1bee74de92_full.jpg" alt="BigSlick" /><a
-					href="https://www.beatleader.xyz/u/76561198014681219">BigSlick</a>
+					href="https://www.beatleader.com/u/76561198014681219">BigSlick</a>
 			</div>
 		</section>
 

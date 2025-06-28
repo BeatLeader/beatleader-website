@@ -7,8 +7,8 @@ import {fetchUrl} from '../../fetch';
 
 export const CURRENT_URL = location.protocol + '//' + location.host;
 export const BL_API_URL = (() => {
-	if (location.host.includes('localhost') || location.host.includes('beatleader.xyz')) {
-		return 'https://api.beatleader.xyz/';
+	if (location.host.includes('localhost') || location.host.includes('beatleader.com')) {
+		return 'https://api.beatleader.com/';
 	} else if (location.host.includes('stage')) {
 		return 'https://stage.api.beatleader.net/';
 	} else if (location.host.includes('beatleader.net')) {
@@ -23,11 +23,11 @@ export const BL_REPLAYS_URL = (() => {
 	} else if (location.host.includes('beatleader.net')) {
 		return 'https://replay.beatleader.net/';
 	} else {
-		return 'https://replay.beatleader.xyz/';
+		return 'https://replay.beatleader.com/';
 	}
 })();
-export const BL_RENDERER_API_URL = 'https://render.beatleader.xyz/';
-export const BL_SOCKET_URL = 'wss://sockets.api.beatleader.xyz/';
+export const BL_RENDERER_API_URL = 'https://render.beatleader.com/';
+export const BL_SOCKET_URL = 'wss://sockets.api.beatleader.com/';
 export const STEAM_API_URL = '/cors/steamapi';
 export const STEAM_KEY = 'B0A7AF33E804D0ABBDE43BA9DD5DAB48';
 
@@ -40,7 +40,7 @@ export const BL_API_SCORES_URL =
 export const BL_API_FRIENDS_SCORES_URL =
 	BL_API_URL +
 	'user/friendScores?leaderboardContext=${leaderboardContext}&page=${page}&sortBy=${sort}&order=${order}&search=${search}&diff=${diff}&type=${songType}&stars_from=${starsFrom}&stars_to=${starsTo}&count=${count}';
-export const BL_API_SCORE_STATS_URL = 'https://cdn.scorestats.beatleader.xyz/${scoreId}.json';
+export const BL_API_SCORE_STATS_URL = 'https://cdn.scorestats.beatleader.com/${scoreId}.json';
 export const BL_API_SCORE_PIN_URL =
 	BL_API_URL +
 	'score/${scoreId}/pin?pin=${pin}&leaderboardContext=${leaderboardContext}&link=${link}&description=${description}&priority=${priority}';

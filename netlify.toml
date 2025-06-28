@@ -27,7 +27,7 @@
 
 [[redirects]]
     from = "/cors/cdn-assets-bl/*"
-    to = "https://cdn.assets.beatleader.xyz/:splat"
+    to = "https://cdn.assets.beatleader.com/:splat"
     status = 200
     force = true
     headers = {X-From = "Netlify"}
@@ -48,7 +48,7 @@
 
 [[redirects]]
     from = "/cors/blapi/*"
-    to = "https://api.beatleader.xyz/:splat"
+    to = "https://api.beatleader.com/:splat"
     status = 200
     force = true
     headers = {X-From = "Netlify"}

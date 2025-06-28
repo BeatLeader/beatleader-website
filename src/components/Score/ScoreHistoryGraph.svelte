@@ -127,7 +127,7 @@
 	let battleRoyaleDraftList = [];
 
 	function startBattleRoyale() {
-		let link = `https://royale.beatleader.xyz/?links=${battleRoyaleDraftList.join(',')}&noRoyale=true`;
+		let link = `https://royale.beatleader.com/?links=${battleRoyaleDraftList.join(',')}&noRoyale=true`;
 		window.open(link, '_blank');
 	}
 

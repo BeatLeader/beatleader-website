@@ -4,14 +4,14 @@
 
 ## Users
 
-Just go to [beatleader.xyz](https://beatleader.xyz)
+Just go to [beatleader.com](https://beatleader.com)
 
 ## Community
 
 - [BeatLeader Discord](https://discord.gg/2RG5YVqtG6)
 
-*The BeatLeader is an unofficial community project and not officially
-affiliated with Beat Saber.*
+_The BeatLeader is an unofficial community project and not officially
+affiliated with Beat Saber._
 
 ## Devs
 
@@ -24,11 +24,13 @@ yarn install
 ### Starting local build
 
 Install netlify-cli(one time setup):
+
 ```bash
 npm install netlify-cli -g
 ```
 
 Start Netlify dev environment(every time):
+
 ```bash
 netlify dev
 ```
@@ -51,6 +53,7 @@ By default, Netlify builds the app after every change to the master branch in th
 ```bash
 git push
 ```
+
 ### ... but I don't use Netlify
 
 Check your hosting provider's documentation.

@@ -185,7 +185,7 @@
 						url: `/leaderboard/accsaber/${currentLeaderboardId}/1`,
 						filters: {countries: ''},
 					},
-			  ]
+				]
 			: []
 	);
 
@@ -362,7 +362,7 @@
 								url: `/leaderboard/clanranking/${currentLeaderboardId}/1`,
 								filters: {countries: ''},
 							},
-					  ]
+						]
 					: []
 			)
 			.concat(
@@ -375,7 +375,7 @@
 								url: `/leaderboard/graph/${currentLeaderboardId}/1`,
 								filters: {countries: ''},
 							},
-					  ]
+						]
 					: []
 			)
 			.concat(
@@ -388,7 +388,7 @@
 								url: `/leaderboard/followed/${currentLeaderboardId}/1`,
 								filters: {countries: ''},
 							},
-					  ]
+						]
 					: []
 			)
 			.concat(
@@ -401,7 +401,7 @@
 								url: `/leaderboard/voters/${currentLeaderboardId}/1`,
 								filters: {countries: ''},
 							},
-					  ]
+						]
 					: []
 			)
 			.concat(
@@ -414,7 +414,7 @@
 								url: `/leaderboard/prediction/${currentLeaderboardId}/1`,
 								filters: {countries: ''},
 							},
-					  ]
+						]
 					: []
 			)
 			.concat(
@@ -427,7 +427,7 @@
 								url: `/leaderboard/global/${currentLeaderboardId}/1?countries=${country}`,
 								filters: {countries: country},
 							},
-					  ]
+						]
 					: []
 			);
 
@@ -527,7 +527,7 @@
 	const {open} = getContext('simple-modal');
 
 	function startBattleRoyale() {
-		let link = `https://royale.beatleader.xyz/?hash=${hash}&difficulty=${capitalize(diffInfo.diff)}&players=${battleRoyaleDraftList.join(
+		let link = `https://royale.beatleader.com/?hash=${hash}&difficulty=${capitalize(diffInfo.diff)}&players=${battleRoyaleDraftList.join(
 			','
 		)}`;
 		window.open(link, '_blank');
@@ -782,8 +782,8 @@
 									in:fly|global={initialPage == currentPage
 										? {}
 										: !score?.isUserScore
-										? {x: 200, delay: idx * 20, duration: 500}
-										: {duration: 300}}
+											? {x: 200, delay: idx * 20, duration: 500}
+											: {duration: 300}}
 									out:fade|global={!score?.isUserScore ? {duration: 100} : {duration: 300}}>
 									<Score
 										{leaderboardId}

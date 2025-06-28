@@ -216,21 +216,21 @@
 				p.value = (p?.values ?? []).filter(v => Number.isFinite(v.id) && (1 << v.id) & (filters?.[p.key] ?? 0));
 				filters[p.key] = filters[p.key] ?? 0;
 			} else if (p.key === 'countries' || p.key === 'hmd') {
-				p.value = Array.isArray(filters?.[p.key]) ? filters[p.key] : p?.default ?? [];
+				p.value = Array.isArray(filters?.[p.key]) ? filters[p.key] : (p?.default ?? []);
 				filters[p.key] = filters[p.key] ?? [];
 			} else if (p.key === 'pp_range' || p.key === 'score_range') {
-				p.values = Array.isArray(filters?.[p.key]) && filters[p.key].length ? filters[p.key] : p?.default ?? [];
+				p.values = Array.isArray(filters?.[p.key]) && filters[p.key].length ? filters[p.key] : (p?.default ?? []);
 				filters[p.key] = filters[p.key] ?? 0;
 			} else {
 				filters[p.key] = p.multi
-					? (p?.values ?? [])?.map(v => v?.id)?.filter(v => filters?.[p.key]?.includes(v)) ?? p?.default ?? []
+					? ((p?.values ?? [])?.map(v => v?.id)?.filter(v => filters?.[p.key]?.includes(v)) ?? p?.default ?? [])
 					: filters?.[p.key]?.length
-					? filters[p.key]
-					: p?.default ?? '';
+						? filters[p.key]
+						: (p?.default ?? '');
 
 				p.value = p.multi
-					? p?.values?.filter(v => filters?.[p.key]?.includes(v.id)) ?? p?.default ?? []
-					: filters?.[p.key] ?? p?.default ?? '';
+					? (p?.values?.filter(v => filters?.[p.key]?.includes(v.id)) ?? p?.default ?? [])
+					: (filters?.[p.key] ?? p?.default ?? '');
 			}
 		});
 
@@ -256,7 +256,7 @@
 			if (p.bitArray) {
 				currentFilters[p.key] = (p?.value ?? []).map(v => v?.id).reduce((prev, i) => prev + (1 << i), 0);
 			} else if (p.key === 'countries' || p.key === 'hmd') {
-				currentFilters[p.key] = p.multi ? (p?.value ?? []).join(',') : p?.value ?? '';
+				currentFilters[p.key] = p.multi ? (p?.value ?? []).join(',') : (p?.value ?? '');
 			} else if (p.key === 'pp_range' || p.key === 'score_range') {
 				if (p?.values?.find(p => p)) {
 					currentFilters[p.key] = (p?.values ?? []).map(i => i + '').join(',');
@@ -264,7 +264,7 @@
 					currentFilters[p.key] = null;
 				}
 			} else {
-				currentFilters[p.key] = p.multi ? (p?.value ?? [])?.map(p => p.id)?.join(',') : p?.value ?? '';
+				currentFilters[p.key] = p.multi ? (p?.value ?? [])?.map(p => p.id)?.join(',') : (p?.value ?? '');
 			}
 		});
 
@@ -369,7 +369,7 @@
 	<article class="page-content" transition:fade|global>
 		<!-- <ContentBox cls="event-banner" on:click={() => navigate('/event/49')}>
 			<div class="event-container">
-				<img alt="Event banner" class="event-image" src="https://cdn.assets.beatleader.xyz/75058-event.png" />
+				<img alt="Event banner" class="event-image" src="https://cdn.assets.beatleader.com/75058-event.png" />
 				<div class="event-text-container">
 					<span class="event-title">Ranked weeks #87-91!</span>
 					<span class="event-text">Check out what was ranked in April and compete for a badge.</span>

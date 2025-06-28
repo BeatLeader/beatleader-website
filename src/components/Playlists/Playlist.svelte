@@ -352,7 +352,7 @@
 								<Spinner />
 							{:else}
 								<Button
-									url="bsplaylist://playlist/https://api.beatleader.xyz/playlist/{playlistId}"
+									url="bsplaylist://playlist/https://api.beatleader.com/playlist/{playlistId}"
 									noMargin={true}
 									type="green"
 									iconFa="far fa-hand-pointer"

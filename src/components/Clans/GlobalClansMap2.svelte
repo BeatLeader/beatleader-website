@@ -26,7 +26,7 @@
 	var clans = [];
 
 	function fetchClanData() {
-		fetch('https://cdn.assets.beatleader.xyz/global-map-file.json')
+		fetch('https://cdn.assets.beatleader.com/global-map-file.json')
 			.then(d => d.json())
 			.then(data => {
 				clansData = data;
@@ -42,7 +42,7 @@
 		context = canvas.getContext('2d');
 
 		if (leaderboardId || clanTag) {
-			fetch('https://cdn.assets.beatleader.xyz/clansmap-globalcache.json')
+			fetch('https://cdn.assets.beatleader.com/clansmap-globalcache.json')
 				.then(r => r.json())
 				.then(cache => {
 					processData(cache);
@@ -130,8 +130,8 @@
 
 			circles.push({
 				id: map.leaderboardId,
-				x: cache ? cache.circles[map.leaderboardId]?.x ?? 0 : topClan.x,
-				y: cache ? cache.circles[map.leaderboardId]?.y ?? 0 : topClan.y,
+				x: cache ? (cache.circles[map.leaderboardId]?.x ?? 0) : topClan.x,
+				y: cache ? (cache.circles[map.leaderboardId]?.y ?? 0) : topClan.y,
 				r: map.stars,
 				color: map.tie
 					? 'grey'

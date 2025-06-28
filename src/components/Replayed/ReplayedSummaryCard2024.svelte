@@ -360,7 +360,7 @@
 
 			<div class="bottom-container">
 				<img class="bottom-icon" src="/assets/favicon.svg" />
-				<span>beatleader.xyz/replayed</span>
+				<span>beatleader.com/replayed</span>
 			</div>
 		</div>
 	</div>
