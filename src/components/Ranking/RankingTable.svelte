@@ -498,7 +498,10 @@
 						{@const team = participants.find(t =>
 							t.players.find(p =>
 								p.user.playableAccounts.find(
-									pa => pa.id == player?.playerId || pa.avatar.includes('cdn.assets.beatleader.com/' + player?.playerId)
+									pa =>
+										pa.id == player?.playerId ||
+										pa.avatar.includes('cdn.assets.beatleader.com/' + player?.playerId) ||
+										pa.avatar.includes('cdn.assets.beatleader.xyz/' + player?.playerId)
 								)
 							)
 						)}
