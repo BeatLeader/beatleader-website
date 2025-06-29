@@ -65,6 +65,7 @@
 		BuildingBlocks2024: () => import('./pages/BuildingBlocks2024.svelte'),
 		ProjectTree: () => import('./pages/ProjectTree.svelte'),
 		ScoresPage: () => import('./pages/Scores.svelte'),
+		ScorePage: () => import('./pages/Score.svelte'),
 	};
 
 	export let url = '';
@@ -376,6 +377,11 @@
 					<Route path="/scores/*page" let:params let:location>
 						{#await pageImports.ScoresPage() then module}
 							<svelte:component this={module.default} page={params.page} {location} />
+						{/await}
+					</Route>
+					<Route path="/score/:scoreId" let:params let:location>
+						{#await pageImports.ScorePage() then module}
+							<svelte:component this={module.default} scoreId={params.scoreId} {location} />
 						{/await}
 					</Route>
 					<Route path="/leaderboard/:type/:leaderboardId/*page" let:params let:location>
