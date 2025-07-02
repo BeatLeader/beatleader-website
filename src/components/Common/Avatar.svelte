@@ -5,9 +5,11 @@
 	export let clan = null;
 	export let overlaySuffix = 'small';
 	export let title = null;
+	export let cls = 'is-24x24';
+	export let big = false;
 
 	$: avatar = player?.playerInfo?.avatar;
-	$: avatarUrl = avatar?.includes('beatleader') ? avatar.replace(avatar.split('.')[avatar.split('.').length - 1], 'webp') : avatar;
+	$: avatarUrl = avatar?.includes('beatleader') && !big ? avatar.replace(avatar.split('.')[avatar.split('.').length - 1], 'webp') : avatar;
 	$: clanAvatar = clan?.icon ?? null;
 	$: profileSettings = player?.profileSettings;
 	$: overlayUrl = profileSettings?.effectName?.length ? getOverlayUrlByName(profileSettings.effectName, overlaySuffix) : null;
@@ -18,7 +20,7 @@
 </script>
 
 {#if avatar}
-	<figure class="image is-24x24" {title} on:click>
+	<figure class="image {cls}" {title} on:click>
 		<img src={avatarUrl} loading="lazy" alt="" />
 		{#if overlayUrl}
 			<img
@@ -33,7 +35,7 @@
 		{/if}
 	</figure>
 {:else if clan}
-	<figure class="image is-24x24" on:click>
+	<figure class="image {cls}" on:click>
 		<img src={clanAvatar} loading="lazy" alt="" />
 	</figure>
 {/if}

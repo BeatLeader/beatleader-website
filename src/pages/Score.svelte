@@ -14,7 +14,6 @@
 	import {onMount} from 'svelte';
 	import createLeaderboardStore from '../stores/http/http-leaderboard-store';
 	import PlayerPerformance from '../components/Player/PlayerPerformance.svelte';
-	import SongInfo from '../components/Player/SongInfo.svelte';
 	import AccuracySpreadChart from '../components/Score/AccuracySpreadChart.svelte';
 	import ReplayButton from '../components/Score/ReplayButton.svelte';
 	import Profile from '../components/Score/ScorePage/Profile.svelte';
@@ -24,6 +23,8 @@
 	import Button from '../components/Common/Button.svelte';
 	import {getContext} from 'svelte';
 	import ScoreNomination from '../components/Score/ScorePage/ScoreNomination.svelte';
+	import SongInfo from '../components/Score/ScorePage/SongInfo.svelte';
+	import PlayerInfo from '../components/Score/ScorePage/PlayerInfo.svelte';
 
 	const {open, close} = getContext('simple-modal');
 
@@ -31,8 +32,6 @@
 
 	let score = null;
 	let leaderboardStore = null;
-
-	let nominationStatus = null;
 
 	function fetchScore(id) {
 		score = null;
@@ -44,46 +43,29 @@
 				console.log(score);
 				leaderboardStore = createLeaderboardStore(score.score.leaderboard.leaderboardId, 'global', Math.ceil(score.score.rank / 10));
 			});
-
-		fetch(`${BL_API_URL}score/nominations/${id}`, {credentials: 'include'}).then(async d => {
-			if (d.status == 200) {
-				nominationStatus = parseInt(await d.text());
-			}
-		});
 	}
 
-	let nominationError = null;
+	let cinematicsCanvas;
 
-	function postVote(value) {
-		nominationError = null;
-		fetch(`${BL_API_URL}score/nominate/${scoreId}/?description=${encodeURIComponent(value)}`, {
-			credentials: 'include',
-			method: 'POST',
-		}).then(async d => {
-			if (d.status == 200) {
-				fetchScore(scoreId);
-			} else {
-				nominationError = await d.text();
-			}
-		});
-	}
+	function drawCinematics(cinematicsCanvas, coverUrl) {
+		if (coverUrl && cinematicsCanvas) {
+			cinematicsCanvas.style.opacity = 1;
+			const context = cinematicsCanvas.getContext('2d');
 
-	function openNomination() {
-		open(ScoreNomination, {
-			confirm: value => {
-				close();
-				postVote(value);
-			},
-			cancel: () => {
-				close();
-			},
-		});
+			const cover = new Image();
+			cover.onload = function () {
+				context.drawImage(cover, 0, 0, cinematicsCanvas.width, cinematicsCanvas.height);
+			};
+			cover.src = coverUrl;
+		}
 	}
 
 	$: scoreId && fetchScore(scoreId);
 	$: player = score?.player;
 	$: leaderboard = $leaderboardStore?.leaderboard;
 	$: song = leaderboard?.song;
+
+	$: song && drawCinematics(cinematicsCanvas, song.imageUrl);
 	$: difficulty = leaderboard?.difficulty;
 	$: scores = $leaderboardStore?.scores?.map(s => ({...s, leaderboard: leaderboard})) ?? null;
 </script>
@@ -91,7 +73,7 @@
 {#if score}
 	<div class="score-page" transition:fade>
 		<div class="grid-container">
-			<div class="player-column">
+			<!-- <div class="player-column">
 				{#if player}
 					<Profile {player} />
 				{/if}
@@ -103,30 +85,18 @@
 						<LeaderboardHeader {leaderboard} />
 					</div>
 				{/if}
-			</div>
+			</div> -->
 
-			<ContentBox cls="score-header-box">
-				<ScoreHeader {score} />
-			</ContentBox>
-
-			{#if nominationStatus}
-				<div class="nomination-container">
-					{#if nominationError}
-						<span class="error-description">{nominationError}</span>
-					{:else if nominationStatus == 1}
-						<Button
-							title="Nominate this for the Score Of The Week"
-							label="Nominate"
-							iconFa="fas fa-award"
-							on:click={() => {
-								openNomination();
-							}} />
-					{:else}
-						<span
-							>You nominated this score for the "Score Of The Week". Check Cube Community Youtube Channel on Wednesday for results.</span>
-					{/if}
+			<div class="score-header-box">
+				<div class="cinematics">
+					<div class="cinematics-canvas">
+						<canvas bind:this={cinematicsCanvas} style="position: absolute; width: 100%; height: 100%; opacity: 0" />
+					</div>
 				</div>
-			{/if}
+				<SongInfo {score} {leaderboard} />
+				<ScoreHeader {score} />
+				<PlayerInfo {score} {player} />
+			</div>
 
 			<div class="graphs-column" style="grid-column: 1 / -1">
 				<ContentBox cls="score-page-details">
@@ -164,9 +134,8 @@
 		padding: 2em;
 	}
 	.grid-container {
-		display: grid;
-		grid-template-columns: calc(50% - 1em) calc(50% - 1em);
-		column-gap: 1.5em;
+		display: flex;
+		flex-direction: column;
 	}
 	.player-column,
 	.map-column,
@@ -248,7 +217,7 @@
 		min-height: 50vh;
 	}
 
-	.leaderboard-header-box {
+	.score-header-box {
 		padding: 0;
 		border-radius: 12px;
 		background-color: black;
@@ -257,28 +226,58 @@
 		--webkit-perspective: 1000;
 		--webkit-backface-visibility: hidden;
 		-webkit-backdrop-filter: blur(10px);
-		z-index: -1;
 		position: relative;
+		margin: 4px 10px 18px;
+	}
+
+	.cinematics {
+		position: absolute;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		pointer-events: none;
+	}
+
+	.cinematics-canvas {
+		filter: blur(5em) opacity(0.5) saturate(250%);
+		left: 0;
+		pointer-events: none;
+		position: absolute;
+		top: 0;
+		transform: scale(1.1) translateZ(0);
+		width: 110%;
+		z-index: -1;
+		height: 110%;
 	}
 
 	:global(.graphs-column .score-page-details) {
 		padding: 0 0.3em 3px;
 		border-radius: 12px;
-		margin-right: 0;
 	}
 
 	:global(.leaderboard-column .score-page-details) {
 		padding: 0.4em;
 		border-radius: 12px;
-		margin-right: 0;
 	}
 
 	:global(.score-header-box) {
 		grid-column: 1 / -1;
-		margin-right: 0 !important;
 	}
 
-	:global(.player-column .content-box.stats-and-summary-box) {
-		margin: 0 !important;
+	@media (max-width: 1000px) {
+		.score-page {
+			padding: 1em;
+		}
+	}
+
+	@media screen and (max-width: 767px) {
+		.score-page {
+			padding: 0;
+		}
+
+		.cinematics-canvas {
+			width: 97%;
+		}
 	}
 </style>

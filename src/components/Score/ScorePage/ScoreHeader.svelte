@@ -6,16 +6,57 @@
 	import {badgesDef, ModifiersList} from '../../../utils/beatleader/format';
 	import Icons from '../../Song/Icons.svelte';
 	import ScoreExternalStatuses from './ScoreExternalStatuses.svelte';
+	import Button from '../../Common/Button.svelte';
+	import ScoreNomination from './ScoreNomination.svelte';
+	import {BL_API_URL} from '../../../network/queues/beatleader/api-queue';
 
 	export let score;
 
 	function getRank(acc) {
 		return badgesDef.find(b => (!b.max || acc <= b.max) && (!b.min || acc > b.min));
 	}
+	let nominationStatus = null;
+	let nominationError = null;
+
+	function fetchNominationStatus(score) {
+		fetch(`${BL_API_URL}score/nominations/${score.score.id}`, {credentials: 'include'}).then(async d => {
+			if (d.status == 200) {
+				nominationStatus = parseInt(await d.text());
+			}
+		});
+	}
+
+	function postVote(value) {
+		nominationError = null;
+		fetch(`${BL_API_URL}score/nominate/${score.score.id}/?description=${encodeURIComponent(value)}`, {
+			credentials: 'include',
+			method: 'POST',
+		}).then(async d => {
+			if (d.status == 200) {
+				fetchNominationStatus(score);
+			} else {
+				nominationError = await d.text();
+			}
+		});
+	}
+
+	function openNomination() {
+		open(ScoreNomination, {
+			confirm: value => {
+				close();
+				postVote(value);
+			},
+			cancel: () => {
+				close();
+			},
+		});
+	}
 
 	$: acc = score?.score?.acc;
 	$: rank = getRank(acc);
 	$: pp = score?.score?.pp;
+
+	$: score?.score && fetchNominationStatus(score);
 
 	const getConicGradient = accuracy => {
 		// Create gradient stops through all badge colors
@@ -84,7 +125,7 @@
 				<FormattedDate date={score?.score?.timeSet} />
 			</div>
 			<div class="global-rank">
-				<span>GLOBAL RANK</span>
+				<span>SCORE RANK</span>
 				<span class="rank-value">#{score?.score?.rank}</span>
 			</div>
 		</div>
@@ -92,6 +133,24 @@
 		<div class="right-section">
 			{#if score?.score?.externalStatuses?.length}
 				<ScoreExternalStatuses statuses={score?.score?.externalStatuses} />
+			{/if}
+			{#if nominationStatus}
+				<div class="nomination-container">
+					{#if nominationError}
+						<span class="error-description">{nominationError}</span>
+					{:else if nominationStatus == 1}
+						<Button
+							title="Nominate this for the Score Of The Week"
+							label="Nominate"
+							iconFa="fas fa-award"
+							on:click={() => {
+								openNomination();
+							}} />
+					{:else}
+						<span
+							>You nominated this score for the "Score Of The Week". Check Cube Community Youtube Channel on Wednesday for results.</span>
+					{/if}
+				</div>
 			{/if}
 			<div class="replay-icons-container">
 				<Icons icons={['replay', 'analyzer', 'altReplay']} scoreId={score?.score?.id} />
@@ -102,13 +161,12 @@
 
 <style>
 	.score-header-container {
-		display: grid;
-		grid-template-columns: 20% auto 20%;
-		justify-content: space-between;
+		display: flex;
 		align-items: center;
 		position: relative;
 		overflow: hidden;
 		color: white;
+		padding: 0.5em;
 	}
 
 	.background-image {
@@ -149,7 +207,7 @@
 	.replay-icons-container {
 		width: 2em;
 		transform: scale(1.6);
-		margin-right: 0.5em;
+		margin-left: 2em;
 	}
 
 	:global(.right-section .buttons-container.flat) {
@@ -159,7 +217,9 @@
 	.center-section {
 		flex-direction: column;
 		flex-grow: 1;
-		text-align: center;
+
+		text-align: right;
+		align-items: start;
 	}
 
 	.rank-grades {
@@ -189,6 +249,7 @@
 		padding: 10px;
 		margin-left: 2em;
 		position: relative;
+		margin-right: 4em;
 	}
 
 	.circle-background {
@@ -237,6 +298,7 @@
 		font-size: 4em;
 		font-weight: 600;
 		text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+		margin-left: -2px;
 	}
 
 	.player-info,
@@ -258,5 +320,51 @@
 
 	.rank-value {
 		font-weight: bold;
+	}
+
+	.nomination-container {
+		position: absolute;
+		top: 0.5em;
+		right: 1em;
+	}
+
+	@media screen and (max-width: 767px) {
+		.score-header-container {
+			flex-direction: column;
+		}
+
+		:global(.right-section .buttons-container.flat) {
+			flex-direction: row;
+		}
+
+		.replay-icons-container {
+			margin-left: unset;
+			width: unset;
+			margin-top: 1.5em;
+		}
+
+		.center-section {
+			text-align: center;
+			align-items: center;
+		}
+
+		.nomination-container {
+			position: relative;
+			margin-top: 0.4em;
+			margin-right: 1em;
+		}
+
+		.left-section {
+			flex-direction: column;
+		}
+
+		.rank-grades {
+			flex-direction: row;
+		}
+
+		.rank-circle {
+			margin-left: unset;
+			margin-right: unset;
+		}
 	}
 </style>
