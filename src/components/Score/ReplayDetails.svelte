@@ -17,6 +17,7 @@
 	const dispatch = createEventDispatcher();
 
 	export let score;
+	export let showAll = false;
 
 	let accSpreadData;
 	let sliceDetailsData;
@@ -50,13 +51,13 @@
 </script>
 
 <div class="replay-details">
-	{#if $configStore?.scoreDetailsPreferences?.showSliceDetails}
+	{#if showAll || $configStore?.scoreDetailsPreferences?.showSliceDetails}
 		<DetailsBox cls="slice-details-container">
 			<SliceDetails {sliceDetailsData} {sliceSummaryData} />
 		</DetailsBox>
 	{/if}
 
-	{#if $configStore?.scoreDetailsPreferences?.showAccSpreadChart}
+	{#if showAll || $configStore?.scoreDetailsPreferences?.showAccSpreadChart}
 		<DetailsBox cls="accuracy-spread-container">
 			<AccuracySpreadChart {accSpreadData} />
 		</DetailsBox>

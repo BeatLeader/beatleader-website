@@ -1571,7 +1571,11 @@ export function starsToBackgroundColor(diff, config) {
 				return rgbToHex(Math.round(r * value), Math.round(g * value), Math.round(b * value));
 		}
 	}
-	return diff.color;
+	if (diff.color) {
+		return diff.color;
+	} else {
+		return getDiffNameColor(diff.difficultyName);
+	}
 }
 
 export function starsToColor(diff, config) {

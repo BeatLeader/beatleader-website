@@ -10,6 +10,7 @@
 	import CompactPagination from '../Score/CompactPagination.svelte';
 
 	export let beatSavior;
+	export let showAll = false;
 	export let showGrid = true;
 	export let replayAccGraphs = null;
 	export let underswingsData = null;
@@ -39,7 +40,7 @@
 
 {#if beatSavior}
 	<section class="beat-savior">
-		{#if $configStore?.scoreDetailsPreferences?.showScoreMetrics || $configStore?.scoreDetailsPreferences?.showHandsAcc || (showGrid && $configStore?.scoreDetailsPreferences?.showSliceDetails)}
+		{#if showAll || $configStore?.scoreDetailsPreferences?.showScoreMetrics || $configStore?.scoreDetailsPreferences?.showHandsAcc || (showGrid && $configStore?.scoreDetailsPreferences?.showSliceDetails)}
 			<DetailsBox cls="details-and-hands">
 				{#if $configStore?.scoreDetailsPreferences?.showScoreMetrics}
 					<OtherStats {beatSavior} />
@@ -55,7 +56,7 @@
 			</DetailsBox>
 		{/if}
 
-		{#if $configStore?.scoreDetailsPreferences?.showAccChart}
+		{#if showAll || $configStore?.scoreDetailsPreferences?.showAccChart}
 			<DetailsBox cls="chart">
 				{#if graphPageIndex === 0 || !replayAccGraphs}
 					<Chart {beatSavior} />

@@ -75,10 +75,10 @@
 	<section class="details">
 		{#if beatSavior}
 			<div class="stats-grid">
-				<BeatSaviorDetails {beatSavior} showGrid={score?.replay == null} {replayAccGraphs} {underswingsData} {notes} />
+				<BeatSaviorDetails {beatSavior} showGrid={score?.replay == null} {replayAccGraphs} {underswingsData} {notes} showAll={true} />
 
 				{#if score?.replay}
-					<ReplayDetails {score} on:replay-was-processed={handleReplayWasProcessed} />
+					<ReplayDetails {score} on:replay-was-processed={handleReplayWasProcessed} showAll={true} />
 				{/if}
 			</div>
 		{/if}
