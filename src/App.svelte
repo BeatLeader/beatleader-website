@@ -374,11 +374,11 @@
 							<svelte:component this={module.default} page={params.page} {location} />
 						{/await}
 					</Route>
-					<Route path="/scores/*page" let:params let:location>
+					<!-- <Route path="/scores/*page" let:params let:location>
 						{#await pageImports.ScoresPage() then module}
 							<svelte:component this={module.default} page={params.page} {location} />
 						{/await}
-					</Route>
+					</Route> -->
 					<Route path="/score/:scoreId" let:params let:location>
 						{#await pageImports.ScorePage() then module}
 							<svelte:component this={module.default} scoreId={params.scoreId} {location} />

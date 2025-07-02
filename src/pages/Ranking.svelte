@@ -41,7 +41,7 @@
 	const tabOptions = [
 		{value: 'ranking', label: 'Ranking', iconFa: 'fas fa-hashtag', url: '/ranking/1', cls: 'ranking-tab-button'},
 		// {value: 'countries', label: 'Countries', iconFa: 'fas fa-flag', url: '/countries/1', cls: 'ranking-tab-button'},
-		{value: 'scores', label: 'Scores', iconFa: 'fas fa-trophy', url: '/scores/1', cls: 'ranking-tab-button'},
+		// {value: 'scores', label: 'Scores', iconFa: 'fas fa-trophy', url: '/scores/1', cls: 'ranking-tab-button'},
 	];
 	const currentTab = tabOptions[0];
 
@@ -431,6 +431,18 @@
 
 	$: showFilters = $configStore.preferences.showFiltersOnRanking;
 	$: fetchMaxPp();
+
+	let sotw = null;
+
+	function getSotw() {
+		fetch(`${BL_API_URL}score/sotw`)
+			.then(r => r.json())
+			.then(response => {
+				sotw = response;
+			});
+	}
+
+	$: getSotw();
 </script>
 
 <svelte:head>
@@ -556,6 +568,20 @@
 				{/if}
 			{/each}
 		</AsideBox>
+		{#if sotw}
+			<AsideBox title="Score Of The Week" boolname="showFeaturedScoreOnScores" faicon="fas fa-award">
+				<div style="display: flex; width: 100%; height: 100%; justify-content: center;">
+					<iframe
+						width="100%"
+						style="aspect-ratio: 16/9;"
+						src={`https://www.youtube-nocookie.com/embed/${sotw.link.replace('https://youtu.be/', '')}?si=b4lLpGGYeIZ8kRb8`}
+						title="YouTube video player"
+						frameborder="0"
+						allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+						allowfullscreen />
+				</div>
+			</AsideBox>
+		{/if}
 	</aside>
 </section>
 
