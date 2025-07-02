@@ -11,7 +11,7 @@
 	import ModifiersFilter from '../Leaderboard/ModifiersPicker/ModifiersFilter.svelte';
 	import {HMDs, modeDescriptions, requirementsMap} from '../../utils/beatleader/format';
 	import editModel from '../../stores/beatleader/profile-edit-model';
-	import {BL_API_URL, SPECIAL_PLAYER_ID} from '../../network/queues/beatleader/api-queue';
+	import {BL_API_URL, SPECIAL_PLAYER_ID, ALL_SCORES_PLAYER_ID} from '../../network/queues/beatleader/api-queue';
 	import TabSwitcher from '../Common/TabSwitcher.svelte';
 	import {ATTEMPT_END_TYPE, titleForEndType} from '../../utils/attempts';
 	import createServiceParamsManager from './utils/service-param-manager';
@@ -684,7 +684,7 @@
 	$: loadingServiceObj = availableServices.find(s => s.id === loadingService);
 </script>
 
-{#if playerId != SPECIAL_PLAYER_ID && availableServices?.length}
+{#if playerId != SPECIAL_PLAYER_ID && playerId != ALL_SCORES_PLAYER_ID && availableServices?.length}
 	<div class="service-switcher">
 		<TabSwitcher
 			values={availableServices}

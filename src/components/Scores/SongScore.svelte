@@ -5,19 +5,18 @@
 	import createAccountStore from '../../stores/beatleader/account';
 	import {configStore} from '../../stores/config';
 	import SongInfo from './SongInfo.svelte';
-	import ScoreRank from './ScoreRank.svelte';
+	import ScoreRank from '../Player/ScoreRank.svelte';
 	import FormattedDate from '../Common/FormattedDate.svelte';
-	import SongScoreDetails from './SongScoreDetails.svelte';
+	import SongScoreDetails from '../Player/SongScoreDetails.svelte';
 	import Icons from '../Song/Icons.svelte';
-	import PlayerPerformance from './PlayerPerformance.svelte';
-	import PlayerNameWithFlag from '../Common/PlayerNameWithFlag.svelte';
-	import {colorForEndType, titleForEndType, timeToLabel} from '../../utils/attempts';
+	import PlayerPerformance from '../Player/PlayerPerformance.svelte';
+	import PlayerName from './PlayerName.svelte';
+	import {colorForEndType, titleForEndType} from '../../utils/attempts';
 
 	export let playerId = null;
 	export let songScore = null;
 	export let fixedBrowserTitle = null;
 	export let idx = 0;
-	export let animationSign = 1;
 	export let service = null;
 	export let withPlayers = false;
 	export let noIcons = false;
@@ -26,6 +25,7 @@
 	export let inList = true;
 	export let additionalStat = null;
 	export let replayCounter = true;
+	export let animationSign = 1;
 	export let selectedMetric = null;
 
 	let showDetails = false;
@@ -77,6 +77,12 @@
 		}
 	}
 
+	function timeToLabel(time, prefix) {
+		const minutes = Math.floor(time / 60);
+		const seconds = Math.floor(time % 60);
+		return prefix + ' ' + minutes + ':' + seconds.toString().padStart(2, '0');
+	}
+
 	let showAnyDetails = true;
 
 	function checkShowAnyDetails(detailsPreferences) {
@@ -111,9 +117,24 @@
 
 {#if songScore}
 	<div
-		class={`song-score row-${idx} ${inList ? 'score-in-list' : ''}`}
+		class={`song-score row-${idx} scores-list-score ${score.status != 0 ? 'with-status' : ''}`}
 		in:maybe|global={{fn: fly, x: animationSign * 300, delay: idx * 30, duration: 300}}
+		out:maybe|global={{fn: fade, duration: 100}}
 		class:with-details={showDetails}>
+		{#if withPlayers}
+			<div class="top-container">
+				<div class="player">
+					<PlayerName player={songScore.player} on:click={() => navigateToPlayer(songScore.player.alias ?? songScore.player.playerId)} />
+				</div>
+				{#if score.status != 0}
+					{#if (score.status & 2) == 2}
+						<div class="score-of-the-week">
+							<span>Score Of The Week</span>
+						</div>
+					{/if}
+				{/if}
+			</div>
+		{/if}
 		{#if service == 'attempts'}
 			<header>
 				<h3 class="pin-description" title="Attempt number on this map">
@@ -129,32 +150,19 @@
 				{/if}
 				{#if score.endType > 1}
 					{#if score.startTime}
-						<h3 class="pin-description" title="Practice start time">
+						<h3 class="pin-description" title="Attempt start time">
 							{timeToLabel(score.startTime, 'from')}
 						</h3>
 					{/if}
-					{#if score.endType == 5}
-						<h3 class="pin-description" title="Practice finish time">
-							{timeToLabel(score.time, 'to')}
-						</h3>
-						{#if score.speed && score.speed != 1}
-							<h3 class="pin-description" title="Practice speed">
-								{score.speed.toFixed(1)}x
-							</h3>
-						{/if}
-					{:else}
-						<h3 class="pin-description" title="Attempt finish time">
-							{timeToLabel(score.time, 'at')}
-						</h3>
-					{/if}
+					<h3 class="pin-description" title="Attempt finish time">
+						{timeToLabel(score.time, 'at')}
+					</h3>
 				{/if}
 			</header>
 		{/if}
 		<div class="main" class:beat-savior={service === 'beatsavior'} class:accsaber={service === 'accsaber'}>
-			{#if service !== 'beatsavior' && service !== 'attempts'}
-				<a href="/score/{score.id}" class="background-link" on:click|preventDefault|stopPropagation={() => navigate(`/score/${score.id}`)}
-				></a>
-			{/if}
+			<a class="background-link" href="/score/{score.id}" on:click|preventDefault|stopPropagation={() => navigate(`/score/${score.id}`)}
+			></a>
 			<span class="rank tablet-and-up">
 				{#if service !== 'beatsavior' && service !== 'attempts'}
 					<ScoreRank
@@ -177,15 +185,6 @@
 			<span class="song">
 				<div>
 					{#if showSong}
-						{#if withPlayers}
-							<div class="player">
-								<PlayerNameWithFlag
-									player={songScore.player}
-									type={service === 'accsaber' ? 'accsaber/date' : null}
-									on:click={() => navigateToPlayer(songScore.player.alias ?? songScore.player.playerId)} />
-							</div>
-						{/if}
-
 						<SongInfo
 							{leaderboard}
 							{score}
@@ -198,7 +197,7 @@
 							{service}
 							{playerId}
 							icons={selectedIcons}
-							replayLink={score.endType > 0 ? score.replay : null}
+							replayLink={score.id ? null : score.replay}
 							on:score-pinned={onScorePinned} />
 					{/if}
 				</div>
@@ -212,8 +211,7 @@
 						{twitchUrl}
 						{diffInfo}
 						scoreId={score.id}
-						attempt={score.endType > 0}
-						replayLink={score.endType > 0 ? score.replay : null}
+						replayLink={score.id ? null : score.replay}
 						icons={selectedIcons}
 						{serviceIcon}
 						noPin={!isPlayerScore}
@@ -226,8 +224,7 @@
 						{twitchUrl}
 						{diffInfo}
 						scoreId={score.id}
-						attempt={score.endType > 0}
-						replayLink={score.endType > 0 ? score.replay : null}
+						replayLink={score.id ? null : score.replay}
 						icons={selectedIcons}
 						{serviceIcon}
 						noPin={!isPlayerScore}
@@ -288,13 +285,28 @@
 {/if}
 
 <style>
-	.score-in-list {
-		border-bottom: 1px solid var(--row-separator);
-		padding: 0.5em 0;
+	.main {
+		padding: 0.5em;
+		background-color: #222;
+		border-radius: 0 8px 8px 8px;
+		box-shadow: 0 4px 8px rgb(0 0 0 / 55%) !important;
+		position: relative;
+	}
+
+	.main:hover {
+		box-shadow: 0 4px 8px rgb(0 0 0 / 85%) !important;
+	}
+
+	.with-status .main {
+		border-radius: 0 0 8px 8px;
 	}
 
 	.song-score .up-to-tablet + .main {
 		padding-top: 0;
+	}
+
+	.song-score {
+		color: white;
 	}
 
 	.song-score .main {
@@ -303,7 +315,6 @@
 		align-items: center;
 		justify-content: center;
 		grid-column-gap: 0.4em;
-		position: relative;
 	}
 
 	.song-score.with-details .main {
@@ -335,8 +346,8 @@
 		position: absolute;
 		width: 100%;
 		height: 100%;
-		top: 0;
 		left: 0;
+		top: 0;
 		z-index: 0;
 	}
 
@@ -367,9 +378,29 @@
 		min-width: fit-content;
 	}
 
+	.top-container {
+		display: flex;
+		justify-content: space-between;
+	}
+
 	.player {
 		text-align: left;
-		padding-bottom: 0.5rem;
+		margin-top: 0.6em;
+		background: #332c36;
+		width: fit-content;
+		padding: 0.3em;
+		border-radius: 8px 8px 0 0;
+	}
+
+	.score-of-the-week {
+		text-align: left;
+		margin-top: 0.6em;
+		background: #490e63;
+		width: fit-content;
+		padding: 0.3em;
+		border-radius: 8px 8px 0 0;
+		padding-left: 0.5em;
+		padding-right: 0.5em;
 	}
 
 	.main.beat-savior .timeset {
@@ -430,7 +461,7 @@
 
 	header {
 		display: flex;
-		align-items: flex-start;
+		align-items: center;
 		grid-gap: 0;
 		font-size: 0.875em;
 		margin-top: -0.6em;
@@ -478,6 +509,11 @@
 	}
 	.mobile-only.icons {
 		display: none;
+	}
+
+	:global(.scores-list-score .details) {
+		background-color: #171717;
+		box-shadow: 0 2px 4px rgb(0 0 0 / 55%) !important;
 	}
 
 	@media screen and (max-width: 1023px) {

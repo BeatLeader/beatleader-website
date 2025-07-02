@@ -25,6 +25,7 @@
 	export let roles = null;
 	export let profileAppearance;
 	export let zIndex = 0;
+	export let mayEdit = true;
 
 	const dispatch = createEventDispatcher();
 
@@ -74,7 +75,7 @@
 	$: loggedInPlayer = $account?.id;
 	$: isMain = playerId && $account?.id === playerId;
 	$: isAdmin = $account?.player?.role?.includes('admin');
-	$: canRedact = (isMain && loggedInPlayer === playerId) || isAdmin;
+	$: canRedact = mayEdit && ((isMain && loggedInPlayer === playerId) || isAdmin);
 	$: clanOrder = playerInfo?.clans?.map(c => c.tag).join(',');
 
 	let alias = null;

@@ -75,14 +75,15 @@
 
 	.tournament-banner-background {
 		position: absolute;
-		left: 0;
+		left: -53vw;
 		right: 0;
-		top: 0;
-		bottom: 3px;
+		top: -22px;
+		bottom: -20px;
 		background-image: repeating-linear-gradient(
 			/* angle */ 150deg,
-			/* line color & thickness */ #7ac943 0px 0px,
-			/* gap color & width */ transparent 2px 1px
+			/* line color & thickness */ #20a4ee 0px 0px,
+			/* gap color & width */ #20a4ee 0px 1px,
+			transparent 2px 3px
 		);
 		mask-image: url(/assets/bswc-2025-logo.png);
 		mask-repeat: repeat;
@@ -90,7 +91,7 @@
 		mask-position: center;
 		-webkit-mask-image: url(/assets/bswc-2025-logo.png);
 		-webkit-mask-repeat: repeat;
-		-webkit-mask-size: 3em;
+		-webkit-mask-size: contain;
 		-webkit-mask-position: center;
 	}
 

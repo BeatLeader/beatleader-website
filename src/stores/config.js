@@ -75,6 +75,9 @@ export const DEFAULT_CONFIG = {
 		playlistOption: 'selected',
 
 		mapsFiltersOpen: false,
+
+		showFeaturedScoreOnScores: true,
+		showFiltersOnScores: false,
 	},
 	scorePreferences: {
 		badgeRows: 2,

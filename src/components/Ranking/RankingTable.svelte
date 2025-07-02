@@ -118,6 +118,21 @@
 			unranked: 'scoreStats.unrankedTop1Score',
 			all: 'scoreStats.top1Score',
 		},
+		level: {
+			ranked: 'playerInfo.level',
+			unranked: 'playerInfo.level',
+			all: 'playerInfo.level',
+		},
+		prestige: {
+			ranked: 'playerInfo.prestige',
+			unranked: 'playerInfo.prestige',
+			all: 'playerInfo.prestige',
+		},
+		experience: {
+			ranked: 'playerInfo.experience',
+			unranked: 'playerInfo.experience',
+			all: 'playerInfo.experience',
+		},
 	};
 
 	let allPpTypeValues = [
@@ -252,6 +267,30 @@
 				return (data?.scoreStats?.anonimusReplayWatched ?? 0) + (data?.scoreStats?.authorizedReplayWatched ?? 0);
 			},
 			props: {digits: 0, prefix: '', suffix: ''},
+		},
+		{
+			id: 'level',
+			label: 'Level',
+			title: 'Sort by experience level',
+			iconFa: 'fa fa-crosshairs',
+			value: data => getStat(data, statKeys['level'][currentTypeValue]),
+			props: {prefix: '', suffix: '', zero: '-', digits: 2},
+		},
+		{
+			id: 'prestige',
+			label: 'Prestige',
+			title: 'Sort by prestige',
+			iconFa: 'fa fa-crosshairs',
+			value: data => getStat(data, statKeys['prestige'][currentTypeValue]),
+			props: {prefix: '', suffix: '', zero: '-', digits: 2},
+		},
+		{
+			id: 'experience',
+			label: 'Experience',
+			title: 'Sort by experience value',
+			iconFa: 'fa fa-crosshairs',
+			value: data => getStat(data, statKeys['experience'][currentTypeValue]),
+			props: {prefix: '', suffix: '', zero: '-', digits: 2},
 		},
 	];
 

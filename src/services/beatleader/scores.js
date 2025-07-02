@@ -7,7 +7,7 @@ import {opt} from '../../utils/js';
 import makePendingPromisePool from '../../utils/pending-promises';
 import {roundToPrecision} from '../../utils/format';
 import {serviceFilterFunc} from '../utils';
-import {SPECIAL_PLAYER_ID} from '../../network/queues/beatleader/api-queue';
+import {SPECIAL_PLAYER_ID, ALL_SCORES_PLAYER_ID} from '../../network/queues/beatleader/api-queue';
 
 const HISTOGRAM_DATE_PRECISION = 'day';
 const HISTOGRAM_PP_PRECISION = 5;
@@ -268,6 +268,19 @@ export default () => {
 			params: serviceParams,
 		});
 
+	const fetchAllScoresPage = async (
+		serviceParams = {sort: 'date', order: 'desc', page: 1},
+		priority = PRIORITY.FG_LOW,
+		{...options} = {}
+	) =>
+		scoresApiClient.getProcessed({
+			...options,
+			playerId: ALL_SCORES_PLAYER_ID,
+			page: serviceParams?.page ?? 1,
+			priority,
+			params: serviceParams,
+		});
+
 	const fetchScoreStats = async (scoreId, priority = PRIORITY.FG_LOW, {...options} = {cacheTtl: HOUR, maxAge: HOUR}) =>
 		scoreStatsApiClient.getProcessed({...options, scoreId, priority});
 
@@ -304,6 +317,7 @@ export default () => {
 		fetchScoresPage,
 		fetchScoresPageOrGetFromCache,
 		fetchFollowedScores,
+		fetchAllScoresPage,
 		fetchScoreStats,
 		getScoresHistogramDefinition,
 		destroyService,

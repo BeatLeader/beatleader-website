@@ -8,6 +8,7 @@
 	import {PLAYERS_PER_PAGE} from '../../../utils/beatleader/consts';
 
 	export let playerData;
+	export let showHeadset;
 
 	const historyStore = createStatsHistoryStore();
 
@@ -121,30 +122,32 @@
 					reversePrevSign={true} />
 			</a>
 		</div>
-		{#if headset}
-			<div class="platform-entry">
-				<span class="platform-title" title="Last 50 scores top headset">Headset</span>
-				<div class="hmd-container">
-					<div class="hmd-image-container">
-						<img src={'/assets/' + headset.icon} alt={headset.name} style={headsetStyle} />
+		{#if showHeadset}
+			{#if headset}
+				<div class="platform-entry">
+					<span class="platform-title" title="Last 50 scores top headset">Headset</span>
+					<div class="hmd-container">
+						<div class="hmd-image-container">
+							<img src={'/assets/' + headset.icon} alt={headset.name} style={headsetStyle} />
+						</div>
+						<span>
+							{headset.name}
+						</span>
 					</div>
-					<span>
-						{headset.name}
-					</span>
 				</div>
-			</div>
-		{/if}
-		{#if controllerDescription.length}
-			<div class="platform-entry">
-				<span class="platform-title" title="Last 50 scores top controllers">Controllers</span>
-				{controllerDescription}
-			</div>
-		{/if}
-		{#if topPlatform}
-			<div class="platform-entry">
-				<span class="platform-title" title="Last 50 scores top platform">Platform</span>
-				{topPlatform}
-			</div>
+			{/if}
+			{#if controllerDescription.length}
+				<div class="platform-entry">
+					<span class="platform-title" title="Last 50 scores top controllers">Controllers</span>
+					{controllerDescription}
+				</div>
+			{/if}
+			{#if topPlatform}
+				<div class="platform-entry">
+					<span class="platform-title" title="Last 50 scores top platform">Platform</span>
+					{topPlatform}
+				</div>
+			{/if}
 		{/if}
 	</div>
 </div>
