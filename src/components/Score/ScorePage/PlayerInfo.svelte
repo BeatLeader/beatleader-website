@@ -21,27 +21,28 @@
 <a
 	href={`/u/${playerId}${type ? '/' + type : ''}/1${playerClickFilter ? '?' + playerClickFilter : ''}`}
 	class="player-name clickable has-pointer-events"
-	bind:this={referenceElement}
 	on:click|preventDefault>
-	<Avatar {player} cls="profile-info-avatar" big={true} />
-	<div class="name-and-details">
-		<div class="name-and-headset">
-			<span class="name">{name ?? 'Unknown'}</span>
-			with
-			<div class="icon-and-hmd">
-				<img src={'/assets/' + hmd.icon} alt={hmd.name} style={`width: 1.2em; filter: ${hmd?.color}`} />
-				<span class="hmd">{hmd.name}</span>
+	<div class="profile-info-container" bind:this={referenceElement}>
+		<Avatar {player} cls="profile-info-avatar" big={true} />
+		<div class="name-and-details">
+			<div class="name-and-headset">
+				<span class="name">{name ?? 'Unknown'}</span>
+				with
+				<div class="icon-and-hmd">
+					<img src={'/assets/' + hmd.icon} alt={hmd.name} style={`width: 1.2em; filter: ${hmd?.color}`} />
+					<span class="hmd">{hmd.name}</span>
+				</div>
 			</div>
-		</div>
-		<div class="rank-and-pp">
-			<span class="rank">{'#' + (player?.playerInfo?.rank ?? '?')}</span>
-			<span class="pp">{Math.round(player?.playerInfo?.pp ?? 0, 0)}pp</span>
+			<div class="rank-and-pp">
+				<span class="rank">{'#' + (player?.playerInfo?.rank ?? '?')}</span>
+				<span class="pp">{Math.round(player?.playerInfo?.pp ?? 0, 0)}pp</span>
+			</div>
 		</div>
 	</div>
 </a>
 
 {#if !disablePopover && player && player.playerInfo}
-	<Popover triggerEvents={['hover', 'focus']} {referenceElement} placement="auto" spaceAway={10}>
+	<Popover triggerEvents={['hover', 'focus']} {referenceElement} placement="bottom" spaceAway={25}>
 		<div class="popover-contents" transition:fade|global={{duration: 250}}>
 			<MiniProfile {player} />
 		</div>
@@ -65,6 +66,11 @@
 		margin-top: 0.6em;
 		border-radius: 0 0 12px 12px;
 		position: relative;
+	}
+
+	.profile-info-container {
+		display: flex;
+		gap: 0.6em;
 	}
 
 	:global(.profile-info-avatar) {

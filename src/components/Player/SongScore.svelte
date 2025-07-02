@@ -151,8 +151,10 @@
 			</header>
 		{/if}
 		<div class="main" class:beat-savior={service === 'beatsavior'} class:accsaber={service === 'accsaber'}>
-			<a href="/score/{score.id}" class="background-link" on:click|preventDefault|stopPropagation={() => navigate(`/score/${score.id}`)}
-			></a>
+			{#if service !== 'beatsavior' && service !== 'attempts'}
+				<a href="/score/{score.id}" class="background-link" on:click|preventDefault|stopPropagation={() => navigate(`/score/${score.id}`)}
+				></a>
+			{/if}
 			<span class="rank tablet-and-up">
 				{#if service !== 'beatsavior' && service !== 'attempts'}
 					<ScoreRank

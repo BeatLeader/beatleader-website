@@ -9,6 +9,9 @@
 	import Button from '../../Common/Button.svelte';
 	import ScoreNomination from './ScoreNomination.svelte';
 	import {BL_API_URL} from '../../../network/queues/beatleader/api-queue';
+	import {getContext} from 'svelte';
+
+	const {open, close} = getContext('simple-modal');
 
 	export let score;
 
@@ -147,7 +150,7 @@
 								openNomination();
 							}} />
 					{:else}
-						<span
+						<span class="nominates-status"
 							>You nominated this score for the "Score Of The Week". Check Cube Community Youtube Channel on Wednesday for results.</span>
 					{/if}
 				</div>
@@ -328,6 +331,11 @@
 		right: 1em;
 	}
 
+	.nominates-status {
+		width: 23em;
+		display: block;
+	}
+
 	@media screen and (max-width: 767px) {
 		.score-header-container {
 			flex-direction: column;
@@ -365,6 +373,10 @@
 		.rank-circle {
 			margin-left: unset;
 			margin-right: unset;
+		}
+
+		.nominates-status {
+			width: 12em;
 		}
 	}
 </style>

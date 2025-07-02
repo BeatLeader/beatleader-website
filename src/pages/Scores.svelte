@@ -812,7 +812,7 @@
 			</section>
 		</AsideBox>
 		{#if sotw}
-			<AsideBox title="Score Of The Week" boolname="showFeaturedScoreOnScores" faicon="fas fa-star">
+			<AsideBox title="Score Of The Week" boolname="showFeaturedScoreOnScores" faicon="fas fa-award">
 				<div style="display: flex; width: 100%; height: 100%; justify-content: center;">
 					<iframe
 						width="100%"

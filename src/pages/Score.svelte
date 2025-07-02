@@ -21,12 +21,12 @@
 	import ScoreHeader from '../components/Score/ScorePage/ScoreHeader.svelte';
 	import ScoreDetails from '../components/Score/ScorePage/ScoreDetails.svelte';
 	import Button from '../components/Common/Button.svelte';
-	import {getContext} from 'svelte';
 	import ScoreNomination from '../components/Score/ScorePage/ScoreNomination.svelte';
 	import SongInfo from '../components/Score/ScorePage/SongInfo.svelte';
 	import PlayerInfo from '../components/Score/ScorePage/PlayerInfo.svelte';
-
-	const {open, close} = getContext('simple-modal');
+	import ScoreMeta from '../components/Score/ScoreMeta.svelte';
+	import ssrConfig from '../ssr-config';
+	import {navigate} from 'svelte-routing';
 
 	export let scoreId;
 
@@ -60,6 +60,12 @@
 		}
 	}
 
+	function navigateToPlayer(player) {
+		if (!player) return;
+
+		navigate(`/u/${player.alias ?? player.playerId}`);
+	}
+
 	$: scoreId && fetchScore(scoreId);
 	$: player = score?.player;
 	$: leaderboard = $leaderboardStore?.leaderboard;
@@ -69,6 +75,10 @@
 	$: difficulty = leaderboard?.difficulty;
 	$: scores = $leaderboardStore?.scores?.map(s => ({...s, leaderboard: leaderboard})) ?? null;
 </script>
+
+<svelte:head>
+	<title>{player?.name ?? 'Player'} on {song?.name ?? 'map'} - {ssrConfig.name}</title>
+</svelte:head>
 
 {#if score}
 	<div class="score-page" transition:fade>
@@ -95,7 +105,12 @@
 				</div>
 				<SongInfo {score} {leaderboard} />
 				<ScoreHeader {score} />
-				<PlayerInfo {score} {player} />
+				<PlayerInfo
+					{score}
+					{player}
+					on:click={() => {
+						navigateToPlayer(player);
+					}} />
 			</div>
 
 			<div class="graphs-column" style="grid-column: 1 / -1">
@@ -123,6 +138,8 @@
 			</div>
 		</div>
 	</div>
+
+	<ScoreMeta {score} {leaderboard} />
 {:else}
 	<div class="spinner-container">
 		<Spinner />
