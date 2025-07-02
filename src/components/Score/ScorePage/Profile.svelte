@@ -17,13 +17,19 @@
 	import Followers from '../../Player/Bio/Followers.svelte';
 	import Socials from '../../Player/Bio/Socials.svelte';
 
-	export let playerData;
+	import createPlayerInfoWithScoresStore from '../../../stores/http/http-player-with-scores-store';
+
+	export let player;
 	export let isLoading = false;
 	export let error = null;
 	export let skeleton = false;
 	export let avatarHash = null;
 
 	const account = createAccountStore();
+
+	let playerStore = player && player.playerId ? createPlayerInfoWithScoresStore(player && player.playerId) : null;
+
+	$: playerData = $playerStore?.name ? $playerStore : player;
 
 	let editError = null;
 
@@ -130,16 +136,14 @@
 				on:modal-hidden={() => (modalShown = false)} />
 		</div>
 	</div>
-	<SummaryBox {playerId} {playerData} {scoresStats} {accBadges} {skeleton} {profileAppearance} {ssBadges} />
-	<!-- <div class="followers-and-socials">
-		<Followers {playerId} />
-
-		{#if playerInfo}
-			<div class="socials-list">
-				<Socials {name} {playerInfo} {playerData} />
-			</div>
-		{/if}
-	</div> -->
+	<SummaryBox
+		{playerId}
+		{playerData}
+		{scoresStats}
+		{skeleton}
+		{profileAppearance}
+		overrideVisibleStats="topPp,averageRankedAccuracy"
+		showHeadset={false} />
 </ContentBox>
 
 <style>

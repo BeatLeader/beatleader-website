@@ -123,18 +123,17 @@
 	});
 
 	let currentFilters = buildFiltersFromLocation(location);
+	if (page && !Number.isFinite(page)) page = parseInt(page, 10);
+	if (!page || isNaN(page) || page <= 0) page = 1;
 
-	let serviceParams = {page: 1, sort: currentFilters.sort, order: currentFilters.order, filters: currentFilters};
+	let currentPage = page;
+
+	let serviceParams = {page: currentPage, sort: currentFilters.sort, order: currentFilters.order, filters: currentFilters};
 	serviceParamsManager.update(serviceParams, 'scores', true);
 
 	function onTabChanged(e) {
 		navigate(`/ranking/1`);
 	}
-
-	if (page && !Number.isFinite(page)) page = parseInt(page, 10);
-	if (!page || isNaN(page) || page <= 0) page = 1;
-
-	let currentPage = page;
 
 	let previousPage = 0;
 	let boxEl = null;
@@ -168,14 +167,14 @@
 		};
 	});
 
-	const requirementFilterOptions = Object.entries(requirementsMap).map(([key, type]) => {
+	const requirementFilterOptions = Object.entries(requirementsDescription).map(([key, description]) => {
 		return {
-			key: type,
-			label: capitalize(requirementsDescription?.[key]?.name ?? key),
-			icon: `<span class="${requirementsDescription?.[key]?.icon ?? `${key}-icon`}"></span>`,
-			color: requirementsDescription?.[key]?.color ?? 'var(--beatleader-primary',
-			textColor: requirementsDescription?.[key]?.textColor ?? null,
-			title: requirementsDescription?.[key]?.title ?? null,
+			key: requirementsMap[key],
+			label: capitalize(description?.name ?? key),
+			icon: `<span class="${description?.icon ?? `${key}-icon`}"></span>`,
+			color: description?.color ?? 'var(--beatleader-primary',
+			textColor: description?.textColor ?? null,
+			title: description?.title ?? null,
 		};
 	});
 
@@ -244,7 +243,11 @@
 			}
 		}
 
-		serviceParamsManager.update({page: currentPage, sort: currentFilters.sort, order: currentFilters.order, filters: currentFilters});
+		serviceParamsManager.update(
+			{page: currentPage, sort: currentFilters.sort, order: currentFilters.order, filters: currentFilters},
+			'scores',
+			true
+		);
 
 		serviceParams = serviceParamsManager.getParams();
 	}
@@ -374,8 +377,8 @@
 	function onDateRangeChange(event) {
 		if (!event?.detail) return;
 
-		currentFilters.date_from = event.detail?.from ? event.detail.from.getTime() / 1000 : null;
-		currentFilters.date_to = event.detail?.to ? (event.detail.to.getTime() + DAY) / 1000 : null;
+		currentFilters.date_from = event.detail?.from ? parseInt(event.detail.from.getTime() / 1000) : null;
+		currentFilters.date_to = event.detail?.to ? parseInt(event.detail.to.getTime() / 1000) : null;
 
 		currentPage = 1;
 
@@ -431,14 +434,41 @@
 		});
 	}
 
+	let sotw = null;
+
+	function getSotw() {
+		fetch(`${BL_API_URL}score/sotw`)
+			.then(r => r.json())
+			.then(response => {
+				sotw = response;
+			});
+	}
+
 	$: showFilters = $configStore.preferences.showFiltersOnRanking;
 	$: hasRatingsByDefault = currentFilters.type === 'ranked' || currentFilters.type === 'nominated' || currentFilters.type === 'qualified';
 	$: starFiltersDisabled = !hasRatingsByDefault && !showAllRatings;
 	$: sliderLimits = hasRatingsByDefault ? Ranked_Const : Unranked_Const;
 
-	const today = new Date(new Date().setHours(0, 0, 0, 0));
-	const lastWeek = new Date(new Date().setDate(new Date().getDate() - 7));
-	const lastYear = new Date(new Date().setFullYear(new Date().getFullYear() - 1));
+	$: getSotw();
+
+	const now = Date.now() / 1000;
+	const today = dateFromUnix(now - 60 * 60 * 24);
+	const lastWeek = dateFromUnix(now - 60 * 60 * 24 * 7);
+	const lastYear = dateFromUnix(now - 60 * 60 * 24 * 365);
+
+	let isDateFilterOpen = !!(currentFilters.date_from || currentFilters.date_to);
+	let isCategoryFilterOpen = !!currentFilters.mapType;
+	let isRequirementsFilterOpen = !!currentFilters.mapRequirements;
+	let isStarsFilterOpen = !!(
+		currentFilters.stars_from ||
+		currentFilters.stars_to ||
+		currentFilters.accrating_from ||
+		currentFilters.accrating_to ||
+		currentFilters.passrating_from ||
+		currentFilters.passrating_to ||
+		currentFilters.techrating_from ||
+		currentFilters.techrating_to
+	);
 </script>
 
 <svelte:head>
@@ -493,217 +523,267 @@
 				<Switcher values={typeFilterOptions} value={typeFilterOptions.find(o => o.key === currentFilters.type)} on:change={onTypeChanged} />
 			</section>
 
-			<div style="margin-bottom: 0.1em">
-				<Select
-					bind:value={currentFilters.allTypes}
-					on:change={() => onCategoryModeChanged()}
-					fontSize="0.8"
-					options={[
-						{name: 'ANY category', value: 0},
-						{name: 'ALL categories', value: 1},
-						{name: 'NO categories', value: 2},
-					]} />
-			</div>
-
-			<section class="filter">
-				<Switcher
-					values={categoryFilterOptions}
-					value={categoryFilterOptions.filter(c => currentFilters.mapType & c.key)}
-					multi={true}
-					on:change={onCategoryChanged} />
-			</section>
-
-			<div style="margin-bottom: 0.1em">
-				<Select
-					bind:value={currentFilters.allRequirements}
-					on:change={() => onCategoryModeChanged()}
-					fontSize="0.8"
-					options={[
-						{name: 'ANY map feature', value: 0},
-						{name: 'ALL map features', value: 1},
-						{name: 'NO map features', value: 2},
-					]} />
-			</div>
-
-			<section class="filter">
-				<Switcher
-					values={requirementFilterOptions}
-					value={requirementFilterOptions.filter(c => currentFilters.mapRequirements & c.key)}
-					multi={true}
-					on:change={onRequirementsChanged} />
-			</section>
-
-			<section
-				class="filter"
-				class:disabled={starFiltersDisabled}
-				title={starFiltersDisabled ? 'Filter only available for maps with stars' : null}>
-				<label>
-					Stars
-					<span>{formatNumber(currentFilters.stars_from, 2, false, 'Any')}<sup>★</sup></span> to
-					<span>{formatNumber(currentFilters.stars_to, 2, false, 'Any')}<sup>★</sup></span>
-					{#if currentFilters.stars_from || currentFilters.stars_to}
-						<button
-							class="remove-type"
-							title="Remove"
-							on:click={() => {
-								currentFilters.stars_from = null;
-								currentFilters.stars_to = null;
-								starsChanged();
-							}}><i class="fas fa-xmark" /></button>
-					{/if}
-				</label>
-				<RangeSlider
-					range
-					min={sliderLimits.MIN_STARS}
-					max={sliderLimits.MAX_STARS}
-					step={sliderLimits.STAR_GRANULARITY}
-					values={[
-						Number.isFinite(currentFilters.stars_from) ? currentFilters.stars_from : Number.NEGATIVE_INFINITY,
-						Number.isFinite(currentFilters.stars_to) ? currentFilters.stars_to : Number.POSITIVE_INFINITY,
-					]}
-					float
-					hoverable
-					pips
-					pipstep={sliderLimits.STAR_STEP}
-					all="label"
-					on:change={e => debouncedOnStarsChanged(e, 'stars')}
-					disabled={starFiltersDisabled} />
-			</section>
-
-			<section
-				class="filter"
-				class:disabled={starFiltersDisabled}
-				title={starFiltersDisabled ? 'Filter only available for maps with stars' : null}>
-				<label>
-					Acc rating
-					<span>{formatNumber(currentFilters.accrating_from, 2, false, 'Any')}<sup>★</sup></span> to
-					<span>{formatNumber(currentFilters.accrating_to, 2, false, 'Any')}<sup>★</sup></span>
-					{#if currentFilters.accrating_from || currentFilters.accrating_to}
-						<button
-							class="remove-type"
-							title="Remove"
-							on:click={() => {
-								currentFilters.accrating_from = null;
-								currentFilters.accrating_to = null;
-								starsChanged();
-							}}><i class="fas fa-xmark" /></button>
-					{/if}
-				</label>
-				<RangeSlider
-					range
-					min={sliderLimits.MIN_STARS}
-					max={sliderLimits.MAX_STARS}
-					step={sliderLimits.STAR_GRANULARITY}
-					values={[
-						Number.isFinite(currentFilters.accrating_from) ? currentFilters.accrating_from : Number.NEGATIVE_INFINITY,
-						Number.isFinite(currentFilters.accrating_to) ? currentFilters.accrating_to : Number.POSITIVE_INFINITY,
-					]}
-					float
-					hoverable
-					pips
-					pipstep={sliderLimits.STAR_STEP}
-					all="label"
-					on:change={e => debouncedOnStarsChanged(e, 'accrating')}
-					disabled={starFiltersDisabled} />
-			</section>
-
-			<section
-				class="filter"
-				class:disabled={starFiltersDisabled}
-				title={starFiltersDisabled ? 'Filter only available for maps with stars' : null}>
-				<label>
-					Pass rating
-					<span>{formatNumber(currentFilters.passrating_from, 2, false, 'Any')}<sup>★</sup></span> to
-					<span>{formatNumber(currentFilters.passrating_to, 2, false, 'Any')}<sup>★</sup></span>
-					{#if currentFilters.passrating_from || currentFilters.passrating_to}
-						<button
-							class="remove-type"
-							title="Remove"
-							on:click={() => {
-								currentFilters.passrating_from = null;
-								currentFilters.passrating_to = null;
-								starsChanged();
-							}}><i class="fas fa-xmark" /></button>
-					{/if}
-				</label>
-				<RangeSlider
-					range
-					min={sliderLimits.MIN_STARS}
-					max={sliderLimits.MAX_STARS}
-					step={sliderLimits.STAR_GRANULARITY}
-					values={[
-						Number.isFinite(currentFilters.passrating_from) ? currentFilters.passrating_from : Number.NEGATIVE_INFINITY,
-						Number.isFinite(currentFilters.passrating_to) ? currentFilters.passrating_to : Number.POSITIVE_INFINITY,
-					]}
-					float
-					hoverable
-					pips
-					pipstep={sliderLimits.STAR_STEP}
-					all="label"
-					on:change={e => debouncedOnStarsChanged(e, 'passrating')}
-					disabled={starFiltersDisabled} />
-			</section>
-
-			<section
-				class="filter"
-				class:disabled={starFiltersDisabled}
-				title={starFiltersDisabled ? 'Filter only available for maps with stars' : null}>
-				<label>
-					Tech rating
-					<span>{formatNumber(currentFilters.techrating_from, 2, false, 'Any')}<sup>★</sup></span> to
-					<span>{formatNumber(currentFilters.techrating_to, 2, false, 'Any')}<sup>★</sup></span>
-					{#if currentFilters.techrating_from || currentFilters.techrating_to}
-						<button
-							class="remove-type"
-							title="Remove"
-							on:click={() => {
-								currentFilters.techrating_from = null;
-								currentFilters.techrating_to = null;
-								starsChanged();
-							}}><i class="fas fa-xmark" /></button>
-					{/if}
-				</label>
-				<RangeSlider
-					range
-					min={sliderLimits.MIN_STARS}
-					max={sliderLimits.MAX_STARS}
-					step={sliderLimits.STAR_GRANULARITY}
-					values={[
-						Number.isFinite(currentFilters.techrating_from) ? currentFilters.techrating_from : Number.NEGATIVE_INFINITY,
-						Number.isFinite(currentFilters.techrating_to) ? currentFilters.techrating_to : Number.POSITIVE_INFINITY,
-					]}
-					float
-					hoverable
-					pips
-					pipstep={sliderLimits.STAR_STEP}
-					all="label"
-					on:change={e => debouncedOnStarsChanged(e, 'techrating')}
-					disabled={starFiltersDisabled} />
-			</section>
-
-			<section class="filter">
-				<label>Date posted</label>
-
-				<DateRange
-					type="date"
-					dateFrom={dateFromUnix(currentFilters.date_from)}
-					dateTo={dateFromUnix(currentFilters.date_to)}
-					on:change={debouncedOnDateRangeChanged} />
-
-				<div class="time-presets">
-					<Button
-						label="Today"
-						type={Math.abs(dateFromUnix(currentFilters.date_from)?.getTime() - today.getTime()) < 60000 ? 'primary' : 'default'}
-						on:click={() => onDateRangeChange({detail: {from: today, to: null}})} />
-					<Button
-						label="Last week"
-						type={Math.abs(dateFromUnix(currentFilters.date_from)?.getTime() - lastWeek.getTime()) < 60000 ? 'primary' : 'default'}
-						on:click={() => onDateRangeChange({detail: {from: lastWeek, to: null}})} />
-					<Button
-						label="Last year"
-						type={Math.abs(dateFromUnix(currentFilters.date_from)?.getTime() - lastYear.getTime()) < 60000 ? 'primary' : 'default'}
-						on:click={() => onDateRangeChange({detail: {from: lastYear, to: null}})} />
+			<section class="filter dropdown-filter" class:has-value={!!currentFilters.mapType}>
+				<div class="dropdown-header" on:click={() => (isCategoryFilterOpen = !isCategoryFilterOpen)}>
+					<div class="header-content">
+						<i class="fas fa-tags" />
+						<span>Categories</span>
+					</div>
+					<i class="fas fa-chevron-{isCategoryFilterOpen ? 'up' : 'down'}" />
 				</div>
+
+				{#if isCategoryFilterOpen}
+					<div class="dropdown-content" transition:fade>
+						<Select
+							bind:value={currentFilters.allTypes}
+							on:change={() => onCategoryModeChanged()}
+							fontSize="0.8"
+							options={[
+								{name: 'ANY category', value: 0},
+								{name: 'ALL categories', value: 1},
+								{name: 'NO categories', value: 2},
+							]} />
+
+						<Switcher
+							values={categoryFilterOptions}
+							value={categoryFilterOptions.filter(c => currentFilters.mapType & c.key)}
+							multi={true}
+							on:change={onCategoryChanged} />
+					</div>
+				{/if}
+			</section>
+
+			<section class="filter dropdown-filter" class:has-value={!!currentFilters.mapRequirements}>
+				<div class="dropdown-header" on:click={() => (isRequirementsFilterOpen = !isRequirementsFilterOpen)}>
+					<div class="header-content">
+						<i class="fas fa-list-check" />
+						<span>Requirements</span>
+					</div>
+					<i class="fas fa-chevron-{isRequirementsFilterOpen ? 'up' : 'down'}" />
+				</div>
+
+				{#if isRequirementsFilterOpen}
+					<div class="dropdown-content" transition:fade>
+						<Select
+							bind:value={currentFilters.allRequirements}
+							on:change={() => onCategoryModeChanged()}
+							fontSize="0.8"
+							options={[
+								{name: 'ANY map feature', value: 0},
+								{name: 'ALL map features', value: 1},
+								{name: 'NO map features', value: 2},
+							]} />
+
+						<Switcher
+							values={requirementFilterOptions}
+							value={requirementFilterOptions.filter(c => currentFilters.mapRequirements & c.key)}
+							multi={true}
+							on:change={onRequirementsChanged} />
+					</div>
+				{/if}
+			</section>
+
+			<section
+				class="filter dropdown-filter"
+				class:has-value={!!(
+					currentFilters.stars_from ||
+					currentFilters.stars_to ||
+					currentFilters.accrating_from ||
+					currentFilters.accrating_to ||
+					currentFilters.passrating_from ||
+					currentFilters.passrating_to ||
+					currentFilters.techrating_from ||
+					currentFilters.techrating_to
+				)}>
+				<div class="dropdown-header" on:click={() => (isStarsFilterOpen = !isStarsFilterOpen)}>
+					<div class="header-content">
+						<i class="fas fa-star" />
+						<span>Ratings</span>
+					</div>
+					<i class="fas fa-chevron-{isStarsFilterOpen ? 'up' : 'down'}" />
+				</div>
+
+				{#if isStarsFilterOpen}
+					<section
+						class="filter"
+						class:disabled={starFiltersDisabled}
+						title={starFiltersDisabled ? 'Filter only available for maps with stars' : null}>
+						<label>
+							Stars
+							<span>{formatNumber(currentFilters.stars_from, 2, false, 'Any')}<sup>★</sup></span> to
+							<span>{formatNumber(currentFilters.stars_to, 2, false, 'Any')}<sup>★</sup></span>
+							{#if currentFilters.stars_from || currentFilters.stars_to}
+								<button
+									class="remove-type"
+									title="Remove"
+									on:click={() => {
+										currentFilters.stars_from = null;
+										currentFilters.stars_to = null;
+										starsChanged();
+									}}><i class="fas fa-xmark" /></button>
+							{/if}
+						</label>
+						<RangeSlider
+							range
+							min={sliderLimits.MIN_STARS}
+							max={sliderLimits.MAX_STARS}
+							step={sliderLimits.STAR_GRANULARITY}
+							values={[
+								Number.isFinite(currentFilters.stars_from) ? currentFilters.stars_from : Number.NEGATIVE_INFINITY,
+								Number.isFinite(currentFilters.stars_to) ? currentFilters.stars_to : Number.POSITIVE_INFINITY,
+							]}
+							float
+							hoverable
+							pips
+							pipstep={sliderLimits.STAR_STEP}
+							all="label"
+							on:change={e => debouncedOnStarsChanged(e, 'stars')}
+							disabled={starFiltersDisabled} />
+					</section>
+
+					<section
+						class="filter"
+						class:disabled={starFiltersDisabled}
+						title={starFiltersDisabled ? 'Filter only available for maps with stars' : null}>
+						<label>
+							Acc rating
+							<span>{formatNumber(currentFilters.accrating_from, 2, false, 'Any')}<sup>★</sup></span> to
+							<span>{formatNumber(currentFilters.accrating_to, 2, false, 'Any')}<sup>★</sup></span>
+							{#if currentFilters.accrating_from || currentFilters.accrating_to}
+								<button
+									class="remove-type"
+									title="Remove"
+									on:click={() => {
+										currentFilters.accrating_from = null;
+										currentFilters.accrating_to = null;
+										starsChanged();
+									}}><i class="fas fa-xmark" /></button>
+							{/if}
+						</label>
+						<RangeSlider
+							range
+							min={sliderLimits.MIN_STARS}
+							max={sliderLimits.MAX_STARS}
+							step={sliderLimits.STAR_GRANULARITY}
+							values={[
+								Number.isFinite(currentFilters.accrating_from) ? currentFilters.accrating_from : Number.NEGATIVE_INFINITY,
+								Number.isFinite(currentFilters.accrating_to) ? currentFilters.accrating_to : Number.POSITIVE_INFINITY,
+							]}
+							float
+							hoverable
+							pips
+							pipstep={sliderLimits.STAR_STEP}
+							all="label"
+							on:change={e => debouncedOnStarsChanged(e, 'accrating')}
+							disabled={starFiltersDisabled} />
+					</section>
+
+					<section
+						class="filter"
+						class:disabled={starFiltersDisabled}
+						title={starFiltersDisabled ? 'Filter only available for maps with stars' : null}>
+						<label>
+							Pass rating
+							<span>{formatNumber(currentFilters.passrating_from, 2, false, 'Any')}<sup>★</sup></span> to
+							<span>{formatNumber(currentFilters.passrating_to, 2, false, 'Any')}<sup>★</sup></span>
+							{#if currentFilters.passrating_from || currentFilters.passrating_to}
+								<button
+									class="remove-type"
+									title="Remove"
+									on:click={() => {
+										currentFilters.passrating_from = null;
+										currentFilters.passrating_to = null;
+										starsChanged();
+									}}><i class="fas fa-xmark" /></button>
+							{/if}
+						</label>
+						<RangeSlider
+							range
+							min={sliderLimits.MIN_STARS}
+							max={sliderLimits.MAX_STARS}
+							step={sliderLimits.STAR_GRANULARITY}
+							values={[
+								Number.isFinite(currentFilters.passrating_from) ? currentFilters.passrating_from : Number.NEGATIVE_INFINITY,
+								Number.isFinite(currentFilters.passrating_to) ? currentFilters.passrating_to : Number.POSITIVE_INFINITY,
+							]}
+							float
+							hoverable
+							pips
+							pipstep={sliderLimits.STAR_STEP}
+							all="label"
+							on:change={e => debouncedOnStarsChanged(e, 'passrating')}
+							disabled={starFiltersDisabled} />
+					</section>
+
+					<section
+						class="filter"
+						class:disabled={starFiltersDisabled}
+						title={starFiltersDisabled ? 'Filter only available for maps with stars' : null}>
+						<label>
+							Tech rating
+							<span>{formatNumber(currentFilters.techrating_from, 2, false, 'Any')}<sup>★</sup></span> to
+							<span>{formatNumber(currentFilters.techrating_to, 2, false, 'Any')}<sup>★</sup></span>
+							{#if currentFilters.techrating_from || currentFilters.techrating_to}
+								<button
+									class="remove-type"
+									title="Remove"
+									on:click={() => {
+										currentFilters.techrating_from = null;
+										currentFilters.techrating_to = null;
+										starsChanged();
+									}}><i class="fas fa-xmark" /></button>
+							{/if}
+						</label>
+						<RangeSlider
+							range
+							min={sliderLimits.MIN_STARS}
+							max={sliderLimits.MAX_STARS}
+							step={sliderLimits.STAR_GRANULARITY}
+							values={[
+								Number.isFinite(currentFilters.techrating_from) ? currentFilters.techrating_from : Number.NEGATIVE_INFINITY,
+								Number.isFinite(currentFilters.techrating_to) ? currentFilters.techrating_to : Number.POSITIVE_INFINITY,
+							]}
+							float
+							hoverable
+							pips
+							pipstep={sliderLimits.STAR_STEP}
+							all="label"
+							on:change={e => debouncedOnStarsChanged(e, 'techrating')}
+							disabled={starFiltersDisabled} />
+					</section>
+				{/if}
+			</section>
+
+			<section class="filter dropdown-filter" class:has-value={!!(currentFilters.date_from || currentFilters.date_to)}>
+				<div class="dropdown-header" on:click={() => (isDateFilterOpen = !isDateFilterOpen)}>
+					<div class="header-content">
+						<i class="fas fa-calendar-alt" />
+						<span>Date posted</span>
+					</div>
+					<i class="fas fa-chevron-{isDateFilterOpen ? 'up' : 'down'}" />
+				</div>
+
+				{#if isDateFilterOpen}
+					<DateRange
+						dateFrom={dateFromUnix(currentFilters.date_from)}
+						dateTo={dateFromUnix(currentFilters.date_to)}
+						on:change={debouncedOnDateRangeChanged} />
+
+					<div class="time-presets">
+						<Button
+							label="Today"
+							type={Math.abs(dateFromUnix(currentFilters.date_from)?.getTime() - today.getTime()) < 600000 ? 'primary' : 'default'}
+							on:click={() => onDateRangeChange({detail: {from: today, to: null}})} />
+						<Button
+							label="Last week"
+							type={Math.abs(dateFromUnix(currentFilters.date_from)?.getTime() - lastWeek.getTime()) < 600000 ? 'primary' : 'default'}
+							on:click={() => onDateRangeChange({detail: {from: lastWeek, to: null}})} />
+						<Button
+							label="Last year"
+							type={Math.abs(dateFromUnix(currentFilters.date_from)?.getTime() - lastYear.getTime()) < 600000 ? 'primary' : 'default'}
+							on:click={() => onDateRangeChange({detail: {from: lastYear, to: null}})} />
+					</div>
+				{/if}
 			</section>
 
 			<section class="filter">
@@ -731,18 +811,20 @@
 				</div>
 			</section>
 		</AsideBox>
-		<AsideBox title="Play Of The Week" boolname="showFeaturesScoreOnScores" faicon="fas fa-star">
-			<div style="display: flex; width: 100%; height: 100%; justify-content: center;">
-				<iframe
-					width="100%"
-					style="aspect-ratio: 16/9;"
-					src="https://www.youtube-nocookie.com/embed/hcwz3SaHFpY?si=b4lLpGGYeIZ8kRb8"
-					title="YouTube video player"
-					frameborder="0"
-					allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-					allowfullscreen />
-			</div>
-		</AsideBox>
+		{#if sotw}
+			<AsideBox title="Score Of The Week" boolname="showFeaturedScoreOnScores" faicon="fas fa-star">
+				<div style="display: flex; width: 100%; height: 100%; justify-content: center;">
+					<iframe
+						width="100%"
+						style="aspect-ratio: 16/9;"
+						src={`https://www.youtube-nocookie.com/embed/${sotw.link.replace('https://youtu.be/', '')}?si=b4lLpGGYeIZ8kRb8`}
+						title="YouTube video player"
+						frameborder="0"
+						allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+						allowfullscreen />
+				</div>
+			</AsideBox>
+		{/if}
 	</aside>
 </section>
 
@@ -999,6 +1081,45 @@
 		display: flex;
 		gap: 0.5em;
 		margin-top: 0.4em;
+	}
+
+	.dropdown-filter {
+		border: 1px solid var(--faded);
+		border-radius: 4px;
+		overflow: hidden;
+	}
+
+	.dropdown-filter.has-value {
+		border-color: rgba(255, 100, 150, 0.5);
+	}
+
+	.dropdown-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 0.75rem 1rem;
+		background-color: var(--foreground);
+		cursor: pointer;
+		user-select: none;
+	}
+
+	.dropdown-header:hover {
+		background-color: var(--background);
+	}
+
+	.header-content {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+
+	.dropdown-content {
+		padding: 1rem;
+		background-color: var(--foreground);
+	}
+
+	.dropdown-filter + .dropdown-filter {
+		margin-top: 1rem;
 	}
 
 	:global(.time-presets .button) {

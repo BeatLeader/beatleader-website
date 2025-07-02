@@ -1,43 +1,60 @@
 <script>
 	import {createEventDispatcher} from 'svelte';
-	import {DateTime} from 'luxon';
 
 	export let dateFrom = null;
 	export let dateTo = null;
+	export let type = 'datetime'; // 'datetime' or 'date'
 
 	const dispatch = createEventDispatcher();
 
-	const USER_TIMEZONE = Intl?.DateTimeFormat()?.resolvedOptions()?.timeZone ?? 'UTC';
+	function formatDate(date) {
+		if (!date) return null;
 
-	const getLocalDateFromJsDate = date => (date ? DateTime.fromJSDate(date).setZone(USER_TIMEZONE).toISODate() : null);
+		const d = new Date(date);
+		const year = d.getFullYear();
+		const month = String(d.getMonth() + 1).padStart(2, '0');
+		const day = String(d.getDate()).padStart(2, '0');
+		const hours = String(d.getHours()).padStart(2, '0');
+		const minutes = String(d.getMinutes()).padStart(2, '0');
+
+		if (type === 'datetime') {
+			return `${year}-${month}-${day}T${hours}:${minutes}`;
+		}
+		return `${year}-${month}-${day}`;
+	}
+
+	function parseDate(dateString) {
+		if (!dateString) return null;
+		return new Date(dateString);
+	}
 
 	let initialized = false;
 
 	function onChanged(localFrom, localTo) {
 		if (!initialized) {
 			initialized = true;
-
 			return;
 		}
 
-		let newDateFrom = localFrom ? DateTime.fromISO(localFrom).toJSDate() : null;
-		let newDateTo = localTo ? DateTime.fromISO(localTo).toJSDate() : null;
+		let newDateFrom = parseDate(localFrom);
+		let newDateTo = parseDate(localTo);
 
-		if (newDateFrom !== dateFrom || newDateTo !== dateTo) {
+		if (newDateFrom?.getTime() !== dateFrom?.getTime() || newDateTo?.getTime() !== dateTo?.getTime()) {
 			dispatch('change', {from: newDateFrom, to: newDateTo});
 		}
 	}
 
-	$: localFrom = getLocalDateFromJsDate(dateFrom);
-	$: localTo = getLocalDateFromJsDate(dateTo);
-
+	$: localFrom = formatDate(dateFrom);
+	$: localTo = formatDate(dateTo);
 	$: onChanged(localFrom, localTo);
+
+	$: currentDate = formatDate(new Date());
 </script>
 
-<div class="date-range">
-	<input type="date" bind:value={localFrom} min="2022-01-01" max={localTo ? localTo : getLocalDateFromJsDate(new Date())} />
+<div class="date-range {type === 'datetime' ? 'datetime-local' : 'date'}">
+	<input type={type === 'datetime' ? 'datetime-local' : 'date'} bind:value={localFrom} min="2022-01-01" max={localTo || currentDate} />
 	to
-	<input type="date" bind:value={localTo} min={localFrom ? localFrom : '2022-01-01'} max={getLocalDateFromJsDate(new Date())} />
+	<input type={type === 'datetime' ? 'datetime-local' : 'date'} bind:value={localTo} min={localFrom || '2022-01-01'} max={currentDate} />
 </div>
 
 <style>
@@ -47,8 +64,14 @@
 		align-items: center;
 	}
 
+	.date-range.datetime-local {
+		align-items: start;
+		flex-direction: column;
+	}
+
 	@media screen and (max-width: 500px) {
 		.date-range {
+			align-items: start;
 			flex-direction: column;
 		}
 	}

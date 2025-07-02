@@ -14,6 +14,9 @@
 	import MapTriangleSmall from '../../Leaderboard/MapTriangleSmall.svelte';
 	import TriangleMobilePopup from '../../Leaderboard/TriangleMobilePopup.svelte';
 	import {BS_CDN} from '../../../network/queues/beatleader/page-queue';
+	import LeaderboardStats from '../../Leaderboard/LeaderboardStats.svelte';
+	import ContentBox from '../../Common/ContentBox.svelte';
+	import MapTypeDescription from '../../Leaderboard/MapTypeDescription.svelte';
 
 	export let leaderboard;
 	export let ratings = null;
@@ -134,6 +137,12 @@
 			</div>
 		</div>
 
+		<ContentBox cls="stats-and-summary-box frosted">
+			<div class="stats-container darkened-background">
+				<LeaderboardStats {leaderboard} />
+			</div>
+		</ContentBox>
+
 		{#if leaderboard.stats && leaderboard.stats.passRating}
 			<div class="mobile-triangle mobile-only" on:click|preventDefault|stopPropagation={() => showTrianglePopup(leaderboard)}>
 				<MapTriangleSmall leaderboard={leaderboard.difficultyBl} />
@@ -146,13 +155,14 @@
 	header {
 		position: relative;
 		padding: 0.6em;
-		border-radius: 0.4em;
+		border-radius: 12px;
 		color: var(--alternate);
 		display: flex;
 		align-items: flex-start;
 		justify-content: start !important;
-		gap: 1em;
-		margin-bottom: 1.2em;
+		column-gap: 1em;
+		flex-wrap: wrap;
+		box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
 	}
 
 	header:before {
@@ -172,7 +182,16 @@
 		display: flex;
 		justify-content: space-between;
 		flex: 1;
-		min-height: 16em;
+	}
+
+	.stats-container {
+		border-radius: 8px;
+		color: var(--textColor);
+	}
+
+	:global(.leaderboard-header-box .content-box.stats-and-summary-box.frosted) {
+		margin-bottom: 0.5em;
+		margin-top: -0.35em !important;
 	}
 
 	.buttons-container {
@@ -219,11 +238,13 @@
 	}
 
 	.cover-container {
-		width: 11em;
+		width: 10em;
 		aspect-ratio: 1;
 		border-radius: 8px;
 		z-index: 1;
 		overflow: hidden;
+		margin-top: 0.5em;
+		margin-left: 0.6em;
 	}
 
 	.map-cover {
@@ -274,7 +295,6 @@
 		display: flex;
 		justify-content: space-between;
 		flex-direction: column;
-		min-height: 14em;
 	}
 
 	.header-triangle-part {

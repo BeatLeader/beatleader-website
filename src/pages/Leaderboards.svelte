@@ -861,7 +861,6 @@
 						</div>
 
 						<DateRange
-							type="date"
 							dateFrom={dateFromUnix(currentFilters.date_from)}
 							dateTo={dateFromUnix(currentFilters.date_to)}
 							on:change={debouncedOnDateRangeChanged} />
@@ -869,15 +868,15 @@
 						<div class="time-presets">
 							<Button
 								label="Today"
-								type={Math.abs(dateFromUnix(currentFilters.date_from)?.getTime() - today.getTime()) < 60000 ? 'primary' : 'default'}
+								type={Math.abs(dateFromUnix(currentFilters.date_from)?.getTime() - today.getTime()) < 600000 ? 'primary' : 'default'}
 								on:click={() => onDateRangeChange({detail: {from: today, to: null}})} />
 							<Button
 								label="Last week"
-								type={Math.abs(dateFromUnix(currentFilters.date_from)?.getTime() - lastWeek.getTime()) < 60000 ? 'primary' : 'default'}
+								type={Math.abs(dateFromUnix(currentFilters.date_from)?.getTime() - lastWeek.getTime()) < 600000 ? 'primary' : 'default'}
 								on:click={() => onDateRangeChange({detail: {from: lastWeek, to: null}})} />
 							<Button
 								label="Last year"
-								type={Math.abs(dateFromUnix(currentFilters.date_from)?.getTime() - lastYear.getTime()) < 60000 ? 'primary' : 'default'}
+								type={Math.abs(dateFromUnix(currentFilters.date_from)?.getTime() - lastYear.getTime()) < 600000 ? 'primary' : 'default'}
 								on:click={() => onDateRangeChange({detail: {from: lastYear, to: null}})} />
 						</div>
 					</div>

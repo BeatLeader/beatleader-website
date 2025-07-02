@@ -3,18 +3,11 @@
 	import Value from '../../Common/Value.svelte';
 	import FormattedDate from '../../Common/FormattedDate.svelte';
 	import PlayerName from '../../Scores/PlayerName.svelte';
-	import {badgesDef} from '../../../utils/beatleader/format';
+	import {badgesDef, ModifiersList} from '../../../utils/beatleader/format';
+	import Icons from '../../Song/Icons.svelte';
+	import ScoreExternalStatuses from './ScoreExternalStatuses.svelte';
 
 	export let score;
-
-	const ranks = [
-		{label: 'SS', threshold: 0.95},
-		{label: 'S', threshold: 0.9},
-		{label: 'A', threshold: 0.8},
-		{label: 'B', threshold: 0.65},
-		{label: 'C', threshold: 0.5},
-		{label: 'D', threshold: 0},
-	];
 
 	function getRank(acc) {
 		return badgesDef.find(b => (!b.max || acc <= b.max) && (!b.min || acc > b.min));
@@ -25,12 +18,23 @@
 	$: pp = score?.score?.pp;
 
 	const getConicGradient = accuracy => {
-		const rank = getRank(accuracy);
-		const startColor = rank.color;
-		const endColor = `color-mix(in srgb, ${rank.color} 70%, #000)`;
+		// Create gradient stops through all badge colors
+		const stops = badgesDef
+			.slice()
+			.reverse() // Reverse so SS+ is at the end
+			.map((badge, i) => {
+				const threshold = badge.min ?? 0;
+				const position = ((threshold - 0) / 100) * 100;
+				return `${badge.color} ${position}%`;
+			})
+			.join(', ');
 
-		const percentage = ((accuracy - rank.threshold) / (rank.next_threshold - rank.threshold)) * 100;
-		return `background: conic-gradient(${endColor} ${percentage}%, ${startColor} ${percentage}%, ${startColor} 100%);`;
+		// Calculate position for accuracy marker
+		const percentage = accuracy;
+
+		return `background: conic-gradient(from 0deg, ${stops}, ${badgesDef[0].color} 100%);
+				mask: conic-gradient(from 0deg, black ${percentage}%, transparent ${percentage}%);
+				-webkit-mask: conic-gradient(from 0deg, black ${percentage}%, transparent ${percentage}%);`;
 	};
 </script>
 
@@ -38,27 +42,33 @@
 	<div class="score-header-container">
 		<div class="left-section">
 			<div class="rank-grades">
-				{#each ranks as r}
+				{#each badgesDef as r}
 					<div
 						class="grade"
-						class:active={r.label === rank.name}
-						style="background-color: {r.label === rank.name ? rank.color : 'var(--background-secondary)'};">
-						{r.label}
+						class:active={r.name === rank.name}
+						style="background-color: {r.name === rank.name ? rank.color : 'var(--background-secondary)'};">
+						{r.name}
 					</div>
 				{/each}
 			</div>
-			<div class="rank-circle" style={getConicGradient(acc)}>
+			<div class="rank-circle">
+				<div class="circle-background" style={getConicGradient(acc)}></div>
 				<div class="inner-circle">
 					<span class="rank-letter">{rank.name}</span>
+					<Value value={acc} digits={2} suffix="%" />
 				</div>
 			</div>
 		</div>
 
 		<div class="center-section">
 			<div class="modifiers">
-				{#if score?.score?.modifiers}
-					{#each score.score.modifiers.split(',') as modifier}
-						<div class="modifier-badge">{modifier}</div>
+				{#if score?.score?.mods}
+					{#each score.score.mods as modifier}
+						<img
+							class="modifier-badge"
+							title={`${ModifiersList.find(m => m.id == modifier).name} modifier`}
+							alt={`${ModifiersList.find(m => m.id == modifier).name} image`}
+							src={`/assets/${ModifiersList.find(m => m.id == modifier).icon}`} />
 					{/each}
 				{/if}
 			</div>
@@ -70,7 +80,7 @@
 				{/if}
 			</div>
 			<div class="submission-info">
-				<span>Submitted on</span>
+				<span>Submitted</span>
 				<FormattedDate date={score?.score?.timeSet} />
 			</div>
 			<div class="global-rank">
@@ -80,14 +90,20 @@
 		</div>
 
 		<div class="right-section">
-			<ReplayButton score={score?.score} />
+			{#if score?.score?.externalStatuses?.length}
+				<ScoreExternalStatuses statuses={score?.score?.externalStatuses} />
+			{/if}
+			<div class="replay-icons-container">
+				<Icons icons={['replay', 'analyzer', 'altReplay']} scoreId={score?.score?.id} />
+			</div>
 		</div>
 	</div>
 {/if}
 
 <style>
 	.score-header-container {
-		display: flex;
+		display: grid;
+		grid-template-columns: 20% auto 20%;
 		justify-content: space-between;
 		align-items: center;
 		position: relative;
@@ -125,6 +141,21 @@
 		align-items: center;
 		gap: 1.5em;
 	}
+
+	.right-section {
+		justify-content: end;
+	}
+
+	.replay-icons-container {
+		width: 2em;
+		transform: scale(1.6);
+		margin-right: 0.5em;
+	}
+
+	:global(.right-section .buttons-container.flat) {
+		flex-direction: column;
+	}
+
 	.center-section {
 		flex-direction: column;
 		flex-grow: 1;
@@ -156,6 +187,19 @@
 		justify-content: center;
 		align-items: center;
 		padding: 10px;
+		margin-left: 2em;
+		position: relative;
+	}
+
+	.circle-background {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		top: 0;
+		left: 0;
+		z-index: 0;
+		pointer-events: none;
+		border-radius: 50%;
 	}
 
 	.inner-circle {
@@ -166,30 +210,33 @@
 		display: flex;
 		justify-content: center;
 		align-items: center;
+		flex-direction: column;
+		z-index: 1;
 	}
 
 	.rank-letter {
 		font-size: 4em;
 		font-weight: bold;
 		color: white;
-		text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
 	}
 
 	.modifiers {
 		display: flex;
 		gap: 0.5em;
+		margin-bottom: -1em;
 	}
 
 	.modifier-badge {
 		background-color: rgba(255, 255, 255, 0.2);
-		padding: 0.3em 0.8em;
 		border-radius: 6px;
 		font-size: 0.9em;
+		height: 3em;
 	}
 
 	.main-value {
 		font-size: 4em;
-		font-weight: 300;
+		font-weight: 600;
+		text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
 	}
 
 	.player-info,

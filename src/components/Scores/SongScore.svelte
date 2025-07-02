@@ -117,7 +117,7 @@
 
 {#if songScore}
 	<div
-		class={`song-score row-${idx} scores-list-score`}
+		class={`song-score row-${idx} scores-list-score ${score.status != 0 ? 'with-status' : ''}`}
 		in:maybe|global={{fn: fly, x: animationSign * 300, delay: idx * 30, duration: 300}}
 		out:maybe|global={{fn: fade, duration: 100}}
 		class:with-details={showDetails}>
@@ -126,6 +126,13 @@
 				<div class="player">
 					<PlayerName player={songScore.player} on:click={() => navigateToPlayer(songScore.player.alias ?? songScore.player.playerId)} />
 				</div>
+				{#if score.status != 0}
+					{#if (score.status & 2) == 2}
+						<div class="score-of-the-week">
+							<span>Score Of The Week</span>
+						</div>
+					{/if}
+				{/if}
 			</div>
 		{/if}
 		{#if service == 'attempts'}
@@ -154,6 +161,8 @@
 			</header>
 		{/if}
 		<div class="main" class:beat-savior={service === 'beatsavior'} class:accsaber={service === 'accsaber'}>
+			<a class="background-link" href="/score/{score.id}" on:click|preventDefault|stopPropagation={() => navigate(`/score/${score.id}`)}
+			></a>
 			<span class="rank tablet-and-up">
 				{#if service !== 'beatsavior' && service !== 'attempts'}
 					<ScoreRank
@@ -281,10 +290,23 @@
 		background-color: #222;
 		border-radius: 0 8px 8px 8px;
 		box-shadow: 0 4px 8px rgb(0 0 0 / 55%) !important;
+		position: relative;
+	}
+
+	.main:hover {
+		box-shadow: 0 4px 8px rgb(0 0 0 / 85%) !important;
+	}
+
+	.with-status .main {
+		border-radius: 0 0 8px 8px;
 	}
 
 	.song-score .up-to-tablet + .main {
 		padding-top: 0;
+	}
+
+	.song-score {
+		color: white;
 	}
 
 	.song-score .main {
@@ -320,6 +342,15 @@
 		color: inherit;
 	}
 
+	.background-link {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		left: 0;
+		top: 0;
+		z-index: 0;
+	}
+
 	.rank {
 		width: 5.5em;
 		text-align: center;
@@ -328,6 +359,7 @@
 	.song {
 		flex-grow: 1;
 		min-width: 15.25em;
+		z-index: 1;
 	}
 
 	.song > div {
@@ -346,6 +378,11 @@
 		min-width: fit-content;
 	}
 
+	.top-container {
+		display: flex;
+		justify-content: space-between;
+	}
+
 	.player {
 		text-align: left;
 		margin-top: 0.6em;
@@ -353,6 +390,17 @@
 		width: fit-content;
 		padding: 0.3em;
 		border-radius: 8px 8px 0 0;
+	}
+
+	.score-of-the-week {
+		text-align: left;
+		margin-top: 0.6em;
+		background: #490e63;
+		width: fit-content;
+		padding: 0.3em;
+		border-radius: 8px 8px 0 0;
+		padding-left: 0.5em;
+		padding-right: 0.5em;
 	}
 
 	.main.beat-savior .timeset {
@@ -384,6 +432,7 @@
 		display: grid;
 		justify-items: center;
 		margin: 0.3em;
+		z-index: 1;
 	}
 
 	.beat-savior-reveal {

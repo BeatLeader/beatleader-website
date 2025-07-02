@@ -151,6 +151,8 @@
 			</header>
 		{/if}
 		<div class="main" class:beat-savior={service === 'beatsavior'} class:accsaber={service === 'accsaber'}>
+			<a href="/score/{score.id}" class="background-link" on:click|preventDefault|stopPropagation={() => navigate(`/score/${score.id}`)}
+			></a>
 			<span class="rank tablet-and-up">
 				{#if service !== 'beatsavior' && service !== 'attempts'}
 					<ScoreRank
@@ -299,6 +301,7 @@
 		align-items: center;
 		justify-content: center;
 		grid-column-gap: 0.4em;
+		position: relative;
 	}
 
 	.song-score.with-details .main {
@@ -326,6 +329,15 @@
 		color: inherit;
 	}
 
+	.background-link {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		top: 0;
+		left: 0;
+		z-index: 0;
+	}
+
 	.rank {
 		width: 5.5em;
 		text-align: center;
@@ -334,6 +346,7 @@
 	.song {
 		flex-grow: 1;
 		min-width: 15.25em;
+		z-index: 1;
 	}
 
 	.song > div {
@@ -386,6 +399,7 @@
 		display: grid;
 		justify-items: center;
 		margin: 0.3em;
+		z-index: 1;
 	}
 
 	.beat-savior-reveal {

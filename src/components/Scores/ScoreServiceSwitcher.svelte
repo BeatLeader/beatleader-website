@@ -65,14 +65,11 @@
 								{id: 'rank', label: 'Rank', title: 'Sort by rank', iconFa: 'fa fa-list-ol', url: `/u/${playerAlias}/scores/rank/1`},
 								{id: 'stars', label: 'Stars', title: 'Sort by song stars', iconFa: 'fa fa-star', url: `/u/${playerAlias}/scores/stars/1`},
 								{
-									id: 'playCount',
-									label: 'Plays',
-									title: `Sort by attempt count${
-										player?.profileSettings?.showStatsPublic == false ? ' (this player has attempts hidden)' : ''
-									}`,
-									iconFa: 'fa fa-repeat',
-									url: `/u/${playerAlias}/scores/playCount/1`,
-									disabled: player?.profileSettings?.showStatsPublic == false,
+									id: 'sotwNominations',
+									label: 'Nominations',
+									title: 'Sort by Score Of The Week nominations count',
+									iconFa: 'fa fa-award',
+									url: `/u/${playerAlias}/scores/stars/1`,
 								},
 								{id: 'pauses', label: 'Pauses', title: 'Sort by pauses', iconFa: 'fa fa-pause', url: `/u/${playerAlias}/scores/pauses/1`},
 								{
@@ -101,17 +98,6 @@
 						key: 'sort',
 						onChange: event => {
 							if (!event?.detail?.id) return null;
-
-							if ($editModel) {
-								if (!$editModel.data.profileAppearance) $editModel.data.profileAppearance = [];
-
-								const filterName = `ss-${event.detail.id}`;
-								if ($editModel.data.profileAppearance.includes(filterName)) {
-									$editModel.data.profileAppearance = $editModel.data.profileAppearance.filter(s => s !== filterName);
-								} else $editModel.data.profileAppearance = [...$editModel.data.profileAppearance, filterName];
-
-								return null;
-							}
 
 							dispatch('service-params-change', {
 								sort: event.detail.id,

@@ -20,11 +20,19 @@
 	import Profile from '../components/Score/ScorePage/Profile.svelte';
 	import LeaderboardHeader from '../components/Score/ScorePage/LeaderboardHeader.svelte';
 	import ScoreHeader from '../components/Score/ScorePage/ScoreHeader.svelte';
+	import ScoreDetails from '../components/Score/ScorePage/ScoreDetails.svelte';
+	import Button from '../components/Common/Button.svelte';
+	import {getContext} from 'svelte';
+	import ScoreNomination from '../components/Score/ScorePage/ScoreNomination.svelte';
+
+	const {open, close} = getContext('simple-modal');
 
 	export let scoreId;
 
 	let score = null;
 	let leaderboardStore = null;
+
+	let nominationStatus = null;
 
 	function fetchScore(id) {
 		score = null;
@@ -34,33 +42,58 @@
 			.then(newScore => {
 				score = processScore({leaderboard: newScore, ...newScore});
 				console.log(score);
-
-				if (score?.leaderboard?.id) {
-					leaderboardStore = createLeaderboardStore(score.leaderboard.id, 'global', Math.ceil(score.score.rank / 10));
-				}
+				leaderboardStore = createLeaderboardStore(score.score.leaderboard.leaderboardId, 'global', Math.ceil(score.score.rank / 10));
 			});
+
+		fetch(`${BL_API_URL}score/nominations/${id}`, {credentials: 'include'}).then(async d => {
+			if (d.status == 200) {
+				nominationStatus = parseInt(await d.text());
+			}
+		});
 	}
 
-	onMount(() => {
-		scoreId && fetchScore(scoreId);
-	});
+	let nominationError = null;
 
+	function postVote(value) {
+		nominationError = null;
+		fetch(`${BL_API_URL}score/nominate/${scoreId}/?description=${encodeURIComponent(value)}`, {
+			credentials: 'include',
+			method: 'POST',
+		}).then(async d => {
+			if (d.status == 200) {
+				fetchScore(scoreId);
+			} else {
+				nominationError = await d.text();
+			}
+		});
+	}
+
+	function openNomination() {
+		open(ScoreNomination, {
+			confirm: value => {
+				close();
+				postVote(value);
+			},
+			cancel: () => {
+				close();
+			},
+		});
+	}
+
+	$: scoreId && fetchScore(scoreId);
 	$: player = score?.player;
-	$: leaderboard = score?.leaderboard;
-	$: song = score?.leaderboard?.song;
-	$: difficulty = score?.leaderboard?.difficulty;
-	$: scores = $leaderboardStore?.scores?.map(s => ({...s, leaderboard: $leaderboardStore?.leaderboard})) ?? null;
+	$: leaderboard = $leaderboardStore?.leaderboard;
+	$: song = leaderboard?.song;
+	$: difficulty = leaderboard?.difficulty;
+	$: scores = $leaderboardStore?.scores?.map(s => ({...s, leaderboard: leaderboard})) ?? null;
 </script>
 
 {#if score}
 	<div class="score-page" transition:fade>
-		<ContentBox>
-			<ScoreHeader {score} />
-		</ContentBox>
 		<div class="grid-container">
 			<div class="player-column">
 				{#if player}
-					<Profile playerData={player} />
+					<Profile {player} />
 				{/if}
 			</div>
 
@@ -70,9 +103,40 @@
 						<LeaderboardHeader {leaderboard} />
 					</div>
 				{/if}
+			</div>
 
+			<ContentBox cls="score-header-box">
+				<ScoreHeader {score} />
+			</ContentBox>
+
+			{#if nominationStatus}
+				<div class="nomination-container">
+					{#if nominationError}
+						<span class="error-description">{nominationError}</span>
+					{:else if nominationStatus == 1}
+						<Button
+							title="Nominate this for the Score Of The Week"
+							label="Nominate"
+							iconFa="fas fa-award"
+							on:click={() => {
+								openNomination();
+							}} />
+					{:else}
+						<span
+							>You nominated this score for the "Score Of The Week". Check Cube Community Youtube Channel on Wednesday for results.</span>
+					{/if}
+				</div>
+			{/if}
+
+			<div class="graphs-column" style="grid-column: 1 / -1">
+				<ContentBox cls="score-page-details">
+					<ScoreDetails songScore={score} />
+				</ContentBox>
+			</div>
+
+			<div class="leaderboard-column" style="grid-column: 1 / -1">
 				{#if scores}
-					<ContentBox>
+					<ContentBox cls="score-page-details">
 						<div class="scores-grid darkened-background grid-transition-helper">
 							{#each scores as scoreRow, idx (scoreRow?.score?.id ?? '')}
 								<div class:user-score={scoreRow.score.id === score.score.id}>
@@ -86,17 +150,6 @@
 						</div>
 					</ContentBox>
 				{/if}
-			</div>
-
-			<div class="graphs-column">
-				<ContentBox>
-					<h3 class="box-title">Detailed Score</h3>
-					<AccuracySpreadChart {score} />
-				</ContentBox>
-				<ContentBox>
-					<h3 class="box-title">Attempts</h3>
-					<AttemptsGraph leaderboardId={score.leaderboard.id} />
-				</ContentBox>
 			</div>
 		</div>
 	</div>
@@ -112,8 +165,8 @@
 	}
 	.grid-container {
 		display: grid;
-		grid-template-columns: 50% 50%;
-		gap: 1.5em;
+		grid-template-columns: calc(50% - 1em) calc(50% - 1em);
+		column-gap: 1.5em;
 	}
 	.player-column,
 	.map-column,
@@ -121,6 +174,17 @@
 		display: flex;
 		flex-direction: column;
 		gap: 1.5em;
+	}
+
+	.player-column {
+		margin-right: -1em;
+		margin-top: -1px;
+	}
+
+	.nomination-container {
+		grid-column: 1 / -1;
+		display: flex;
+		justify-content: center;
 	}
 
 	.box-title {
@@ -193,44 +257,28 @@
 		--webkit-perspective: 1000;
 		--webkit-backface-visibility: hidden;
 		-webkit-backdrop-filter: blur(10px);
-		z-index: 0;
+		z-index: -1;
 		position: relative;
+	}
+
+	:global(.graphs-column .score-page-details) {
+		padding: 0 0.3em 3px;
+		border-radius: 12px;
+		margin-right: 0;
+	}
+
+	:global(.leaderboard-column .score-page-details) {
+		padding: 0.4em;
+		border-radius: 12px;
+		margin-right: 0;
+	}
+
+	:global(.score-header-box) {
+		grid-column: 1 / -1;
+		margin-right: 0 !important;
 	}
 
 	:global(.player-column .content-box.stats-and-summary-box) {
 		margin: 0 !important;
-	}
-
-	@media (max-width: 1200px) {
-		.grid-container {
-			grid-template-columns: 320px 1fr;
-			grid-template-areas:
-				'player map'
-				'graphs graphs';
-		}
-		.player-column {
-			grid-area: player;
-		}
-		.map-column {
-			grid-area: map;
-		}
-		.graphs-column {
-			grid-area: graphs;
-			grid-template-columns: 1fr 1fr;
-			display: grid;
-		}
-	}
-
-	@media (max-width: 768px) {
-		.grid-container {
-			grid-template-columns: 1fr;
-			grid-template-areas:
-				'player'
-				'map'
-				'graphs';
-		}
-		.graphs-column {
-			grid-template-columns: 1fr;
-		}
 	}
 </style>

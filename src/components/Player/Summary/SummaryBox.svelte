@@ -19,6 +19,7 @@
 	export let editModel = null;
 	export let overrideVisibleStats = null;
 	export let ssBadges = null;
+	export let showHeadset = true;
 
 	function getPrevLabel() {
 		switch ($configStore.preferences.daysToCompare) {
@@ -62,10 +63,10 @@
 							zero="0pp" />
 					</span>
 				</div>
-				<HeadsetAndPlatform {playerData} />
+				<HeadsetAndPlatform {playerData} {showHeadset} />
 			</div>
 
-			<BeatLeaderSummary {playerId} {scoresStats} {accBadges} {skeleton} {profileAppearance} bind:editModel />
+			<BeatLeaderSummary {playerId} {scoresStats} {accBadges} {skeleton} {profileAppearance} {overrideVisibleStats} bind:editModel />
 		</div>
 		<div class="badges-footer">
 			<BlBadges badges={ssBadges} />
@@ -73,7 +74,7 @@
 	</ContentBox>
 {/if}
 
-{#if playerData?.playerInfo?.level || playerData?.playerInfo?.experience || playerData?.playerInfo?.prestige}
+<!-- {#if playerData?.playerInfo?.level || playerData?.playerInfo?.experience || playerData?.playerInfo?.prestige}
 	<ContentBox cls="stats-and-summary-box frosted">
 		<div class="experience-container">
 			<span>Level: <b>{playerData?.playerInfo?.level}</b></span>
@@ -81,7 +82,7 @@
 			<span>Prestige: <b>{playerData?.playerInfo?.prestige}</b></span>
 		</div>
 	</ContentBox>
-{/if}
+{/if} -->
 
 <style>
 	.badges-footer {
