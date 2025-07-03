@@ -5,8 +5,6 @@ export function mobileTouch(node, callback) {
 		if (!callback) return;
 
 		if (node.contains(event.target)) {
-			event.preventDefault();
-
 			callback();
 		}
 	};

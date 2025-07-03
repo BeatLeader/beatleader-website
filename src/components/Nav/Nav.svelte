@@ -488,7 +488,7 @@
 				</div>
 
 				<div class="dropdown-item">
-					<a href="/developer" aria-label="Developer Portal">
+					<a href="/developer" aria-label="Developer Portal" on:click|preventDefault={() => navigate('/developer')}>
 						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
 						</svg>
@@ -593,7 +593,10 @@
 				</div>
 
 				<div class="dropdown-item">
-					<a href="/supporting-project/link" aria-label="Claim Rewards">
+					<a
+						href="/supporting-project/link"
+						aria-label="Claim Rewards"
+						on:click|preventDefault={() => navigate('/supporting-project/link')}>
 						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 							<path
 								stroke-linecap="round"
