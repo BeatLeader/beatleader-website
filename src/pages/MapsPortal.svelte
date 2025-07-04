@@ -115,6 +115,24 @@
 				],
 			},
 		},
+		{
+			component: CarouselCard,
+			props: {
+				title: 'Port Royale',
+				body: 'A Battle Royale Tournament for Everyone!',
+				imageUrl: '/assets/Discover/portroyale2025.png',
+				targetUrl: 'https://beatkhana.com/tournaments/portroyale/general',
+				forcedColor: 'black',
+				linkName: 'contest info page',
+				buttons: [
+					{
+						text: 'Discord Server',
+						type: 'primary',
+						url: 'https://discord.com/invite/efDQC2U3n5',
+					},
+				],
+			},
+		},
 		// {
 		// 	component: CarouselCard,
 		// 	props: {
