@@ -91,6 +91,12 @@
 		grid-gap: 0.75em;
 	}
 
+	a {
+		width: fit-content;
+		display: block;
+		pointer-events: all;
+	}
+
 	.songinfo {
 		text-align: left;
 		font-size: 0.95rem;
@@ -113,6 +119,10 @@
 
 	.author-name {
 		overflow-wrap: anywhere;
+	}
+
+	.author {
+		width: fit-content;
 	}
 
 	.category {

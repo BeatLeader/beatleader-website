@@ -107,6 +107,7 @@
 		row.some(col => !!col?.withImprovements || col?.secondary === 'improvement')
 	);
 	$: checkShowAnyDetails($configStore?.scoreDetailsPreferences);
+	$: isScoreLink = service !== 'beatsavior' && service !== 'attempts';
 </script>
 
 {#if songScore}
@@ -151,11 +152,19 @@
 			</header>
 		{/if}
 		<div class="main" class:beat-savior={service === 'beatsavior'} class:accsaber={service === 'accsaber'}>
-			{#if service !== 'beatsavior' && service !== 'attempts'}
+			{#if isScoreLink}
 				<a href="/score/{score.id}" class="background-link" on:click|preventDefault|stopPropagation={() => navigate(`/score/${score.id}`)}
 				></a>
 			{/if}
-			<span class="rank tablet-and-up">
+			<a
+				href={isScoreLink ? `/score/${score.id}` : null}
+				on:click|preventDefault|stopPropagation={() => {
+					if (isScoreLink) {
+						navigate(`/score/${score.id}`);
+					}
+				}}
+				style={isScoreLink ? '' : 'cursor: unset'}
+				class="rank tablet-and-up">
 				{#if service !== 'beatsavior' && service !== 'attempts'}
 					<ScoreRank
 						rank={score.rank}
@@ -172,7 +181,7 @@
 						prevPrefix="vs "
 						prevDate={scoreBadgesHaveImprovements ? (prevScore?.timeSet ?? null) : null} />
 				</div>
-			</span>
+			</a>
 
 			<span class="song">
 				<div>
@@ -234,7 +243,15 @@
 						on:score-pinned={onScorePinned} />
 				</div>
 			{/if}
-			<span class="rank mobile-only">
+			<a
+				href={isScoreLink ? `/score/${score.id}` : null}
+				on:click|preventDefault|stopPropagation={() => {
+					if (isScoreLink) {
+						navigate(`/score/${score.id}`);
+					}
+				}}
+				style={isScoreLink ? '' : 'cursor: unset'}
+				class="rank mobile-only">
 				{#if service !== 'beatsavior'}
 					<ScoreRank
 						rank={score.rank}
@@ -244,7 +261,7 @@
 						controller={score.controller}
 						platform={score.platform} />
 				{/if}
-			</span>
+			</a>
 
 			<span class="timeset mobile-only">
 				<FormattedDate date={score.timeSet} prevPrefix="vs " prevDate={scoreBadgesHaveImprovements ? (prevScore?.timeSet ?? null) : null} />
@@ -261,8 +278,16 @@
 					</span>
 				</div>
 			{/if}
-
-			<PlayerPerformance {service} {songScore} {showDetails} {modifiers} {additionalStat} {selectedMetric} on:badge-click />
+			<a
+				href={isScoreLink ? `/score/${score.id}` : null}
+				on:click|preventDefault|stopPropagation={() => {
+					if (isScoreLink) {
+						navigate(`/score/${score.id}`);
+					}
+				}}
+				style={isScoreLink ? '' : 'cursor: unset'}>
+				<PlayerPerformance {service} {songScore} {showDetails} {modifiers} {additionalStat} {selectedMetric} on:badge-click />
+			</a>
 			{#if showAnyDetails}
 				<div class="score-options-section mobile-only">
 					<span
@@ -343,12 +368,15 @@
 	.rank {
 		width: 5.5em;
 		text-align: center;
+		z-index: 1;
+		color: white;
 	}
 
 	.song {
 		flex-grow: 1;
 		min-width: 15.25em;
 		z-index: 1;
+		pointer-events: none;
 	}
 
 	.song > div {

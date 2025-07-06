@@ -82,6 +82,7 @@
 		position: relative;
 		min-width: 4em;
 		width: 4em;
+		pointer-events: all;
 	}
 
 	.difficulty {

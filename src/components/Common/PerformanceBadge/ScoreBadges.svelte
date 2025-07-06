@@ -15,12 +15,13 @@
 	let filteredBadges = badges;
 
 	function rotateBadge(col, rowIdx, colIdx) {
-		if (!filteredBadges?.[rowIdx]?.[colIdx]?.badges) return;
+		if (!filteredBadges?.[rowIdx]?.[colIdx]?.badges) return false;
 
 		filteredBadges[rowIdx][colIdx].idx += 1;
 		if (filteredBadges[rowIdx][colIdx].idx > col.badges.length - 1) filteredBadges[rowIdx][colIdx].idx = 0;
 
 		filteredBadges[rowIdx][colIdx].id = `bdg-${rowIdx}-${colIdx}-${col?.badges?.[filteredBadges[rowIdx][colIdx].idx]?.metric}`;
+		return true;
 	}
 
 	$: if (Array.isArray(badges) && badges?.length) {
@@ -49,9 +50,16 @@
 					class:multi={!forceNotDemo && !$isDemo && col?.badges?.length > 1}
 					class:selected={rowIdx === selected?.row && colIdx === selected?.col}
 					title={col.title}
-					on:click={() => {
-						if (!$isDemo && col?.badges?.length > 1) rotateBadge(col, rowIdx, colIdx);
+					on:click={e => {
+						var rotated = false;
+						if (!$isDemo && col?.badges?.length > 1) {
+							rotated = rotateBadge(col, rowIdx, colIdx);
+						}
 						dispatch('badge-click', {row: rowIdx, col: colIdx});
+						if ($isDemo || rotated) {
+							e.stopPropagation();
+							e.preventDefault();
+						}
 					}}>
 					{#if col?.badges?.length}
 						<svelte:component this={col?.badges?.[col?.idx ?? 0]?.component} {...col?.badges?.[col?.idx ?? 0]?.componentProps}>
