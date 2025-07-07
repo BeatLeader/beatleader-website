@@ -143,12 +143,7 @@
 	let previousPage = 0;
 	let initialPage = page;
 
-	function updateFilters(newFilters) {
-		currentFilters = newFilters;
-		changeParams(currentLeaderboardId, currentType, currentPage, currentFilters);
-	}
-
-	function updateParams(leaderboardId, type, page) {
+	function updateParams(leaderboardId, type, page, newFilters) {
 		if (page && !Number.isFinite(page)) page = parseInt(page, 10);
 		if (!page || isNaN(page) || page <= 0) page = 1;
 
@@ -166,6 +161,11 @@
 
 		if (leaderboardId != currentLeaderboardId) {
 			currentLeaderboardId = leaderboardId;
+			shouldRefresh = true;
+		}
+
+		if (JSON.stringify(currentFilters) != JSON.stringify(newFilters)) {
+			currentFilters = newFilters;
 			shouldRefresh = true;
 		}
 
@@ -754,8 +754,7 @@
 
 	$: if (autoScrollToTop) document.body.scrollIntoView({behavior: 'smooth'});
 
-	$: updateParams(leaderboardId, type, page);
-	$: updateFilters(buildFiltersFromLocation(location));
+	$: updateParams(leaderboardId, type, page, buildFiltersFromLocation(location));
 
 	$: scores = $leaderboardStore?.scores?.map(s => ({...s, leaderboard: $leaderboardStore?.leaderboard})) ?? null;
 	$: clanRankingList = $leaderboardStore?.clanRanking;
