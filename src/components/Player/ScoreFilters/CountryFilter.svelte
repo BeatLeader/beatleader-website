@@ -21,7 +21,15 @@
 
 	const items = all_countries.map(code => ({value: code, label: getCountryName(code)})).sort((a, b) => a.label.localeCompare(b.label));
 	function onSelect(e) {
-		dispatch('change', e?.detail?.map(i => i.value)?.filter(v => v?.length) ?? []);
+		var newValue = e?.detail?.map(i => i.value)?.filter(v => v?.length) ?? [];
+
+		if (
+			typeof value === 'string'
+				? JSON.stringify(newValue) != JSON.stringify(value.length ? [value] : [])
+				: JSON.stringify(newValue) != JSON.stringify(value)
+		) {
+			dispatch('change', e?.detail?.map(i => i.value)?.filter(v => v?.length) ?? []);
+		}
 	}
 
 	$: countryValue = items.filter(i => (value ?? []).includes(i.value));
