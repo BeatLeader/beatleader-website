@@ -68,7 +68,7 @@
 
 		if (
 			additionalStat &&
-			['pauses', 'maxStreak', 'replaysWatched', 'accPP', 'passPP', 'techPP', 'playCount'].includes(additionalStat) &&
+			['pauses', 'maxStreak', 'sotwNominations', 'replaysWatched', 'accPP', 'passPP', 'techPP', 'playCount'].includes(additionalStat) &&
 			service === 'scores' &&
 			rows >= 2 &&
 			!config.some(row => row.some(col => col?.metric === additionalStat))
@@ -106,7 +106,7 @@
 				? [[{metric: 'pp', secondary: 'weighted'}, {metric: 'acc', secondary: 'mods', withMods: false}, {metric: 'score'}]]
 				: $configStore?.scoreBadges;
 	$: configBadgeRows =
-		type === 'leaderboard-score' ? $configStore?.leaderboardPreferences?.badgeRows : $configStore?.scorePreferences?.badgeRows ?? 2;
+		type === 'leaderboard-score' ? $configStore?.leaderboardPreferences?.badgeRows : ($configStore?.scorePreferences?.badgeRows ?? 2);
 	$: badgesDefinition = [...(Object.values(configBadges) ?? [])];
 
 	$: badges = getBadges(

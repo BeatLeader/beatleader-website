@@ -40,7 +40,6 @@
 			.then(d => d.json())
 			.then(newScore => {
 				score = processScore({leaderboard: newScore, ...newScore});
-				console.log(score);
 				leaderboardStore = createLeaderboardStore(score.score.leaderboard.leaderboardId, 'global', Math.ceil(score.score.rank / 10));
 			});
 	}

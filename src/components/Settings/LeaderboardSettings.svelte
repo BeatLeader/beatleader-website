@@ -127,6 +127,29 @@
 			},
 		},
 		{
+			key: 'sotwNominations',
+			name: 'sotwNominations',
+			customizable: false,
+			settings: {
+				leaderboardPreferences: {
+					badges: [
+						[{metric: 'pp', secondary: 'none'}, {metric: 'acc', secondary: 'mods', withMods: false}, {metric: 'sotwNominations'}],
+						[null, null, null],
+					],
+					badgeRows: 1,
+					show: {
+						avatar: true,
+						country: true,
+						clans: true,
+						date: true,
+						replay: true,
+						hmd: false,
+						analyzer: true,
+					},
+				},
+			},
+		},
+		{
 			key: 'mistakes',
 			name: 'Amount of mistakes',
 			customizable: false,

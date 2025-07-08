@@ -107,6 +107,13 @@
 									url: buildUrl('scores', {sort: 'maxStreak'}),
 								},
 								{
+									id: 'sotwNominations',
+									label: 'Streak',
+									title: 'Sort by 115 streak',
+									iconFa: 'icon115s',
+									url: buildUrl('scores', {sort: 'sotwNominations'}),
+								},
+								{
 									id: 'replaysWatched',
 									label: 'Watched',
 									title: 'Sort by replay watched',

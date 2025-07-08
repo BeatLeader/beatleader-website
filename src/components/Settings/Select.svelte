@@ -163,6 +163,7 @@
 
 	.dropdown-item-icon {
 		width: 1.2em;
+		height: 1.2em;
 		text-align: center;
 	}
 </style>

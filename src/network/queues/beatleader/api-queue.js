@@ -72,7 +72,7 @@ export const BL_API_FRIENDS_SCORES_URL =
 	'user/friendScores?leaderboardContext=${leaderboardContext}&page=${page}&sortBy=${sort}&order=${order}&search=${search}&diff=${diff}&type=${songType}&hmd=${hmd}&stars_from=${starsFrom}&stars_to=${starsTo}&count=${count}';
 export const BL_API_ALL_SCORES_URL =
 	BL_API_URL +
-	'scores/all?leaderboardContext=${leaderboardContext}&page=${page}&sortBy=${sort}&order=${order}&search=${search}&mapRequirements=${mapRequirements}&date_from=${date_from}&date_to=${date_to}&diff=${diff}&type=${type}&mapType=${mapType}&allTypes=${allTypes}&hmd=${hmd}&stars_from=${stars_from}&stars_to=${stars_to}&accrating_from=${accrating_from}&accrating_to=${accrating_to}&passrating_from=${passrating_from}&passrating_to=${passrating_to}&techrating_from=${techrating_from}&techrating_to=${techrating_to}&count=${count}&modifiers=${modifiers}&mappers=${mappers}&players=${players}';
+	'scores/all?leaderboardContext=${leaderboardContext}&page=${page}&sortBy=${sort}&order=${order}&thenSortBy=${thenSort}&thenOrder=${thenOrder}&search=${search}&mapRequirements=${mapRequirements}&date_from=${date_from}&date_to=${date_to}&diff=${diff}&mode=${mode}&type=${type}&mapType=${mapType}&allTypes=${allTypes}&hmd=${hmd}&stars_from=${stars_from}&stars_to=${stars_to}&accrating_from=${accrating_from}&accrating_to=${accrating_to}&passrating_from=${passrating_from}&passrating_to=${passrating_to}&techrating_from=${techrating_from}&techrating_to=${techrating_to}&count=${count}&modifiers=${modifiers}&mappers=${mappers}&players=${players}';
 export const BL_API_SCORE_STATS_URL = 'https://cdn.scorestats.beatleader.com/${scoreId}.json';
 export const BL_API_SCORE_PIN_URL =
 	BL_API_URL +

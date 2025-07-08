@@ -59,8 +59,13 @@
 	import TabSwitcher from '../components/Common/TabSwitcher.svelte';
 
 	import createServiceParamsManager from '../components/Player/utils/service-param-manager';
-	import Scores from '../components/Scores/Scores.svelte';
 	import AsideBox from '../components/Common/AsideBox.svelte';
+	import PlaylistPicker from '../components/Leaderboard/PlaylistPicker.svelte';
+
+	import createScoresStore from '../stores/http/http-scores-store.js';
+	import {scrollToTargetAdjusted} from '../utils/browser';
+	import SongScore from '../components/Player/SongScore.svelte';
+	import Error from '../components/Common/Error.svelte';
 
 	export let page = 1;
 	export let location;
@@ -79,6 +84,10 @@
 	const account = createAccountStore();
 
 	const params = [
+		{key: 'sort', default: 'pp', process: processStringFilter},
+		{key: 'order', default: 'desc', process: processStringFilter},
+		{key: 'thenSort', default: 'date', process: processStringFilter},
+		{key: 'thenOrder', default: 'desc', process: processStringFilter},
 		{key: 'search', default: '', process: processStringFilter},
 		{key: 'type', default: 'all', process: processStringFilter},
 		{key: 'mytype', default: '', process: processStringFilter},
@@ -92,8 +101,7 @@
 		{key: 'techrating_to', default: undefined, process: processFloatFilter},
 		{key: 'date_from', default: null, process: processIntFilter},
 		{key: 'date_to', default: null, process: processIntFilter},
-		{key: 'sort', default: 'pp', process: processStringFilter},
-		{key: 'order', default: 'desc', process: processStringFilter},
+
 		{key: 'mode', default: null, process: processStringFilter},
 		{key: 'diff', default: null, process: processStringFilter},
 		{key: 'mapRequirements', default: null, process: processIntFilter},
@@ -104,6 +112,7 @@
 		{key: 'mappers', default: null, process: processStringFilter},
 		{key: 'players', default: null, process: processStringFilter},
 		{key: 'modifiers', default: null, process: processStringFilter},
+		{key: 'playlistIds', default: null, process: processStringFilter},
 	];
 
 	const buildFiltersFromLocation = createBuildFiltersFromLocation(params, filters => {
@@ -128,7 +137,13 @@
 
 	let currentPage = page;
 
-	let serviceParams = {page: currentPage, sort: currentFilters.sort, order: currentFilters.order, filters: currentFilters};
+	let serviceParams = {
+		page: currentPage,
+		sort: currentFilters.sort,
+		order: currentFilters.order,
+
+		filters: {thenSort: currentFilters.thenSort, thenOrder: currentFilters.thenOrder, ...currentFilters},
+	};
 	serviceParamsManager.update(serviceParams, 'scores', true);
 
 	function onTabChanged(e) {
@@ -232,6 +247,10 @@
 		if (isNaN(newPage)) newPage = 1;
 
 		currentPage = newPage;
+		sortValue = currentFilters.sort;
+		orderValue = currentFilters.order;
+		thenSortValue = currentFilters.thenSort;
+		thenOrderValue = currentFilters.thenOrder;
 
 		if (setUrl) {
 			const query = buildSearchFromFiltersWithDefaults(currentFilters, params);
@@ -360,6 +379,14 @@
 		navigateToCurrentPageAndFilters();
 	}
 
+	function onPlaylistIdsChange(event) {
+		currentFilters.playlistIds = event.detail.join(',');
+
+		currentPage = 1;
+
+		navigateToCurrentPageAndFilters();
+	}
+
 	function onStarsChanged(event, ratingType) {
 		if (!Array.isArray(event?.detail?.values) || event.detail.values.length !== 2) return;
 
@@ -408,22 +435,110 @@
 	const debouncedOnDateRangeChanged = debounce(onDateRangeChange, FILTERS_DEBOUNCE_MS);
 
 	function onPageChanged(e) {
-		let newPage = e?.detail ?? null;
+		if (!(event?.detail?.initial ?? false)) scrollToTop();
+		let newPage = (e?.detail?.page ?? 0) + 1;
 		if (!newPage) return;
 
 		if (!Number.isFinite(newPage)) newPage = 1;
 
+		previousPage = currentPage;
 		currentPage = newPage;
 
 		navigateToCurrentPageAndFilters(true);
 	}
 
-	function onScoresParamsChanged(e) {
-		const newServiceParams = e?.detail ?? null;
-		if (!newServiceParams) return;
+	let orderValues = [
+		{value: 'asc', name: 'Ascending', icon: 'fa-arrow-up'},
+		{value: 'desc', name: 'Descending', icon: 'fa-arrow-down'},
+	];
+	let orderValue = orderValues[0].value;
 
-		currentFilters.sort = newServiceParams.sort;
-		currentFilters.order = newServiceParams.order;
+	function onOrderChange(event) {
+		if (!event?.detail?.value || event.detail.value == currentFilters.order) return null;
+
+		currentFilters.order = event.detail.value;
+
+		navigateToCurrentPageAndFilters();
+	}
+
+	let sortValues1 = [
+		{value: 'pp', name: 'PP', title: 'Sort by PP', icon: 'fa-cubes'},
+		{
+			value: 'accPP',
+			name: 'Acc PP',
+			title: 'Sort by acc PP',
+			icon: 'fa-arrows-to-dot',
+		},
+		{
+			value: 'passPP',
+			name: 'Pass PP',
+			title: 'Sort by pass PP',
+			icon: 'fa-person-walking-dashed-line-arrow-right',
+		},
+		{
+			value: 'techPP',
+			name: 'Tech PP',
+			title: 'Sort by tech PP',
+			icon: 'fa-arrows-split-up-and-left',
+		},
+		{value: 'date', name: 'Date', title: 'Sort by date', icon: 'fa fa-clock'},
+		{value: 'acc', name: 'Acc', title: 'Sort by accuracy', icon: 'fa fa-crosshairs'},
+		{value: 'rank', name: 'Rank', title: 'Sort by rank', icon: 'fa fa-list-ol'},
+		{value: 'stars', name: 'Stars', title: 'Sort by song stars', icon: 'fa fa-star'},
+		{
+			value: 'sotwNominations',
+			name: 'Nominations',
+			title: 'Sort by Score Of The Week nominations count',
+			icon: 'fa fa-award',
+		},
+		{value: 'pauses', name: 'Pauses', title: 'Sort by pauses', icon: 'fa fa-pause'},
+		{
+			value: 'maxStreak',
+			name: 'Streak',
+			title: 'Sort by 115 streak',
+			icon: 'icon115s',
+		},
+		{
+			value: 'replaysWatched',
+			name: 'Watched',
+			title: 'Sort by replay watched',
+			icon: 'fa fa-eye',
+		},
+		{
+			value: 'mistakes',
+			name: 'Mistakes',
+			title: 'Sort by mistakes',
+			icon: 'icon-mistakes',
+		},
+	];
+	let sortValues = sortValues1;
+	let sortValue = sortValues[0].value;
+
+	function onSortChange(event) {
+		if (!event?.detail?.value || event.detail.value == currentFilters.sort) return null;
+
+		currentFilters.sort = event.detail.value;
+
+		navigateToCurrentPageAndFilters();
+	}
+
+	let thenOrderValue = orderValues[0].value;
+
+	function onThenOrderChange(event) {
+		if (!event?.detail?.value || event.detail.value == currentFilters.thenOrder) return null;
+
+		currentFilters.thenOrder = event.detail.value;
+
+		navigateToCurrentPageAndFilters();
+	}
+
+	let thenSortValues = sortValues1;
+	let thenSortValue = thenSortValues[0].value;
+
+	function onThenSortChange(event) {
+		if (!event?.detail?.value || event.detail.value == currentFilters.thenSort) return null;
+
+		currentFilters.thenSort = event.detail.value;
 
 		navigateToCurrentPageAndFilters();
 	}
@@ -469,6 +584,47 @@
 		currentFilters.techrating_from ||
 		currentFilters.techrating_to
 	);
+
+	let initialState = null;
+	let initialStateType = null;
+	let numOfScores = null;
+
+	let playerId = ALL_SCORES_PLAYER_ID;
+	let currentService = 'scores';
+	let showOtherSorting = false;
+
+	let scoresStore = createScoresStore(playerId, currentService, serviceParams);
+
+	let scoresBoxEl = null;
+
+	function changeParams(newPlayerId, newService, newServiceParams) {
+		if (!newPlayerId) return null;
+
+		scoresStore.fetch(newServiceParams, newService, newPlayerId, true);
+
+		return {playerId: newPlayerId, service: newService, serviceParams: newServiceParams};
+	}
+
+	function scrollToTop() {
+		if (scoresBoxEl) scrollToTargetAdjusted(scoresBoxEl, 44);
+	}
+
+	$: changeParams(playerId, currentService, serviceParams);
+	$: page = serviceParams?.page ?? null;
+	$: totalScores = (scoresStore => (scoresStore && scoresStore.getTotalScores ? scoresStore.getTotalScores() : null))(
+		scoresStore,
+		$scoresStore
+	);
+	$: pending = scoresStore ? scoresStore.pending : null;
+	$: error = scoresStore ? scoresStore.error : null;
+
+	$: scoresStore && scoresStore.fetch(serviceParams, currentService);
+	$: pagerTotalScores = totalScores !== null && totalScores !== undefined ? totalScores : numOfScores;
+
+	$: itemsPerPage = (itemsPerPage => (itemsPerPage && itemsPerPage.getItemsPerPage ? scoresStore.getItemsPerPage() : null))(
+		scoresStore,
+		$scoresStore
+	);
 </script>
 
 <svelte:head>
@@ -482,26 +638,85 @@
 		</div>
 
 		<ContentBox bind:box={boxEl}>
-			<Scores
-				playerId={ALL_SCORES_PLAYER_ID}
-				initialService="scores"
-				initialServiceParams={serviceParams}
-				on:page-changed={onPageChanged}
-				on:service-params-changed={onScoresParamsChanged}
-				withPlayers={true} />
+			<div bind:this={scoresBoxEl}>
+				{#if $error}
+					<div><Error error={$error} /></div>
+				{/if}
+
+				{#if $scoresStore && $scoresStore.length}
+					<div class="song-scores grid-transition-helper">
+						{#each $scoresStore as songScore, idx ((songScore?.id ?? songScore?.score?.leaderboardId ?? '') + (songScore?.score?.timeset ?? songScore?.score?.score ?? '') + (songScore?.score?.attemptsCount ?? '') + (songScore?.timeSet ?? songScore?.player?.playerId ?? ''))}
+							<SongScore
+								{playerId}
+								{songScore}
+								{idx}
+								service={currentService}
+								withPlayers={true}
+								animationSign={currentPage >= previousPage ? 1 : -1}
+								additionalStat={serviceParams?.sort} />
+						{/each}
+					</div>
+				{:else}
+					<p>No scores.</p>
+				{/if}
+
+				<Pager
+					totalItems={pagerTotalScores}
+					currentPage={currentPage - 1}
+					fixedItemsPerPage={itemsPerPage}
+					loadingPage={$pending?.serviceParams?.page ? $pending.serviceParams.page - 1 : null}
+					on:page-changed={onPageChanged} />
+			</div>
 		</ContentBox>
 	</article>
 
 	<aside class="scores-aside-container">
 		<AsideBox title="Filters" boolname="showFiltersOnScores" faicon="fas fa-filter">
-			<section class="filter">
-				<label>Song/Author/Hash/bsr</label>
+			<div class="search-and-orders">
+				{#if currentFilters.search?.length}
+					<div class="sorting-options">
+						<Select
+							value="relevance"
+							fontSize="0.8"
+							options={[{value: 'relevance', name: 'Relevance', title: 'Sort by search relevance', icon: 'fa-magnifying-glass'}]} />
+						<Select value="desc" fontSize="0.8" options={[{value: 'desc', name: 'Descending', icon: 'fa-arrow-down'}]} />
+					</div>
+					<span class="then-sort-label">
+						<div class="line-thing"></div>
+						<span>then sort</span>
+						<div class="line-thing"></div></span>
+				{/if}
+				<div class="sorting-options">
+					<Select bind:value={sortValue} on:change={onSortChange} fontSize="0.8" options={sortValues} />
+					<Select bind:value={orderValue} on:change={onOrderChange} fontSize="0.8" options={orderValues} />
+					<div class="score-options-section">
+						<span
+							class="beat-savior-reveal clickable"
+							class:opened={showOtherSorting}
+							on:click={() => (showOtherSorting = !showOtherSorting)}
+							title="Show details">
+							<i class="fas fa-chevron-down" />
+						</span>
+					</div>
+				</div>
+				{#if showOtherSorting}
+					<span class="then-sort-label">
+						<div class="line-thing"></div>
+						<span>then sort</span>
+						<div class="line-thing"></div></span>
+					<div class="sorting-options">
+						<Select bind:value={thenSortValue} on:change={onThenSortChange} fontSize="0.8" options={thenSortValues} />
+						<Select bind:value={thenOrderValue} on:change={onThenOrderChange} fontSize="0.8" options={orderValues} />
+					</div>
+				{/if}
+			</div>
 
+			<section class="search-filter">
 				<input
 					on:input={debounce(onSearchChanged, FILTERS_DEBOUNCE_MS)}
 					type="text"
 					class="search"
-					placeholder="Search..."
+					placeholder="Search(Song/Author/Hash/bsr)..."
 					value={currentFilters.search} />
 			</section>
 
@@ -517,6 +732,12 @@
 					currentMapperId={$account.player && $account.player.playerInfo.mapperId}
 					mapperIds={currentFilters.mappers?.split(',').map(id => parseInt(id)) ?? []}
 					on:change={e => onMappersChange(e)} />
+			</section>
+
+			<section class="filter">
+				<PlaylistPicker
+					playlistIds={(currentFilters.playlistIds?.length && currentFilters.playlistIds?.split(',')) ?? []}
+					on:change={e => onPlaylistIdsChange(e)} />
 			</section>
 
 			<section class="filter">
@@ -921,6 +1142,39 @@
 		padding: 0.5rem !important;
 	}
 
+	.sorting-options {
+		display: flex;
+		justify-content: left;
+		align-items: center;
+		gap: 0.3em;
+	}
+
+	.search-filter {
+		margin-bottom: 1em;
+	}
+
+	.search-and-orders {
+		display: flex;
+		flex-direction: column;
+		margin-bottom: 1em;
+		gap: 0.5em;
+	}
+
+	.then-sort-label {
+		width: 100%;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		color: grey;
+		font-size: 12px;
+	}
+
+	.line-thing {
+		flex: 1;
+		height: 1px;
+		background-color: gray;
+	}
+
 	.event-container {
 		width: 100%;
 		height: 100%;
@@ -1030,6 +1284,23 @@
 		transition: opacity 0.2s ease-in-out;
 	}
 
+	.score-options-section {
+		display: grid;
+		justify-items: center;
+		margin: 0.3em;
+	}
+
+	.beat-savior-reveal {
+		align-self: end;
+		cursor: pointer;
+		transition: transform 500ms;
+		transform-origin: 0.42em 0.8em;
+	}
+
+	.beat-savior-reveal.opened {
+		transform: rotateZ(180deg);
+	}
+
 	:global(.content-box.event-banner:hover .cinematics-canvas) {
 		opacity: 1;
 	}
@@ -1120,6 +1391,32 @@
 
 	.dropdown-filter + .dropdown-filter {
 		margin-top: 1rem;
+	}
+
+	.song-scores :global(> *:last-child) {
+		border-bottom: none !important;
+	}
+
+	.scores-container {
+		padding: 0.5em;
+		border-radius: 8px;
+	}
+
+	.unconstrained-pager {
+		display: flex;
+		gap: 0.5em;
+		margin-top: 0.5em;
+		margin-bottom: -0.6em;
+	}
+
+	:global(.unconstrained-pager .fas) {
+		margin-top: -0.4em;
+	}
+	@media screen and (max-width: 768px) {
+		:global(.scores-playlist-button) {
+			margin-top: 9em !important;
+			right: auto;
+		}
 	}
 
 	:global(.time-presets .button) {

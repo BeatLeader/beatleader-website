@@ -41,7 +41,7 @@
 	const tabOptions = [
 		{value: 'ranking', label: 'Ranking', iconFa: 'fas fa-hashtag', url: '/ranking/1', cls: 'ranking-tab-button'},
 		// {value: 'countries', label: 'Countries', iconFa: 'fas fa-flag', url: '/countries/1', cls: 'ranking-tab-button'},
-		// {value: 'scores', label: 'Scores', iconFa: 'fas fa-trophy', url: '/scores/1', cls: 'ranking-tab-button'},
+		{value: 'scores', label: 'Scores', iconFa: 'fas fa-trophy', url: '/scores/1', cls: 'ranking-tab-button'},
 	];
 	const currentTab = tabOptions[0];
 

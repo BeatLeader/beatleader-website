@@ -11953,6 +11953,8 @@ select {
 	background-size: cover;
 	background-repeat: no-repeat;
 	background-image: url('./mistakes.webp');
+	-webkit-filter: invert(1) brightness(1.5);
+	filter: invert(1) brightness(1.5);
 }
 
 .icon-mistakes-mini {

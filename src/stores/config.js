@@ -113,7 +113,7 @@ export const DEFAULT_CONFIG = {
 	leaderboardPreferences: {
 		badges: [
 			[{metric: 'pp', secondary: 'none'}, {metric: 'acc', secondary: 'mods', withMods: false}, {metric: 'score'}],
-			[{metric: 'pauses'}, {metric: 'maxStreak'}, {metric: 'mistakes', withImprovements: false}],
+			[{metric: 'pauses'}, {metric: 'maxStreak'}, {metric: 'sotwNominations'}, {metric: 'mistakes', withImprovements: false}],
 		],
 		badgeRows: 1,
 

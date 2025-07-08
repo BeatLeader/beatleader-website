@@ -12,6 +12,7 @@
 	import PlayerPerformance from './PlayerPerformance.svelte';
 	import PlayerNameWithFlag from '../Common/PlayerNameWithFlag.svelte';
 	import {colorForEndType, titleForEndType, timeToLabel} from '../../utils/attempts';
+	import PlayerName from '../Scores/PlayerName.svelte';
 
 	export let playerId = null;
 	export let songScore = null;
@@ -112,9 +113,24 @@
 
 {#if songScore}
 	<div
-		class={`song-score row-${idx} ${inList ? 'score-in-list' : ''}`}
+		class={`song-score row ${score.status != 0 ? 'with-status' : ''}-${idx} ${inList ? 'score-in-list' : ''}`}
 		in:maybe|global={{fn: fly, x: animationSign * 300, delay: idx * 30, duration: 300}}
-		class:with-details={showDetails}>
+		class:with-details={showDetails}
+		class:as-box={withPlayers}>
+		{#if withPlayers}
+			<div class="top-container">
+				<div class="player">
+					<PlayerName player={songScore.player} on:click={() => navigateToPlayer(songScore.player.alias ?? songScore.player.playerId)} />
+				</div>
+				{#if score.status != 0}
+					{#if (score.status & 2) == 2}
+						<div class="score-of-the-week">
+							<span>Score Of The Week</span>
+						</div>
+					{/if}
+				{/if}
+			</div>
+		{/if}
 		{#if service == 'attempts'}
 			<header>
 				<h3 class="pin-description" title="Attempt number on this map">
@@ -151,7 +167,7 @@
 				{/if}
 			</header>
 		{/if}
-		<div class="main" class:beat-savior={service === 'beatsavior'} class:accsaber={service === 'accsaber'}>
+		<div class="main" class:beat-savior={service === 'beatsavior'} class:as-box={withPlayers} class:accsaber={service === 'accsaber'}>
 			{#if isScoreLink}
 				<a href="/score/{score.id}" class="background-link" on:click|preventDefault|stopPropagation={() => navigate(`/score/${score.id}`)}
 				></a>
@@ -186,15 +202,6 @@
 			<span class="song">
 				<div>
 					{#if showSong}
-						{#if withPlayers}
-							<div class="player">
-								<PlayerNameWithFlag
-									player={songScore.player}
-									type={service === 'accsaber' ? 'accsaber/date' : null}
-									on:click={() => navigateToPlayer(songScore.player.alias ?? songScore.player.playerId)} />
-							</div>
-						{/if}
-
 						<SongInfo
 							{leaderboard}
 							{score}
@@ -313,9 +320,30 @@
 {/if}
 
 <style>
+	.main.as-box {
+		padding: 0.5em;
+		background-color: #222;
+		border-radius: 0 8px 8px 8px;
+		box-shadow: 0 4px 8px rgb(0 0 0 / 55%) !important;
+		position: relative;
+	}
+
+	.main.as-box:hover {
+		box-shadow: 0 4px 8px rgb(0 0 0 / 85%) !important;
+	}
+
+	.with-status .main {
+		border-radius: 0 0 8px 8px;
+	}
+
 	.score-in-list {
 		border-bottom: 1px solid var(--row-separator);
 		padding: 0.5em 0;
+	}
+
+	.score-in-list.as-box {
+		border-bottom: unset;
+		padding: unset;
 	}
 
 	.song-score .up-to-tablet + .main {
@@ -454,6 +482,31 @@
 
 	.attempts-count {
 		font-size: 0.6em;
+	}
+
+	.top-container {
+		display: flex;
+		justify-content: space-between;
+	}
+
+	.player {
+		text-align: left;
+		margin-top: 0.6em;
+		background: #332c36;
+		width: fit-content;
+		padding: 0.3em;
+		border-radius: 8px 8px 0 0;
+	}
+
+	.score-of-the-week {
+		text-align: left;
+		margin-top: 0.6em;
+		background: #490e63;
+		width: fit-content;
+		padding: 0.3em;
+		border-radius: 8px 8px 0 0;
+		padding-left: 0.5em;
+		padding-right: 0.5em;
 	}
 
 	header {

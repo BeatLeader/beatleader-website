@@ -133,6 +133,9 @@
 					{:else if sortBy == 'maxStreak'}
 						<i class="fa-solid fa-crosshairs" />
 						<Value value={score.score.maxStreak} digits={0} />
+					{:else if sortBy == 'sotwNominations'}
+						<i class="fa-solid fa-award" />
+						<Value value={score.score.sotwNominations} digits={0} />
 					{:else if sortBy == 'weight'}
 						<i class="fa-solid fa-weight-hanging" />
 						<Value value={score.score.weight} digits={2} />

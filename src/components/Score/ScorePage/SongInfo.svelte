@@ -58,8 +58,6 @@
 
 	$: hash = song?.hash ?? null;
 	$: coverUrl = song?.coverImage ?? (hash ? `${BS_CDN}/${encodeURIComponent(hash.toLowerCase())}.jpg` : '/assets/song-default.webp');
-
-	$: console.log(diff);
 </script>
 
 {#if song}

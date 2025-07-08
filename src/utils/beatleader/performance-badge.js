@@ -141,6 +141,7 @@ const availableMetrics = [
 	},
 	{metric: 'pauses', name: 'Pauses'},
 	{metric: 'maxStreak', name: 'Max 115 streak'},
+	{metric: 'sotwNominations', name: 'sotwNominations'},
 	{metric: 'maxCombo', name: 'Max combo'},
 	{metric: 'passPP', name: 'Pass PP'},
 	{metric: 'accPP', name: 'Accuracy PP'},
@@ -373,6 +374,26 @@ export const getPerformanceBadge = (def, score, improvements, beatSavior, modifi
 			title = isDemo ? 'Click to setup' : `${score?.[metric] ?? 0} "115s" in a row`;
 			className = 'beatSavior';
 			icon = 'fa-solid fa-crosshairs';
+
+			componentProps = {
+				onlyLabel: true,
+				color: 'white',
+				bgColor: 'var(--dimmed)',
+				title,
+			};
+
+			slotComponentProps = {
+				value: score?.[metric],
+				inline: true,
+				digits: 0,
+				suffix: ``,
+			};
+			break;
+
+		case 'sotwNominations':
+			title = isDemo ? 'Click to setup' : `${score?.[metric] ?? 0} nominations`;
+			className = 'beatSavior';
+			icon = 'fa-solid fa-award';
 
 			componentProps = {
 				onlyLabel: true,
