@@ -13,7 +13,7 @@
 	export let songScore = null;
 	export let showDetails = false;
 	export let modifiers = null;
-	export let additionalStat = null;
+	export let additionalStats = null;
 	export let selectedMetric = null;
 	export let type = 'profile-score';
 
@@ -46,7 +46,7 @@
 		};
 	}
 
-	function getBadges(service, config, rows, score, improvements, beatSavior, additionalStat, isDemo, status) {
+	function getBadges(service, config, rows, score, improvements, beatSavior, additionalStats, isDemo, status) {
 		if (!service?.length || !Array.isArray(config) || !config?.length) return;
 
 		if (!rows) rows = 2;
@@ -66,15 +66,29 @@
 				config = deepClone(config);
 		}
 
-		if (
-			additionalStat &&
-			['pauses', 'maxStreak', 'sotwNominations', 'replaysWatched', 'accPP', 'passPP', 'techPP', 'playCount'].includes(additionalStat) &&
-			service === 'scores' &&
-			rows >= 2 &&
-			!config.some(row => row.some(col => col?.metric === additionalStat))
-		) {
-			config[config.length - 1][0] = {metric: additionalStat};
-			rows = config.length;
+		if (additionalStats?.length) {
+			for (let I = 0; I < additionalStats.length; I++) {
+				const additionalStat = additionalStats[I];
+				if (
+					['pauses', 'maxStreak', 'sotwNominations', 'replaysWatched', 'accPP', 'passPP', 'techPP', 'playCount'].includes(additionalStat) &&
+					service === 'scores' &&
+					rows >= 2 &&
+					!config.some(row => row.some(col => col?.metric === additionalStat))
+				) {
+					if (I == 0) {
+						config[config.length - 1][0] = {metric: additionalStat};
+						rows = config.length;
+					} else {
+						if (config[config.length - 1][1]?.metric) {
+							config[config.length] = [{metric: additionalStat}];
+							rows = config.length + 1;
+						} else {
+							config[config.length - 1][1] = {metric: additionalStat};
+							rows = config.length;
+						}
+					}
+				}
+			}
 		}
 
 		return config
@@ -116,7 +130,7 @@
 		score,
 		improvements,
 		beatSavior,
-		additionalStat,
+		additionalStats,
 		$isDemo,
 		songScore?.leaderboard?.difficultyBl?.status ?? 0,
 		modifiers
@@ -131,7 +145,7 @@
 					score?.myScore?.score,
 					null,
 					getBeatSaviorCompatibleStats(score?.myScore?.score),
-					additionalStat,
+					additionalStats,
 					false,
 					songScore?.leaderboard?.difficultyBl?.status ?? 0,
 					modifiers

@@ -11947,6 +11947,24 @@ select {
 	}
 }
 
+.arrowheadright-icon {
+	width: 100%;
+	height: 100%;
+	margin-left: 1px;
+	margin-top: 2px;
+	&::after {
+		display: inline-block;
+		background-color: currentColor;
+		content: '';
+		mask-image: url('./arrowheadright.svg');
+		mask-type: alpha;
+		width: 2.5em;
+		height: 2.5em;
+		margin-left: -1.1em;
+		margin-right: -1em;
+	}
+}
+
 .icon-mistakes {
 	width: 100%;
 	height: 100%;

@@ -634,7 +634,12 @@
 <section class="align-content">
 	<article class="page-content" transition:fade|global>
 		<div class="ranking-switcher">
-			<TabSwitcher values={tabOptions} value={currentTab} on:change={onTabChanged} class="ranking" />
+			<TabSwitcher
+				values={tabOptions}
+				value={currentTab}
+				loadingValue={$pending?.serviceParams?.page ? currentTab : null}
+				on:change={onTabChanged}
+				class="ranking" />
 		</div>
 
 		<ContentBox bind:box={boxEl}>
@@ -653,7 +658,7 @@
 								service={currentService}
 								withPlayers={true}
 								animationSign={currentPage >= previousPage ? 1 : -1}
-								additionalStat={serviceParams?.sort} />
+								additionalStats={[currentFilters?.sort, currentFilters?.thenSort]} />
 						{/each}
 					</div>
 				{:else}

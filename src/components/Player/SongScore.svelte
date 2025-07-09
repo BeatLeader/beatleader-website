@@ -25,7 +25,7 @@
 	export let icons = null;
 	export let showSong = true;
 	export let inList = true;
-	export let additionalStat = null;
+	export let additionalStats = null;
 	export let replayCounter = true;
 	export let selectedMetric = null;
 
@@ -113,7 +113,7 @@
 
 {#if songScore}
 	<div
-		class={`song-score row ${score.status != 0 ? 'with-status' : ''}-${idx} ${inList ? 'score-in-list' : ''}`}
+		class={`song-score ${score.status != 0 ? 'with-status' : ''} row-${idx} ${inList ? 'score-in-list' : ''}`}
 		in:maybe|global={{fn: fly, x: animationSign * 300, delay: idx * 30, duration: 300}}
 		class:with-details={showDetails}
 		class:as-box={withPlayers}>
@@ -168,19 +168,7 @@
 			</header>
 		{/if}
 		<div class="main" class:beat-savior={service === 'beatsavior'} class:as-box={withPlayers} class:accsaber={service === 'accsaber'}>
-			{#if isScoreLink}
-				<a href="/score/{score.id}" class="background-link" on:click|preventDefault|stopPropagation={() => navigate(`/score/${score.id}`)}
-				></a>
-			{/if}
-			<a
-				href={isScoreLink ? `/score/${score.id}` : null}
-				on:click|preventDefault|stopPropagation={() => {
-					if (isScoreLink) {
-						navigate(`/score/${score.id}`);
-					}
-				}}
-				style={isScoreLink ? '' : 'cursor: unset'}
-				class="rank tablet-and-up">
+			<div class="rank tablet-and-up">
 				{#if service !== 'beatsavior' && service !== 'attempts'}
 					<ScoreRank
 						rank={score.rank}
@@ -197,7 +185,7 @@
 						prevPrefix="vs "
 						prevDate={scoreBadgesHaveImprovements ? (prevScore?.timeSet ?? null) : null} />
 				</div>
-			</a>
+			</div>
 
 			<span class="song">
 				<div>
@@ -250,58 +238,43 @@
 						on:score-pinned={onScorePinned} />
 				</div>
 			{/if}
-			<a
-				href={isScoreLink ? `/score/${score.id}` : null}
-				on:click|preventDefault|stopPropagation={() => {
-					if (isScoreLink) {
-						navigate(`/score/${score.id}`);
-					}
-				}}
-				style={isScoreLink ? '' : 'cursor: unset'}
-				class="rank mobile-only">
-				{#if service !== 'beatsavior'}
-					<ScoreRank
-						rank={score.rank}
-						countryRank={score.ssplCountryRank}
-						countryRankTotal={null}
-						hmd={score.hmd}
-						controller={score.controller}
-						platform={score.platform} />
-				{/if}
-			</a>
+			<div class="rank-and-timeset mobile-only">
+				<div class="rank">
+					{#if service !== 'beatsavior'}
+						<ScoreRank
+							rank={score.rank}
+							countryRank={score.ssplCountryRank}
+							countryRankTotal={null}
+							hmd={score.hmd}
+							controller={score.controller}
+							platform={score.platform} />
+					{/if}
+				</div>
 
-			<span class="timeset mobile-only">
-				<FormattedDate date={score.timeSet} prevPrefix="vs " prevDate={scoreBadgesHaveImprovements ? (prevScore?.timeSet ?? null) : null} />
-			</span>
+				<span class="timeset">
+					<FormattedDate
+						date={score.timeSet}
+						prevPrefix="vs "
+						prevDate={scoreBadgesHaveImprovements ? (prevScore?.timeSet ?? null) : null} />
+				</span>
+			</div>
 
 			{#if showAnyDetails}
-				<div class="score-options-section tablet-and-up">
-					<span
-						class="beat-savior-reveal clickable"
-						class:opened={showDetails}
-						on:click={() => (showDetails = !showDetails)}
-						title="Show details">
+				<div class="score-options-section clickable tablet-and-up" on:click={() => (showDetails = !showDetails)}>
+					<span class="beat-savior-reveal" class:opened={showDetails} title="Show details">
 						<i class="fas fa-chevron-down" />
 					</span>
 				</div>
 			{/if}
-			<a
-				href={isScoreLink ? `/score/${score.id}` : null}
-				on:click|preventDefault|stopPropagation={() => {
-					if (isScoreLink) {
-						navigate(`/score/${score.id}`);
-					}
-				}}
-				style={isScoreLink ? '' : 'cursor: unset'}>
-				<PlayerPerformance {service} {songScore} {showDetails} {modifiers} {additionalStat} {selectedMetric} on:badge-click />
-			</a>
+			<PlayerPerformance {service} {songScore} {showDetails} {modifiers} {additionalStats} {selectedMetric} on:badge-click />
+			{#if isScoreLink}
+				<a href="/score/{score.id}" class="arrow-link" on:click|preventDefault|stopPropagation={() => navigate(`/score/${score.id}`)}>
+					<i class="arrowheadright-icon" />
+				</a>
+			{/if}
 			{#if showAnyDetails}
-				<div class="score-options-section mobile-only">
-					<span
-						class="beat-savior-reveal clickable"
-						class:opened={showDetails}
-						on:click={() => (showDetails = !showDetails)}
-						title="Show details">
+				<div class="score-options-section clickable mobile-only" on:click={() => (showDetails = !showDetails)}>
+					<span class="beat-savior-reveal" class:opened={showDetails} title="Show details">
 						<i class="fas fa-chevron-down" />
 					</span>
 				</div>
@@ -535,6 +508,10 @@
 		margin-right: 0.5em;
 	}
 
+	.arrow-link {
+		color: #ffffff54;
+	}
+
 	h3.editable {
 		cursor: pointer;
 	}
@@ -590,6 +567,20 @@
 			padding-bottom: 0 !important;
 		}
 
+		.timeset {
+			display: flex;
+			align-items: center;
+			gap: 0.3em;
+			text-align: unset;
+			width: unset;
+		}
+
+		.rank-and-timeset {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+
 		.song {
 			display: flex;
 			justify-content: flex-start;
@@ -597,7 +588,8 @@
 			width: 100%;
 			margin-right: 0;
 			padding-top: 1em;
-			padding-bottom: 0.75em;
+			padding-bottom: 1em;
+			padding-left: 1em;
 		}
 
 		.up-to-tablet.icons {
@@ -616,7 +608,17 @@
 			text-align: center;
 		}
 		.score-options-section.mobile-only {
-			display: grid !important;
+			display: flex !important;
+			width: 100%;
+			justify-content: center;
+			margin-bottom: -0.5em;
+		}
+
+		.arrow-link {
+			position: absolute;
+			right: 0.4em;
+			bottom: 3em;
+			z-index: 0;
 		}
 	}
 </style>

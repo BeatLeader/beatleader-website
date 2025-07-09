@@ -349,17 +349,20 @@
 			margin-left: unset;
 			width: unset;
 			margin-top: 1.5em;
+			transform: scale(1.2);
 		}
 
 		.center-section {
 			text-align: center;
 			align-items: center;
+			gap: 0.8em;
 		}
 
 		.nomination-container {
 			position: relative;
-			margin-top: 0.4em;
+			margin-top: 0.5em;
 			margin-right: 1em;
+			transform: scale(0.8);
 		}
 
 		.left-section {

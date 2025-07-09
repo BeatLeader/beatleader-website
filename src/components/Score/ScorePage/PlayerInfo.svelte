@@ -95,6 +95,7 @@
 		display: flex;
 		gap: 0.5em;
 		align-items: baseline;
+		flex-wrap: wrap;
 	}
 
 	.player-name :global(> img) {
@@ -108,5 +109,18 @@
 
 	.popover-contents {
 		max-width: 40em;
+	}
+
+	@media screen and (max-width: 767px) {
+		.player-name {
+			justify-content: center;
+		}
+		.name {
+			font-size: 1.2em;
+		}
+		:global(.profile-info-avatar) {
+			height: 3em;
+			width: 3em;
+		}
 	}
 </style>

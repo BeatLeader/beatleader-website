@@ -251,6 +251,15 @@
 		.songLink {
 			row-gap: 0.5em;
 			justify-content: center;
+			font-size: 1.1rem;
+		}
+
+		.diff-container {
+			font-size: 1.1rem;
+		}
+
+		.center-section {
+			gap: 0.6em;
 		}
 	}
 </style>
