@@ -301,10 +301,6 @@
 		position: relative;
 	}
 
-	.main.as-box:hover {
-		box-shadow: 0 4px 8px rgb(0 0 0 / 85%) !important;
-	}
-
 	.with-status .main {
 		border-radius: 0 0 8px 8px;
 	}

@@ -13,7 +13,7 @@
 </script>
 
 <Modal showCloseButton={false} closeable on:close={() => dispatch('closed')} width="auto" height="auto">
-	<div class="top-container">
+	<div class="maps-top-container">
 		<span class="main-title">Trending</span>
 		<div class="maps-table">
 			<div class="map-row">
@@ -34,7 +34,7 @@
 </Modal>
 
 <style>
-	.top-container {
+	.maps-top-container {
 		display: flex;
 		flex-direction: column;
 		overflow: hidden;
@@ -55,17 +55,17 @@
 		gap: 1.5em;
 	}
 
-	:global(.content-box:has(.top-container)) {
+	:global(.content-box:has(.maps-top-container)) {
 		backdrop-filter: none !important;
 	}
 
 	@media screen and (max-width: 767px) {
-		:global(.top-container .map-card.maps-table) {
+		:global(.maps-top-container .map-card.maps-table) {
 			width: 100% !important;
 			min-height: 12em !important;
 		}
 
-		:global(.ss-modal:has(.top-container)) {
+		:global(.ss-modal:has(.maps-top-container)) {
 			overflow: hidden !important;
 		}
 	}
