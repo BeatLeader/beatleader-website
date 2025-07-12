@@ -81,8 +81,8 @@
 		bottom: -20px;
 		background-image: repeating-linear-gradient(
 			/* angle */ 150deg,
-			/* line color & thickness */ #20a4ee 0px 0px,
-			/* gap color & width */ #20a4ee 0px 1px,
+			/* line color & thickness */ #ec2b7c 0px 0px,
+			/* gap color & width */ #ec2b7c 0px 1px,
 			transparent 2px 3px
 		);
 		mask-image: url(/assets/bswc-2025-logo.png);

@@ -563,7 +563,39 @@
 						<br /><br />
 					</span>
 
-					<div class="downloadButtons">
+					<div class="downloadButtons bswc-2025-buttons">
+						<a href="https://www.twitch.tv/cubecommunity?utm_source=BeatLeader" target="_blank">
+							<Button iconFa="fab fa-twitch" type="twitch" label="Watch matches" />
+						</a>
+						<a href="https://cube.community/tournaments/bswc-2025" target="_blank">
+							<Button iconFa="fas fa-circle-info" label="BSWC Info" />
+						</a>
+						<a href="https://cube.community/tournaments/bswc-2025/bracket" target="_blank">
+							<Button iconFa="fas fa-diagram-project" label="Bracket" />
+						</a>
+					</div>
+
+					<span style="margin-top: 0.5em">
+						<b>Good luck to the teams! And good luck in our fan event! </b>
+					</span>
+				</div>
+			</ContentBox>
+		{/if}
+		{#if eventId == 71}
+			<ContentBox cls={(modalShown ? 'inner-modal' : '') + 'bswc-box'}>
+				<div class="bswcbg" style="background-image: url(/assets/bswc2025background.webp) !important" />
+				<div class="bswcbgblur" style="filter: brightness(0.9);" />
+				<div class="bswc-container" style="color: black">
+					<span>
+						<b>Week 3 of BSWC 2025 is here!</b> US vs Israel and UK vs Canada in a semi-final! I hope you saved some points to bet on
+						matches this week, because it's going to be close.<br />
+						No need to spend points in our events, only your kilocalories in exchange for fun and a badge for the champion.<br />
+						Make a reminder for matches and keep an eye out for the banner on top when they go live. Or check recordings from the last week on
+						the BSWC website.
+						<br /><br />
+					</span>
+
+					<div class="downloadButtons bswc-2025-buttons">
 						<a href="https://www.twitch.tv/cubecommunity?utm_source=BeatLeader" target="_blank">
 							<Button iconFa="fab fa-twitch" type="twitch" label="Watch matches" />
 						</a>
