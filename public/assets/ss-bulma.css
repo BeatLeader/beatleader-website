@@ -11968,11 +11968,15 @@ select {
 .icon-mistakes {
 	width: 100%;
 	height: 100%;
-	background-size: cover;
-	background-repeat: no-repeat;
-	background-image: url('./mistakes.webp');
-	-webkit-filter: invert(1) brightness(1.5);
-	filter: invert(1) brightness(1.5);
+	&::after {
+		display: inline-block;
+		background-color: currentColor;
+		content: '';
+		mask-image: url('./mistakes.svg');
+		mask-type: alpha;
+		width: 100%;
+		height: 100%;
+	}
 }
 
 .icon-mistakes-mini {

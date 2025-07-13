@@ -166,4 +166,9 @@
 		height: 1.2em;
 		text-align: center;
 	}
+
+	.dropdown-header-text i {
+		width: 1em;
+		height: 1em;
+	}
 </style>

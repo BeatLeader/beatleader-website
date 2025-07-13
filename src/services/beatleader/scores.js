@@ -271,15 +271,18 @@ export default () => {
 	const fetchAllScoresPage = async (
 		serviceParams = {sort: 'date', order: 'desc', page: 1},
 		priority = PRIORITY.FG_LOW,
-		{...options} = {}
-	) =>
-		scoresApiClient.getProcessed({
-			...options,
+		force = false,
+		signal = null
+	) => {
+		return scoresApiClient.getProcessed({
 			playerId: ALL_SCORES_PLAYER_ID,
 			page: serviceParams?.page ?? 1,
 			priority,
+			signal,
+			force,
 			params: serviceParams,
 		});
+	};
 
 	const fetchScoreStats = async (scoreId, priority = PRIORITY.FG_LOW, {...options} = {cacheTtl: HOUR, maxAge: HOUR}) =>
 		scoreStatsApiClient.getProcessed({...options, scoreId, priority});

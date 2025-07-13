@@ -108,9 +108,9 @@
 								},
 								{
 									id: 'sotwNominations',
-									label: 'Streak',
-									title: 'Sort by 115 streak',
-									iconFa: 'icon115s',
+									label: 'Nominations',
+									title: 'Sort by nominations for Best Of The Week',
+									iconFa: 'fas fa-award',
 									url: buildUrl('scores', {sort: 'sotwNominations'}),
 								},
 								{

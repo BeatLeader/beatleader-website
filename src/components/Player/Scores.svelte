@@ -200,7 +200,7 @@
 						{withPlayers}
 						{noIcons}
 						animationSign={currentPage >= previousPage ? 1 : -1}
-						additionalStat={currentServiceParams?.sort} />
+						additionalStats={[currentServiceParams?.sort]} />
 				{/each}
 			</div>
 		{:else}

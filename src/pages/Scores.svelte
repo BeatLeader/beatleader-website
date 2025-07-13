@@ -600,7 +600,7 @@
 	function changeParams(newPlayerId, newService, newServiceParams) {
 		if (!newPlayerId) return null;
 
-		scoresStore.fetch(newServiceParams, newService, newPlayerId, true);
+		scoresStore.fetch(newServiceParams, newService, newPlayerId);
 
 		return {playerId: newPlayerId, service: newService, serviceParams: newServiceParams};
 	}
@@ -618,7 +618,6 @@
 	$: pending = scoresStore ? scoresStore.pending : null;
 	$: error = scoresStore ? scoresStore.error : null;
 
-	$: scoresStore && scoresStore.fetch(serviceParams, currentService);
 	$: pagerTotalScores = totalScores !== null && totalScores !== undefined ? totalScores : numOfScores;
 
 	$: itemsPerPage = (itemsPerPage => (itemsPerPage && itemsPerPage.getItemsPerPage ? scoresStore.getItemsPerPage() : null))(
@@ -686,7 +685,9 @@
 							options={[{value: 'relevance', name: 'Relevance', title: 'Sort by search relevance', icon: 'fa-magnifying-glass'}]} />
 						<Select value="desc" fontSize="0.8" options={[{value: 'desc', name: 'Descending', icon: 'fa-arrow-down'}]} />
 					</div>
-					<span class="then-sort-label">
+					<span
+						title="Scores, tied after sorting by the main criteria will be then sorted in groups by additional criteria"
+						class="then-sort-label">
 						<div class="line-thing"></div>
 						<span>then sort</span>
 						<div class="line-thing"></div></span>
@@ -705,7 +706,9 @@
 					</div>
 				</div>
 				{#if showOtherSorting}
-					<span class="then-sort-label">
+					<span
+						title="Scores, tied after sorting by the main criteria will be then sorted in groups by additional criteria"
+						class="then-sort-label">
 						<div class="line-thing"></div>
 						<span>then sort</span>
 						<div class="line-thing"></div></span>
