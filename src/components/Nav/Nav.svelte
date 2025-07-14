@@ -129,6 +129,7 @@
 		const isAdmin = $account?.player?.playerInfo?.role?.split(',')?.some(role => ['admin'].includes(role));
 		if (loggedInUser.player) {
 			if (isStaff) signupOptions.push({component: LinkMenuItem, props: {label: 'Staff Dashboard', url: '/staff'}});
+			if (isStaff) signupOptions.push({component: LinkMenuItem, props: {label: 'Score Nominations', url: '/sotwnominations'}});
 			if (isAdmin) signupOptions.push({component: LinkMenuItem, props: {label: 'Admin', url: '/admin'}});
 
 			signupOptions.push({

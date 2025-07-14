@@ -66,6 +66,7 @@
 		ProjectTree: () => import('./pages/ProjectTree.svelte'),
 		ScoresPage: () => import('./pages/Scores.svelte'),
 		ScorePage: () => import('./pages/Score.svelte'),
+		NominatedScores: () => import('./pages/NominatedScores.svelte'),
 	};
 
 	export let url = '';
@@ -311,6 +312,11 @@
 
 					<Route path="/staff" let:location>
 						{#await pageImports.StaffDashboard() then module}
+							<svelte:component this={module.default} {location} />
+						{/await}
+					</Route>
+					<Route path="/sotwnominations" let:location>
+						{#await pageImports.NominatedScores() then module}
 							<svelte:component this={module.default} {location} />
 						{/await}
 					</Route>
