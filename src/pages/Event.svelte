@@ -613,6 +613,37 @@
 				</div>
 			</ContentBox>
 		{/if}
+		{#if eventId == 72}
+			<ContentBox cls={(modalShown ? 'inner-modal' : '') + 'bswc-box'}>
+				<div class="bswcbg" style="background-image: url(/assets/bswc2025background.webp) !important" />
+				<div class="bswcbgblur" style="filter: brightness(0.9);" />
+				<div class="bswc-container" style="color: black">
+					<span>
+						<b>Week 4 of BSWC 2025 is here!</b> First Final - <b>US vs Canada</b>: {formatDateRelative(dateFromUnix(1753034400))}🍿<br />
+						Team members from previous weeks are elegible for this fan event. Have fun!<br />
+						Make a reminder for matches and keep an eye out for the banner on top when they go live. Or check recordings from the last week on
+						the BSWC website.
+						<br /><br />
+					</span>
+
+					<div class="downloadButtons bswc-2025-buttons">
+						<a href="https://www.twitch.tv/cubecommunity?utm_source=BeatLeader" target="_blank">
+							<Button iconFa="fab fa-twitch" type="twitch" label="Watch matches" />
+						</a>
+						<a href="https://cube.community/tournaments/bswc-2025" target="_blank">
+							<Button iconFa="fas fa-circle-info" label="BSWC Info" />
+						</a>
+						<a href="https://cube.community/tournaments/bswc-2025/bracket" target="_blank">
+							<Button iconFa="fas fa-diagram-project" label="Bracket" />
+						</a>
+					</div>
+
+					<span style="margin-top: 0.5em">
+						<b>Let the best win! </b>
+					</span>
+				</div>
+			</ContentBox>
+		{/if}
 		<ContentBox cls={modalShown ? 'inner-modal' : ''}>
 			{#each params as param}
 				{#if param.type}

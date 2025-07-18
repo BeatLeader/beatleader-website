@@ -431,6 +431,12 @@
 			return !teamNames.includes(team.name) ? '-eligible' : '';
 		}
 
+		if (eventId == 72) {
+			const teamNames = ['Israel', 'United Kingdom', 'Canada', 'United States'];
+
+			return !teamNames.includes(team.name) ? '-eligible' : '';
+		}
+
 		if (eventId == 55) {
 			const teamNames = ['United States', 'United Kingdom', 'Denmark', 'Israel', 'Canada', 'Germany'];
 
@@ -527,7 +533,7 @@
 	<section class="ranking-grid">
 		{#each $rankingStore.data as player, idx (player?.playerId)}
 			{@const bswc2024 = eventId == 52 || eventId == 53 || eventId == 54 || eventId == 55 || eventId == 56}
-			{@const bswc2025 = eventId == 69 || eventId == 70 || eventId == 71}
+			{@const bswc2025 = eventId == 69 || eventId == 70 || eventId == 71 || eventId == 72}
 			{@const showFlags = bswc2024 || bswc2025}
 			<div
 				class="ranking-grid-row {showFlags || (!noIcons && $configStore.rankingList.showFriendsButton)
