@@ -8,6 +8,8 @@
 	export let type = null;
 	export let playerClickFilter = null;
 	export let disablePopover = false;
+	export let showRank = true;
+	export let cls = null;
 
 	let referenceElement;
 
@@ -17,10 +19,12 @@
 
 <a
 	href={`/u/${playerId}${type ? '/' + type : ''}/1${playerClickFilter ? '?' + playerClickFilter : ''}`}
-	class="player-name clickable has-pointer-events"
+	class="player-name clickable has-pointer-events {cls}"
 	bind:this={referenceElement}
 	on:click|preventDefault>
-	<span class="rank">{'#' + (player?.playerInfo?.rank ?? '?')}</span>
+	{#if showRank}
+		<span class="rank">{'#' + (player?.playerInfo?.rank ?? '?')}</span>
+	{/if}
 	<Avatar {player} />
 	<span class="name">{name ?? 'Unknown'}</span>
 </a>
@@ -35,7 +39,7 @@
 
 <style>
 	a {
-		color: inherit !important;
+		color: inherit;
 	}
 
 	.player-name {
