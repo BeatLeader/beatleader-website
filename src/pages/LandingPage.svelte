@@ -6,6 +6,7 @@
 	import {MetaTags} from 'svelte-meta-tags';
 	import {CURRENT_URL} from '../network/queues/beatleader/api-queue';
 	import BlueSkyTimeline from '../components/Dashboard/BlueSkyTimeline.svelte';
+	import EventBanner from '../components/Event/EventBanner.svelte';
 
 	$: metaDescription =
 		ssrConfig.name +
@@ -69,6 +70,9 @@
 				</div>
 			</div>
 		</ContentBox>
+		<span class="event-promotion-title"
+			>Latest BeatLeader competitive event featuring a refreshing set of purpose-made maps for this summer!</span>
+		<EventBanner />
 		<div class="two-boxes">
 			<ContentBox cls="landing-box">
 				<span class="box-headline">We aggregate the data from other cool projects to help you play better.</span>
@@ -282,6 +286,17 @@
 
 	.global-ranking-call {
 		margin-top: 2em;
+	}
+
+	.event-promotion-title {
+		padding: 0.25em 0;
+		margin-bottom: 0.75em !important;
+		font-size: 1.25em;
+		width: 100%;
+		display: block;
+		margin-left: 0.5em;
+		margin-right: 0.5em;
+		text-align: center;
 	}
 
 	h3 {
