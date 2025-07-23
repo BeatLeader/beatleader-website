@@ -44,7 +44,9 @@
 		</div>
 		<ContentBox cls="landing-box">
 			<div class="container-element darkened-background">
-				<h3 class="description"><b>Start posting your scores to compete with others on more than 100,000 different maps.</b></h3>
+				<h3 class="description centered-title">
+					<b>Start posting your scores to compete with others on more than 100,000 different maps.</b>
+				</h3>
 
 				<div class="features">
 					<div class="feature">
@@ -57,14 +59,16 @@
 					</div>
 				</div>
 
-				<ul>
-					<li>Fully open-source project and community</li>
-					<li>Complexity ratings for all maps</li>
-					<li>Ranked maps to earn Performance Points</li>
+				<div class="table-container">
+					<ul>
+						<li>Fully open-source project and community</li>
+						<li>Complexity ratings for all maps</li>
+						<li>Ranked maps to earn Performance Points</li>
 
-					<li>Detailed statistics for every score</li>
-					<li>Clans, events, and many more!</li>
-				</ul>
+						<li>Detailed statistics for every score</li>
+						<li>Clans, events, and many more!</li>
+					</ul>
+				</div>
 				<div class="global-ranking-call">
 					<h3><strong>Check out <a href="/ranking/1">the global rankings</a> to find the best players</strong></h3>
 				</div>
@@ -78,54 +82,30 @@
 				<span class="box-headline">We aggregate the data from other cool projects to help you play better.</span>
 				<div class="container-element darkened-background">
 					<div class="sources">
-						<div class="source">
-							<h3 class="title is-6">
-								<a class="imageLink" href={`https://beatsaver.com/`} target="_blank" rel="noreferrer">
-									<img src="/assets/beatsaver-icon.png" class="icon" alt="BeatSaver" title="BeatSaver" />
-								</a>
-							</h3>
-							<a href="https://beatsaver.com/" target="_blank" rel="noreferrer"> BeatSaver </a>
-						</div>
-						<div class="source">
-							<h3 class="title is-6">
-								<a class="imageLink" href={`https://github.com/AllPoland/ArcViewer/`} target="_blank" rel="noreferrer">
-									<img src="/assets/ArcViewerIcon.webp" title="ArcViewer" class="icon" alt="ArcViewer Logo" />
-								</a>
-							</h3>
-							<a href="https://github.com/AllPoland/ArcViewer/" target="_blank" rel="noreferrer"> ArcViewer </a>
-						</div>
-						<div class="source">
-							<h3 class="title is-6">
-								<a class="imageLink" href={`https://accsaber.com/`} target="_blank" rel="noreferrer">
-									<img src="/assets/accsaber-logo.webp" title="AccSaber" class="icon" alt="AccSaber Logo" />
-								</a>
-							</h3>
-							<a href="https://accsaber.com/" target="_blank" rel="noreferrer"> AccSaber </a>
-						</div>
-						<div class="source">
-							<h3 class="title is-6">
-								<a class="imageLink" href={`https://bsaber.com/`} target="_blank" rel="noreferrer">
-									<img src="/assets/beastsabericonbig.webp" title="BeastSaber" class="icon" alt="BeastSaber Logo" />
-								</a>
-							</h3>
-							<a href="https://bsaber.com/" target="_blank" rel="noreferrer"> BeastSaber </a>
-						</div>
-						<div class="source">
-							<h3 class="title is-6">
-								<a class="imageLink" href={`https://cube.community/`} target="_blank" rel="noreferrer">
-									<img src="/assets/cubecommunitylogo.webp" title="CubeCommunity" class="icon" alt="CubeCommunity Logo" />
-								</a>
-							</h3>
-							<a href="https://cube.community/" target="_blank" rel="noreferrer"> CubeCommunity </a>
-						</div>
-						<div class="source">
-							<h3 class="title is-6">
-								<a class="imageLink" href="https://beat-savior.herokuapp.com/" target="_blank" rel="noreferrer">
-									<span class="icon beatsavior-icon" title="BeatSavior" />
-								</a>
-							</h3>
-							<a href="https://beat-savior.herokuapp.com/" target="_blank" rel="noreferrer"> BeatSavior </a>
-						</div>
+						<a class="source" href="https://beatsaver.com/" target="_blank" rel="noreferrer">
+							<img src="/assets/beatsaver-icon.png" class="icon" alt="BeatSaver" title="BeatSaver" />
+							<span>BeatSaver</span>
+						</a>
+						<a class="source" href="https://github.com/AllPoland/ArcViewer/" target="_blank" rel="noreferrer">
+							<img src="/assets/ArcViewerIcon.webp" title="ArcViewer" class="icon" alt="ArcViewer Logo" />
+							<span>ArcViewer</span>
+						</a>
+						<a class="source" href="https://accsaber.com/" target="_blank" rel="noreferrer">
+							<img src="/assets/accsaber-logo.webp" title="AccSaber" class="icon" alt="AccSaber Logo" />
+							<span>AccSaber</span>
+						</a>
+						<a class="source" href="https://bsaber.com/" target="_blank" rel="noreferrer">
+							<img src="/assets/beastsabericonbig.webp" title="BeastSaber" class="icon" alt="BeastSaber Logo" />
+							<span>BeastSaber</span>
+						</a>
+						<a class="source" href="https://cube.community/" target="_blank" rel="noreferrer">
+							<img src="/assets/cubecommunitylogo.webp" title="CubeCommunity" class="icon" alt="CubeCommunity Logo" />
+							<span>CubeCommunity</span>
+						</a>
+						<a class="source" href="https://beat-savior.herokuapp.com/" target="_blank" rel="noreferrer">
+							<span class="icon beatsavior-icon" title="BeatSavior" />
+							<span>BeatSavior</span>
+						</a>
 					</div>
 				</div>
 			</ContentBox>
@@ -229,17 +209,32 @@
 		margin-left: 5em;
 	}
 
-	.sources {
+	.table-container {
 		display: flex;
-		flex-wrap: wrap;
-		gap: 2em;
+		justify-content: center;
+		align-items: center;
+	}
+
+	.sources {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, 10em);
+		gap: 2em 1em;
+		padding: 1em 0;
+		justify-content: center;
+		align-content: center;
+		height: 100%;
 	}
 
 	.source {
 		display: flex;
 		flex-direction: column;
-		justify-content: center;
 		align-items: center;
+		gap: 0.5em;
+		transition: transform 0.2s ease-in-out;
+	}
+
+	.source:hover {
+		transform: scale(1.05);
 	}
 
 	.features {
@@ -286,6 +281,11 @@
 
 	.global-ranking-call {
 		margin-top: 2em;
+		text-align: center;
+	}
+
+	.centered-title {
+		text-align: center;
 	}
 
 	.event-promotion-title {
@@ -317,9 +317,9 @@
 		margin-right: 0.5em;
 	}
 
-	.imageLink {
-		width: 4em;
-		height: 4em;
+	.source .icon {
+		width: 5em;
+		height: 5em;
 	}
 
 	.downloadButtons {

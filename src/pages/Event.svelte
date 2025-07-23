@@ -649,8 +649,8 @@
 			<ContentBox cls={modalShown ? 'inner-modal' : ''}>
 				<span>
 					Are you sitting bored at home with nothing to do, just sweating to death?<br />
-					Well fortunately for you, <PlayerMention playerId="76561199125063205" /> and <PlayerMention playerId="76561199066888403" /> bring you
-					the latest seasonal project:<br /><br />
+					Well, fortunately for you, <PlayerMention playerId="76561199125063205" /> and <PlayerMention playerId="76561199066888403" /> bring
+					you the latest seasonal project:<br /><br />
 					<b>BEAT THE HEAT</b><br /><br />
 					<PlayerMention playerId="76561199125063205" />
 					<PlayerMention playerId="76561199066888403" />
@@ -665,7 +665,7 @@
 					<PlayerMention playerId="76561198119612390" />
 					<PlayerMention playerId="3407080552717504" />
 					and <PlayerMention playerId="76561198062524183" /> have come together to make some absolute heater maps for you to enjoy, each with
-					their own little summer theme to them.<br />
+					its own little summer theme to them.<br />
 					Huge thanks to <PlayerMention playerId="76561198101853765" /> for providing artwork for the event ❤️ <br /><br />
 					The event will go from July 21st 06:00UTC through July 31st 06:00UTC. There will be an achievement for playing all the maps, and there
 					will also be event badges given out to the top 3 players who have the most event pp at the end of the event, so make sure you play
@@ -673,7 +673,7 @@
 				</span>
 				<span>
 					<br /><br />
-					<b>Preare your swimsuit, towel and dive into refreshing set of new maps! Good luck!🤽</b>
+					<b>Prepare your swimsuit, towel, and dive into a refreshing set of new maps! Good luck!🤽</b>
 				</span>
 			</ContentBox>
 		{/if}
