@@ -161,7 +161,7 @@
 						<Button
 							iconFa="fas fa-download"
 							title={!loggedInPlayer || !isSupporter ? 'Log in on the top of the Page and Link Patreon' : 'Download Reesabers for 1.37'}
-							label="Download for Quest 1.37"
+							label="Quest 1.37 (v0.3.12)"
 							disabled={!loggedInPlayer || !isSupporter}
 							on:click={() => {
 								downloadQmod('1.37.0');
@@ -169,12 +169,12 @@
 							type="green" />
 						<Button
 							iconFa="fas fa-download"
-							title={!loggedInPlayer || !isSupporter ? 'Log in on the top of the Page and Link Patreon' : 'Download Reesabers for 1.40.6'}
-							label="Download for Quest 1.40.6"
+							title={!loggedInPlayer || !isSupporter ? 'Log in on the top of the Page and Link Patreon' : 'Download Reesabers for 1.40.7'}
+							label="Quest 1.40.7 (v0.3.14)"
 							disabled={!loggedInPlayer || !isSupporter}
 							type="green"
 							on:click={() => {
-								downloadQmod('1.40.6');
+								downloadQmod('1.40.7');
 							}} />
 					</div>
 				{:else}
