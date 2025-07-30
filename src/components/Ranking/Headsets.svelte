@@ -6,6 +6,7 @@
 	import HeadsetPickerItem from '../Common/PickerItem.svelte';
 
 	export let value = [];
+	export let placeholder = 'Click to select headset';
 
 	const dispatch = createEventDispatcher();
 
@@ -30,7 +31,7 @@ var(--background); --inputColor: var(--textColor); --multiSelectPadding: 2px 35p
 		{itemFilter}
 		Item={HeadsetPickerItem}
 		MultiSelection={HeadsetPickerMultiItem}
-		placeholder="Click to select headset"
+		{placeholder}
 		isSearchable={true}
 		isMulti={true}
 		placeholderAlwaysShow={true}

@@ -8,7 +8,7 @@
 	// const SPECIAL_PLAYER_ID = 'user-friends';
 
 	let page = 1;
-	let filters = {sortBy: 'pp'};
+	let filters = {sortBy: 'pp', ppType: 'general'};
 
 	let isLoading = false;
 	let pending = null;

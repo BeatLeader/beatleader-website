@@ -15,6 +15,30 @@ function updateScoresStats(playerData) {
 				{key: 'totalPlayCount', label: 'Total play count', bgColor: 'var(--selected)'},
 				{key: 'totalScore', label: 'Total score', bgColor: 'var(--selected)'},
 				{key: 'rankedPlayCount', label: 'Ranked play count', bgColor: 'var(--ppColour)'},
+				{
+					key: 'scorePlaytime',
+					label: 'Playtime',
+					title: 'Total playtime from the all known scores in hours',
+					bgColor: 'var(--selected)',
+					suffix: 'h',
+					digits: 1
+				},
+				{
+					key: 'steamPlaytime2Weeks',
+					label: 'Steam recent playtime',
+					title: 'Steam reported playtime hours in the past 2 weeks',
+					bgColor: 'var(--selected)',
+					suffix: 'h',
+					digits: 1
+				},
+				{
+					key: 'steamPlaytimeForever',
+					label: 'Steam playtime',
+					title: 'Steam total reported playtime hours',
+					bgColor: 'var(--selected)',
+					suffix: 'h',
+					digits: 1
+				},
 				{key: 'totalRankedScore', label: 'Total ranked score', bgColor: 'var(--ppColour)'},
 				{key: 'topPp', label: 'Top PP', bgColor: 'var(--ppColour)', digits: 2, suffix: 'pp'},
 				{key: 'replaysWatched', label: 'Replays watched', bgColor: 'var(--ppColour)'},

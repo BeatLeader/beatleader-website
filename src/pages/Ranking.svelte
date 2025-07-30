@@ -31,6 +31,7 @@
 	import AsideBox from '../components/Common/AsideBox.svelte';
 	import CountryCard from '../components/Ranking/CountryCard.svelte';
 	import EventBanner from '../components/Event/EventBanner.svelte';
+	import RankingSorters from '../components/Ranking/RankingSorters.svelte';
 
 	export let page = 1;
 	export let location;
@@ -38,6 +39,23 @@
 	document.body.classList.remove('slim');
 
 	const FILTERS_DEBOUNCE_MS = 500;
+
+	const platformOptions = [
+		{id: 'steam', label: 'Steam'},
+		{id: 'oculus', label: 'Quest'},
+		{id: 'oculuspc', label: 'Oculus'},
+	];
+	const roleOptions = [
+		{id: 'admin', label: 'Administrator'},
+		{id: 'creator', label: 'BL creator'},
+		{id: 'rankedteam', label: 'Ranking Team'},
+		{id: 'qualityteam', label: 'Quality Team'},
+
+		{id: 'sponsor', label: 'Sponsor'},
+		{id: 'supporter', label: 'Supporter'},
+		{id: 'tipper', label: 'Tipper'},
+		{id: 'mapper', label: 'Mapper'},
+	];
 
 	const tabOptions = [
 		{value: 'ranking', label: 'Ranking', iconFa: 'fas fa-hashtag', url: '/ranking/1', cls: 'ranking-tab-button'},
@@ -50,248 +68,69 @@
 		navigate(`/scores/1`);
 	}
 
-	const findParam = key => params.find(p => p.key === key);
-
-	const onInputValueChange = (value, key) => {
-		const param = findParam(key);
-		if (param) {
-			param.value = value;
-
-			updateCurrentFiltersFromParams();
-		}
-	};
-
-	const onInputChange = (e, key) => {
-		onInputValueChange(e.target.value ?? '', key);
-	};
-
-	const onMultiSwitchChange = (e, key) => {
-		const param = findParam(key);
-		if (param) {
-			param.value = (param?.value ?? []).includes(e.detail)
-				? (param?.value ?? []).filter(p => p?.id !== e.detail.id)
-				: [...(param?.value ?? []), e.detail];
-
-			updateCurrentFiltersFromParams();
-		}
-	};
-
-	let start = null;
-
-	var rangeChange = (event, key) => {
-		if (!Array.isArray(event?.detail?.values) || event.detail.values.length !== 2) return;
-
-		const range = findParam(key);
-		if (range) {
-			range.values = event.detail.values;
-		}
-
-		start = new Date().getTime();
-		setTimeout(() => {
-			if (new Date().getTime() - start > 499) {
-				updateCurrentFiltersFromParams();
-			}
-		}, 500);
-	};
-
 	var params = [
-		{
-			key: 'search',
-			label: 'Player Name',
-			default: '',
-			process: processStringFilter,
-			type: 'input',
-			value: '',
-			placeholder: 'Search for a player',
-			onChange: e => {
-				const length = e?.target?.value?.length;
-				if (length > 0 && length < 2) return;
-
-				onInputChange(e, 'search');
-			},
-		},
-		{
-			key: 'countries',
-			label: 'Countries',
-			default: [],
-			process: processStringArrayFilter,
-			type: 'countries',
-			value: [],
-			values: [],
-			onChange: e => {
-				const param = findParam('countries');
-				const newValues = e?.detail ?? [];
-				if (param && param.value.join('') != newValues.join('')) {
-					param.value = newValues;
-
-					updateCurrentFiltersFromParams();
-				}
-			},
-			multi: true,
-		},
-		{
-			key: 'platform',
-			label: 'Platform',
-			default: [],
-			process: processStringArrayFilter,
-			type: 'switch',
-			value: [],
-			values: [
-				{id: 'steam', label: 'Steam'},
-				{id: 'oculus', label: 'Quest'},
-				{id: 'oculuspc', label: 'Oculus'},
-			],
-			onChange: e => onMultiSwitchChange(e, 'platform'),
-			multi: true,
-		},
-		{
-			key: 'hmd',
-			label: 'Headsets',
-			default: [],
-			process: processStringArrayFilter,
-			type: 'headsets',
-			value: [],
-			values: [],
-			onChange: e => {
-				const param = findParam('hmd');
-				const newValues = e?.detail ?? [];
-				if (param && param.value.join('') != newValues.join('')) {
-					param.value = newValues;
-
-					updateCurrentFiltersFromParams();
-				}
-			},
-			multi: true,
-		},
-		{
-			key: 'role',
-			label: 'Role',
-			default: [],
-			process: processStringArrayFilter,
-			type: 'switch',
-			value: [],
-			values: [
-				{id: 'admin', label: 'Administrator'},
-				{id: 'creator', label: 'BL creator'},
-				{id: 'rankedteam', label: 'Ranking Team'},
-				{id: 'qualityteam', label: 'Quality Team'},
-
-				{id: 'sponsor', label: 'Sponsor'},
-				{id: 'supporter', label: 'Supporter'},
-				{id: 'tipper', label: 'Tipper'},
-				{id: 'mapper', label: 'Mapper'},
-			],
-			onChange: e => onMultiSwitchChange(e, 'role'),
-			multi: true,
-		},
-		{
-			key: 'pp_range',
-			label: 'Pp range',
-			default: [null, null],
-			min: 0,
-			max: 24000,
-			step: 1,
-			pipstep: 5000,
-			type: 'slider',
-			process: processIntArrayFilter,
-			values: [],
-			onChange: e => rangeChange(e, 'pp_range'),
-		},
-		{
-			key: 'score_range',
-			label: 'Scores count',
-			default: [null, null],
-			min: 0,
-			max: 15000,
-			step: 1,
-			pipstep: 5000,
-			type: 'slider',
-			process: processIntArrayFilter,
-			values: [],
-			onChange: e => rangeChange(e, 'score_range'),
-		},
+		{key: 'search', default: '', process: processStringFilter},
+		{key: 'countries', default: '', process: processStringFilter},
+		{key: 'platform', default: '', process: processStringFilter},
+		{key: 'hmd', default: '', process: processStringFilter},
+		{key: 'role', default: '', process: processStringFilter},
+		{key: 'pp_range', default: '', process: processStringFilter},
+		{key: 'score_range', default: '', process: processStringFilter},
+		{key: 'ranked_score_range', default: '', process: processStringFilter},
+		{key: 'acc_pp_range', default: '', process: processStringFilter},
+		{key: 'pass_pp_range', default: '', process: processStringFilter},
+		{key: 'tech_pp_range', default: '', process: processStringFilter},
 		{
 			key: 'sortBy',
 			default: 'pp',
 			process: processStringFilter,
-			type: null,
 		},
 		{
 			key: 'order',
 			default: 'desc',
 			process: processStringFilter,
-			type: null,
 		},
 		{
 			key: 'mapsType',
 			default: 'ranked',
 			process: processStringFilter,
-			type: null,
 		},
 		{
 			key: 'ppType',
 			default: 'general',
 			process: processStringFilter,
-			type: null,
 		},
 		{
 			key: 'firstScoreTime',
-			label: 'Started playing after',
 			default: null,
-			type: 'date',
 			process: processIntFilter,
-			onChange: e => onInputValueChange(e.detail ? e.detail.getTime() / 1000 : null, 'firstScoreTime'),
 		},
 		{
 			key: 'recentScoreTime',
-			label: 'Most recent score after',
 			default: null,
-			type: 'date',
 			process: processIntFilter,
-			onChange: e => onInputValueChange(e.detail ? e.detail.getTime() / 1000 : null, 'recentScoreTime'),
 		},
 	];
 
-	function fetchMaxPp() {
-		fetch(`${BL_API_URL}players/top/pp?leaderboardContext=${GLOBAL_LEADERBOARD_TYPE}`)
-			.then(res => res.text())
-			.then(data => {
-				const maxPp = parseFloat(data);
-				if (maxPp) {
-					params.find(p => p.key === 'pp_range').max = Math.floor(maxPp) + 1;
-					params = params;
-				}
-			});
-	}
-
 	const buildFiltersFromLocation = createBuildFiltersFromLocation(params, filters => {
-		params.forEach(p => {
-			if (p.bitArray) {
-				p.value = (p?.values ?? []).filter(v => Number.isFinite(v.id) && (1 << v.id) & (filters?.[p.key] ?? 0));
-				filters[p.key] = filters[p.key] ?? 0;
-			} else if (p.key === 'countries' || p.key === 'hmd') {
-				p.value = Array.isArray(filters?.[p.key]) ? filters[p.key] : (p?.default ?? []);
-				filters[p.key] = filters[p.key] ?? [];
-			} else if (p.key === 'pp_range' || p.key === 'score_range') {
-				p.values = Array.isArray(filters?.[p.key]) && filters[p.key].length ? filters[p.key] : (p?.default ?? []);
-				filters[p.key] = filters[p.key] ?? 0;
-			} else if (p.type === 'date') {
-				p.value = filters[p.key] ? filters[p.key] : p?.default;
-			} else {
-				filters[p.key] = p.multi
-					? ((p?.values ?? [])?.map(v => v?.id)?.filter(v => filters?.[p.key]?.includes(v)) ?? p?.default ?? [])
-					: filters?.[p.key]?.length
-						? filters[p.key]
-						: (p?.default ?? '');
-
-				p.value = p.multi
-					? (p?.values?.filter(v => filters?.[p.key]?.includes(v.id)) ?? p?.default ?? [])
-					: (filters?.[p.key] ?? p?.default ?? '');
-			}
-		});
-
 		return filters;
 	});
+
+	let ranges_limits = {
+		pp: 24269.979,
+		techPp: 2056.7563,
+		accPp: 20292.66,
+		passPp: 10001.825,
+		playCount: 31387,
+		rankedPlayCount: 3217,
+	};
+	function fetchMaxPp() {
+		fetch(`${BL_API_URL}players/top?leaderboardContext=${GLOBAL_LEADERBOARD_TYPE}`)
+			.then(res => res.json())
+			.then(data => {
+				ranges_limits = data;
+			});
+	}
 
 	document.body.classList.add('slim');
 
@@ -307,35 +146,12 @@
 	let isLoading = false;
 	let pending = null;
 
-	function updateCurrentFiltersFromParams() {
-		params.forEach(p => {
-			if (p.bitArray) {
-				currentFilters[p.key] = (p?.value ?? []).map(v => v?.id).reduce((prev, i) => prev + (1 << i), 0);
-			} else if (p.key === 'countries' || p.key === 'hmd') {
-				currentFilters[p.key] = p.multi ? (p?.value ?? []).join(',') : (p?.value ?? '');
-			} else if (p.key === 'pp_range' || p.key === 'score_range') {
-				if (p?.values?.find(p => p)) {
-					currentFilters[p.key] = (p?.values ?? []).map(i => i + '').join(',');
-				} else {
-					currentFilters[p.key] = null;
-				}
-			} else {
-				currentFilters[p.key] = p.multi ? (p?.value ?? [])?.map(p => p.id)?.join(',') : (p?.value ?? '');
-			}
-		});
-
-		params = params;
-
-		currentPage = 1;
-
-		navigateToCurrentPageAndFilters();
-	}
-
 	function changeParams(newPage, newFilters, replace, setUrl = true) {
-		currentFilters = newFilters;
-		if (!currentFilters?.sortBy?.length) {
-			currentFilters.sortBy = 'pp';
+		if (!newFilters?.sortBy?.length) {
+			newFilters.sortBy = 'pp';
 		}
+		currentFilters = newFilters;
+
 		newPage = parseInt(newPage, 10);
 		if (isNaN(newPage)) newPage = 1;
 		previousPage = currentPage;
@@ -365,16 +181,7 @@
 	}
 
 	function onSortChanged(event) {
-		if (!event?.detail?.id) return null;
-
-		if (currentFilters.sortBy === event.detail.id) {
-			currentFilters.order = currentFilters.order === 'asc' ? 'desc' : 'asc';
-		} else {
-			currentFilters.sortBy = event.detail.id;
-			currentFilters.order = 'desc';
-		}
-		findParam('sortBy').value = currentFilters.sortBy;
-		findParam('order').value = currentFilters.order;
+		currentFilters.sortBy = event.detail;
 
 		navigateToCurrentPageAndFilters();
 	}
@@ -382,39 +189,24 @@
 	function onMapsTypeChanged(event) {
 		currentFilters.mapsType = event.detail;
 
-		findParam('mapsType').value = currentFilters.mapsType;
-
 		navigateToCurrentPageAndFilters();
 	}
 
 	function onPpTypeChanged(event) {
 		currentFilters.ppType = event.detail;
 
-		findParam('ppType').value = currentFilters.ppType;
-
 		navigateToCurrentPageAndFilters();
 	}
 
-	function onFiltersUpdated(e) {
-		if (!e?.detail?.currentFilters) return;
-
-		currentFilters = {...e.detail.currentFilters};
-
-		currentPage = e?.detail?.currentPage ?? 1;
+	function onOrderChanged(event) {
+		currentFilters.order = event.detail;
 
 		navigateToCurrentPageAndFilters();
-	}
-
-	function boolflip(name) {
-		$configStore = produce($configStore, draft => {
-			draft.preferences[name] = !draft.preferences[name];
-		});
 	}
 
 	$: document.body.scrollIntoView({behavior: 'smooth'});
 	$: changeParams(page, buildFiltersFromLocation(location), false, false);
 
-	$: showFilters = $configStore.preferences.showFiltersOnRanking;
 	$: fetchMaxPp();
 
 	let sotw = null;
@@ -428,6 +220,32 @@
 	}
 
 	$: getSotw();
+
+	let isRangeFilterOpen = !!(
+		currentFilters.pp_range ||
+		currentFilters.score_range ||
+		currentFilters.ranked_score_range ||
+		currentFilters.acc_pp_range ||
+		currentFilters.pass_pp_range ||
+		currentFilters.tech_pp_range
+	);
+	let isPlatformFilterOpen = !!currentFilters.platform;
+	let isRoleFilterOpen = !!currentFilters.role;
+	let isDateFilterOpen = !!currentFilters.firstScoreTime || !!currentFilters.recentScoreTime;
+
+	function labelFormatter(max, step) {
+		// Return a formatter function
+		return value => {
+			const lastPipValue = Math.floor((max - 1) / step) * step;
+
+			// If the current value is the last pip from pipstep AND it's too close to the max value, hide it.
+			if (value === lastPipValue && max - lastPipValue < max * 0.08) {
+				return '';
+			}
+
+			return Math.round(value);
+		};
+	}
 </script>
 
 <svelte:head>
@@ -436,24 +254,14 @@
 
 <section class="align-content">
 	<article class="page-content" transition:fade|global>
-		<!-- <ContentBox cls="event-banner" on:click={() => navigate('/event/49')}>
-			<div class="event-container">
-				<img alt="Event banner" class="event-image" src="https://cdn.assets.beatleader.com/75058-event.png" />
-				<div class="event-text-container">
-					<span class="event-title">Ranked weeks #87-91!</span>
-					<span class="event-text">Check out what was ranked in April and compete for a badge.</span>
-				</div>
-				<Button label="Event" iconFa="fas fa-rocket" on:click={() => navigate('/event/49')} />
-			</div>
-		</ContentBox> -->
 		<EventBanner />
-
-		<!-- <ContentBox cls="country-card-container">
-			<CountryCard />
-		</ContentBox> -->
-
 		<div class="ranking-switcher">
-			<TabSwitcher values={tabOptions} value={currentTab} on:change={onTabChanged} class="ranking" />
+			<TabSwitcher
+				values={tabOptions}
+				value={currentTab}
+				loadingValue={pending ? currentTab : null}
+				on:change={onTabChanged}
+				class="ranking" />
 		</div>
 
 		<ContentBox bind:box={boxEl}>
@@ -462,11 +270,7 @@
 				filters={currentFilters}
 				meta={true}
 				animationSign={currentPage >= previousPage ? 1 : -1}
-				on:filters-updated={onFiltersUpdated}
 				on:page-changed={onPageChanged}
-				on:sort-changed={onSortChanged}
-				on:maps-type-changed={onMapsTypeChanged}
-				on:pp-type-changed={onPpTypeChanged}
 				on:loading={e => (isLoading = !!e?.detail)}
 				on:pending={e => (pending = e?.detail)} />
 		</ContentBox>
@@ -474,55 +278,429 @@
 
 	<aside class="ranking-aside">
 		<AsideBox title="Filters" boolname="showFiltersOnRanking" faicon="fas fa-filter">
-			{#each params as param}
-				{#if param.type}
-					<section class="filter">
-						<label
-							>{param?.label ?? param?.key ?? ''}
-							{#if param?.type === 'slider' && (param.values[0] || param.values[1])}
-								<button
-									class="remove-type"
-									title="Remove"
-									on:click={() => {
-										param.onChange({detail: {values: [null, null]}});
-									}}><i class="fas fa-xmark" /></button>
-							{/if}
-						</label>
+			<RankingSorters
+				filters={currentFilters}
+				on:sort-changed={onSortChanged}
+				on:maps-type-changed={onMapsTypeChanged}
+				on:pp-type-changed={onPpTypeChanged}
+				on:order-changed={onOrderChanged} />
+			<section class="filter">
+				<input
+					type="text"
+					placeholder={'Search by a player name'}
+					value={currentFilters.search}
+					on:input={debounce(e => {
+						const length = e?.target?.value?.length;
+						if (length > 0 && length < 2) return;
 
-						{#if param?.type === 'input'}
-							<input
-								type="text"
-								placeholder={param.placeholder ?? null}
-								value={param.value}
-								on:input={debounce(param.onChange, FILTERS_DEBOUNCE_MS)} />
-						{:else if param?.type === 'switch'}
-							<Switcher values={param.values} value={param.value} multi={!!param?.multi} on:change={param.onChange} />
-						{:else if param?.type === 'countries'}
-							<Countries countries={param.value} on:change={param.onChange} />
-						{:else if param?.type === 'headsets'}
-							<Headsets value={param.value} on:change={param.onChange} />
-						{:else if param?.type === 'slider'}
+						currentFilters.search = e.target.value ?? '';
+						currentPage = 1;
+						navigateToCurrentPageAndFilters();
+					}, FILTERS_DEBOUNCE_MS)} />
+			</section>
+
+			<section class="filter">
+				<Countries
+					countries={currentFilters.countries?.split(',').filter(c => c) ?? []}
+					placeholder="Click to filter by countries"
+					on:change={e => {
+						const newValues = e?.detail ?? [];
+						if (currentFilters.countries != newValues.join(',')) {
+							currentFilters.countries = newValues.join(',');
+							currentPage = 1;
+							navigateToCurrentPageAndFilters();
+						}
+					}} />
+			</section>
+
+			<section class="filter">
+				<Headsets
+					value={currentFilters.hmd?.split(',').filter(c => c) ?? []}
+					placeholder="Click to filter by headsets"
+					on:change={e => {
+						const newValues = e?.detail ?? [];
+						if (currentFilters.hmd != newValues.join(',')) {
+							currentFilters.hmd = newValues.join(',');
+							currentPage = 1;
+							navigateToCurrentPageAndFilters();
+						}
+					}} />
+			</section>
+
+			<section class="filter dropdown-filter" class:has-value={currentFilters.platform?.length}>
+				<div class="dropdown-header" on:click={() => (isPlatformFilterOpen = !isPlatformFilterOpen)}>
+					<div class="header-content">
+						<i class="fas fa-computer" />
+						<span>Platform</span>
+					</div>
+					<i class="fas fa-chevron-{isPlatformFilterOpen ? 'up' : 'down'}" />
+				</div>
+
+				{#if isPlatformFilterOpen}
+					<div class="dropdown-content" transition:fade>
+						<section class="filter">
+							<Switcher
+								values={platformOptions}
+								value={platformOptions.filter(v => currentFilters.platform?.split(',').includes(v.id))}
+								multi={true}
+								on:change={e => {
+									var currentValue = currentFilters.platform?.split(',') ?? [];
+
+									currentFilters.platform = (
+										currentValue.includes(e.detail.id) ? currentValue.filter(p => p !== e.detail.id) : [...currentValue, e.detail.id]
+									)
+										.filter(r => r.length)
+										.join(',');
+									currentPage = 1;
+									navigateToCurrentPageAndFilters();
+								}} />
+						</section>
+					</div>
+				{/if}
+			</section>
+
+			<section class="filter dropdown-filter" class:has-value={currentFilters.role?.length}>
+				<div class="dropdown-header" on:click={() => (isRoleFilterOpen = !isRoleFilterOpen)}>
+					<div class="header-content">
+						<i class="fas fa-tags" />
+						<span>Role</span>
+					</div>
+					<i class="fas fa-chevron-{isRoleFilterOpen ? 'up' : 'down'}" />
+				</div>
+
+				{#if isRoleFilterOpen}
+					<div class="dropdown-content" transition:fade>
+						<section class="filter">
+							<Switcher
+								values={roleOptions}
+								value={roleOptions.filter(v => currentFilters.role?.split(',').includes(v.id))}
+								multi={true}
+								on:change={e => {
+									var currentValue = currentFilters.role?.split(',') ?? [];
+
+									currentFilters.role = (
+										currentValue.includes(e.detail.id) ? currentValue.filter(p => p !== e.detail.id) : [...currentValue, e.detail.id]
+									)
+										.filter(r => r.length)
+										.join(',');
+									currentPage = 1;
+									navigateToCurrentPageAndFilters();
+								}} />
+						</section>
+					</div>
+				{/if}
+			</section>
+
+			<section
+				class="filter dropdown-filter"
+				class:has-value={currentFilters.pp_range?.length ||
+					!!currentFilters.score_range?.length ||
+					!!currentFilters.ranked_score_range?.length ||
+					!!currentFilters.acc_pp_range?.length ||
+					!!currentFilters.pass_pp_range?.length ||
+					!!currentFilters.tech_pp_range?.length}>
+				<div class="dropdown-header" on:click={() => (isRangeFilterOpen = !isRangeFilterOpen)}>
+					<div class="header-content">
+						<i class="fas fa-ruler" />
+						<span>Ranges</span>
+					</div>
+					<i class="fas fa-chevron-{isRangeFilterOpen ? 'up' : 'down'}" />
+				</div>
+
+				{#if isRangeFilterOpen}
+					<div class="dropdown-content" transition:fade>
+						<section class="filter">
+							<label
+								>Total PP range
+								{#if currentFilters.pp_range}
+									<button
+										class="remove-type"
+										title="Remove"
+										on:click={() => {
+											currentFilters.pp_range = '';
+											currentPage = 1;
+											navigateToCurrentPageAndFilters();
+										}}><i class="fas fa-xmark" /></button>
+								{/if}
+							</label>
+
 							<RangeSlider
 								range
-								min={param.min}
-								max={param.max}
-								step={param.step}
-								values={[
-									Number.isFinite(param.values[0]) ? param.values[0] : Number.NEGATIVE_INFINITY,
-									Number.isFinite(param.values[1]) ? param.values[1] : Number.POSITIVE_INFINITY,
-								]}
+								min={0}
+								max={ranges_limits.pp + 1}
+								step={1}
+								values={(() => {
+									const values = (currentFilters.pp_range || ',').split(',').map(v => (v ? parseFloat(v) : null));
+									return [
+										Number.isFinite(values[0]) ? values[0] : Number.NEGATIVE_INFINITY,
+										Number.isFinite(values[1]) ? values[1] : Number.POSITIVE_INFINITY,
+									];
+								})()}
 								float
 								hoverable
 								pips
-								pipstep={param.pipstep}
+								pipstep={10000}
 								all="label"
-								on:change={param.onChange} />
-						{:else if param?.type === 'date'}
-							<DatePicker type="date" date={dateFromUnix(param.value)} on:change={param.onChange} />
-						{/if}
-					</section>
+								formatter={labelFormatter(ranges_limits.pp + 1, 10000)}
+								on:change={debounce(e => {
+									if (!Array.isArray(e?.detail?.values) || e.detail.values.length !== 2) return;
+
+									currentFilters.pp_range = e.detail.values.join(',');
+									currentPage = 1;
+									navigateToCurrentPageAndFilters();
+								}, 500)} />
+						</section>
+
+						<section class="filter">
+							<label
+								>All Scores count
+								{#if currentFilters.score_range}
+									<button
+										class="remove-type"
+										title="Remove"
+										on:click={() => {
+											currentFilters.score_range = '';
+											currentPage = 1;
+											navigateToCurrentPageAndFilters();
+										}}><i class="fas fa-xmark" /></button>
+								{/if}
+							</label>
+
+							<RangeSlider
+								range
+								min={0}
+								max={ranges_limits.playCount + 1}
+								step={1}
+								values={(() => {
+									const values = (currentFilters.score_range || ',').split(',').map(v => (v ? parseFloat(v) : null));
+									return [
+										Number.isFinite(values[0]) ? values[0] : Number.NEGATIVE_INFINITY,
+										Number.isFinite(values[1]) ? values[1] : Number.POSITIVE_INFINITY,
+									];
+								})()}
+								float
+								hoverable
+								pips
+								pipstep={10000}
+								all="label"
+								formatter={labelFormatter(ranges_limits.playCount + 1, 10000)}
+								on:change={debounce(e => {
+									if (!Array.isArray(e?.detail?.values) || e.detail.values.length !== 2) return;
+
+									currentFilters.score_range = e.detail.values.join(',');
+									currentPage = 1;
+									navigateToCurrentPageAndFilters();
+								}, 500)} />
+						</section>
+
+						<section class="filter">
+							<label
+								>Ranked Scores count
+								{#if currentFilters.ranked_score_range}
+									<button
+										class="remove-type"
+										title="Remove"
+										on:click={() => {
+											currentFilters.ranked_score_range = '';
+											currentPage = 1;
+											navigateToCurrentPageAndFilters();
+										}}><i class="fas fa-xmark" /></button>
+								{/if}
+							</label>
+
+							<RangeSlider
+								range
+								min={0}
+								max={ranges_limits.rankedPlayCount + 1}
+								step={1}
+								values={(() => {
+									const values = (currentFilters.ranked_score_range || ',').split(',').map(v => (v ? parseFloat(v) : null));
+									return [
+										Number.isFinite(values[0]) ? values[0] : Number.NEGATIVE_INFINITY,
+										Number.isFinite(values[1]) ? values[1] : Number.POSITIVE_INFINITY,
+									];
+								})()}
+								float
+								hoverable
+								pips
+								pipstep={1000}
+								all="label"
+								formatter={labelFormatter(ranges_limits.rankedPlayCount + 1, 1000)}
+								on:change={debounce(e => {
+									if (!Array.isArray(e?.detail?.values) || e.detail.values.length !== 2) return;
+
+									currentFilters.ranked_score_range = e.detail.values.join(',');
+									currentPage = 1;
+									navigateToCurrentPageAndFilters();
+								}, 500)} />
+						</section>
+
+						<section class="filter">
+							<label
+								>Acc PP range
+								{#if currentFilters.acc_pp_range}
+									<button
+										class="remove-type"
+										title="Remove"
+										on:click={() => {
+											currentFilters.acc_pp_range = '';
+											currentPage = 1;
+											navigateToCurrentPageAndFilters();
+										}}><i class="fas fa-xmark" /></button>
+								{/if}
+							</label>
+
+							<RangeSlider
+								range
+								min={0}
+								max={ranges_limits.accPp + 1}
+								step={1}
+								values={(() => {
+									const values = (currentFilters.acc_pp_range || ',').split(',').map(v => (v ? parseFloat(v) : null));
+									return [
+										Number.isFinite(values[0]) ? values[0] : Number.NEGATIVE_INFINITY,
+										Number.isFinite(values[1]) ? values[1] : Number.POSITIVE_INFINITY,
+									];
+								})()}
+								float
+								hoverable
+								pips
+								pipstep={5000}
+								all="label"
+								formatter={labelFormatter(ranges_limits.accPp + 1, 5000)}
+								on:change={debounce(e => {
+									if (!Array.isArray(e?.detail?.values) || e.detail.values.length !== 2) return;
+
+									currentFilters.acc_pp_range = e.detail.values.join(',');
+									currentPage = 1;
+									navigateToCurrentPageAndFilters();
+								}, 500)} />
+						</section>
+
+						<section class="filter">
+							<label
+								>Pass PP range
+								{#if currentFilters.pass_pp_range}
+									<button
+										class="remove-type"
+										title="Remove"
+										on:click={() => {
+											currentFilters.pass_pp_range = '';
+											currentPage = 1;
+											navigateToCurrentPageAndFilters();
+										}}><i class="fas fa-xmark" /></button>
+								{/if}
+							</label>
+
+							<RangeSlider
+								range
+								min={0}
+								max={ranges_limits.passPp + 1}
+								step={1}
+								values={(() => {
+									const values = (currentFilters.pass_pp_range || ',').split(',').map(v => (v ? parseFloat(v) : null));
+									return [
+										Number.isFinite(values[0]) ? values[0] : Number.NEGATIVE_INFINITY,
+										Number.isFinite(values[1]) ? values[1] : Number.POSITIVE_INFINITY,
+									];
+								})()}
+								float
+								hoverable
+								pips
+								pipstep={2000}
+								all="label"
+								formatter={labelFormatter(ranges_limits.passPp + 1, 2000)}
+								on:change={debounce(e => {
+									if (!Array.isArray(e?.detail?.values) || e.detail.values.length !== 2) return;
+
+									currentFilters.pass_pp_range = e.detail.values.join(',');
+									currentPage = 1;
+									navigateToCurrentPageAndFilters();
+								}, 500)} />
+						</section>
+
+						<section class="filter">
+							<label
+								>Tech PP range
+								{#if currentFilters.tech_pp_range}
+									<button
+										class="remove-type"
+										title="Remove"
+										on:click={() => {
+											currentFilters.tech_pp_range = '';
+											currentPage = 1;
+											navigateToCurrentPageAndFilters();
+										}}><i class="fas fa-xmark" /></button>
+								{/if}
+							</label>
+
+							<RangeSlider
+								range
+								min={0}
+								max={ranges_limits.techPp + 1}
+								step={1}
+								values={(() => {
+									const values = (currentFilters.tech_pp_range || ',').split(',').map(v => (v ? parseFloat(v) : null));
+									return [
+										Number.isFinite(values[0]) ? values[0] : Number.NEGATIVE_INFINITY,
+										Number.isFinite(values[1]) ? values[1] : Number.POSITIVE_INFINITY,
+									];
+								})()}
+								float
+								hoverable
+								pips
+								pipstep={500}
+								all="label"
+								formatter={labelFormatter(ranges_limits.techPp + 1, 500)}
+								on:change={debounce(e => {
+									if (!Array.isArray(e?.detail?.values) || e.detail.values.length !== 2) return;
+
+									currentFilters.tech_pp_range = e.detail.values.join(',');
+									currentPage = 1;
+									navigateToCurrentPageAndFilters();
+								}, 500)} />
+						</section>
+					</div>
 				{/if}
-			{/each}
+			</section>
+
+			<section class="filter dropdown-filter" class:has-value={!!currentFilters.firstScoreTime || !!currentFilters.recentScoreTime}>
+				<div class="dropdown-header" on:click={() => (isDateFilterOpen = !isDateFilterOpen)}>
+					<div class="header-content">
+						<i class="fas fa-calendar-alt" />
+						<span>Dates</span>
+					</div>
+					<i class="fas fa-chevron-{isDateFilterOpen ? 'up' : 'down'}" />
+				</div>
+
+				{#if isDateFilterOpen}
+					<div class="dropdown-content" transition:fade>
+						<section class="filter">
+							<label>Started playing after</label>
+							<DatePicker
+								type="date"
+								date={dateFromUnix(currentFilters.firstScoreTime)}
+								on:change={e => {
+									currentFilters.firstScoreTime = e.detail ? e.detail.getTime() / 1000 : null;
+									currentPage = 1;
+									navigateToCurrentPageAndFilters();
+								}} />
+						</section>
+
+						<section class="filter">
+							<label>Most recent score after</label>
+							<DatePicker
+								type="date"
+								date={dateFromUnix(currentFilters.recentScoreTime)}
+								on:change={e => {
+									currentFilters.recentScoreTime = e.detail ? e.detail.getTime() / 1000 : null;
+									currentPage = 1;
+									navigateToCurrentPageAndFilters();
+								}} />
+						</section>
+					</div>
+				{/if}
+			</section>
 		</AsideBox>
 		{#if sotw}
 			<AsideBox title="Score Of The Week" boolname="showFeaturedScoreOnScores" faicon="fas fa-award">
@@ -659,6 +837,45 @@
 		justify-content: start;
 		align-items: center;
 		gap: 1em;
+	}
+
+	.dropdown-filter {
+		border: 1px solid var(--faded);
+		border-radius: 4px;
+		overflow: hidden;
+	}
+
+	.dropdown-filter.has-value {
+		border-color: rgba(255, 100, 150, 0.5);
+	}
+
+	.dropdown-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 0.75rem 1rem;
+		background-color: var(--foreground);
+		cursor: pointer;
+		user-select: none;
+	}
+
+	.dropdown-header:hover {
+		background-color: var(--background);
+	}
+
+	.header-content {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+
+	.dropdown-content {
+		padding: 1rem;
+		background-color: var(--foreground);
+	}
+
+	.dropdown-filter + .dropdown-filter {
+		margin-top: 1rem;
 	}
 
 	:global(.country-card-container) {

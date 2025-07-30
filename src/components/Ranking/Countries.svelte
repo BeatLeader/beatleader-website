@@ -4,6 +4,7 @@
 	import {all_countries} from '../../utils/beatleader/format';
 
 	export let countries = [];
+	export let placeholder;
 
 	const dispatch = createEventDispatcher();
 
@@ -30,7 +31,7 @@
 <section
 	style=" --clearSelectTop: 8px; --multiItemBG: var(--selected); --multiClearBG: var(--selected); --listBackground:
 var(--background); --inputColor: var(--textColor); --multiSelectPadding: 2px 35px 2px 4px">
-	<CountryPicker {value} {items} on:select={onSelect} on:open />
+	<CountryPicker {value} {items} {placeholder} on:select={onSelect} on:open />
 </section>
 
 <style>

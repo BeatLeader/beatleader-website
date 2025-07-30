@@ -72,7 +72,7 @@ export const BL_API_FRIENDS_SCORES_URL =
 	'user/friendScores?leaderboardContext=${leaderboardContext}&page=${page}&sortBy=${sort}&order=${order}&search=${search}&diff=${diff}&type=${songType}&hmd=${hmd}&stars_from=${starsFrom}&stars_to=${starsTo}&count=${count}';
 export const BL_API_ALL_SCORES_URL =
 	BL_API_URL +
-	'scores/all?leaderboardContext=${leaderboardContext}&page=${page}&sortBy=${sort}&order=${order}&thenSortBy=${thenSort}&thenOrder=${thenOrder}&search=${search}&mapRequirements=${mapRequirements}&date_from=${date_from}&date_to=${date_to}&diff=${diff}&mode=${mode}&type=${type}&mapType=${mapType}&allTypes=${allTypes}&hmd=${hmd}&stars_from=${stars_from}&stars_to=${stars_to}&accrating_from=${accrating_from}&accrating_to=${accrating_to}&passrating_from=${passrating_from}&passrating_to=${passrating_to}&techrating_from=${techrating_from}&techrating_to=${techrating_to}&count=${count}&modifiers=${modifiers}&mappers=${mappers}&players=${players}';
+	'scores/all?leaderboardContext=${leaderboardContext}&page=${page}&sortBy=${sort}&order=${order}&thenSortBy=${thenSort}&thenOrder=${thenOrder}&search=${search}&mapRequirements=${mapRequirements}&date_from=${date_from}&date_to=${date_to}&diff=${diff}&mode=${mode}&type=${type}&mapType=${mapType}&allTypes=${allTypes}&hmd=${hmd}&stars_from=${stars_from}&stars_to=${stars_to}&accrating_from=${accrating_from}&accrating_to=${accrating_to}&passrating_from=${passrating_from}&passrating_to=${passrating_to}&techrating_from=${techrating_from}&techrating_to=${techrating_to}&count=${count}&modifiers=${modifiers}&mappers=${mappers}&players=${players}&playlistIds=${playlistIds}';
 export const BL_API_SCORE_STATS_URL = 'https://cdn.scorestats.beatleader.com/${scoreId}.json';
 export const BL_API_SCORE_PIN_URL =
 	BL_API_URL +
@@ -87,7 +87,7 @@ export const BL_API_FIND_PLAYER_URL =
 	'players?search=${query}&leaderboardContext=${leaderboardContext}&page=${page}&count=${count}&sortBy=${sortBy}&order=${order}';
 export const BL_API_RANKING_URL =
 	BL_API_URL +
-	'players?leaderboardContext=${leaderboardContext}&page=${page}&count=${count}&sortBy=${sortBy}&mapsType=${mapsType}&ppType=${ppType}&order=${order}&countries=${countries}&friends=${friends}&search=${search}&platform=${platform}&role=${role}&hmd=${hmd}&firstScoreTime=${firstScoreTime}&recentScoreTime=${recentScoreTime}&pp_range=${pp_range}&score_range=${score_range}';
+	'players?leaderboardContext=${leaderboardContext}&page=${page}&count=${count}&sortBy=${sortBy}&mapsType=${mapsType}&ppType=${ppType}&order=${order}&countries=${countries}&friends=${friends}&search=${search}&platform=${platform}&role=${role}&hmd=${hmd}&firstScoreTime=${firstScoreTime}&recentScoreTime=${recentScoreTime}&pp_range=${pp_range}&score_range=${score_range}&ranked_score_range=${ranked_score_range}&acc_pp_range=${acc_pp_range}&tech_pp_range=${tech_pp_range}&pass_pp_range=${pass_pp_range}';
 export const BL_API_EVENT_RANKING_URL =
 	BL_API_URL +
 	'event/${eventId}/players?page=${page}&sortBy=${sortBy}&mapsType=${mapsType}&order=${order}&countries=${countries}&friends=${friends}&search=${search}&platform=${platform}&role=${role}&hmd=${hmd}&pp_range=${pp_range}&score_range=${score_range}';

@@ -219,7 +219,7 @@
 		<SongScore
 			{playerId}
 			{songScore}
-			service={songScore.score.endType > 0 ? 'beatsavior' : 'beatleader'}
+			service="beatleader"
 			icons={['bs', 'replay', 'pin', 'pin-service']}
 			{fixedBrowserTitle}
 			replayCounter={false} />

@@ -45,7 +45,7 @@
 
 <div class="main-container" in:fly|global={{y: animationSign * 200, duration: 400}} out:fade|global={{duration: 100}}>
 	<div class="profile" id="ranking-preview">
-		<RankingTable page={1} meta={false} editing={true} />
+		<RankingTable page={1} filters={{sortBy: 'pp', ppType: 'general'}} />
 	</div>
 
 	<section class="option" id="ranking-options">

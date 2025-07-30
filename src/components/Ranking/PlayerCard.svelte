@@ -15,17 +15,19 @@
 	import MiniProfile from '../Player/Mini/MiniProfile.svelte';
 	import Popover from '../Common/Popover.svelte';
 	import {configStore} from '../../stores/config';
+	import {PlayerValue, RANKING_SORT_BY_PROPS} from './rankingSortConstants';
 
 	export let player;
 	export let currentFilters = null;
 	export let playerId = null;
 	export let withCrown = false;
 	export let selectedClanTag = null;
-	export let value = null;
-	export let valueProps = {};
+	export let numRank = 1;
+
 	export let playerClickFilter = null;
 	export let maxRank = 1;
 	export let maxCountryRank = 1;
+	export let maxNumRank = 1;
 	export let opacity = '1.0';
 	export let noImprovements = false;
 
@@ -60,8 +62,6 @@
 			currentFilters.countries = player?.playerInfo?.country?.country?.toLowerCase() ?? '';
 
 			const currentPage = Math.floor((player.playerInfo.country.rank - 1) / PLAYERS_PER_PAGE) + 1;
-
-			dispatch('filters-updated', {currentFilters, currentPage});
 		}
 
 		navigate(`/ranking/${currentPage}?${buildSearchFromFilters(currentFilters)}`);
@@ -85,8 +85,13 @@
 	}
 
 	var pp = player?.playerInfo?.pp;
-	var rank = player?.playerInfo?.rank;
-	var countryRank = player?.playerInfo?.country.rankValue ?? player?.playerInfo?.country.rank;
+	var rank = 1;
+	var countryRank = 1;
+
+	function updateRanks(numRank, showingGeneral) {
+		rank = showingGeneral ? player?.playerInfo?.rank : numRank;
+		countryRank = showingGeneral ? (player?.playerInfo?.country.rankValue ?? player?.playerInfo?.country.rank) : player?.playerInfo?.rank;
+	}
 
 	function hoverStats() {
 		if (player && player.playerInfo && (selectedClanTag || player.clans)) {
@@ -125,13 +130,18 @@
 		firstColumnGridTemplate = gridParts.join(' ');
 	}
 
+	$: showingGeneral = currentFilters.sortBy == 'pp' && currentFilters.ppType == 'general';
 	$: updateFirstColumn(
-		maxRank,
-		maxCountryRank,
+		showingGeneral ? maxRank : maxNumRank,
+		showingGeneral ? maxCountryRank : maxRank,
 		$configStore.rankingList.showCountryRank,
-		!noImprovements && $configStore.rankingList.showDifference,
-		!noImprovements && $configStore.rankingList.showCountryDifference
+		!noImprovements && $configStore.rankingList.showDifference && showingGeneral,
+		!noImprovements && $configStore.rankingList.showCountryDifference && showingGeneral
 	);
+
+	$: value = PlayerValue(player, currentFilters);
+	$: valueProps = RANKING_SORT_BY_PROPS[currentFilters.sortBy];
+	$: updateRanks(numRank, showingGeneral);
 
 	let referenceElement;
 </script>
@@ -154,7 +164,7 @@
 			on:keypress={e => onGlobalClick(e, player)}>
 			#<Value value={rank} digits={0} zero="?" />
 		</div>
-		{#if !noImprovements && $configStore.rankingList.showDifference}
+		{#if !noImprovements && $configStore.rankingList.showDifference && showingGeneral}
 			<span class="change" title="Compared to the last week">
 				<Change value={opt(player, 'others.difference')} digits={0} />
 			</span>
@@ -168,10 +178,14 @@
 				on:click={e => onCountryClick(player)}
 				on:keypress={e => onGlobalClick(e, player)}>
 				#<Value value={countryRank} digits={0} zero="?" />
-				<Flag country={opt(player, 'playerInfo.country.country')} />
+				{#if showingGeneral}
+					<Flag country={opt(player, 'playerInfo.country.country')} />
+				{:else}
+					<i class="fa-solid fa-earth-americas"></i>
+				{/if}
 			</div>
 		{/if}
-		{#if !noImprovements && $configStore.rankingList.showCountryDifference}
+		{#if !noImprovements && $configStore.rankingList.showCountryDifference && showingGeneral}
 			<span class="change" title="Country rank compared to the last week">
 				<Change value={opt(player, 'others.countryDifference')} digits={0} />
 			</span>

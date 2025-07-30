@@ -8,7 +8,7 @@
 	export let prevValue = null;
 	export let reversePrevSign = false;
 	export let digits = 2;
-	export let zero = formatNumber(0, Number.isInteger(digits) ? digits : 2);
+	export let zero = null;
 	export let withSign = false;
 	export let prefix = '';
 	export let withZeroPrefix = false;
@@ -41,7 +41,9 @@
 	function getFormattedValue(value, digits, withSign, minValue, prefix, suffix, withZeroPrefix, withZeroSuffix) {
 		return Number.isFinite(value) && Math.abs(value) > minValue
 			? (prefix ?? '') + formatNumber(value, digits, withSign) + (suffix ?? '')
-			: (withZeroPrefix ? prefix ?? '' : '') + zero + (withZeroSuffix ? suffix ?? '' : '');
+			: (withZeroPrefix ? (prefix ?? '') : '') +
+					(zero ?? formatNumber(0, Number.isInteger(digits) ? digits : 2)) +
+					(withZeroSuffix ? (suffix ?? '') : '');
 	}
 
 	onMount(() => {
@@ -79,10 +81,10 @@
 	$: prevDiff = Number.isFinite(prevValue) ? (prevAbsolute ? prevValue : resolvedValue - prevValue) * (reversePrevSign ? -1 : 1) : null;
 	$: prevDiffFormatted = Number.isFinite(prevDiff)
 		? (configStore,
-		  $configStore,
-		  resolvedValue,
-		  Number.isFinite(prevDiff)
-				? (prefixPrev ?? '') + formatNumber(prevDiff, digits, !prevAbsolute) + (suffixPrev ? suffixPrev : suffix ?? '')
+			$configStore,
+			resolvedValue,
+			Number.isFinite(prevDiff)
+				? (prefixPrev ?? '') + formatNumber(prevDiff, digits, !prevAbsolute) + (suffixPrev ? suffixPrev : (suffix ?? ''))
 				: '')
 		: null;
 	$: prevClass =

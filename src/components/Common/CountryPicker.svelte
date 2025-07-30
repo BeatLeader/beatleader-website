@@ -6,6 +6,7 @@
 
 	export let value;
 	export let items;
+	export let placeholder = 'Click to select country';
 
 	const dispatch = createEventDispatcher();
 
@@ -26,7 +27,7 @@
 	{itemFilter}
 	{Item}
 	MultiSelection={CountryPickerMultiItem}
-	placeholder="Click to select country"
+	{placeholder}
 	isSearchable={true}
 	isMulti={true}
 	placeholderAlwaysShow={true}

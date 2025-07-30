@@ -19,6 +19,7 @@
 	import {Confetti} from 'svelte-confetti';
 	import EventMeta from '../components/Event/EventMeta.svelte';
 	import PlayerMention from '../components/Scores/PlayerMention.svelte';
+	import EventRankingTable from '../components/Ranking/EventRankingTable.svelte';
 
 	export let page = 1;
 	export let location;
@@ -66,9 +67,12 @@
 			onChange: e => {
 				const param = findParam('countries');
 				if (param) {
-					param.value = e?.detail ?? [];
-
-					updateCurrentFiltersFromParams();
+					const newValues = e?.detail ?? [];
+					if (param.value != newValues.join(',')) {
+						param.value = newValues.join(',');
+						currentPage = 1;
+						updateCurrentFiltersFromParams();
+					}
 				}
 			},
 			multi: true,
@@ -128,7 +132,7 @@
 		navigateToCurrentPageAndFilters();
 	}
 
-	function changeParams(newPage, eventId, newLocation, replace) {
+	function changeParams(newPage, eventId, newLocation) {
 		currentEventId = eventId;
 		newPage = parseInt(newPage, 10);
 		if (isNaN(newPage)) newPage = 1;
@@ -136,6 +140,7 @@
 		currentFilters = buildFiltersFromLocation(newLocation);
 		if (!currentFilters?.sortBy?.length) {
 			currentFilters.sortBy = 'pp';
+			currentFilters.ppType = 'general';
 		}
 
 		currentPage = newPage;
@@ -173,7 +178,7 @@
 	let modalShown;
 
 	$: document.body.scrollIntoView({behavior: 'smooth'});
-	$: changeParams(page, eventId, location, true);
+	$: changeParams(page, eventId, location);
 	$: mainPlayerId = $account?.id;
 </script>
 
@@ -706,7 +711,7 @@
 				{/if}
 			</h1>
 
-			<RankingTable
+			<EventRankingTable
 				page={currentPage}
 				filters={currentFilters}
 				playerClickFilter={`eventId=${currentEvent?.id ?? ''}`}

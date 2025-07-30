@@ -208,7 +208,12 @@ Improvements: {data.improvements}"
 				</div>
 			</div>
 		{/if}
-		<div class="triangle-container">
+		<a
+			href="/ranking/1?acc_pp_range={Math.round($accPpTween * 0.95)}%2C{Math.round($accPpTween * 1.05)}&pass_pp_range={Math.round(
+				$passPpTween * 0.95
+			)}%2C{Math.round($passPpTween * 1.05)}&tech_pp_range={Math.round($techPpTween * 0.95)}%2C{Math.round($techPpTween * 1.05)}"
+			title="Show players with a similar triangle"
+			class="triangle-container">
 			{#if showRatings}
 				{#if $passPpTween}
 					<div class="pass">
@@ -302,7 +307,7 @@ Improvements: {data.improvements}"
 					</g>
 				</g>
 			</svg>
-		</div>
+		</a>
 	</div>
 	{#if history?.length > 1 && playerId == $account?.player?.playerId}
 		<div class="gif-container">

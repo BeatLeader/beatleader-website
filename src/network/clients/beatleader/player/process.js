@@ -56,6 +56,11 @@ export default response => {
 		].forEach(k => {
 			if (scoreStats[k] && Number.isFinite(scoreStats[k])) scoreStats[k] *= 100;
 		});
+
+		['scorePlaytime', 'steamPlaytime2Weeks', 'steamPlaytimeForever'].forEach(k => {
+			if (scoreStats[k] && Number.isFinite(scoreStats[k])) scoreStats[k] /= 60;
+		});
+
 		scoreStats.percentsProcessed = true;
 	}
 
@@ -83,6 +88,7 @@ export default response => {
 				'sf-requirements',
 				'sf-songType',
 				'sf-stars',
+				'sf-accs',
 				'sf-modifiers',
 				'sf-eventId',
 			];
