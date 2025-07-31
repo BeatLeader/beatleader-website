@@ -78,6 +78,8 @@ export const DEFAULT_CONFIG = {
 
 		showFeaturedScoreOnScores: true,
 		showFiltersOnScores: false,
+
+		beatTheHeatShown: false,
 	},
 	scorePreferences: {
 		badgeRows: 2,

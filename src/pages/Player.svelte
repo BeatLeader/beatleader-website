@@ -27,6 +27,9 @@
 	import {BL_API_URL} from '../network/queues/beatleader/api-queue';
 	import {fetchJson} from '../network/fetch';
 	import {toggleRandomImageOnHover} from '../utils/clans';
+	import {getContext} from 'svelte';
+	import {produce} from 'immer';
+	import BeatTheHeatCongratulation from '../components/Player/BeatTheHeatCongratulation.svelte';
 
 	const STORE_SORTING_KEY = 'PlayerScoreSorting';
 	const STORE_ORDER_KEY = 'PlayerScoreOrder';
@@ -42,6 +45,7 @@
 	const pinnedScoresStore = createPinnedScoresStore();
 	const statsHistoryStore = createStatsHistoryStore();
 	const account = createAccountStore();
+	const {open, close} = getContext('simple-modal');
 
 	function processInitialParams(params) {
 		const serviceInfo = serviceParamsManager.initFromUrl(params);
@@ -181,6 +185,29 @@
 			});
 	}
 
+	function showBeatTheHeatCongratulation(isMain, achievements, beatTheHeatShown) {
+		if (!isMain) return;
+		if (beatTheHeatShown) return;
+		const achievement = achievements.find(a => a.achievementDescriptionId == 5);
+		if (!achievement) return;
+
+		open(BeatTheHeatCongratulation, {
+			achievement,
+			confirm: () => {
+				close();
+				$configStore = produce($configStore, draft => {
+					draft.preferences.beatTheHeatShown = true;
+				});
+			},
+			cancel: () => {
+				close();
+				$configStore = produce($configStore, draft => {
+					draft.preferences.beatTheHeatShown = true;
+				});
+			},
+		});
+	}
+
 	$: paramsStore = playerStore ? playerStore.params : null;
 
 	$: currentPlayerId = $paramsStore.currentPlayerId;
@@ -222,6 +249,8 @@
 	$: $playerStore?.playerInfo && updateHorizontalRichBio($playerStore?.playerInfo.horizontalRichBio);
 	$: isMain = playerId && $account?.id === playerId;
 	$: isMain && fetchLegacyStatus();
+
+	$: showBeatTheHeatCongratulation(isMain, achievements, $configStore.preferences.beatTheHeatShown);
 
 	$: rank = $playerStore?.playerInfo.rank;
 	$: country = $playerStore?.playerInfo.country.country;
