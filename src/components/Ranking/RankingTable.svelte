@@ -35,7 +35,7 @@
 		newPage = parseInt(newPage, 10);
 		if (isNaN(newPage)) newPage = 1;
 
-		rankingStore.fetch(newType, playersPerPage, newPage, {...newFilters}, true);
+		rankingStore.fetch(newType, playersPerPage, newPage, {...newFilters});
 	}
 
 	function updateCurrentFilters(newFilters) {
@@ -45,8 +45,6 @@
 	onMount(() => {
 		dispatch('loading', true);
 	});
-
-	$: console.log(page);
 
 	$: isLoading = rankingStore.isLoading;
 	$: pending = rankingStore.pending;

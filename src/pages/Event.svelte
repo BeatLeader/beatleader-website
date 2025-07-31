@@ -9,7 +9,13 @@
 	import RankingTable from '../components/Ranking/RankingTable.svelte';
 	import Button from '../components/Common/Button.svelte';
 	import createAccountStore from '../stores/beatleader/account';
-	import {createBuildFiltersFromLocation, buildSearchFromFilters, processStringFilter, processStringArrayFilter} from '../utils/filters';
+	import {
+		createBuildFiltersFromLocation,
+		buildSearchFromFilters,
+		processStringFilter,
+		processStringArrayFilter,
+		buildSearchFromFiltersWithDefaults,
+	} from '../utils/filters';
 	import RangeSlider from 'svelte-range-slider-pips';
 	import {debounce} from '../utils/debounce';
 	import {dateFromUnix, formatDateRelative, formatDate, WEEKSECONDS} from '../utils/date';
@@ -29,53 +35,28 @@
 
 	const FILTERS_DEBOUNCE_MS = 500;
 
-	const findParam = key => params.find(p => p.key === key);
-
-	const onInputChange = (e, key) => {
-		const param = findParam(key);
-		if (param) {
-			param.value = e.target.value ?? '';
-
-			updateCurrentFiltersFromParams();
-		}
-	};
-
 	var params = [
 		{
 			key: 'search',
-			label: 'Player Name',
 			default: '',
 			process: processStringFilter,
 			type: 'input',
-			value: '',
-			placeholder: 'Search for a player',
-			onChange: e => {
-				const length = e?.target?.value?.length;
-				if (length > 0 && length < 3) return;
-
-				onInputChange(e, 'search');
-			},
 		},
 		{
 			key: 'countries',
-			label: 'Countries',
-			default: [],
-			process: processStringArrayFilter,
+			default: '',
+			process: processStringFilter,
 			type: 'countries',
-			value: [],
-			values: [],
-			onChange: e => {
-				const param = findParam('countries');
-				if (param) {
-					const newValues = e?.detail ?? [];
-					if (param.value != newValues.join(',')) {
-						param.value = newValues.join(',');
-						currentPage = 1;
-						updateCurrentFiltersFromParams();
-					}
-				}
-			},
-			multi: true,
+		},
+		{
+			key: 'ppType',
+			default: 'general',
+			process: processStringFilter,
+		},
+		{
+			key: 'sortBy',
+			default: 'pp',
+			process: processStringFilter,
 		},
 	];
 
@@ -116,14 +97,6 @@
 	let preventScroll = false;
 
 	function updateCurrentFiltersFromParams(noScroll) {
-		params.forEach(p => {
-			if (p.key === 'countries') {
-				currentFilters[p.key] = p.multi ? (p?.value ?? []).join(',') : (p?.value ?? '');
-			} else {
-				currentFilters[p.key] = p.multi ? (p?.value ?? [])?.map(p => p.id)?.join(',') : (p?.value ?? '');
-			}
-		});
-
 		params = params;
 
 		currentPage = 1;
@@ -157,11 +130,19 @@
 	function onPageChanged(event) {
 		if (event?.detail?.initial || !Number.isFinite(event.detail.page)) return;
 
-		navigate(`/event/${currentEventId}/${event.detail.page + 1}?${buildSearchFromFilters(currentFilters)}`, {preserveScroll: true});
+		currentPage = event.detail.page + 1;
+
+		updateCurrentFiltersFromParams();
 	}
 
 	function navigateToCurrentPageAndFilters(replace) {
-		navigate(`/event/${currentEventId}/${currentPage}?${buildSearchFromFilters(currentFilters)}`, {replace, preserveScroll: true});
+		const query = buildSearchFromFiltersWithDefaults(currentFilters, params);
+		const url = `/event/${currentEventId}/${currentPage}${query.length ? '?' + query : ''}`;
+		if (replace) {
+			window.history.replaceState({}, '', url);
+		} else {
+			window.history.pushState({}, '', url);
+		}
 	}
 
 	let topPlayerId;
@@ -683,23 +664,33 @@
 			</ContentBox>
 		{/if}
 		<ContentBox cls={modalShown ? 'inner-modal' : ''}>
-			{#each params as param}
-				{#if param.type}
-					<section class="filter">
-						<label>{param?.label ?? param?.key ?? ''}</label>
+			<section class="filter">
+				<input
+					type="text"
+					placeholder={'Search by a player name'}
+					value={currentFilters.search}
+					on:input={debounce(e => {
+						const length = e?.target?.value?.length;
+						if (length > 0 && length < 2) return;
 
-						{#if param?.type === 'input'}
-							<input
-								type="text"
-								placeholder={param.placeholder ?? null}
-								value={param.value}
-								on:input={debounce(param.onChange, FILTERS_DEBOUNCE_MS)} />
-						{:else if param?.type === 'countries'}
-							<Countries countries={param.value} on:change={param.onChange} on:open={e => (modalShown = e.detail)} />
-						{/if}
-					</section>
-				{/if}
-			{/each}
+						currentFilters.search = e.target.value ?? '';
+						currentPage = 1;
+						navigateToCurrentPageAndFilters();
+					}, FILTERS_DEBOUNCE_MS)} />
+			</section>
+			<section class="filter">
+				<Countries
+					countries={currentFilters.countries?.split(',').filter(c => c) ?? []}
+					placeholder="Click to filter by countries"
+					on:change={e => {
+						const newValues = e?.detail ?? [];
+						if (currentFilters.countries != newValues.join(',')) {
+							currentFilters.countries = newValues.join(',');
+							currentPage = 1;
+							navigateToCurrentPageAndFilters();
+						}
+					}} />
+			</section>
 		</ContentBox>
 
 		<ContentBox bind:box={boxEl}>

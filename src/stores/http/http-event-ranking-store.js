@@ -3,12 +3,12 @@ import createApiRankingProvider from './providers/api-event-ranking';
 import stringify from 'json-stable-stringify';
 
 export default (type = 'global', page = 1, eventId = 1, filters = {}, initialState = null, initialStateType = 'initial') => {
-	let currentType = type ? type : 'global';
-	let currentPage = page ? page : 1;
-	let currentEventId = eventId ? eventId : 1;
-	let currentFilters = filters ?? {};
+	let currentType = null;
+	let currentPage = null;
+	let currentEventId = null;
+	let currentFilters = null;
 
-	const onNewData = ({fetchParams}) => {
+	const onNewData = ({fetchParams, state, set}) => {
 		currentType = fetchParams?.type ?? 'global';
 		currentPage = fetchParams?.page ?? 1;
 		currentEventId = fetchParams?.eventId ?? 1;
@@ -19,10 +19,9 @@ export default (type = 'global', page = 1, eventId = 1, filters = {}, initialSta
 
 	const httpStore = createHttpStore(
 		provider,
-		{type, page, eventId, filters},
+		{},
 		initialState,
 		{
-			onInitialized: onNewData,
 			onAfterStateChange: onNewData,
 			onSetPending: ({fetchParams}) => ({...fetchParams}),
 		},
@@ -38,6 +37,11 @@ export default (type = 'global', page = 1, eventId = 1, filters = {}, initialSta
 			!force
 		)
 			return false;
+
+		currentType = type;
+		currentPage = page;
+		currentEventId = eventId;
+		currentFilters = filters;
 
 		return httpStore.fetch({type, page, eventId, filters}, force, provider);
 	};

@@ -3,9 +3,9 @@ import createApiRankingProvider from './providers/api-ranking';
 import stringify from 'json-stable-stringify';
 
 export default (type = 'global', page = 1, filters = {}, initialState = null, initialStateType = 'initial') => {
-	let currentType = type ? type : 'global';
-	let currentPage = page ? page : 1;
-	let currentFilters = filters ?? {};
+	let currentType = null;
+	let currentPage = null;
+	let currentFilters = null;
 
 	const onNewData = ({fetchParams}) => {
 		currentType = fetchParams?.type ?? 'global';
@@ -17,7 +17,7 @@ export default (type = 'global', page = 1, filters = {}, initialState = null, in
 
 	const httpStore = createHttpStore(
 		provider,
-		{type, page, filters},
+		{},
 		initialState,
 		{
 			onInitialized: onNewData,

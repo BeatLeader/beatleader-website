@@ -48,7 +48,7 @@
 		newPage = parseInt(newPage, 10);
 		if (isNaN(newPage)) newPage = 1;
 
-		rankingStore.fetch(newType, newPage, eventId, {...newFilters}, true);
+		rankingStore.fetch(newType, newPage, eventId, {...newFilters});
 	}
 
 	function checkEligible(eventId, team) {
