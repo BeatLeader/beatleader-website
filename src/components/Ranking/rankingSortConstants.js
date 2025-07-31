@@ -203,6 +203,7 @@ export const RANKING_SORT_STAT_KEYS = {
 		ranked: 'scoreStats.averageRankedRank',
 		unranked: 'scoreStats.averageUnrankedRank',
 		all: 'scoreStats.averageRank',
+		clan: 'playerInfo.rank',
 	},
 	weightedRank: {
 		ranked: 'scoreStats.averageRankedRank',
@@ -224,6 +225,7 @@ export const RANKING_SORT_STAT_KEYS = {
 		acc: 'playerInfo.accPp',
 		pass: 'playerInfo.passPp',
 		tech: 'playerInfo.techPp',
+		clan: 'playerInfo.pp',
 	},
 	topPp: {
 		general: 'scoreStats.topPp',

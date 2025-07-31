@@ -130,7 +130,7 @@
 		firstColumnGridTemplate = gridParts.join(' ');
 	}
 
-	$: showingGeneral = currentFilters.sortBy == 'pp' && currentFilters.ppType == 'general';
+	$: showingGeneral = currentFilters.ppType == 'clan' || (currentFilters.sortBy == 'pp' && currentFilters.ppType == 'general');
 	$: updateFirstColumn(
 		showingGeneral ? maxRank : maxNumRank,
 		showingGeneral ? maxCountryRank : maxRank,

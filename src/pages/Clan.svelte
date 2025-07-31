@@ -52,6 +52,8 @@
 	const params = [
 		{key: 'search', default: '', process: processString},
 		{key: 'sortBy', default: 'pp', process: processString},
+		{key: 'ppType', default: 'clan', process: processString},
+		{key: 'mapsType', default: 'clan', process: processString},
 		{key: 'order', default: 'desc', process: processString},
 		{key: 'primary', default: false, process: processBoolFilter},
 		{key: 'playedStatus', default: null, process: processString},
@@ -198,7 +200,7 @@
 
 	let sortValues1 = [
 		{id: 'pp', label: 'PP', title: 'Sort by PP', iconFa: 'fa fa-cubes'},
-		{id: 'acc', label: 'Acc', title: 'Sort by accuracy', iconFa: 'fa fa-crosshairs'},
+		// {id: 'acc', label: 'Acc', title: 'Sort by accuracy', iconFa: 'fa fa-crosshairs'},
 		{id: 'rank', label: 'Rank', title: 'Sort by rank', iconFa: 'fa fa-list-ol'},
 		{id: 'date', label: 'Recent', title: 'Sort by the last score posted', iconFa: 'fa fa-clock', hideFor: ['players']},
 		{id: 'toconquer', label: 'To Conquer', title: 'Sort by PP needed to capture', iconFa: 'fa fa-arrows-to-circle', hideFor: ['players']},
@@ -416,6 +418,7 @@
 								value={player?.playerInfo?.pp}
 								{maxRank}
 								{maxCountryRank}
+								{currentFilters}
 								opacity={player.playerInfo?.clanOrder?.indexOf(clan?.tag) ? '0.7' : '1.0'}
 								valueProps={{suffix: 'pp', zero: '-'}} />
 
