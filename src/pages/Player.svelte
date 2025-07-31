@@ -156,6 +156,7 @@
 
 	let achievements = [];
 	function fetchAchievements(playerId) {
+		achievements = [];
 		fetchJson(BL_API_URL + `player/${playerId}/achievements`)
 			.then(clientInfo => {
 				achievements = clientInfo.body;
@@ -250,8 +251,6 @@
 	$: isMain = playerId && $account?.id === playerId;
 	$: isMain && fetchLegacyStatus();
 
-	$: showBeatTheHeatCongratulation(isMain, achievements, $configStore.preferences.beatTheHeatShown);
-
 	$: rank = $playerStore?.playerInfo.rank;
 	$: country = $playerStore?.playerInfo.country.country;
 	$: countryRank = $playerStore?.playerInfo.country.rankValue ?? $playerStore?.playerInfo.country.rank;
@@ -259,6 +258,7 @@
 	$: playerId && fetchAchievements(playerId);
 	$: pinnedScoresStore.fetchScores(playerData?.playerId);
 	$: statsHistoryStore.fetchStats(playerData, $configStore.preferences.daysOfHistory);
+	$: showBeatTheHeatCongratulation(isMain, achievements, $configStore.preferences.beatTheHeatShown);
 
 	$: editing = new URLSearchParams(location?.search).get('edit') ?? null;
 	$: playerPage && toggleRandomImageOnHover(playerPage, playerInfo?.clans?.filter(cl => cl.tag == 'SABA').length);

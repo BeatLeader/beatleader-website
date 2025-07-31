@@ -107,6 +107,12 @@
 		z-index: 0;
 	}
 
+	:global(.top-container .atropos-highlight) {
+		top: -150% !important;
+		height: 400% !important;
+		background-image: radial-gradient(circle at 50%, rgb(119 167 230 / 23%), transparent 50%) !important;
+	}
+
 	@media screen and (max-width: 767px) {
 		.top-container {
 			width: unset;
