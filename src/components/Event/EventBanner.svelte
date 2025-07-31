@@ -21,7 +21,7 @@
 	$: cinematicsCanvas && drawCinematics(cinematicsCanvas, '/assets/beatheat_bg.webp');
 </script>
 
-<ContentBox cls="event-banner" on:click={() => navigate('/event/73')}>
+<!-- <ContentBox cls="event-banner" on:click={() => navigate('/event/73')}>
 	<div class="cinematics">
 		<div class="cinematics-canvas">
 			<canvas bind:this={cinematicsCanvas} style="position: absolute; width: 100%; height: 100%; opacity: 0" />
@@ -52,7 +52,7 @@
 			</div>
 		</div>
 	</div>
-</ContentBox>
+</ContentBox> -->
 
 <style>
 	:global(.content-box.event-banner) {
