@@ -264,7 +264,7 @@
 				class="ranking" />
 		</div>
 
-		<ContentBox bind:box={boxEl}>
+		<ContentBox cls="ranking-main-box" zIndex={2} bind:box={boxEl}>
 			<RankingTable
 				page={currentPage}
 				filters={currentFilters}
@@ -277,7 +277,11 @@
 	</article>
 
 	<aside class="ranking-aside">
-		<AsideBox title="Filters" boolname="showFiltersOnRanking" faicon="fas fa-filter">
+		<AsideBox
+			title="Filters"
+			boolname={window?.innerWidth < 767 ? 'showFiltersOnRankingMobile' : 'showFiltersOnRanking'}
+			faicon="fas fa-filter"
+			cls="ranking-filters-dropdown">
 			<RankingSorters
 				filters={currentFilters}
 				on:sort-changed={onSortChanged}
@@ -773,6 +777,7 @@
 
 	.ranking-switcher {
 		margin-left: 0.8em;
+		margin-top: 0.5em;
 	}
 
 	:global(.ranking-tab-button) {
@@ -891,6 +896,25 @@
 		aside {
 			width: 100%;
 			max-width: 65em;
+		}
+	}
+
+	@media screen and (max-width: 767px) {
+		.ranking-switcher {
+			margin-top: 1em;
+		}
+
+		:global(.ranking-main-box .pagination) {
+			margin-bottom: -0.4em !important;
+			margin-left: 0.1em !important;
+			margin-top: 0.4em !important;
+		}
+
+		:global(.ranking-filters-dropdown) {
+			position: absolute !important;
+			top: 4.2em;
+			right: 0.5em;
+			z-index: 3 !important;
 		}
 	}
 </style>

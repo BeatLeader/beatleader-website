@@ -9,6 +9,7 @@
 	export let faicon = '';
 	export let boolname = null;
 	export let contentClass = '';
+	export let cls = '';
 
 	const [send, receive] = crossfade({
 		duration: 300,
@@ -30,7 +31,7 @@
 	$: opened = $configStore.preferences[boolname];
 </script>
 
-<ContentBox cls="aside-content-box frosted">
+<ContentBox cls="aside-content-box frosted {cls}">
 	<div class="box-toggle-section">
 		<span
 			class="reveal-button clickable"

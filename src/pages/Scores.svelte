@@ -559,7 +559,6 @@
 			});
 	}
 
-	$: showFilters = $configStore.preferences.showFiltersOnRanking;
 	$: hasRatingsByDefault = currentFilters.type === 'ranked' || currentFilters.type === 'nominated' || currentFilters.type === 'qualified';
 	$: starFiltersDisabled = !hasRatingsByDefault && !showAllRatings;
 	$: sliderLimits = hasRatingsByDefault ? Ranked_Const : Unranked_Const;
@@ -641,7 +640,7 @@
 				class="ranking" />
 		</div>
 
-		<ContentBox bind:box={boxEl}>
+		<ContentBox cls="scores-main-box" zIndex={2} bind:box={boxEl}>
 			<div bind:this={scoresBoxEl}>
 				{#if $error}
 					<div><Error error={$error} /></div>
@@ -675,7 +674,11 @@
 	</article>
 
 	<aside class="scores-aside-container">
-		<AsideBox title="Filters" boolname="showFiltersOnScores" faicon="fas fa-filter">
+		<AsideBox
+			title="Filters"
+			boolname={window?.innerWidth < 767 ? 'showFiltersOnScoresMobile' : 'showFiltersOnScores'}
+			cls="scores-filters-dropdown"
+			faicon="fas fa-filter">
 			<div class="search-and-orders">
 				{#if currentFilters.search?.length}
 					<div class="sorting-options">
@@ -1113,6 +1116,7 @@
 
 	.ranking-switcher {
 		margin-left: 0.8em;
+		margin-top: 0.5em;
 	}
 
 	:global(.ranking-tab-button) {
@@ -1424,6 +1428,24 @@
 		:global(.scores-playlist-button) {
 			margin-top: 9em !important;
 			right: auto;
+		}
+	}
+
+	@media screen and (max-width: 767px) {
+		.ranking-switcher {
+			margin-top: 1em;
+		}
+		:global(.scores-main-box .pagination) {
+			margin-bottom: -0.4em !important;
+			margin-left: 0.1em !important;
+			margin-top: 0.4em !important;
+		}
+
+		:global(.scores-filters-dropdown) {
+			position: absolute !important;
+			top: 4.2em;
+			right: 0.5em;
+			z-index: 3 !important;
 		}
 	}
 

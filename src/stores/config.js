@@ -58,6 +58,8 @@ export const DEFAULT_CONFIG = {
 		showAccSaber: true,
 
 		showFiltersOnRanking: true,
+		showFiltersOnRankingMobile: false,
+
 		maps3D: true,
 		mapsViewType: 'maps-cards',
 
@@ -75,9 +77,11 @@ export const DEFAULT_CONFIG = {
 		playlistOption: 'selected',
 
 		mapsFiltersOpen: false,
+		mapsFiltersOpenMobile: false,
 
 		showFeaturedScoreOnScores: true,
-		showFiltersOnScores: false,
+		showFiltersOnScores: true,
+		showFiltersOnScoresMobile: false,
 
 		beatTheHeatShown: false,
 	},

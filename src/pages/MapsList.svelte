@@ -985,7 +985,7 @@
 		on:touchend={() => (lastY = null)}
 		on:touchcancel={() => (lastY = null)}
 		bind:this={asideContainer}>
-		<AsideBox title="Filters" boolname="mapsFiltersOpen" faicon="fas fa-filter">
+		<AsideBox title="Filters" boolname={window?.innerWidth < 767 ? 'mapsFiltersOpenMobile' : 'mapsFiltersOpen'} faicon="fas fa-filter">
 			<div class="sorting-options">
 				<Select bind:value={sortValue} on:change={onSortChange} fontSize="0.8" options={sortValues} />
 				<Select bind:value={orderValue} on:change={onOrderChange} fontSize="0.8" options={orderValues} />
