@@ -81,7 +81,7 @@
 
 	$: document.body.scrollIntoView({behavior: 'smooth'});
 
-	$: cinematicsCanvas && drawCinematics(cinematicsCanvas, 'https://cdn.cube.community/1706455892406-Artboard_1_copy_3.webp');
+	$: cinematicsCanvas && drawCinematics(cinematicsCanvas, '/assets/bswc2025background.webp');
 
 	$: isLoading = eventsStore.isLoading;
 	$: pending = eventsStore.pending;
@@ -137,7 +137,7 @@
 								class:finished={Date.now() / 1000 > event?.endDate}
 								in:fade|global={{delay: idx * 10}}>
 								<ContentBox>
-									{#if event.id == 56 && !(Date.now() / 1000 > event?.endDate)}
+									{#if event.id == 74 && !(Date.now() / 1000 > event?.endDate)}
 										<div class="cinematics">
 											<div class="cinematics-canvas">
 												<canvas bind:this={cinematicsCanvas} style="position: absolute; width: 100%; height: 100%; opacity: 0" />
@@ -159,8 +159,8 @@
 								class="event-box"
 								class:finished={Date.now() / 1000 > event?.endDate}
 								in:fade|global={{delay: idx * 10}}>
-								<ContentBox cls={event.id == 23 ? 'festive' : event.id == 56 ? 'bswc-box' : ''}>
-									{#if event.id == 56 && !(Date.now() / 1000 > event?.endDate)}
+								<ContentBox cls={event.id == 23 ? 'festive' : event.id == 74 ? 'bswc-box' : ''}>
+									{#if event.id == 74 && !(Date.now() / 1000 > event?.endDate)}
 										<div class="cinematics">
 											<div class="cinematics-canvas">
 												<canvas bind:this={cinematicsCanvas} style="position: absolute; width: 100%; height: 100%; opacity: 0" />
@@ -251,7 +251,7 @@
 	}
 
 	.bswcbg {
-		background-image: url(https://cdn.cube.community/1706455892406-Artboard_1_copy_3.webp) !important;
+		background-image: url(/assets/bswc2025background.webp) !important;
 		background-size: cover !important;
 		background-position: center !important;
 		z-index: 1;
@@ -266,7 +266,7 @@
 	.bswcbgblur {
 		backdrop-filter: blur(10px);
 		-webkit-backdrop-filter: blur(10px);
-		filter: brightness(0.5);
+		filter: brightness(0.6);
 		z-index: 2;
 		width: 102%;
 		position: absolute;

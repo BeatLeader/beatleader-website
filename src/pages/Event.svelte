@@ -663,6 +663,40 @@
 				</span>
 			</ContentBox>
 		{/if}
+		{#if eventId == 74}
+			<ContentBox cls={(modalShown ? 'inner-modal' : '') + 'bswc-box'}>
+				<div class="bswcbg" style="background-image: url(/assets/bswc2025background.webp) !important" />
+				<div class="bswcbgblur" style="filter: brightness(0.9);" />
+				<div class="bswc-container" style="color: black">
+					<span>
+						<b>Grand Finals!</b> This week decides - <b>US, UK or Canada</b> will become the champion of 2025.<br />
+
+						Team members from previous weeks are elegible for this fan event. Have fun!<br />
+						Make a reminder for matches and keep an eye out for the banner on top when they go live. Or check recordings from the last week on
+						the BSWC website.
+						<br /><br />
+					</span>
+
+					<div class="downloadButtons bswc-2025-buttons">
+						<a href="https://www.twitch.tv/cubecommunity?utm_source=BeatLeader" target="_blank">
+							<Button iconFa="fab fa-twitch" type="twitch" label="Watch matches" />
+						</a>
+
+						<a href="https://cube.community/tournaments/bswc-2025/bracket" target="_blank">
+							<Button iconFa="fas fa-diagram-project" label="Bracket" />
+						</a>
+
+						<a href="https://cube.community/tournaments/bswc-2025/donate" target="_blank">
+							<Button iconFa="fas fa-money-bill-trend-up" type="patreon" label="Add to the prize!" />
+						</a>
+					</div>
+
+					<span style="margin-top: 0.5em">
+						<b>Meeting in chat at the Final!🍿</b>
+					</span>
+				</div>
+			</ContentBox>
+		{/if}
 		<ContentBox cls={modalShown ? 'inner-modal' : ''}>
 			<section class="filter">
 				<input
