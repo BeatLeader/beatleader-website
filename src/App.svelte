@@ -67,6 +67,7 @@
 		ScoresPage: () => import('./pages/Scores.svelte'),
 		ScorePage: () => import('./pages/Score.svelte'),
 		NominatedScores: () => import('./pages/NominatedScores.svelte'),
+		BadgesPage: () => import('./pages/Badges.svelte'),
 	};
 
 	export let url = '';
@@ -474,6 +475,11 @@
 					<Route path="/events/*page" let:params let:location>
 						{#await pageImports.EventsPage() then module}
 							<svelte:component this={module.default} page={params.page} {location} />
+						{/await}
+					</Route>
+					<Route path="/badges" let:location>
+						{#await pageImports.BadgesPage() then module}
+							<svelte:component this={module.default} {location} />
 						{/await}
 					</Route>
 					<Route path="/clan/:clanId/*page" let:params let:location>

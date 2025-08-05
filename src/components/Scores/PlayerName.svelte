@@ -30,7 +30,7 @@
 </a>
 
 {#if !disablePopover && player && player.playerInfo}
-	<Popover triggerEvents={['hover', 'focus']} {referenceElement} placement="auto" spaceAway={10}>
+	<Popover triggerEvents={['hover', 'focus']} {referenceElement} placement="auto" spaceAway={10} zIndex={2000}>
 		<div class="popover-contents" transition:fade|global={{duration: 250}}>
 			<MiniProfile {player} />
 		</div>

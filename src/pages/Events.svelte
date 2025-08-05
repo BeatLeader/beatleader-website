@@ -10,9 +10,22 @@
 	import {MetaTags} from 'svelte-meta-tags';
 	import {CURRENT_URL} from '../network/queues/beatleader/api-queue';
 	import BuildingBlocks from '../components/Event/BuildingBlocks.svelte';
+	import TabSwitcher from '../components/Common/TabSwitcher.svelte';
 
 	export let page = 1;
 	export let location;
+
+	const tabOptions = [
+		{value: 'events', label: 'Events', iconFa: 'fas fa-calendar-alt', url: '/events/1', cls: 'ranking-tab-button'},
+		{value: 'badges', label: 'Badges', iconFa: 'fas fa-medal', url: '/badges', cls: 'ranking-tab-button'},
+	];
+	const currentTab = tabOptions[0];
+
+	function onTabChanged(e) {
+		if (e.detail.value === 'badges') {
+			navigate(`/badges`);
+		}
+	}
 
 	let shouldBeForceRefreshed = new URLSearchParams(location?.search ?? '')?.get('refresh') ?? false;
 
@@ -100,14 +113,13 @@
 
 <section class="align-content">
 	<article class="page-content" transition:fade|global>
+		<div class="ranking-switcher">
+			<TabSwitcher values={tabOptions} value={currentTab} on:change={onTabChanged} class="ranking" />
+		</div>
 		<ContentBox>
-			<h1 class="title is-5">
-				Events
-
-				{#if $isLoading}
-					<Spinner />
-				{/if}
-			</h1>
+			{#if $isLoading}
+				<Spinner />
+			{/if}
 
 			{#if eventsPage?.length}
 				<div class="events">
@@ -221,6 +233,11 @@
 		max-width: 65em;
 		width: 100%;
 		overflow: visible;
+	}
+
+	.ranking-switcher {
+		margin-left: 0.8em;
+		margin-top: 0.5em;
 	}
 
 	article {

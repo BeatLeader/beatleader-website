@@ -161,6 +161,8 @@
 	 */
 	export let popperInstance: any = undefined;
 
+	export let zIndex = 100;
+
 	let popoverElement: HTMLElement;
 
 	let isPopoverVisible: boolean = false;
@@ -483,7 +485,7 @@
 </script>
 
 {#if isPopoverVisible}
-	<div class="svelte-easy-popover" bind:this={popoverElement}>
+	<div class="svelte-easy-popover" style="z-index: {zIndex}" bind:this={popoverElement}>
 		{#if triggerEventSet.has('hover') && spaceAway > 0}
 			<div class="popover-hover-bridge" style={`--popover-space-away: ${spaceAway}px;`} />
 		{/if}
@@ -494,10 +496,6 @@
 <style>
 	.popover-hover-bridge {
 		position: absolute;
-	}
-
-	.svelte-easy-popover {
-		z-index: var(--z-index, 100);
 	}
 
 	:global([data-popper-placement^='top']).svelte-easy-popover .popover-hover-bridge {
