@@ -90,6 +90,7 @@
 						label={button.text}
 						url={button.url}
 						type={button.type}
+						iconFa={button.iconFa}
 						on:click={() => {
 							if (button.url) navigate(button.url);
 						}} />
