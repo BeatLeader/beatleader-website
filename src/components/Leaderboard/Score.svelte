@@ -65,6 +65,7 @@
 		$configStore?.leaderboardPreferences?.show?.date === true ||
 		(sortBy === 'date' && $configStore?.leaderboardPreferences?.show?.date === false);
 	$: isBot = score?.player?.playerInfo?.bot;
+	$: isTemporary = score?.player?.playerInfo?.temporary;
 
 	$: headset = getHeadsetForHMD(score?.score?.hmd);
 	$: controllerDescription =
@@ -75,7 +76,7 @@
 </script>
 
 {#if score}
-	<div class="player-score {isBot ? 'bot' : ''}" class:highlight>
+	<div class="player-score {isBot ? 'bot' : ''} {isTemporary ? 'temporary' : ''}" class:highlight>
 		<div class="mobile-first-line">
 			<div class="rank with-badge">
 				<Badge
@@ -113,6 +114,17 @@
 							color="white"
 							bgColor="blue"
 							title="0100100100100111011011010010000001101110011011110111010000100000011010000111010101101101011000010110111000100000011100000110110001100001011110010110010101110010" />
+					</div>
+				{/if}
+				{#if isTemporary}
+					<div class="temporary-badge">
+						<Badge
+							label="TMP"
+							onlyLabel={true}
+							fluid={true}
+							color="black"
+							bgColor="yellow"
+							title="Player profile was issued temporary, and will be deleted in a week" />
 					</div>
 				{/if}
 				<PlayerNameWithFlag
@@ -378,6 +390,10 @@
 		background-color: #8080804d;
 	}
 
+	.temporary {
+		background-color: #8080804d;
+	}
+
 	.hmd-image-container {
 		display: flex;
 		justify-content: center;
@@ -390,6 +406,12 @@
 	}
 
 	:global(.bot-badge .badge) {
+		margin: 0 !important;
+		height: 1.2em;
+		font-size: 0.9em !important;
+	}
+
+	:global(.temporary-badge .badge) {
 		margin: 0 !important;
 		height: 1.2em;
 		font-size: 0.9em !important;

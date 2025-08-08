@@ -7,7 +7,7 @@
 	$: title = banDescription
 		? `Player banned by admin due to: ${banDescription.banReason} for ${
 				banDescription.duration ? Math.round(banDescription.duration / DAYSECONDS) + ' days' : 'eternity'
-		  }`
+			}`
 		: `Player banned by admin`;
 </script>
 
@@ -25,6 +25,9 @@
 	{/if}
 {/if}
 {#if playerInfo.inactive}<span class="status inactive">Inactive</span>{/if}
+{#if playerInfo.temporary}<span class="status temporary" title="Player profile was issued temporary, and will be deleted in a week"
+		>Temporary</span
+	>{/if}
 
 <style>
 	.status {
@@ -47,5 +50,9 @@
 
 	.bot {
 		color: blue;
+	}
+
+	.temporary {
+		color: yellow;
 	}
 </style>

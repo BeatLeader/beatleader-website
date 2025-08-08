@@ -12,6 +12,7 @@ export const processLeaderboardScore = s => {
 	ret.player.playerInfo.country = {country: player.country.toUpperCase(), rank: player.countryRank};
 	ret.player.playerInfo.avatar = player.avatar;
 	ret.player.playerInfo.bot = player.bot;
+	ret.player.playerInfo.temporary = player.temporary;
 	ret.player.playerInfo.pp = player.pp;
 	ret.player.playerInfo.rank = player.rank;
 

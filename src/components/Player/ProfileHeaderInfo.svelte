@@ -205,7 +205,7 @@
 			{/if}
 		</div>
 
-		{#if playerInfo.inactive || playerInfo.banned}
+		{#if playerInfo.inactive || playerInfo.banned || playerInfo.temporary}
 			<span class="status">
 				<Status {playerInfo} />
 			</span>
