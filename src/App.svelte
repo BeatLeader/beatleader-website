@@ -71,6 +71,8 @@
 		NominatedScores: () => import('./pages/NominatedScores.svelte'),
 		BadgesPage: () => import('./pages/Badges.svelte'),
 		BeastiesNominations: () => import('./pages/BeastiesNominations.svelte'),
+		ReePresetPage: () => import('./pages/ReePreset.svelte'),
+		ReePresetsPage: () => import('./pages/ReePresets.svelte'),
 	};
 
 	export let url = '';
@@ -497,6 +499,7 @@
 							<svelte:component this={module.default} {location} />
 						{/await}
 					</Route>
+
 					<Route path="/event/lovelive">
 						{#await pageImports.LoveLivePage() then module}
 							<svelte:component this={module.default} />
@@ -505,6 +508,16 @@
 					<Route path="/event/rocketleaguevol2">
 						{#await pageImports.RocketLeaguePackPage() then module}
 							<svelte:component this={module.default} />
+						{/await}
+					</Route>
+					<Route path="/reepreset/:presetId/*page" let:params>
+						{#await pageImports.ReePresetPage() then module}
+							<svelte:component this={module.default} presetId={params.presetId} page={params.page} />
+						{/await}
+					</Route>
+					<Route path="/reepresets/*page" let:params let:location>
+						{#await pageImports.ReePresetsPage() then module}
+							<svelte:component this={module.default} page={params.page} {location} />
 						{/await}
 					</Route>
 					<Route path="/event/:eventId/*page" let:params let:location>

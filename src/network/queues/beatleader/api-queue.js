@@ -1,6 +1,7 @@
 import {default as createQueue, PRIORITY} from '../http-queue';
 import {substituteVarsUrl} from '../../../utils/format';
 import {PLAYER_SCORES_PER_PAGE, PLAYERS_PER_PAGE} from '../../../utils/beatleader/consts';
+import {presetTypesMap} from '../../../utils/beatleader/format';
 import {fetchUrl} from '../../fetch';
 
 export const CURRENT_URL = location.protocol + '//' + location.host;
@@ -132,6 +133,13 @@ export const BL_API_CLAN_INVITE_URL = BL_API_URL + 'clan/invite?player=${player}
 export const BL_API_CLAN_CANCEL_INVITE_URL = BL_API_URL + 'clan/cancelinvite?player=${player}';
 export const BL_API_ACC_GRAPH_URL =
 	BL_API_URL + 'player/${player}/accgraph?leaderboardContext=${leaderboardContext}&type=${type}&no_unranked_stars=${no_unranked_stars}';
+
+export const BL_API_REEPRESETS_URL = BL_API_URL + 'reepresets?page=${page}&search=${search}&sortBy=${sortBy}&order=${order}';
+export const BL_API_REEPRESET_URL = BL_API_URL + 'reepreset/${presetId}?page=${page}';
+export const BL_API_REEPRESET_CREATE_URL = BL_API_URL + 'reepreset/create';
+export const BL_API_REEPRESET_REACT_URL = BL_API_URL + 'reepresets/${presetId}/reaction/toggle?reaction=${reaction}';
+export const BL_API_REEPRESET_UPDATE_URL = BL_API_URL + 'reepreset/${id}';
+
 export const BL_API_FRIEND_ADD_URL = BL_API_URL + 'user/friend?playerId=${playerId}';
 export const BL_API_FRIEND_REMOVE_URL = BL_API_URL + 'user/friend?playerId=${playerId}';
 export const BL_API_MINIRANKINGS_URL =
@@ -459,6 +467,142 @@ export default (options = {}) => {
 
 	const rankGraph = async (playerId, priority = PRIORITY.FG_LOW, options = {}) =>
 		fetchJson(substituteVarsUrl(BL_API_RANK_GRAPH_URL, {player: playerId}), {...options, credentials: 'include'}, priority);
+	const reepresets = async (page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) =>
+		fetchJson(substituteVarsUrl(BL_API_REEPRESETS_URL, {page, ...filters}, true, true), options, priority);
+
+	const reepreset = async (presetId, page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) =>
+		fetchJson(substituteVarsUrl(BL_API_REEPRESET_URL, {presetId, page, ...filters}), options, priority);
+
+	const addPrefix = (file, prefix) => {
+		return new File([file], `${prefix}_${file.name}`, {
+			type: file.type,
+			lastModified: file.lastModified,
+		});
+	};
+
+	const reepresetCreate = async ({
+		name,
+		tags,
+		description,
+		iconFile,
+		jsonFiles,
+		textureFiles,
+		commentsDisabled,
+		priority = PRIORITY.FG_HIGH,
+		options = {},
+	}) => {
+		const formData = new FormData();
+
+		for (let i = 0; i < jsonFiles.length; i++) {
+			formData.append('files', addPrefix(jsonFiles[i], 'jsonfile'));
+		}
+		for (let i = 0; i < textureFiles?.length; i++) {
+			formData.append('files', addPrefix(textureFiles[i], 'texturefile'));
+		}
+		formData.append('files', addPrefix(iconFile, 'coverfile'));
+
+		let encodedTags = 0;
+		tags.forEach(typeName => {
+			encodedTags += presetTypesMap[typeName];
+		});
+
+		formData.append('name', name);
+		formData.append('description', description);
+		formData.append('tags', encodedTags);
+		formData.append('commentsDisabled', commentsDisabled);
+
+		return fetchJson(
+			BL_API_REEPRESET_CREATE_URL,
+			{body: formData, ...options, retries: 0, method: 'POST', credentials: 'include', maxAge: 1, cacheTtl: null},
+			priority
+		);
+	};
+
+	const reepresetUpdate = async ({
+		name,
+		tags,
+		description,
+		iconFile,
+		jsonFiles,
+		textureFiles,
+		commentsDisabled,
+		preset,
+		filesToDelete,
+		priority = PRIORITY.FG_HIGH,
+		options = {},
+	}) => {
+		const formData = new FormData();
+
+		if (jsonFiles?.length) {
+			for (let i = 0; i < jsonFiles.length; i++) {
+				formData.append('files', addPrefix(jsonFiles[i], 'jsonfile'));
+			}
+		}
+		if (textureFiles?.length) {
+			for (let i = 0; i < textureFiles?.length; i++) {
+				formData.append('files', addPrefix(textureFiles[i], 'texturefile'));
+			}
+		}
+
+		if (iconFile) {
+			formData.append('files', addPrefix(iconFile, 'coverfile'));
+		}
+
+		if (tags) {
+			let encodedTags = 0;
+			tags.forEach(typeName => {
+				encodedTags += presetTypesMap[typeName];
+			});
+
+			if (encodedTags != preset.tags) {
+				formData.append('tags', encodedTags);
+			}
+		}
+
+		if (commentsDisabled != preset.commentsDisabled) {
+			formData.append('commentsDisabled', commentsDisabled);
+		}
+
+		if (name && name != preset.name) {
+			formData.append('name', name);
+		}
+
+		if (description && description != preset.description) {
+			formData.append('description', description);
+		}
+
+		if (filesToDelete) {
+			formData.append('filesToDelete', filesToDelete);
+		}
+
+		return fetchJson(
+			substituteVarsUrl(BL_API_REEPRESET_UPDATE_URL, {id: preset.id}, true, true),
+			{
+				body: formData,
+				...options,
+				retries: 0,
+				method: 'PUT',
+				credentials: 'include',
+				maxAge: 1,
+				cacheTtl: null,
+			},
+			priority
+		);
+	};
+
+	const presetRemove = async (presetId, priority = PRIORITY.FG_HIGH, options = {}) =>
+		fetchHtml(
+			substituteVarsUrl(BL_API_REEPRESET_URL, {presetId}),
+			{...options, retries: 0, method: 'DELETE', credentials: 'include', maxAge: 1, cacheTtl: null},
+			priority
+		);
+
+	const reactToPreset = async (presetId = 1, reaction = 1, priority = PRIORITY.FG_LOW, options = {}) =>
+		fetchJson(
+			substituteVarsUrl(BL_API_REEPRESET_REACT_URL, {presetId, reaction}, true, true),
+			{...options, method: 'POST', credentials: 'include'},
+			priority
+		);
 
 	const leaderboard = async (leaderboardId, page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) =>
 		fetchJson(
@@ -540,7 +684,6 @@ export default (options = {}) => {
 		leaderboard,
 		leaderboardsByHash,
 		maps,
-
 		clans,
 		clan,
 		clanMaps,
@@ -559,6 +702,14 @@ export default (options = {}) => {
 		clanKick,
 		clanInvite,
 		clanCancelInvite,
+
+		reepresets,
+		reepreset,
+		presetRemove,
+		reepresetCreate,
+		reepresetUpdate,
+		reactToPreset,
+
 		accGraph,
 		rankGraph,
 		addFollowed,
