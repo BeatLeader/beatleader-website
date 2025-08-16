@@ -17,6 +17,25 @@
 		{
 			component: CarouselCard,
 			props: {
+				title: '',
+				body: '',
+				imageUrl: '/assets/Discover/waterbytes.jpg',
+				targetUrl: 'https://tiltify.com/@tibytes/waterbytes',
+				linkName: 'Leaderboard',
+				forcedColor: 'rgba(0, 0, 0, 0)',
+				buttons: [
+					{
+						text: 'Watch!',
+						type: 'twitch',
+						url: 'https://twitch.tv/tibyteslive',
+						iconFa: 'fab fa-twitch',
+					},
+				],
+			},
+		},
+		{
+			component: CarouselCard,
+			props: {
 				title: 'Extra Sensory 2 Mods and Maps are out!',
 				body: '',
 				imageUrl: '/assets/Discover/extra_sensory_thumbnail_2.webp',
@@ -47,17 +66,17 @@
 				forcedColor: 'rgba(0, 0, 0, 0)',
 			},
 		},
-		{
-			component: CarouselCard,
-			props: {
-				title: 'Latest Noodle Map Monday',
-				body: 'No noodle map monday found :( Check back later',
-				imageUrl: '/assets/Main/landing.webp',
-				targetUrl: undefined,
-				linkName: 'Leaderboard',
-				forcedColor: 'rgba(0, 0, 0, 0)',
-			},
-		},
+		// {
+		// 	component: CarouselCard,
+		// 	props: {
+		// 		title: 'Latest Noodle Map Monday',
+		// 		body: 'No noodle map monday found :( Check back later',
+		// 		imageUrl: '/assets/Main/landing.webp',
+		// 		targetUrl: undefined,
+		// 		linkName: 'Leaderboard',
+		// 		forcedColor: 'rgba(0, 0, 0, 0)',
+		// 	},
+		// },
 	];
 
 	let tournamentCards = [
