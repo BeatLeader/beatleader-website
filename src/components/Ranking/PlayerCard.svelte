@@ -60,9 +60,9 @@
 
 		if (currentFilters) {
 			currentFilters.countries = player?.playerInfo?.country?.country?.toLowerCase() ?? '';
-
-			const currentPage = Math.floor((player.playerInfo.country.rank - 1) / PLAYERS_PER_PAGE) + 1;
 		}
+
+		const currentPage = Math.floor((player.playerInfo.country.rankValue - 1) / PLAYERS_PER_PAGE) + 1;
 
 		navigate(`/ranking/${currentPage}?${buildSearchFromFilters(currentFilters)}`);
 	}
