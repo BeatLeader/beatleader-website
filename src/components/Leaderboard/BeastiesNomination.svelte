@@ -34,19 +34,19 @@
 
 			if (leaderboard.stats.requirements & requirementsMap.noodles) {
 				applicapleCategories.push({
-					id: 'Mods-Modchart',
+					id: 'Mods-GameplayModchart',
 				});
 			}
 
 			if (leaderboard.stats.requirements & requirementsMap.noodles || leaderboard.stats.requirements & requirementsMap.chroma) {
 				applicapleCategories.push({
-					id: 'Mods-ArtMap',
+					id: 'OTY-ModdedMap',
 				});
 			}
 
 			if (diffs.find(d => d.type == '90Degree' || d.type == '360Degree' || d.type == 'OneSaber' || d.type == 'NoArrows')) {
 				applicapleCategories.push({
-					id: 'Gen-Alternative',
+					id: 'Gen-NonStandard',
 				});
 			}
 
@@ -66,7 +66,8 @@
 				'Style-Challenge',
 				'Style-Acc',
 				'Style-Poodle',
-				'Style-Gimmick',
+				'Style-Wildcard',
+				'OTY-Map',
 			].forEach(element => {
 				applicapleCategories.push({
 					id: element,
@@ -147,7 +148,7 @@
 					<span style="margin-bottom: 1.5em;"
 						>The <a href="https://bsaber.com/the-beastsaber-mapping-awards">BeastSaber Mapping Awards</a>, also called "The Beasties," are
 						annual awards that seek to celebrate the best of the best of Beat Saber mapping across multiple categories. Maps that were
-						released between December 1, 2023 and November 30, 2024 are eligible for this year's nominations.</span>
+						released between December 1, 2024 and November 30, 2025 are eligible for this year's nominations.</span>
 
 					{#if nominating}
 						<Spinner />

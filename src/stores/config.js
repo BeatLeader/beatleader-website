@@ -73,6 +73,7 @@ export const DEFAULT_CONFIG = {
 		ccWinterHighlights24: true,
 		followersBecomingPublic: true,
 		beastiesNominationsBanner: true,
+		beastiesNominationsBanner2025: true,
 
 		playlistOption: 'selected',
 

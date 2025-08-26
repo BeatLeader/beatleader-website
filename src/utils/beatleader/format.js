@@ -1588,11 +1588,11 @@ export function starsToColor(diff, config) {
 
 export let bestiesCategoriesNames = {
 	'Gen-OST': 'Best OST Map',
-	'Gen-Alternative': 'Non-Standard Mode',
+	'Gen-NonStandard': 'Non-Standard Mode',
 	'Gen-FullSpread': 'Full spread',
 	'Mods-Lightshow': 'Best Lightshow Map',
-	'Mods-Modchart': 'Best Modchart',
-	'Mods-ArtMap': 'Art map (Chroma+Noodle)',
+	'Mods-GameplayModchart': 'Best Modchart',
+
 	'Ranked-RankedMap': 'Best Ranked Map',
 	'Style-Balanced': 'Balanced Style Map',
 	'Style-Tech': 'Tech Style Map',
@@ -1602,7 +1602,10 @@ export let bestiesCategoriesNames = {
 	'Style-Challenge': 'Challenge Style Map',
 	'Style-Acc': 'Acc Style Map',
 	'Style-Poodle': 'Poodle Style Map',
-	'Style-Gimmick': 'Gimmick Style Map',
+	'Style-Wildcard': 'Wildcard Map',
+
+	'OTY-ModdedMap': 'Chroma+Noodle Mas Of The Year',
+	'OTY-Map': 'Map Of The Year',
 };
 
 export const all_countries = [

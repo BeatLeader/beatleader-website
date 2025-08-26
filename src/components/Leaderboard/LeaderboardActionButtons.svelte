@@ -55,17 +55,22 @@
 	let currentNominations = null;
 
 	function fetchNomination(leaderboard) {
-		if (parseInt(Number('0x' + leaderboard.song.id.replaceAll('x', '')), 10) < 228010) {
+		if (leaderboard.difficultyBl.status == DifficultyStatus.ost && leaderboard.song.id != 'Danger') {
 			ellegibleForNomination = false;
 			return;
 		}
 
-		if (parseInt(Number('0x' + leaderboard.song.id.replaceAll('x', '')), 10) >= 270435) {
+		if (parseInt(Number('0x' + leaderboard.song.id.replaceAll('x', '')), 10) < 270435) {
 			ellegibleForNomination = false;
 			return;
 		}
 
-		if (Math.floor(Date.now() / 1000) >= 1734220740) {
+		// if (parseInt(Number('0x' + leaderboard.song.id.replaceAll('x', '')), 10) >= 270435) {
+		// 	ellegibleForNomination = false;
+		// 	return;
+		// }
+
+		if (Math.floor(Date.now() / 1000) >= 1765756799) {
 			ellegibleForNomination = false;
 			return;
 		}
@@ -81,7 +86,7 @@
 
 	function toggleFirstUsage() {
 		$configStore = produce($configStore, draft => {
-			draft.preferences.beastiesNominationsBanner = false;
+			draft.preferences.beastiesNominationsBanner2025 = false;
 		});
 	}
 
@@ -217,7 +222,7 @@
 		{/if}
 
 		{#if ellegibleForNomination}
-			{#if $configStore.preferences.beastiesNominationsBanner}
+			{#if $configStore.preferences.beastiesNominationsBanner2025}
 				<div class="beastsaber-banner">
 					<Button
 						cls="beastsButton highlighted"
