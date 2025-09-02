@@ -17,25 +17,6 @@
 		{
 			component: CarouselCard,
 			props: {
-				title: '',
-				body: '',
-				imageUrl: '/assets/Discover/waterbytes.jpg',
-				targetUrl: 'https://tiltify.com/@tibytes/waterbytes',
-				linkName: 'Leaderboard',
-				forcedColor: 'rgba(0, 0, 0, 0)',
-				buttons: [
-					{
-						text: 'Watch!',
-						type: 'twitch',
-						url: 'https://twitch.tv/tibyteslive',
-						iconFa: 'fab fa-twitch',
-					},
-				],
-			},
-		},
-		{
-			component: CarouselCard,
-			props: {
 				title: 'Extra Sensory 2 Mods and Maps are out!',
 				body: '',
 				imageUrl: '/assets/Discover/extra_sensory_thumbnail_2.webp',
@@ -156,17 +137,17 @@
 		{
 			component: CarouselCard,
 			props: {
-				title: 'Port Royale',
-				body: 'A Battle Royale Tournament for Everyone!',
-				imageUrl: '/assets/Discover/portroyale2025.png',
-				targetUrl: 'https://beatkhana.com/tournaments/portroyale/general',
+				title: 'The Swedish Tournament!',
+				body: '',
+				imageUrl: '/assets/Discover/BSSEC.png',
+				targetUrl: 'https://beatsabersweden.se/events/swedishChampionships25',
 				forcedColor: 'black',
 				linkName: 'contest info page',
 				buttons: [
 					{
-						text: 'Discord Server',
+						text: 'Join Discord Server',
 						type: 'primary',
-						url: 'https://discord.com/invite/efDQC2U3n5',
+						url: 'https://discord.gg/WqczySs',
 						iconFa: 'fab fa-discord',
 					},
 				],
