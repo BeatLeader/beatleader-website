@@ -118,6 +118,25 @@
 		{
 			component: CarouselCard,
 			props: {
+				title: 'TriSync Tournament 2025',
+				body: 'A tournament where 2 players control 1 saber each and play the map together at the same time!',
+				imageUrl: '/assets/Discover/trisynctournament2025.jpg',
+				targetUrl: 'https://challonge.com/trisync',
+				forcedColor: 'black',
+				linkName: 'contest info page',
+				buttons: [
+					{
+						text: 'Watch translations!',
+						type: 'twitch',
+						url: 'https://www.twitch.tv/trisynctournament',
+						iconFa: 'fab fa-twitch',
+					},
+				],
+			},
+		},
+		{
+			component: CarouselCard,
+			props: {
 				title: 'Liga Argentina 2025',
 				body: '¡La Liga 2025 de Beat Saber Argentina esta por comenzar!',
 				imageUrl: '/assets/Discover/ligaargentina2025.jpg',
@@ -291,8 +310,8 @@
 			</div>
 
 			<div class="items">
-				<HeaderCard text="Discover" />
-				<FeaturedCarousel {cards} {cardWidthRatio} height={carouselHeight} autoMoveInterval="8000" showBigButtons />
+				<HeaderCard text="Tournaments" />
+				<FeaturedCarousel cards={tournamentCards} {cardWidthRatio} height={carouselHeight} autoMoveInterval="8000" showBigButtons />
 				<div style="margin-bottom: -2.5em;" />
 				<!--<EventCard
 					text="Early 2024 Ranked event!"
@@ -300,8 +319,8 @@
 					image="/assets/Main/landing.webp"
 					button={{url: '/event/44', label: 'Event', icon: 'fas fa-rocket'}} />-->
 				<div style="margin-bottom: 1em;" />
-				<HeaderCard text="Tournaments" />
-				<FeaturedCarousel cards={tournamentCards} {cardWidthRatio} height={carouselHeight} autoMoveInterval="8000" showBigButtons />
+				<HeaderCard text="Discover" />
+				<FeaturedCarousel {cards} {cardWidthRatio} height={carouselHeight} autoMoveInterval="8000" showBigButtons />
 				<div style="margin-bottom: 0.5em;" />
 				<EventCard
 					text="Got something to share?"
