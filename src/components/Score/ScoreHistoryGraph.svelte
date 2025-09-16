@@ -181,7 +181,7 @@
 						on:mouseenter={() => (hoveredAttempt = score)}
 						on:mouseleave={() => (hoveredAttempt = null)}>
 						<div class="history-item-meta">
-							<div>
+							<div class="timeset">
 								<span class="history-item-type">{titleForEndType(score.type)} </span>
 								{#if score.type > 1}
 									<span class="history-item-time">at {timeToLabel(score.time)} </span>

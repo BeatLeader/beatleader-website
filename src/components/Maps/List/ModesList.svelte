@@ -221,7 +221,7 @@
 		display: flex;
 		position: relative;
 		pointer-events: none;
-		color: white;
+		color: var(--textColor);
 	}
 
 	.diff-container.isHovered {
@@ -320,7 +320,7 @@
 		align-items: center;
 		flex-wrap: wrap;
 		gap: 0.2em;
-		color: white;
+		color: var(--textColor);
 		cursor: pointer;
 	}
 

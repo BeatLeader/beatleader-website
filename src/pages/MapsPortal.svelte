@@ -373,8 +373,6 @@
 		left: 50%;
 		top: -0.375em;
 		transform: translateX(-50%);
-
-		color: rgba(255, 255, 255, 0.5) !important;
 		font-family: Audiowide;
 		font-size: 150px;
 		font-style: normal;

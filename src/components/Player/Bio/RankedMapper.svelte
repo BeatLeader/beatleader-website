@@ -270,7 +270,7 @@
 		display: flex;
 		padding: 0.5em;
 		border-radius: 8px;
-		color: white !important;
+		color: var(--textColor) !important;
 		flex: 1;
 		max-width: 28em;
 		min-width: 20em;

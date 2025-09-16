@@ -6,6 +6,7 @@
 	import {createEventDispatcher} from 'svelte';
 	import Spinner from '../Common/Spinner.svelte';
 	import {createDistanceWeightFunction, createMinMaxCounter} from '../../utils/math';
+	import {configStore} from '../../stores/config';
 
 	export let notes;
 	export let height = '12em';
@@ -16,9 +17,6 @@
 
 	let canvas = null;
 	let chart = null;
-
-	let themeName = 'darkss';
-	let theme = null;
 
 	function processChartData(chartData, resolution, smoothPeriodPercentage, weightFunctionSteepness) {
 		var data = [];
@@ -52,8 +50,16 @@
 	async function setupChart(canvas, chartData) {
 		if (!canvas || !chartData || !Object.keys(chartData).length) return;
 
-		const accColor = theme && theme.alternate ? theme.alternate : '#72a8ff';
-		const gridColor = '#2a2a2a';
+		var accColor = '#72a8ff';
+		var gridColor = '#2a2a2a';
+
+		Chart.defaults.color = '#fff';
+
+		if ($configStore.preferences.theme == 'flylight') {
+			gridColor = '#dadadaaf';
+
+			Chart.defaults.color = '#757575';
+		}
 
 		var data = processChartData(chartData, 200, 0.02, 3);
 
@@ -114,7 +120,6 @@
 							ticks: {
 								autoSkip: true,
 								autoSkipPadding: 4,
-								color: 'white',
 							},
 							grid: {
 								color: gridColor,
@@ -127,7 +132,6 @@
 								callback: function (val) {
 									return val + '%';
 								},
-								color: 'white',
 							},
 							grid: {
 								color: gridColor,
@@ -181,13 +185,13 @@
 
 	.graph-title {
 		font-size: 1.25rem;
-		color: white;
+		color: var(--textColor);
 		display: inline-flex;
 		gap: 0.4em;
 	}
 
 	.modifiers-container {
-		color: white;
+		color: var(--textColor);
 		font-weight: bold;
 	}
 

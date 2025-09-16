@@ -62,9 +62,18 @@
 	async function setupChart(canvas, configStore, passRating, accRating, techRating, logarithmic, startAcc, endAcc) {
 		if (!canvas) return;
 
-		const gridColor = '#2a2a2a';
-		const mainColor = '#eb008c';
-		const annotationColor = '#aaa';
+		var gridColor = '#2a2a2a';
+		var mainColor = '#eb008c';
+		var annotationColor = '#aaa';
+
+		Chart.defaults.color = '#fff';
+
+		if (configStore.preferences.theme == 'flylight') {
+			gridColor = '#dadadaaf';
+			mainColor = '#eb008c';
+			annotationColor = '#aaa';
+			Chart.defaults.color = '#757575';
+		}
 
 		let annotations = [];
 		const totalPPData = [];
@@ -149,7 +158,6 @@
 			ticks: {
 				callback: val => (val * 100 === Math.floor(val * 100) ? (logarithmic ? 1 - val : `${formatNumber(val * 100, 0)}%`) : null),
 				autoSkip: true,
-				color: 'white',
 			},
 			grid: {
 				color: gridColor,
@@ -164,12 +172,10 @@
 			title: {
 				display: $pageContainer.name !== 'phone',
 				text: 'pp',
-				color: 'white',
 			},
 			ticks: {
 				callback: val => (val === Math.floor(val) ? val : null),
 				precision: 0,
-				color: 'white',
 			},
 			grid: {
 				color: gridColor,

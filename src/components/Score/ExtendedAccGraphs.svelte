@@ -2,6 +2,7 @@
 	import Chart from 'chart.js/auto';
 	import {formatNumber} from '../../utils/format';
 	import {createMinMaxCounter, createDistanceWeightFunction} from '../../utils/math';
+	import {configStore} from '../../stores/config';
 
 	export let replayAccGraphs = null;
 	export let underswingsData = null;
@@ -83,6 +84,11 @@
 			});
 		}
 
+		Chart.defaults.color = '#fff';
+		if ($configStore.preferences.theme == 'flylight') {
+			Chart.defaults.color = '#757575';
+		}
+
 		var datasets = [];
 
 		if (notes) {
@@ -117,7 +123,6 @@
 			ticks: {
 				autoSkip: true,
 				autoSkipPadding: 4,
-				color: 'white',
 			},
 		};
 
@@ -129,7 +134,6 @@
 				position: 'left',
 				ticks: {
 					autoSkipPadding: 12,
-					color: 'white',
 				},
 			},
 		};
@@ -264,7 +268,6 @@
 						title: {
 							display: !!title?.length,
 							text: title,
-							color: 'white',
 							font: {weight: 'normal'},
 							position: 'bottom',
 							padding: {top: 5, bottom: 0},

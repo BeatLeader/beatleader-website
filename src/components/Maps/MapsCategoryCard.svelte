@@ -166,7 +166,8 @@
 	<TrendingMapsPopup maps={trendingMaps} on:closed={() => (expanded = false)} />
 {/if}
 
-<a href={redirectUrl} class="card" style="background: {bgColor} !important;" on:click|preventDefault={handleClick}>
+<a href={redirectUrl} class="card" on:click|preventDefault={handleClick}>
+	<div class="background" style="background-color: {bgColor} !important;"></div>
 	<h1>{categoryName}</h1>
 
 	<div class="icons-container">
@@ -207,6 +208,14 @@
 		user-select: none;
 	}
 
+	.background {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+	}
+
 	@media screen and (max-width: 950px) {
 		.card {
 			height: 29em;
@@ -221,7 +230,7 @@
 		justify-content: center;
 		text-align: center;
 
-		color: #fff;
+		color: var(--textColor);
 		font-size: 2.625em;
 
 		font-style: normal;
@@ -247,7 +256,7 @@
 	}
 
 	.counterHeader {
-		color: #fff;
+		color: var(--textColor);
 		font-size: 1.25em;
 		font-style: normal;
 		font-weight: 700;
@@ -255,7 +264,7 @@
 	}
 
 	.countdown {
-		color: #fff;
+		color: var(--textColor);
 		font-size: 1.5em;
 		font-style: normal;
 		font-weight: 700;

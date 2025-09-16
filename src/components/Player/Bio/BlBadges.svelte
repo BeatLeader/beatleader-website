@@ -317,7 +317,7 @@
 	.bl-badges {
 		display: flex;
 		gap: 0.5em 0.5em;
-		padding: 0.5em 0;
+		padding: 0.5em;
 		justify-content: center;
 		width: 100%;
 		flex-wrap: wrap;

@@ -101,17 +101,13 @@
 	async function setupChart(canvas, currentHistory, scoreHistoryLegend, currentHoveredAttempt) {
 		if (!canvas) return;
 
-		const gridColor = '#2a2a2a';
-		const rankColor = '#3e95cd';
-		const countryRankColor = '#8992e8';
-		const ppColor = '#007100';
-		const rankedPlayCountColor = '#3e3e3e';
-		const totalPlayCountColor = '#fff';
+		var gridColor = '#2a2a2a';
 
-		const activityColor = '#333';
-		const rankedActivityColor = '#eb008c';
-		const improvementsColor = '#474747';
-		const rankedImprovementsColor = '#f04dae';
+		Chart.defaults.color = '#fff';
+		if ($configStore.preferences.theme == 'flylight') {
+			gridColor = '#dadadaaf';
+			Chart.defaults.color = '#757575';
+		}
 
 		const songDuration = leaderboard.song.duration;
 

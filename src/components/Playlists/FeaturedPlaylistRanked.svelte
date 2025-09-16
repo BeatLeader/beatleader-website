@@ -40,6 +40,6 @@
 		display: flex;
 		flex-direction: column;
 		gap: 0.5em;
-		color: white !important;
+		color: var(--textColor) !important;
 	}
 </style>

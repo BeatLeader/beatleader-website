@@ -46,6 +46,12 @@
 
 		const getBackgroundColor = (color, alpha) => color.replace(/[\d.]+\)$/g, `${alpha})`);
 
+		Chart.defaults.color = '#fff';
+
+		if ($configStore.preferences.theme == 'flylight') {
+			Chart.defaults.color = '#757575';
+		}
+
 		const datasets = [
 			{
 				label: 'Fails',
@@ -98,7 +104,6 @@
 							color: '#2a2a2a',
 						},
 						ticks: {
-							color: 'white',
 							callback: value => formatTime((value / (data.length - 1)) * duration),
 						},
 					},
@@ -110,7 +115,6 @@
 							color: '#2a2a2a',
 						},
 						ticks: {
-							color: 'white',
 							callback: value => `${formatNumber(value, 1)}%`,
 						},
 					},
@@ -120,7 +124,6 @@
 						display: false,
 						position: 'top',
 						labels: {
-							color: 'white',
 							padding: 20,
 						},
 					},
@@ -248,7 +251,7 @@
 
 	.rate {
 		font-size: 1.25rem;
-		color: white;
+		color: var(--textColor);
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -266,7 +269,7 @@
 	.count {
 		font-size: 2.5rem;
 		font-weight: bold;
-		color: white;
+		color: var(--textColor);
 	}
 
 	.label {

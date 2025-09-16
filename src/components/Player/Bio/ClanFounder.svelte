@@ -216,13 +216,16 @@
 		display: flex;
 		padding: 0.5em;
 		border-radius: 8px;
-		color: white !important;
 		flex: 1;
 		max-width: 28em;
 		min-width: 20em;
 		z-index: 0;
 		overflow: hidden;
 		box-shadow: 0 2px 10px rgb(0 0 0 / 33%);
+	}
+
+	.clanName {
+		color: var(--textColor);
 	}
 
 	.leader-container:hover {

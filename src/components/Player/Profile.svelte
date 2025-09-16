@@ -305,7 +305,7 @@
 		{/if}
 	</div>
 
-	<div class="player-general-info" class:edit-enabled={!!$editModel}>
+	<div class="player-general-info" class:withCover={cover} class:edit-enabled={!!$editModel}>
 		<div class="avatar-and-roles">
 			<div class="avatar-cell">
 				<Avatar
