@@ -27,6 +27,7 @@
 	import Followers from './Bio/Followers.svelte';
 	import Socials from './Bio/Socials.svelte';
 	import Snow from '../Common/Snow.svelte';
+	import Cat from '../Common/Cat.svelte';
 
 	export let playerData;
 	export let isLoading = false;
@@ -264,6 +265,8 @@
 		<Rain />
 	{:else if playerInfo?.clans?.filter(cl => cl.tag == 'COLD').length}
 		<Snow />
+	{:else if playerInfo?.clans?.filter(cl => cl.tag == 'SYNC').length}
+		<Cat />
 	{/if}
 {/if}
 
