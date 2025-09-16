@@ -31,13 +31,13 @@
 	$: cover = playerData?.profileSettings?.profileCover;
 </script>
 
-<ContentBox cls="mini-profile-box">
+<div class="mini-profile-box" class:content-box={!cover}>
 	{#if cover}
 		<div class="cover-image" style="background-image: url({cover})" />
 	{/if}
 	<AvatarOverlay data={playerData?.profileSettings} />
 
-	<div class="player-general-info">
+	<div class="player-general-info" class:withCover={cover}>
 		<div class="avatar-and-roles">
 			<div class="avatar-cell">
 				<Avatar {playerInfo} />
@@ -69,7 +69,7 @@
 				profileAppearance={playerData?.profileSettings?.profileAppearance ?? null} />
 		</div>
 	</div>
-</ContentBox>
+</div>
 
 <style>
 	.player-general-info {
@@ -79,7 +79,7 @@
 		align-items: flex-start;
 	}
 
-	:global(.mini-profile-box) {
+	.mini-profile-box {
 		padding: 0.4em !important;
 		border-radius: 12px !important;
 	}
