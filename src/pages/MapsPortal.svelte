@@ -118,6 +118,25 @@
 		{
 			component: CarouselCard,
 			props: {
+				title: 'PokéSaber 2',
+				body: 'A tourney with an unique Health & Stamina systems, team-based Adrenaline & Fatigue events. Signups are open!',
+				imageUrl: '/assets/Discover/pokesaber2.jpg',
+				targetUrl: 'https://beatkhana.com/tournaments/PokeSaber2/general',
+				forcedColor: 'black',
+				linkName: 'contest info page',
+				buttons: [
+					{
+						text: 'Sign up!',
+						type: 'primary',
+						url: 'https://beatkhana.com/tournaments/PokeSaber2/general',
+						iconFa: 'fa fa-sign-in-alt',
+					},
+				],
+			},
+		},
+		{
+			component: CarouselCard,
+			props: {
 				title: 'TriSync Tournament 2025',
 				body: 'A tournament where 2 players control 1 saber each and play the map together at the same time!',
 				imageUrl: '/assets/Discover/trisynctournament2025.jpg',
