@@ -760,6 +760,8 @@
 	$: clanRankingList = $leaderboardStore?.clanRanking;
 	$: leaderboard = $leaderboardStore?.leaderboard;
 	$: song = $leaderboardStore?.leaderboard?.song;
+	$: console.log(song);
+
 	$: initRatings(leaderboard);
 
 	$: ({diffs, modes, currentDiff, currentMode} = processDiffs($leaderboardStore?.diffs ?? [], song, currentLeaderboardId));
@@ -1176,6 +1178,21 @@
 								<FeaturedPlaylist playlist={featuredPlaylist} />
 							</div>
 						{/each}
+					</div>
+				</LeaderboardAsideBox>
+			{/if}
+
+			{#if song?.videoPreviewUrl}
+				<LeaderboardAsideBox title="Map preview" boolname="showMapPreviewVideo" faicon="fab fa-youtube">
+					<div style="display: flex; width: 100%; height: 100%; justify-content: center;">
+						<iframe
+							width="100%"
+							style="aspect-ratio: 16/9;"
+							src={`https://www.youtube-nocookie.com/embed/${song.videoPreviewUrl.replace('https://youtu.be/', '')}?si=b4lLpGGYeIZ8kRb8`}
+							title="YouTube video player"
+							frameborder="0"
+							allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+							allowfullscreen />
 					</div>
 				</LeaderboardAsideBox>
 			{/if}

@@ -912,7 +912,7 @@
 
 		:global(.ranking-filters-dropdown) {
 			position: absolute !important;
-			top: 4.2em;
+			top: 16.8em;
 			right: 0.5em;
 			z-index: 3 !important;
 		}

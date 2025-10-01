@@ -172,6 +172,7 @@ export const processLeaderboard = led => {
 			fullImageUrl: led?.song?.fullCoverImage,
 			downloadUrl: led?.song?.downloadUrl,
 			explicity: led?.song?.explicity,
+			videoPreviewUrl: led?.song?.videoPreviewUrl,
 			stats: {},
 		}
 	);

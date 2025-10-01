@@ -163,9 +163,9 @@
 							</a>
 						{:else}
 							<a
-								href={`/event/${event.id}`}
+								href={`/event/${event.pageAlias ?? event.id}`}
 								on:click={e => {
-									navigate(`/event/${event.id}`);
+									navigate(`/event/${event.pageAlias ?? event.id}`);
 									e.preventDefault();
 								}}
 								class="event-box"
