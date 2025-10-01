@@ -5,11 +5,10 @@
 	import Spinner from '../Common/Spinner.svelte';
 	import {dateFromUnix, formatDate, formatDateRelative} from '../../utils/date';
 	import Button from '../Common/Button.svelte';
-	import {MetaTags} from 'svelte-meta-tags';
-	import ssrConfig from '../../ssr-config';
 	import TabSwitcher from '../Common/TabSwitcher.svelte';
 	import {getDiffNameColor, diffNameForDiff} from '../../utils/beatleader/format';
 	import PlayerMention from '../Scores/PlayerMention.svelte';
+	import EventMeta from './EventMeta.svelte';
 
 	export let currentEvent;
 	export let page = 1;
@@ -97,9 +96,6 @@
 	function onTypeChange(e) {
 		currentMode = e.detail;
 	}
-
-	let title = currentEvent.name;
-	let metaDescription = '12 days of jolly maps from various mappers!';
 
 	$: changeParams(page, eventId, location);
 	$: currentEvent && loadEventStatus(currentEvent);
@@ -343,17 +339,17 @@
 					</div>
 				{/if}
 
-				<!-- <div class="description" style="margin-top: 1em;">
+				<div class="description" style="margin-top: 1em;">
 					<p>For the best event support - update to the latest mod versions if you haven't yet:</p>
 					<div class="buttons-container">
-						<a href="https://github.com/BeatLeader/beatleader-mod/releases/tag/v0.9.30" target="_blank" rel="noreferrer">
+						<a href="https://github.com/BeatLeader/beatleader-mod/releases/tag/v0.9.34" target="_blank" rel="noreferrer">
 							<Button iconFa="fas fa-download" label="Download PC mod" color="blue" />
 						</a>
-						<a href="https://github.com/BeatLeader/beatleader-qmod/releases/tag/v0.8.30" target="_blank" rel="noreferrer">
-							<Button iconFa="fas fa-download" label="Download Quest mod" color="blue" />
+						<a disabled href="#" title="Quest mod is coming soon!" target="_blank" rel="noreferrer">
+							<Button iconFa="fas fa-download" label="Download Quest mod" color="blue" disabled />
 						</a>
 					</div>
-				</div> -->
+				</div>
 
 				<!-- {#if treeData.bonusOrnaments?.length}
 					<div class="bonus-ornaments">
@@ -376,24 +372,9 @@
 	{/if}
 </div>
 
-<MetaTags
-	{title}
-	description={metaDescription}
-	openGraph={{
-		title,
-		description: metaDescription,
-		images: [{url: CURRENT_URL + '/assets/project-tree.webp'}],
-		siteName: ssrConfig.name,
-	}}
-	twitter={{
-		handle: '@handle',
-		site: '@beatleader_',
-		cardType: 'summary_large_image',
-		title,
-		description: metaDescription,
-		image: CURRENT_URL + '/assets/project-tree.webp',
-		imageAlt: metaDescription,
-	}} />
+{#if currentEvent}
+	<EventMeta event={currentEvent} />
+{/if}
 
 <style>
 	h1 {

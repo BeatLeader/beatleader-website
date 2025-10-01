@@ -37,7 +37,7 @@
 	}
 
 	function handleMouseEnter() {
-		gifSrc = `/assets/adovent_girl.gif?ts=${Date.now()}`;
+		gifSrc = `/assets/adovent_girl.gif`;
 	}
 
 	function handleMouseLeave() {
