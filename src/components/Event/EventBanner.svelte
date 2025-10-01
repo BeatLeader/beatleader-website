@@ -16,8 +16,8 @@
 	let timeLeftMs = 0;
 
 	// GIF play/pause control
-	let gifSrc = '';
-	let stillDataUrl = '';
+	let gifSrc = null;
+	let stillDataUrl = null;
 
 	async function generateStillFromGif() {
 		try {
@@ -41,7 +41,7 @@
 	}
 
 	function handleMouseLeave() {
-		gifSrc = '';
+		gifSrc = null;
 	}
 
 	function formatDuration(ms) {
@@ -117,7 +117,7 @@
 			{:then Atropos}
 				<svelte:component this={Atropos} rotateXMax={1} rotateYMax={1} highlight="false" shadow="false" rotateTouch="scroll-y">
 					<div class="cover-bg" data-atropos-offset="-2" />
-					<img class="cover-girls-gif" data-atropos-offset="1" src={gifSrc || stillDataUrl} alt="" />
+					<img class="cover-girls-gif" data-atropos-offset="1" src={gifSrc || stillDataUrl || '/assets/adovent_girl.png'} alt="" />
 					<div
 						class="cover-hands"
 						data-atropos-offset="3"
