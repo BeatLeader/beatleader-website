@@ -136,7 +136,7 @@
 							{#each calendar as day, index}
 								<a
 									href={day.song
-										? `/leaderboard/global/${day.song.id}${day.song.difficulties[0].value}${day.song.difficulties[0].mode}`
+										? `/leaderboard/global/${day.song.id}${day.song.difficulties[day.song.difficulties.length - 1].value}${day.song.difficulties[day.song.difficulties.length - 1].mode}`
 										: null}
 									class="calendar-day {day.today ? 'today' : ''} {day.song ? 'has-song' : 'empty'}">
 									<div class="calendar-day-container">
@@ -214,16 +214,21 @@
 											{#each player.days as day, index}
 												<div class="day-container">
 													<div class="day-score">
-														<p title={`Champion on ${calendar[day.day - 1].song.name}`}>
+														<p title={`#${day.points.rank} on ${calendar[day.day - 1].song.name}`}>
 															{calendar[day.day - 1].date.getDate().toString().padStart(2, '0')}
 														</p>
 													</div>
 													<div class="day-diffs">
 														{#each day.diffs.reverse() as diff, index}
 															<div
-																title={`Top 1 on ${diffNameForDiff(diff)}`}
 																class="day-diff"
-																style="background-color: {getDiffNameColor(diffNameForDiff(diff))}">
+																style="background-color: {day.points.rank === 1
+																	? '#ffb900'
+																	: day.points.rank === 2
+																		? '#848484'
+																		: day.points.rank === 3
+																			? '#764b00'
+																			: 'purple'}">
 															</div>
 														{/each}
 													</div>

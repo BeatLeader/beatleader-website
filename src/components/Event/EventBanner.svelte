@@ -196,6 +196,7 @@
 		align-items: center;
 		margin-right: 2em;
 		gap: 0.5em;
+		pointer-events: none;
 	}
 
 	.event-text-container {
