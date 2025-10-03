@@ -137,6 +137,25 @@
 		{
 			component: CarouselCard,
 			props: {
+				title: 'Fishy Tourney 2025',
+				body: 'Just a regular trios tournament',
+				imageUrl: '/assets/Discover/fishytourney2025.jpg',
+				targetUrl: 'https://challonge.com/sjbhqjbc',
+				forcedColor: 'black',
+				linkName: 'contest info page',
+				buttons: [
+					{
+						text: 'Discord Server',
+						type: 'primary',
+						url: 'https://discord.gg/2rrtGpP2en',
+						iconFa: 'fab fa-discord',
+					},
+				],
+			},
+		},
+		{
+			component: CarouselCard,
+			props: {
 				title: 'TriSync Tournament 2025',
 				body: 'A tournament where 2 players control 1 saber each and play the map together at the same time!',
 				imageUrl: '/assets/Discover/trisynctournament2025.jpg',
