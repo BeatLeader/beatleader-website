@@ -9,6 +9,8 @@
 	import {getDiffNameColor, diffNameForDiff} from '../../utils/beatleader/format';
 	import PlayerMention from '../Scores/PlayerMention.svelte';
 	import EventMeta from './EventMeta.svelte';
+	import Playlist from '../Playlists/Playlist.svelte';
+	import createPlaylistStore from '../../stores/playlists';
 
 	export let currentEvent;
 	export let page = 1;
@@ -25,6 +27,7 @@
 	let error = null;
 	let loading = true;
 	let calendar = [];
+	let playlists = createPlaylistStore();
 
 	function generateCalendarDays(treeData, currentEvent) {
 		calendar = [];
@@ -89,6 +92,7 @@
 	let modes = [
 		{label: 'Calendar', value: 'calendar', iconFa: 'fas fa-calendar-alt'},
 		{label: 'Leaderboard', value: 'leaderboard', iconFa: 'fas fa-trophy'},
+		{label: 'Playlist', value: 'playlist', iconFa: 'fas fa-list-ul'},
 		{label: 'FAQ', value: 'faq', iconFa: 'fas fa-question-circle'},
 	];
 	let currentMode = modes[0];
@@ -97,8 +101,17 @@
 		currentMode = e.detail;
 	}
 
+	let playlist = null;
+	function loadPlaylist(playlistId) {
+		playlists.getShared(playlistId, (result, resultId) => {
+			playlist = result;
+		});
+	}
+
 	$: changeParams(page, eventId, location);
 	$: currentEvent && loadEventStatus(currentEvent);
+
+	$: currentEvent && loadPlaylist(currentEvent.playlistId);
 </script>
 
 <div class="project-tree" transition:fade style="--event-color: {currentEvent.mainColor}">
@@ -115,7 +128,7 @@
 							<div class="ado-header">
 								<PlayerMention playerId="76561198825767745" /> presents:
 							</div>
-							<h1>ADOevent Calendar 2025</h1>
+							<h1>ADOvent Calendar 2025</h1>
 							<br />
 							<div class="ado-header">
 								Every day, from October 1st to October 24th, one brand new map is released. Compete every day for points and get a chance to
@@ -134,9 +147,10 @@
 					{#if currentMode.value == 'calendar'}
 						<div class="calendar">
 							{#each calendar as day, index}
+							{@const difficulties = day.song?.difficulties.filter(diff => diff.mode == 1)}
 								<a
 									href={day.song
-										? `/leaderboard/global/${day.song.id}${day.song.difficulties[day.song.difficulties.length - 1].value}${day.song.difficulties[day.song.difficulties.length - 1].mode}`
+										? `/leaderboard/global/${day.song.id}${difficulties[difficulties.length - 1].value}${difficulties[difficulties.length - 1].mode}`
 										: null}
 									class="calendar-day {day.today ? 'today' : ''} {day.song ? 'has-song' : 'empty'}">
 									<div class="calendar-day-container">
@@ -242,6 +256,15 @@
 								{/each}
 							</div>
 						{/if}
+					{:else if currentMode.value == 'playlist'}
+						<div class="playlist">
+							<Playlist
+								sharedPlaylistId={currentEvent.playlistId}
+								store={playlists}
+								expanded={true}
+								idx={0}
+								playlistExport={playlist} />
+						</div>
 					{:else if currentMode.value == 'faq'}
 						<div class="faq">
 							<h2>FAQ</h2>
@@ -290,9 +313,10 @@
 							<p>
 								<b>How do I get the achievement?</b> <br />
 								The achievement will be available at the end of the event. Achievement will have three tiers:<br />
-								tier 1 - play 10 event maps during the event period (10/01 - 10/25)<br />
-								tier 2 - receive any number of Ado points (end the day in the top 10)<br />
-								tier 3 - play every event map during the event period map during the event period
+								<b>tier 1</b> - pplay all event maps until the end of October ({formatDate(new Date('2025-10-31T23:59:59Z'))})<br />
+								<b>tier 2</b> - play 10 event maps on their corresponding day (10/01 - 10/25)<br />
+								<b>tier 3</b> - play every event map on its corresponding day (10/01 - 10/25)<br />
+								<b>tier 4</b> - receive any number of Ado points (end the day in the top 10)<br />
 							</p>
 						</div>
 					{/if}
@@ -323,12 +347,8 @@
 						<div style="margin-top: 1em;">
 							<div class="ado-header"><PlayerMention playerId="76561199103668170" /> also made a special sabers for this event:<br /></div>
 							<div class="buttons-container">
-								<a href="http://cdn.assets.beatleader.com/Adovent2025AdoRoseSaber.saber" target="_blank" rel="noreferrer">
-									<Button iconFa="fas fa-download" label="PC Sabers" color="blue" />
-								</a>
-								<a href="http://cdn.assets.beatleader.com/Adovent2025AdoRoseSaber.whacker" target="_blank" rel="noreferrer">
-									<Button iconFa="fas fa-download" label="Quest Sabers" color="red" />
-								</a>
+								<Button url="http://cdn.assets.beatleader.com/Adovent2025AdoRoseSaber.saber" iconFa="fas fa-download" label="PC Sabers" color="blue" onlyurl={true} />
+								<Button url="http://cdn.assets.beatleader.com/Adovent2025AdoRoseSaber.whacker" iconFa="fas fa-download" label="Quest Sabers" color="red" onlyurl={true} />
 							</div>
 							<br />
 							<span
@@ -518,6 +538,13 @@
 		border-radius: 8px;
 		padding: 15px;
 		text-align: center;
+	}
+
+	.playlist {
+		margin: 20px;
+		background: rgba(154, 154, 154, 0.134);
+		border-radius: 8px;
+		padding: 15px;
 	}
 
 	.bonus-ornaments {
