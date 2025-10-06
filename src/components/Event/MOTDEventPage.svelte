@@ -312,8 +312,8 @@
 							</p>
 							<p>
 								<b>How do I get the achievement?</b> <br />
-								The achievement will be available at the end of the event. Achievement will have three tiers:<br />
-								<b>tier 1</b> - pplay all event maps until the end of October ({formatDate(new Date('2025-10-31T23:59:59Z'))})<br />
+								The achievement will be available at the end of the event. Achievement will have four tiers:<br />
+								<b>tier 1</b> - play all event maps until the end of October ({formatDate(new Date('2025-10-31T23:59:59Z'))})<br />
 								<b>tier 2</b> - play 10 event maps on their corresponding day (10/01 - 10/25)<br />
 								<b>tier 3</b> - play every event map on its corresponding day (10/01 - 10/25)<br />
 								<b>tier 4</b> - receive any number of Ado points (end the day in the top 10)<br />
