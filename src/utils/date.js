@@ -195,7 +195,10 @@ export function formatDateRelative(val, roundFunc = Math.floor, unit = 'auto', l
 		style: 'long',
 	});
 
-	const diffInSecs = (Date.now() - dateFromString(val)) / 1000;
+	// Use direct JS Date math to avoid parsing and ensure correct sign
+	const now = new Date();
+	const then = val;
+	const diffInSecs = (now.getTime() - then.getTime()) / 1000;
 	const absDiff = Math.abs(diffInSecs);
 
 	switch (unit) {
@@ -203,21 +206,48 @@ export function formatDateRelative(val, roundFunc = Math.floor, unit = 'auto', l
 			if (absDiff < 60) return rtf.format(-roundFunc(diffInSecs), 'second');
 			else if (absDiff < 60 * 60) return rtf.format(-roundFunc(diffInSecs / 60), 'minute');
 			else if (absDiff < 60 * 60 * 24) return rtf.format(-roundFunc(diffInSecs / (60 * 60)), 'hour');
-			else if (absDiff < 60 * 60 * 24 * 30) return rtf.format(-roundFunc(diffInSecs / (60 * 60 * 24)), 'day');
-			else if (absDiff < 60 * 60 * 24 * 365) return rtf.format(-roundFunc(diffInSecs / (60 * 60 * 24 * 30)), 'month');
-			else if (absDiff < 60 * 60 * 24 * 365 * 2) {
-				const now = new Date();
-				const then = dateFromString(val);
-				if (now.getFullYear() - then.getFullYear() === 2) {
-					const rtfNumeric = new Intl.RelativeTimeFormat(locale, {
-						localeMatcher: 'best fit',
-						numeric: 'always',
-						style: 'long',
-					});
-					return rtfNumeric.format(-1, 'year');
+			else if (absDiff < 60 * 60 * 24 * 30) {
+				// Calendar-aware day difference: count crossed midnights, not just elapsed hours
+				const startOfNow = truncateDate(now, 'day');
+				const startOfThen = truncateDate(then, 'day');
+				const dayDiff = Math.round((startOfNow.getTime() - startOfThen.getTime()) / DAY);
+				return rtf.format(-dayDiff, 'day');
+			} else {
+				// Calendar-aware month/year differences using calendar boundaries
+				const monthDiff = (now.getFullYear() - then.getFullYear()) * 12 + (now.getMonth() - then.getMonth());
+				const absMonthDiff = Math.abs(monthDiff);
+
+				if (absMonthDiff < 12) {
+					if (roundFunc(absDiff / (60 * 60 * 24 * 30)) < 2) {
+						const rtfNumeric = new Intl.RelativeTimeFormat(locale, {
+							localeMatcher: 'best fit',
+							numeric: 'always',
+							style: 'long',
+						});
+						return rtfNumeric.format(-1, 'month');
+					}
+					return rtf.format(-monthDiff, 'month');
 				}
-				return rtf.format(-roundFunc(diffInSecs / (60 * 60 * 24 * 365)), 'year');
-			} else return rtf.format(-roundFunc(diffInSecs / (60 * 60 * 24 * 365)), 'year');
+
+				const yearsFromMonths = Math.trunc(monthDiff / 12); // trunc toward 0 keeps 13 months -> 1 year
+				const absYearsFromMonths = Math.abs(yearsFromMonths);
+				const yearNumberDiff = Math.abs(now.getFullYear() - then.getFullYear());
+
+				if (absMonthDiff < 24) {
+					// Avoid misleading phrases like "last year" when crossing two calendar years but < 2 full years
+					if (yearNumberDiff === 2 && absYearsFromMonths === 1) {
+						const rtfNumeric = new Intl.RelativeTimeFormat(locale, {
+							localeMatcher: 'best fit',
+							numeric: 'always',
+							style: 'long',
+						});
+						return rtfNumeric.format(-yearsFromMonths, 'year');
+					}
+					return rtf.format(-yearsFromMonths, 'year');
+				}
+
+				return rtf.format(-yearsFromMonths, 'year');
+			}
 
 		default:
 			let unitDivider =
