@@ -127,6 +127,9 @@
 		});
 	});
 
+	let openModal = null;
+	let closeModal = null;
+
 	$: if (mainEl) containerStore.observe(mainEl);
 
 	if ($configStore.preferences.theme != 'default' && $configStore.preferences.theme != 'ree-dark') {
@@ -279,9 +282,9 @@
 	</div>
 {/if} -->
 <Router {url}>
-	<Nav class={$configStore?.preferences?.theme} />
+	<Nav class={$configStore?.preferences?.theme} {openModal} {closeModal} />
 	<Notifications zIndex={10000} item={NotificationComponent}>
-		<SimpleModal closeButton={false} styleWindow={{width: '90vw', height: '65vh'}} styleContent={{padding: 0, 'margin-bottom': '-0.5em'}}>
+		<SimpleModal closeButton={false} styleWindow={{width: '90vw', height: '65vh'}} styleContent={{padding: 0, 'margin-bottom': '-0.5em'}} bind:openFunction={openModal} bind:closeFunction={closeModal}>
 			<main bind:this={mainEl} class={$configStore?.preferences?.theme}>
 				<div class="ssr-page-container">
 					<Route path="/">

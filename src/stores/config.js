@@ -85,6 +85,7 @@ export const DEFAULT_CONFIG = {
 		showFiltersOnScoresMobile: false,
 
 		beatTheHeatShown: false,
+		askOnLogOut: true,
 	},
 	scorePreferences: {
 		badgeRows: 2,

@@ -1,5 +1,5 @@
 <script>
-	import {onMount} from 'svelte';
+	import {onMount, getContext} from 'svelte';
 	import {navigate} from 'svelte-routing';
 	import eventBus from '../../utils/broadcast-channel-pubsub';
 	import createAccountStore from '../../stores/beatleader/account';
@@ -19,9 +19,13 @@
 	import PlaylistHeaderMenuItem from './PlaylistHeaderMenuItem.svelte';
 	import {globalHistory} from 'svelte-routing/src/history';
 	import {GLOBAL_LEADERBOARD_TYPE, setLeaderboardType} from '../../utils/format';
+	import LogOutConfirm from './LogOutConfirm.svelte';
 
 	let className = null;
 	export {className as class};
+
+	export let openModal = null;
+	export let closeModal = null;
 
 	let player = null;
 	let settingsNotificationBadge = null;
@@ -137,8 +141,12 @@
 				props: {
 					label: 'Log Out',
 					callback: () => {
-						account.logOut();
-						navigate('/');
+						if ($configStore?.preferences?.askOnLogOut) {
+							logOut();
+						} else {
+							account.logOut();
+							navigate('/');
+						}
 					},
 				},
 			});
@@ -213,6 +221,21 @@
 	function updateHref() {
 		currenturl = window.location.href;
 	}
+
+	
+	const logOut = async () => {
+		openModal(LogOutConfirm, {
+			confirm: () => {
+				closeModal();
+				account.logOut();
+				navigate('/');
+			},
+			cancel: () => {
+				closeModal();
+			},
+		});
+	};
+
 	$: updateHref();
 	$: player = $account?.player;
 	$: starredFollowedIds = player?.profileSettings?.starredFriends ?? [];

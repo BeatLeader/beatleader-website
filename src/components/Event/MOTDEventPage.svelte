@@ -97,7 +97,8 @@
 		fetch(url)
 			.then(r => r.blob())
 			.then(r => {
-				saveAs(r, `Adovent2025AdoRoseSaber.whacker`);
+				const blob = new Blob([r], { type: 'application/octet-stream' });
+				saveAs(blob, 'Adovent2025AdoRoseSaber.whacker');
 				whackerDownloading = false;
 			});
 	}

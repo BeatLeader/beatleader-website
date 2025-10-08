@@ -184,6 +184,9 @@
 	 */
 	export let disableFocusTrap = false;
 
+	export let openFunction = null;
+	export let closeFunction = null;
+
 	const defaultState = {
 		id,
 		ariaLabel,
@@ -396,6 +399,9 @@
 	 * @type {Context}
 	 */
 	const context = {open, close};
+
+	openFunction = open;
+	closeFunction = close;
 
 	setContext(key, context);
 
