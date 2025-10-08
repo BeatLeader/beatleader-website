@@ -11,6 +11,7 @@
 	import EventMeta from './EventMeta.svelte';
 	import Playlist from '../Playlists/Playlist.svelte';
 	import createPlaylistStore from '../../stores/playlists';
+	import {saveAs} from 'file-saver';
 
 	export let currentEvent;
 	export let page = 1;
@@ -89,6 +90,18 @@
 		}
 	}
 
+	let whackerDownloading = false;
+
+	function downloadWhacker(url) {
+		whackerDownloading = true;
+		fetch(url)
+			.then(r => r.blob())
+			.then(r => {
+				saveAs(r, `Adovent2025AdoRoseSaber.whacker`);
+				whackerDownloading = false;
+			});
+	}
+
 	let modes = [
 		{label: 'Calendar', value: 'calendar', iconFa: 'fas fa-calendar-alt'},
 		{label: 'Leaderboard', value: 'leaderboard', iconFa: 'fas fa-trophy'},
@@ -147,7 +160,7 @@
 					{#if currentMode.value == 'calendar'}
 						<div class="calendar">
 							{#each calendar as day, index}
-							{@const difficulties = day.song?.difficulties.filter(diff => diff.mode == 1)}
+								{@const difficulties = day.song?.difficulties.filter(diff => diff.mode == 1)}
 								<a
 									href={day.song
 										? `/leaderboard/global/${day.song.id}${difficulties[difficulties.length - 1].value}${difficulties[difficulties.length - 1].mode}`
@@ -258,12 +271,7 @@
 						{/if}
 					{:else if currentMode.value == 'playlist'}
 						<div class="playlist">
-							<Playlist
-								sharedPlaylistId={currentEvent.playlistId}
-								store={playlists}
-								expanded={true}
-								idx={0}
-								playlistExport={playlist} />
+							<Playlist sharedPlaylistId={currentEvent.playlistId} store={playlists} expanded={true} idx={0} playlistExport={playlist} />
 						</div>
 					{:else if currentMode.value == 'faq'}
 						<div class="faq">
@@ -347,8 +355,21 @@
 						<div style="margin-top: 1em;">
 							<div class="ado-header"><PlayerMention playerId="76561199103668170" /> also made a special sabers for this event:<br /></div>
 							<div class="buttons-container">
-								<Button url="http://cdn.assets.beatleader.com/Adovent2025AdoRoseSaber.saber" iconFa="fas fa-download" label="PC Sabers" color="blue" onlyurl={true} />
-								<Button url="http://cdn.assets.beatleader.com/Adovent2025AdoRoseSaber.whacker" iconFa="fas fa-download" label="Quest Sabers" color="red" onlyurl={true} />
+								<Button
+									url="https://cdn.assets.beatleader.com/Adovent2025AdoRoseSaber.saber"
+									iconFa="fas fa-download"
+									label="PC Sabers"
+									color="blue"
+									onlyurl={true} />
+								{#if whackerDownloading}
+									<Spinner />
+								{:else}
+									<Button
+										iconFa="fas fa-download"
+										label="Quest Sabers"
+										color="red"
+										on:click={() => downloadWhacker('https://cdn.assets.beatleader.com/Adovent2025AdoRoseSaber.whacker')} />
+								{/if}
 							</div>
 							<br />
 							<span
