@@ -343,6 +343,7 @@
 		delete: 'Delete',
 		analyzer: 'Reeplay Analyzer',
 		altReplay: 'ArcViewer Replay',
+		download: 'Download .bsor',
 	};
 
 	$: onConfigUpdated(configStore && $configStore ? $configStore : null);

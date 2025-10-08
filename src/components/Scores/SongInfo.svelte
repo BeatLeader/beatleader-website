@@ -71,7 +71,7 @@
 					{song}
 					{twitchUrl}
 					{diffInfo}
-					scoreId={score.id}
+					{score}
 					{replayLink}
 					{icons}
 					{serviceIcon}

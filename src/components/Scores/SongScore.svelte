@@ -210,7 +210,7 @@
 						{song}
 						{twitchUrl}
 						{diffInfo}
-						scoreId={score.id}
+						{score}
 						replayLink={score.id ? null : score.replay}
 						icons={selectedIcons}
 						{serviceIcon}
@@ -223,7 +223,7 @@
 						{song}
 						{twitchUrl}
 						{diffInfo}
-						scoreId={score.id}
+						{score}
 						replayLink={score.id ? null : score.replay}
 						icons={selectedIcons}
 						{serviceIcon}

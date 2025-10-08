@@ -156,7 +156,7 @@
 				</div>
 			{/if}
 			<div class="replay-icons-container">
-				<Icons icons={['replay', 'analyzer', 'altReplay']} scoreId={score?.score?.id} />
+				<Icons icons={['replay', 'analyzer', 'altReplay', 'download']} score={score?.score} />
 			</div>
 		</div>
 	</div>

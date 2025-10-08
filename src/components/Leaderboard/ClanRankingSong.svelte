@@ -103,7 +103,7 @@
 	$: diffInfo = opt(leaderboard, 'diffInfo');
 
 	$: selectedIcons = (icons ?? ($configStore && visibleScoreIcons($configStore.visibleScoreIcons)))?.filter(
-		i => i != 'analyzer' && i != 'altReplay'
+		i => i != 'analyzer' && i != 'altReplay' && i != 'download'
 	);
 
 	$: scores = ($clanRankingStore?.clanRanking?.scores ?? []).map((s, i) => {

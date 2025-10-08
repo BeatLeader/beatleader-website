@@ -215,7 +215,7 @@
 						{song}
 						{twitchUrl}
 						{diffInfo}
-						scoreId={score.id}
+						{score}
 						attempt={score.endType > 0}
 						replayLink={score.endType > 0 ? score.replay : null}
 						icons={selectedIcons}
@@ -229,7 +229,7 @@
 						{song}
 						{twitchUrl}
 						{diffInfo}
-						scoreId={score.id}
+						{score}
 						attempt={score.endType > 0}
 						replayLink={score.endType > 0 ? score.replay : null}
 						icons={selectedIcons}

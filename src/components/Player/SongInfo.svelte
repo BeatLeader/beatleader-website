@@ -71,7 +71,7 @@
 					{song}
 					{twitchUrl}
 					{diffInfo}
-					scoreId={score.id}
+					{score}
 					attempt={score.endType > 0}
 					{replayLink}
 					{icons}

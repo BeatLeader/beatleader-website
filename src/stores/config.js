@@ -222,6 +222,7 @@ export const DEFAULT_CONFIG = {
 		delete: true,
 		analyzer: true,
 		altReplay: false,
+		download: false,
 	},
 	ppCurve: {
 		startAcc: 0.6,

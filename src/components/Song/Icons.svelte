@@ -22,7 +22,7 @@
 	export let diffInfo = null;
 	export let twitchUrl = null;
 	export let icons = false;
-	export let scoreId = null;
+	export let score = null;
 	export let attempt = false;
 	export let replayLink = null;
 	export let mapCheck = false;
@@ -50,7 +50,7 @@
 	let shownIcons;
 
 	function updateIcons(icons) {
-		shownIcons = icons ? icons : ['playlist', 'bsr', 'bs', 'preview', 'replay', 'analyzer', 'oneclick', 'twitch', 'delete', 'pin'];
+		shownIcons = icons ? icons : ['playlist', 'bsr', 'bs', 'preview', 'replay', 'analyzer', 'oneclick', 'twitch', 'delete', 'pin', 'download'];
 		if (mapCheck) {
 			shownIcons.push('mapcheck');
 		}
@@ -180,9 +180,9 @@
 	$: ocdifficulties = ocplaylistSong?.difficulties?.map(el => capitalize(el.name) + el.characteristic);
 
 	$: isAdmin = $account.player && $account.player.playerInfo.role && $account.player.playerInfo.role.includes('admin');
-	$: replayUrl = webPlayerLink(replayLink, scoreId, !shownIcons.includes('altReplay') && $configStore.preferences.webPlayer, attempt);
-	$: altReplayUrl = webPlayerLink(replayLink, scoreId, 'arcviewer', attempt);
-	$: analyzerUrl = analyzerLink(replayLink, scoreId);
+	$: replayUrl = webPlayerLink(replayLink, score?.id, !shownIcons.includes('altReplay') && $configStore.preferences.webPlayer, attempt);
+	$: altReplayUrl = webPlayerLink(replayLink, score?.id, 'arcviewer', attempt);
+	$: analyzerUrl = analyzerLink(replayLink, score?.id);
 	$: previewUrl = `https://allpoland.github.io/ArcViewer/?id=${songKey}${diffName ? `&difficulty=${diffName}` : ''}${
 		charName ? `&mode=${charName}` : ''
 	}`;
@@ -203,7 +203,7 @@
 
 <ScoreActionButtonsLayout type={layoutType}>
 	<span slot="special_buttons">
-		{#if shownIcons.includes('delete') && isAdmin && scoreId}
+		{#if shownIcons.includes('delete') && isAdmin && score?.id}
 			<Button
 				iconFa="fas fa-trash-alt"
 				title="Delete score"
@@ -211,13 +211,13 @@
 				type="danger"
 				animated={true}
 				on:click={() =>
-					fetch(BL_API_URL + `score/${scoreId}`, {
+					fetch(BL_API_URL + `score/${score?.id}`, {
 						method: 'DELETE',
 						credentials: 'include',
 					})} />
 		{/if}
 		{#if !noPin && shownIcons.includes('pin')}
-			<PinIcon {scoreId} {attempt} on:score-pinned />
+			<PinIcon scoreId={score?.id} {attempt} on:score-pinned />
 		{/if}
 		{#if songKey && songKey.length && shownIcons.includes('playlist')}
 			{#if $configStore?.preferences?.playlistOption == 'selected'}
@@ -402,6 +402,16 @@
 				cls={altReplay ? 'replay-button-alt' : 'replay-button'}
 				icon="<img src='/assets/ArcViewerIcon.webp'>"
 				title="Replay"
+				animated={true}
+				noMargin={true} />
+		{/if}
+
+		{#if shownIcons.includes('download') && (replayLink?.length || score?.replay?.length)}
+			<Button
+				url={replayLink || score?.replay}
+				onlyurl={true}
+				iconFa="fas fa-download"
+				title="Download .bsor"
 				animated={true}
 				noMargin={true} />
 		{/if}
