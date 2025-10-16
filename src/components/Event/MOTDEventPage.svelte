@@ -97,7 +97,7 @@
 		fetch(url)
 			.then(r => r.blob())
 			.then(r => {
-				const blob = new Blob([r], { type: 'application/octet-stream' });
+				const blob = new Blob([r], {type: 'application/octet-stream'});
 				saveAs(blob, 'Adovent2025AdoRoseSaber.whacker');
 				whackerDownloading = false;
 			});
@@ -239,29 +239,31 @@
 											<p>{player.name}</p>
 										</div>
 										<div class="player-days">
-											{#each player.days as day, index}
-												<div class="day-container">
-													<div class="day-score">
-														<p title={`#${day.points.rank} on ${calendar[day.day - 1].song.name}`}>
-															{calendar[day.day - 1].date.getDate().toString().padStart(2, '0')}
-														</p>
+											<div class="player-days-container">
+												{#each player.days as day, index}
+													<div class="day-container">
+														<div class="day-score">
+															<p title={`#${day.points.rank} on ${calendar[day.day - 1].song.name}`}>
+																{calendar[day.day - 1].date.getDate().toString().padStart(2, '0')}
+															</p>
+														</div>
+														<div class="day-diffs">
+															{#each day.diffs.reverse() as diff, index}
+																<div
+																	class="day-diff"
+																	style="background-color: {day.points.rank === 1
+																		? '#ffb900'
+																		: day.points.rank === 2
+																			? '#848484'
+																			: day.points.rank === 3
+																				? '#764b00'
+																				: 'purple'}">
+																</div>
+															{/each}
+														</div>
 													</div>
-													<div class="day-diffs">
-														{#each day.diffs.reverse() as diff, index}
-															<div
-																class="day-diff"
-																style="background-color: {day.points.rank === 1
-																	? '#ffb900'
-																	: day.points.rank === 2
-																		? '#848484'
-																		: day.points.rank === 3
-																			? '#764b00'
-																			: 'purple'}">
-															</div>
-														{/each}
-													</div>
-												</div>
-											{/each}
+												{/each}
+											</div>
 											<div class="player-score">
 												<p>{player.score.toFixed(0)} points</p>
 											</div>
@@ -675,6 +677,13 @@
 	.player-days {
 		display: flex;
 		gap: 10px;
+		justify-content: space-between;
+	}
+
+	.player-days-container {
+		display: flex;
+		gap: 10px;
+		flex-wrap: wrap;
 	}
 
 	.day-container {
@@ -746,6 +755,10 @@
 
 		.day-container {
 			margin-left: -22px;
+		}
+
+		.player-days {
+			width: 100%;
 		}
 	}
 </style>
