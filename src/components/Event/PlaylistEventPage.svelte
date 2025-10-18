@@ -693,7 +693,7 @@
 				<span>
 					<b>Bats? Ghosts? Pumpkins? It's Halloween again? 😱 </b><br /><br />
 					<PlayerMention playerId="76561198289375258" /> Mapping Group, together with <PlayerMention playerId="76561199066888403" />,<PlayerMention playerId="76561198825767745" />,<PlayerMention playerId="76561198826449821" /> prepare a new event for you: <b>BatLeader!</b> <br />
-					Play maps from <a href="https://beatsaver.com/playlists/701888">Genres Of Halloween</a> and from <a href="https://beatsaver.com/playlists/203171">Gone EP</a> packs, and other spooky maps from cool mappers<br /><br />
+					Play maps from <a href="https://beatsaver.com/playlists/1033478">Genres Of Halloween</a> and from <a href="https://beatsaver.com/playlists/1024073">Gone EP</a> packs, and other spooky maps from cool mappers<br /><br />
 					Earn rewards:<br />
 					• <b>Badge</b> for making it into the event's top 10<br />
 					• <b>Achievement tiers</b> for participating:<br />
