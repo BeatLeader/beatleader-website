@@ -273,7 +273,7 @@
 			<div class="logo-container desktop-and-up">
 				<img src="/assets/logo.webp" class="logo" alt="" />
 				<div class="logo-name">
-					<span class="name">BEATLEADER</span>
+					<span class="name">B<span class="broken-e">E</span>ATLEADER</span>
 					{#if leaderboardType.id != ''}
 						<span class="leaderboard-type">{leaderboardType.name}</span>
 					{/if}
@@ -811,6 +811,15 @@
 		margin-top: 0.3em;
 	}
 
+	.broken-e {
+		display: inline;
+		animation: brokenLampFlicker 7.6s steps(1, end) infinite;
+		will-change: opacity, text-shadow;
+		font-family: 'Audiowide';
+    letter-spacing: 0.2em;
+    margin-top: 0.3em;
+	}
+
 	.leaderboard-type {
 		color: #9f9f9f;
 		font-size: 0.8em;
@@ -1114,6 +1123,54 @@
 		100% {
 			transform: scale(1.05);
 			box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
+		}
+	}
+
+	/* Horror-movie office lamp: mostly off, brief harsh flicks on */
+	@keyframes brokenLampFlicker {
+		0%, 5%, 9%, 21%, 23%, 64%, 65%, 85%, 100% {
+			opacity: 0.08;
+			text-shadow: none;
+		}
+		6% {
+			opacity: 1;
+			text-shadow: 0 0 6px rgba(255, 255, 255, 0.9), 0 0 12px var(--textColor), 0 0 20px var(--beatleader-primary);
+		}
+		6.4% {
+			opacity: 0.08;
+			text-shadow: none;
+		}
+		7.1% {
+			opacity: 0.95;
+			text-shadow: 0 0 5px rgba(255, 255, 255, 0.8), 0 0 10px var(--textColor), 0 0 16px var(--beatleader-primary);
+		}
+		7.5% {
+			opacity: 0.08;
+			text-shadow: none;
+		}
+		22.1% {
+			opacity: 0.9;
+			text-shadow: 0 0 5px rgba(255, 255, 255, 0.8), 0 0 10px var(--textColor);
+		}
+		22.5% {
+			opacity: 0.08;
+			text-shadow: none;
+		}
+		66.2% {
+			opacity: 1;
+			text-shadow: 0 0 6px rgba(255, 255, 255, 0.9), 0 0 12px var(--textColor), 0 0 22px var(--beatleader-primary);
+		}
+		66.6% {
+			opacity: 0.08;
+			text-shadow: none;
+		}
+		86.2% {
+			opacity: 0.85;
+			text-shadow: 0 0 4px rgba(255, 255, 255, 0.75), 0 0 8px var(--textColor);
+		}
+		86.6% {
+			opacity: 0.08;
+			text-shadow: none;
 		}
 	}
 

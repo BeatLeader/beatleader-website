@@ -687,6 +687,26 @@
 				</div>
 			</ContentBox>
 		{/if}
+
+		{#if eventId == 78}
+			<ContentBox cls={modalShown ? 'inner-modal' : ''}>
+				<span>
+					<b>Bats? Ghosts? Pumpkins? It's Halloween again? 😱 </b><br /><br />
+					<PlayerMention playerId="76561198289375258" /> Mapping Group, together with <PlayerMention playerId="76561199066888403" />,<PlayerMention playerId="76561198825767745" />,<PlayerMention playerId="76561198826449821" /> prepare a new event for you: <b>BatLeader!</b> <br />
+					Play maps from <a href="https://beatsaver.com/playlists/701888">Genres Of Halloween</a> and from <a href="https://beatsaver.com/playlists/203171">Gone EP</a> packs, and other spooky maps from cool mappers<br /><br />
+					Earn rewards:<br />
+					• <b>Badge</b> for making it into the event's top 10<br />
+					• <b>Achievement tiers</b> for participating:<br />
+						○ Tier 1: Pass any difficulty on every map<br />
+						○ Tier 2: Pass every Expert+ difficulty<br />
+						○ Tier 3: Get 80%+ accuracy on every Expert+ difficulty<br />
+					(All tiers must be completed without No-Fail, but other negative modifiers are allowed) <br /><br />
+				</span>
+				<span>
+					<b>Have a scary weekends and holiday, many sweets and fun!🎃</b>
+				</span>
+			</ContentBox>
+		{/if}
 		<ContentBox cls={modalShown ? 'inner-modal' : ''}>
 			<section class="filter">
 				<input
