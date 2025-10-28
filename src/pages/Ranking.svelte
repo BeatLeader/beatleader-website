@@ -254,7 +254,7 @@
 
 <section class="align-content">
 	<article class="page-content" transition:fade|global>
-		<EventBanner />
+		<!-- <EventBanner /> -->
 		<div class="ranking-switcher">
 			<TabSwitcher
 				values={tabOptions}
@@ -912,7 +912,7 @@
 
 		:global(.ranking-filters-dropdown) {
 			position: absolute !important;
-			top: 16.8em;
+			top: 4.2em;
 			right: 0.5em;
 			z-index: 3 !important;
 		}
