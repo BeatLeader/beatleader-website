@@ -1,5 +1,6 @@
 <script>
 	import {navigate} from 'svelte-routing';
+	import {isSelectionInsideElement} from '../../utils/js';
 	import createAccountStore from '../../stores/beatleader/account';
 	import {LEADERBOARD_SCORES_PER_PAGE} from '../../utils/beatleader/consts';
 	import {LEADERBOARD_SCORES_PER_PAGE as ACCSABER_LEADERBOARD_SCORES_PER_PAGE} from '../../utils/accsaber/consts';
@@ -32,6 +33,8 @@
 		return 'global';
 	}
 
+	let anchorEl = null;
+
 	$: song = leaderboard?.song ?? null;
 	$: scoresPerPage = service === 'accsaber' ? ACCSABER_LEADERBOARD_SCORES_PER_PAGE : LEADERBOARD_SCORES_PER_PAGE;
 	$: page = rank && Number.isFinite(rank) ? Math.floor((rank - 1) / scoresPerPage) + 1 : 1;
@@ -51,7 +54,13 @@
 				<span class="name">{song.name} {song.subName}</span>
 				<div class="author"><span class="author-name">{song.author}</span> <small>{song.mapper}</small></div>
 			{:else}
-				<a href={leaderboardUrl} on:click|preventDefault={() => navigate(leaderboardUrl)}>
+				<a
+					bind:this={anchorEl}
+					href={leaderboardUrl}
+					on:click|preventDefault={() => {
+						if (isSelectionInsideElement(anchorEl, window.getSelection())) return;
+						navigate(leaderboardUrl);
+					}}>
 					<span class="name">{song.name} {song.subName}</span>
 					<div class="author"><span class="author-name">{song.author}</span> <small>{song.mapper}</small></div>
 

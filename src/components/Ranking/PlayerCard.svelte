@@ -1,7 +1,7 @@
 <script>
 	import {navigate} from 'svelte-routing';
 	import {fade} from 'svelte/transition';
-	import {opt} from '../../utils/js';
+	import {opt, isSelectionInsideElement} from '../../utils/js';
 	import Value from '../Common/Value.svelte';
 	import Avatar from '../Common/Avatar.svelte';
 	import Change from '../Common/Change.svelte';
@@ -153,7 +153,10 @@
 	}`}
 	bind:this={referenceElement}
 	style="grid-template-columns: {firstColumnWidth} 4em auto 1fr; opacity: {opacity}"
-	on:click|preventDefault={e => onPlayerClick(e, player)}
+	on:click|preventDefault={e => {
+		if (isSelectionInsideElement(referenceElement, window.getSelection())) return;
+		onPlayerClick(e, player);
+	}}
 	on:keypress={e => onPlayerClick(e, player)}
 	on:pointerover={() => hoverStats(player)}>
 	<div class="player-rank" style="grid-template-columns: {firstColumnGridTemplate}">

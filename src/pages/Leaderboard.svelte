@@ -760,7 +760,6 @@
 	$: clanRankingList = $leaderboardStore?.clanRanking;
 	$: leaderboard = $leaderboardStore?.leaderboard;
 	$: song = $leaderboardStore?.leaderboard?.song;
-	$: console.log(song);
 
 	$: initRatings(leaderboard);
 

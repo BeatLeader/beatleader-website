@@ -82,15 +82,13 @@
 			</div>
 		</div>
 		<div class="cover-container">
-			<div
+			<img
 				class="map-cover"
-				style={`${
-					coverUrl
-						? `background: url(${coverUrl}${shouldBlur && !isBlurred ? '?original=true' : ''}); background-repeat: no-repeat; background-size: cover; background-position: center;`
-						: ''
-				} ${shouldBlur ? 'cursor: pointer;' : ''}`}
-				on:click={() => (isBlurred = !isBlurred)}>
-			</div>
+				src={coverUrl ? `${coverUrl}${shouldBlur && !isBlurred ? '?original=true' : ''}` : ''}
+				alt="Map cover"
+				style={shouldBlur ? 'cursor: pointer;' : ''}
+				on:click={() => (isBlurred = !isBlurred)}
+			/>
 		</div>
 
 		<div class="main-container">

@@ -1,6 +1,7 @@
 <script>
 	import {createEventDispatcher, getContext, onMount} from 'svelte';
 	import {fade, fly, slide} from 'svelte/transition';
+	import {isSelectionInsideElement} from '../../../utils/js';
 
 	import Value from '../../Common/Value.svelte';
 	import Badge from '../../Common/Badge.svelte';
@@ -452,11 +453,22 @@
 
 				<a on:click|preventDefault|stopPropagation={() => navigate(mapLink)} class="header-link" href={mapLink}></a>
 				<div class="header" style="height: {headerContainerHeight < 150 ? '100%' : 'unset'};" class:is-hovered={isHovered}>
-					<div
-						class="map-cover"
-						style={coverUrl
-							? `background: url(${coverUrl}); background-repeat: no-repeat; background-size: cover; background-position: center;`
-							: ''}>
+					<div class="map-cover">
+						{#if coverUrl}
+							<a
+								on:click|preventDefault|stopPropagation={() => {
+									if (isSelectionInsideElement(mapCardElement, window.getSelection())) return;
+									navigate(mapLink);
+								}}
+								href={mapLink}
+								class="cover-link"
+								style="display: block; width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 2;"
+								tabindex="0"
+								aria-label="Open map page"
+							>
+								<img src={coverUrl} alt="map cover" style="width: 100%; height: 100%; object-fit: cover; object-position: center; background: #222;" />
+							</a>
+						{/if}
 						<div class="sort-value-background" class:with-value={sortValue} class:is-hovered={sortValue && isHovered}></div>
 					</div>
 
@@ -466,7 +478,10 @@
 						</div>
 					{/if}
 
-					<a on:click|preventDefault|stopPropagation={() => navigate(mapLink)} class="main-container" href={mapLink}>
+					<a on:click|preventDefault|stopPropagation={() => {
+						if (isSelectionInsideElement(mapCardElement, window.getSelection())) return;
+						navigate(mapLink);
+					}} class="main-container" href={mapLink}>
 						<div class="header-container" bind:this={headerContainer}>
 							<div class="header-top-part">
 								<h1 class="song-title">
@@ -860,7 +875,7 @@
 		aspect-ratio: 1;
 		border-radius: 8px;
 		z-index: 2;
-		pointer-events: none;
+		overflow: hidden;
 	}
 
 	.placeholder {

@@ -1,8 +1,12 @@
 <script>
 	import Flag from './Flag.svelte';
+	import {isSelectionInsideElement} from '../../utils/js';
 	import Popover from './Popover.svelte';
 	import {fade} from 'svelte/transition';
 	import MiniProfile from '../Player/Mini/MiniProfile.svelte';
+	import {createEventDispatcher} from 'svelte';
+
+	const dispatch = createEventDispatcher();
 
 	export let player;
 	export let type = null;
@@ -22,7 +26,10 @@
 	href={`/u/${playerId}${type ? '/' + type : ''}/1${playerClickFilter ? '?' + playerClickFilter : ''}`}
 	class="player-name clickable has-pointer-events"
 	bind:this={referenceElement}
-	on:click|preventDefault>
+	on:click|preventDefault={e => {
+		if (isSelectionInsideElement(referenceElement, window.getSelection())) return;
+		dispatch('click', e);
+	}}>
 	{#if !hideFlag}
 		<Flag {country} on:flag-click />
 	{/if}

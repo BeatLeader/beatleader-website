@@ -779,6 +779,8 @@ body {
 a {
 	cursor: pointer;
 	text-decoration: none;
+	-webkit-user-drag: none; /* Safari/Chrome */
+  	user-drag: none;
 }
 
 a strong {
@@ -822,6 +824,7 @@ small {
 span {
 	font-style: inherit;
 	font-weight: inherit;
+	user-select: text;
 }
 
 strong {

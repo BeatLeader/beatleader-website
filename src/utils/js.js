@@ -71,3 +71,14 @@ export function shallowEqual(object1, object2, exceptionKeys = []) {
 export function decapitalizeFirstLetter(string) {
 	return string.charAt(0).toLowerCase() + string.slice(1);
 }
+
+export function isSelectionInsideElement(element, selection) {
+	const sel = window.getSelection?.();
+	if (sel && !sel.isCollapsed) {
+		try {
+			const range = sel.getRangeAt(0);
+			if (element.contains(range.commonAncestorContainer)) return true;
+		} catch (_) {}
+	}
+	return false;
+}
