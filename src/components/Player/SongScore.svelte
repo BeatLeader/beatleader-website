@@ -156,7 +156,7 @@
 						</h3>
 						{#if score.speed && score.speed != 1}
 							<h3 class="pin-description" title="Practice speed">
-								{score.speed.toFixed(1)}x
+								{score.speed.toFixed(2)}x
 							</h3>
 						{/if}
 					{:else}
