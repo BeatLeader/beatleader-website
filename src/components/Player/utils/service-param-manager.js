@@ -18,6 +18,7 @@ const validSorts = {
 		'replaysWatched',
 		'mistakes',
 		'sotwNominations',
+		'scoreValue',
 	],
 	attempts: ['pp', 'date', 'acc', 'rank', 'playCount', 'pauses', 'maxStreak', 'mistakes'],
 	beatsavior: ['date', 'acc', 'mistakes'],

@@ -86,6 +86,13 @@
 								},
 								{id: 'date', label: 'Date', title: 'Sort by date', iconFa: 'fa fa-clock', url: buildUrl('scores', {sort: 'date'})},
 								{id: 'acc', label: 'Acc', title: 'Sort by accuracy', iconFa: 'fa fa-crosshairs', url: buildUrl('scores', {sort: 'acc'})},
+								{
+									id: 'scoreValue',
+									label: 'Score',
+									title: 'Sort by modified score value',
+									iconFa: 'fa fa-coins',
+									url: buildUrl('scores', {sort: 'scoreValue'}),
+								},
 								{id: 'rank', label: 'Rank', title: 'Sort by rank', iconFa: 'fa fa-list-ol', url: buildUrl('scores', {sort: 'rank'})},
 								{id: 'stars', label: 'Stars', title: 'Sort by song stars', iconFa: 'fa fa-star', url: buildUrl('scores', {sort: 'stars'})},
 								{
