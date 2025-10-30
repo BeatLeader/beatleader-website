@@ -6,7 +6,7 @@
 	import Value from '../../Common/Value.svelte';
 	import Badge from '../../Common/Badge.svelte';
 	import Icons from '../../Song/Icons.svelte';
-	import {formatDiffStatus, DifficultyStatus, wrapBLStatus, getSongSortingValue} from '../../../utils/beatleader/format';
+	import {formatDiffStatus, DifficultyStatus, wrapBLStatus, getSongSortingValue, isReadyToRank} from '../../../utils/beatleader/format';
 	import {configStore} from '../../../stores/config';
 	import HashDisplay from '../../Common/HashDisplay.svelte';
 	import SongStatus from './SongStatus.svelte';
@@ -75,6 +75,7 @@
 	let sortValue = null;
 	let coverUrl = null;
 	let mapType = null;
+	let readyToRank = false;
 
 	function getSong(map) {
 		if (!map) return;
@@ -94,7 +95,9 @@
 			hash = song.hash;
 			name = song.name;
 			coverUrl = song.coverImage;
-			sortValue = getSongSortingValue(song, null, sortBy);
+
+			sortValue = getSongSortingValue(song, null, sortBy, status);
+			readyToRank = isReadyToRank(song, null, sortBy, status);
 		}
 	}
 
@@ -464,9 +467,11 @@
 								class="cover-link"
 								style="display: block; width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 2;"
 								tabindex="0"
-								aria-label="Open map page"
-							>
-								<img src={coverUrl} alt="map cover" style="width: 100%; height: 100%; object-fit: cover; object-position: center; background: #222;" />
+								aria-label="Open map page">
+								<img
+									src={coverUrl}
+									alt="map cover"
+									style="width: 100%; height: 100%; object-fit: cover; object-position: center; background: #222;" />
 							</a>
 						{/if}
 						<div class="sort-value-background" class:with-value={sortValue} class:is-hovered={sortValue && isHovered}></div>
@@ -478,10 +483,13 @@
 						</div>
 					{/if}
 
-					<a on:click|preventDefault|stopPropagation={() => {
-						if (isSelectionInsideElement(mapCardElement, window.getSelection())) return;
-						navigate(mapLink);
-					}} class="main-container" href={mapLink}>
+					<a
+						on:click|preventDefault|stopPropagation={() => {
+							if (isSelectionInsideElement(mapCardElement, window.getSelection())) return;
+							navigate(mapLink);
+						}}
+						class="main-container"
+						href={mapLink}>
 						<div class="header-container" bind:this={headerContainer}>
 							<div class="header-top-part">
 								<h1 class="song-title">
@@ -513,6 +521,13 @@
 								{#if mapType && $configStore.mapCards.mapType}
 									<MapTypeDescription type={mapType} />
 								{/if}
+
+								{#if readyToRank}
+									<i
+										class="fa-solid fa-calendar-check"
+										style="color: #2fff00; margin-top: 0.2em;"
+										title="Ready to rank this Friday at 10:00 UTC"></i>
+								{/if}
 							</div>
 						</div>
 					</a>
@@ -532,7 +547,11 @@
 					style="--margin-top-value: -{headerContainerHeight < 150 ? 2.4 : 0}em;">
 					<div class="placeholder">
 						{#if sortValue}
-							<div class="sort-value" class:is-hovered={isHovered || currentAnimation}>
+							<div
+								class="sort-value"
+								class:is-hovered={isHovered || currentAnimation}
+								class:ready-to-rank={readyToRank}
+								class:is-qualified={status == DifficultyStatus.qualified && sortBy == 'timestamp'}>
 								{sortValue}
 							</div>
 						{/if}
@@ -719,6 +738,7 @@
 		font-weight: 600;
 		font-size: 0.9em;
 		margin-bottom: 0.4em;
+		margin-right: 0.5em;
 	}
 
 	.sort-value.is-hovered {
@@ -741,6 +761,11 @@
 
 	.sort-value-background.with-value {
 		background-color: #0000004a;
+	}
+
+	.sort-value.is-qualified:not(.ready-to-rank) {
+		font-size: 0.6em;
+		color: #ebffe6;
 	}
 
 	.modes-list-container {
@@ -1167,6 +1192,12 @@
 
 		.sort-value {
 			font-size: 0.8em;
+			margin-top: -0.2em;
+			margin-right: 0.2em;
+		}
+
+		.sort-value.is-qualified:not(.ready-to-rank) {
+			font-size: 0.45em;
 		}
 
 		.desktop-only {
@@ -1257,7 +1288,7 @@
 		}
 
 		.modes-list-container {
-			width: calc(100% - 8.3em);
+			width: calc(100vw - 8.3em);
 		}
 
 		:global(.song-statuses .song-status) {

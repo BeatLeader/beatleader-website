@@ -1,6 +1,6 @@
 import {CURRENT_URL} from '../../network/queues/beatleader/api-queue';
 import {HSVtoRGB, HSLtoRGB, rgbToHex} from '../color';
-import {dateFromUnix, formatDateRelative} from '../date';
+import {dateFromUnix, formatDateRelative, WEEKSECONDS} from '../date';
 import {formatNumber} from '../format';
 import {capitalize, opt} from '../js';
 
@@ -1434,8 +1434,28 @@ export function describeGraphAxis(axis) {
 	return 'Undefined';
 }
 
-export function getSongSortingValue(song, diff, sortingKey) {
+export function isReadyToRank(song, diff, sortingKey, status) {
+	if (!song.difficulties?.length) return false;
+	if (sortingKey == 'timestamp' && status == DifficultyStatus.qualified) {
+		const qualifiedDiff = song.difficulties.find(d => d.status == DifficultyStatus.qualified);
+		if (Date.now() / 1000 - qualifiedDiff.qualifiedTime < WEEKSECONDS) {
+			return false;
+		}
+		return true;
+	}
+	return false;
+}
+
+export function getSongSortingValue(song, diff, sortingKey, status) {
 	if (!song.difficulties?.length) return null;
+
+	if (sortingKey == 'timestamp' && status == DifficultyStatus.qualified) {
+		const qualifiedDiff = song.difficulties.find(d => d.status == DifficultyStatus.qualified);
+		if (Date.now() / 1000 - qualifiedDiff.qualifiedTime < WEEKSECONDS) {
+			return "Ready to rank " + formatDateRelative(dateFromUnix(qualifiedDiff.qualifiedTime + WEEKSECONDS));
+		}
+		return "Ready to rank";
+	}
 
 	if (sortingKey == 'stars' || sortingKey == 'accRating' || sortingKey == 'passRating' || sortingKey == 'techRating') {
 		if (diff) {
