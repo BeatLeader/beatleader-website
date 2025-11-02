@@ -60,10 +60,10 @@
 	}
 
 	.achievement img {
-		width: 7em;
-		height: 7em;
-		border-radius: 50%;
-		margin: -0.7em 0.8em -0.7em -0.7em;
+		width: 6em;
+		height: 6em;
+		border-radius: 10%;
+		margin: -0.2em 0.8em -0.2em -0.2em;
 	}
 
 	.achievement-details {

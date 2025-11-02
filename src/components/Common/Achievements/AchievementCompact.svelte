@@ -41,6 +41,7 @@
 		align-items: center;
 		border-radius: 0.8em;
 		box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+		overflow: hidden;
 	}
 
 	:global(.popover-contents .atropos-highlight) {
@@ -51,7 +52,6 @@
 	.achievement img {
 		width: 4em;
 		height: 4em;
-		border-radius: 50%;
 	}
 
 	.gold {

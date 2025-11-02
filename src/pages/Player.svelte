@@ -30,6 +30,7 @@
 	import {getContext} from 'svelte';
 	import {produce} from 'immer';
 	import BeatTheHeatCongratulation from '../components/Player/BeatTheHeatCongratulation.svelte';
+	import AdoventCongratulation from '../components/Player/AdoventCongratulation.svelte';
 
 	const STORE_SORTING_KEY = 'PlayerScoreSorting';
 	const STORE_ORDER_KEY = 'PlayerScoreOrder';
@@ -209,6 +210,28 @@
 		});
 	}
 
+	function showAdoventCongratulation(isMain, achievements, adoventShown) {
+		if (!isMain) return;
+		if (adoventShown) return;
+		const achievement = achievements.find(a => a.achievementDescriptionId == 6);
+		if (!achievement) return;
+		open(AdoventCongratulation, {
+			achievement,
+			confirm: () => {
+				close();
+				$configStore = produce($configStore, draft => {
+					draft.preferences.adoventShown = true;
+				});
+			},
+			cancel: () => {
+				close();
+				$configStore = produce($configStore, draft => {
+					draft.preferences.adoventShown = true;
+				});
+			},
+		});
+	}
+
 	$: paramsStore = playerStore ? playerStore.params : null;
 
 	$: currentPlayerId = $paramsStore.currentPlayerId;
@@ -259,6 +282,7 @@
 	$: pinnedScoresStore.fetchScores(playerData?.playerId);
 	$: statsHistoryStore.fetchStats(playerData, $configStore.preferences.daysOfHistory);
 	$: showBeatTheHeatCongratulation(isMain, achievements, $configStore.preferences.beatTheHeatShown);
+	$: showAdoventCongratulation(isMain, achievements, $configStore.preferences.adoventShown);
 
 	$: editing = new URLSearchParams(location?.search).get('edit') ?? null;
 	$: playerPage && toggleRandomImageOnHover(playerPage, playerInfo?.clans?.filter(cl => cl.tag == 'SABA').length);

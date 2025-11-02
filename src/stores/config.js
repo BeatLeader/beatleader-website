@@ -85,6 +85,7 @@ export const DEFAULT_CONFIG = {
 		showFiltersOnScoresMobile: false,
 
 		beatTheHeatShown: false,
+		adoventShown: false,
 		askOnLogOut: true,
 	},
 	scorePreferences: {
