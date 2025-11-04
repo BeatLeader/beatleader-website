@@ -1603,7 +1603,7 @@
 		align-items: start;
 		align-content: baseline;
 		position: relative;
-		max-width: 75em;
+		max-width: 68em;
 	}
 
 	.songs.long {
@@ -1813,7 +1813,6 @@
 		.maps-box {
 			padding-right: unset;
 			justify-content: start;
-			padding-left: 2em;
 		}
 	}
 
@@ -1826,6 +1825,9 @@
 		}
 		.songs {
 			flex: 0;
+		}
+		.maps-box {
+			padding-left: 2em;
 		}
 		:global(.my-type-button) {
 			margin-bottom: unset !important;
