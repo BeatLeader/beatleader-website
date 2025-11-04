@@ -86,6 +86,7 @@ export const DEFAULT_CONFIG = {
 
 		beatTheHeatShown: false,
 		adoventShown: false,
+		batleaderShown: false,
 		askOnLogOut: true,
 	},
 	scorePreferences: {

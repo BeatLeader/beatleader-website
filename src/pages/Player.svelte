@@ -31,6 +31,7 @@
 	import {produce} from 'immer';
 	import BeatTheHeatCongratulation from '../components/Player/BeatTheHeatCongratulation.svelte';
 	import AdoventCongratulation from '../components/Player/AdoventCongratulation.svelte';
+	import BatLeaderCongratulation from '../components/Player/BatLeaderCongratulation.svelte';
 
 	const STORE_SORTING_KEY = 'PlayerScoreSorting';
 	const STORE_ORDER_KEY = 'PlayerScoreOrder';
@@ -232,6 +233,28 @@
 		});
 	}
 
+	function showBatLeaderCongratulation(isMain, achievements, batLeaderShown) {
+		if (!isMain) return;
+		if (batLeaderShown) return;
+		const achievement = achievements.find(a => a.achievementDescriptionId == 7);
+		if (!achievement) return;
+		open(BatLeaderCongratulation, {
+			achievement,
+			confirm: () => {
+				close();
+				$configStore = produce($configStore, draft => {
+					draft.preferences.batLeaderShown = true;
+				});
+			},
+			cancel: () => {
+				close();
+				$configStore = produce($configStore, draft => {
+					draft.preferences.batLeaderShown = true;
+				});
+			},
+		});
+	}
+
 	$: paramsStore = playerStore ? playerStore.params : null;
 
 	$: currentPlayerId = $paramsStore.currentPlayerId;
@@ -283,7 +306,8 @@
 	$: statsHistoryStore.fetchStats(playerData, $configStore.preferences.daysOfHistory);
 	$: showBeatTheHeatCongratulation(isMain, achievements, $configStore.preferences.beatTheHeatShown);
 	$: showAdoventCongratulation(isMain, achievements, $configStore.preferences.adoventShown);
-
+	$: showBatLeaderCongratulation(isMain, achievements, $configStore.preferences.batLeaderShown);
+	
 	$: editing = new URLSearchParams(location?.search).get('edit') ?? null;
 	$: playerPage && toggleRandomImageOnHover(playerPage, playerInfo?.clans?.filter(cl => cl.tag == 'SABA').length);
 </script>
