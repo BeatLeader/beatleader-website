@@ -28,12 +28,12 @@
 		{
 			component: CarouselCard,
 			props: {
-				title: 'Cube Community Spring Highlights',
+				title: 'Cube Community Summer Highlights',
 				body: '',
-				imageUrl: '/assets/Discover/cc-spring-highlights-2025.jpg',
-				targetUrl: 'https://www.youtube.com/watch?v=6W7RqoB0NtI',
+				imageUrl: '/assets/Discover/cc-summer-highlights-2025.jpg',
+				targetUrl: 'https://youtu.be/EC0BpTOhTMI',
 				linkName: 'YouTube',
-				forcedColor: 'rgb(119 164 108)',
+				forcedColor: '#cf861f',
 			},
 		},
 		{
@@ -172,25 +172,25 @@
 				],
 			},
 		},
-		{
-			component: CarouselCard,
-			props: {
-				title: 'Liga Argentina 2025',
-				body: '¡La Liga 2025 de Beat Saber Argentina esta por comenzar!',
-				imageUrl: '/assets/Discover/ligaargentina2025.jpg',
-				targetUrl: 'https://www.youtube.com/watch?v=6fbhLRdgzNY',
-				forcedColor: 'black',
-				linkName: 'contest info page',
-				buttons: [
-					{
-						text: 'Discord Server',
-						type: 'primary',
-						url: 'https://discord.com/invite/vEmATnAj5z',
-						iconFa: 'fab fa-discord',
-					},
-				],
-			},
-		},
+		// {
+		// 	component: CarouselCard,
+		// 	props: {
+		// 		title: 'Liga Argentina 2025',
+		// 		body: '¡La Liga 2025 de Beat Saber Argentina esta por comenzar!',
+		// 		imageUrl: '/assets/Discover/ligaargentina2025.jpg',
+		// 		targetUrl: 'https://www.youtube.com/watch?v=6fbhLRdgzNY',
+		// 		forcedColor: 'black',
+		// 		linkName: 'contest info page',
+		// 		buttons: [
+		// 			{
+		// 				text: 'Discord Server',
+		// 				type: 'primary',
+		// 				url: 'https://discord.com/invite/vEmATnAj5z',
+		// 				iconFa: 'fab fa-discord',
+		// 			},
+		// 		],
+		// 	},
+		// },
 		{
 			component: CarouselCard,
 			props: {
