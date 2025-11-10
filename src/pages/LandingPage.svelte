@@ -74,9 +74,9 @@
 				</div>
 			</div>
 		</ContentBox>
-		<!-- <span class="event-promotion-title"
-			>Latest BeatLeader competitive event featuring a refreshing set of purpose-made maps for this summer!</span> -->
-		<!-- <EventBanner /> -->
+		<span class="event-promotion-title"
+			>Latest BeatLeader competitive event featuring new ranked maps!</span>
+		<EventBanner wideScreen={true} />
 		<div class="two-boxes">
 			<ContentBox cls="landing-box">
 				<span class="box-headline">We aggregate the data from other cool projects to help you play better.</span>

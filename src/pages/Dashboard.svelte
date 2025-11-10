@@ -24,9 +24,9 @@
 
 <article class="page-content" transition:fade|global>
 	<div class="columns is-multiline">
-		<!-- <div class="content column is-full is-full-fullhd">
-			<EventBanner />
-		</div> -->
+		<div class="content column is-full is-full-fullhd">
+			<EventBanner wideScreen={true} />
+		</div>
 		<div class="content column is-full is-two-fifths-fullhd">
 			<FollowedRanking />
 			<div class="twitterEmbed">
