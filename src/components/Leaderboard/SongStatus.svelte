@@ -1,9 +1,9 @@
 <script>
-	import {songStatusesDescription, songStatusesMap} from '../../utils/beatleader/format';
+	import {songStatusesDescription, songStatusesMap, DifficultyStatus} from '../../utils/beatleader/format';
 	import createBeatSaverService from '../../services/beatmaps';
 	import createPlayerService from '../../services/beatleader/player';
 	import {navigate} from 'svelte-routing';
-	import {dateFromUnix, formatDateRelative} from '../../utils/date';
+	import {dateFromUnix, formatDateRelative, formatDate, WEEKSECONDS} from '../../utils/date';
 	import Avatar from '../Common/Avatar.svelte';
 
 	function navigateToPlayer(player) {
@@ -13,6 +13,7 @@
 	}
 
 	export let songStatus = null;
+	export let difficulty = null;
 
 	let responsible = null;
 	let player = null;
@@ -32,6 +33,46 @@
 		}
 	}
 
+	let qualifiedRankedWeek = null;
+	let readyToRank = false;
+	let thisFriday10amUnix = null;
+	let nextFriday10amUnix = null;
+	let rankedStatusTitle = null;
+
+	function calculateQualifiedRankedWeek(difficulty) {
+		if (!difficulty) return;
+		if (difficulty.status != DifficultyStatus.qualified && difficulty.status != DifficultyStatus.ranked) return;
+		const now = new Date();
+		const day = now.getUTCDay();
+		const daysUntilFriday = (5 - day + 7) % 7 || 7;
+		let friday = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + daysUntilFriday, 10, 0, 0));
+		if (day === 5 && now.getUTCHours() < 10) {
+			friday = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 10, 0, 0));
+		}
+		thisFriday10amUnix = Math.floor(friday.getTime() / 1000);
+		const fridayEpochStart = 1762509600;
+		const weekNumberBase = 169;
+
+		if (difficulty.status == DifficultyStatus.ranked) {
+			qualifiedRankedWeek = weekNumberBase + Math.floor((difficulty.rankedTime - fridayEpochStart) / WEEKSECONDS);
+			readyToRank = true;
+			rankedStatusTitle = 'Ranked on ' + formatDate(dateFromUnix(difficulty.rankedTime));
+		} else {
+			if (difficulty.qualifiedTime + WEEKSECONDS < thisFriday10amUnix) {
+				qualifiedRankedWeek = weekNumberBase + Math.floor((thisFriday10amUnix - fridayEpochStart) / WEEKSECONDS);
+				readyToRank = true;
+				rankedStatusTitle = 'Will be ranked this Friday at 10:00 UTC';
+			} else if (difficulty.status == DifficultyStatus.qualified) {
+				nextFriday10amUnix = thisFriday10amUnix + WEEKSECONDS;
+				qualifiedRankedWeek = weekNumberBase + Math.floor((nextFriday10amUnix - fridayEpochStart) / WEEKSECONDS);
+				readyToRank = false;
+				rankedStatusTitle = 'Will be ranked on ' + formatDate(dateFromUnix(nextFriday10amUnix));
+			}
+		}
+	}
+
+	$: calculateQualifiedRankedWeek(difficulty);
+
 	$: status = songStatus.blstatus ?? Object.entries(songStatusesMap).find(map => map[1] == songStatus.status)[0];
 	$: fetchResponsible(songStatus);
 	$: label = songStatusesDescription?.[status]?.name ?? songStatus.title ?? status;
@@ -46,6 +87,24 @@
 		songStatus?.timeset ? formatDateRelative(dateFromUnix(songStatus?.timeset)) : ''
 	);
 </script>
+
+{#if qualifiedRankedWeek}
+	<div
+		class="song-status"
+		style="background-color: {readyToRank ? '#eb008c2e' : '#d2d2d22e'}; border: solid 2px {readyToRank ? '#eb008c' : '#d2d2d2'}"
+		title={rankedStatusTitle}>
+		{#if readyToRank}
+			<i class="fa-solid fa-calendar-check" style="margin-left: 0.2em;"></i>
+		{:else if songStatus.status == DifficultyStatus.ranked}
+			<i class="fa-solid fa-clock" style=" margin-left: 0.2em;"></i>
+		{:else}
+			<i class="fa-solid fa-clock" style=" margin-left: 0.2em;"></i>
+		{/if}
+		<span class="status-label" style="margin-left: 0.4em;">
+			Batch #{qualifiedRankedWeek}
+		</span>
+	</div>
+{/if}
 
 <div
 	class="song-status"
@@ -83,6 +142,16 @@
 	.status-label {
 		margin-left: 0.2em;
 		margin-right: 0.2em;
+	}
+
+	.qualified-ranked-week {
+		border-radius: 0.6em;
+		padding: 0.1em 0.28em;
+		color: #2e383c;
+		font-size: 0.8em;
+		display: flex;
+		align-items: center;
+		font-weight: 600;
 	}
 
 	img {

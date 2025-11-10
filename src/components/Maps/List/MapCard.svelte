@@ -74,6 +74,7 @@
 	let name = null;
 	let sortValue = null;
 	let coverUrl = null;
+	let applicableDifficulty = null;
 	let mapType = null;
 	let readyToRank = false;
 
@@ -90,7 +91,8 @@
 			if (song.difficulties) {
 				status = calculateStatus(song);
 				requirements = calculateRequirements(song);
-				mapType = song.difficulties?.filter(d => d.value && d.applicable).sort((a, b) => b.value - a.value)?.[0]?.type;
+				applicableDifficulty = song.difficulties?.filter(d => d.value && d.applicable).sort((a, b) => b.value - a.value)?.[0];
+				mapType = applicableDifficulty?.type;
 			}
 			hash = song.hash;
 			name = song.name;
@@ -472,6 +474,9 @@
 									src={coverUrl}
 									alt="map cover"
 									style="width: 100%; height: 100%; object-fit: cover; object-position: center; background: #222;" />
+								{#if isHovered && sortValue}
+									<div class="hover-overlay"></div>
+								{/if}
 							</a>
 						{/if}
 						<div class="sort-value-background" class:with-value={sortValue} class:is-hovered={sortValue && isHovered}></div>
@@ -511,7 +516,7 @@
 							</div>
 							<div class="status-container" class:is-hovered={isHovered}>
 								{#if status && status != DifficultyStatus.unranked && status != DifficultyStatus.unrankable}
-									<SongStatus songStatus={wrapBLStatus(status)} />
+									<SongStatus songStatus={wrapBLStatus(status)} difficulty={applicableDifficulty} />
 								{/if}
 								{#if song.externalStatuses}
 									{#each song.externalStatuses as songStatus}
@@ -520,13 +525,6 @@
 								{/if}
 								{#if mapType && $configStore.mapCards.mapType}
 									<MapTypeDescription type={mapType} />
-								{/if}
-
-								{#if readyToRank}
-									<i
-										class="fa-solid fa-calendar-check"
-										style="color: #2fff00; margin-top: 0.2em;"
-										title="Ready to rank this Friday at 10:00 UTC"></i>
 								{/if}
 							</div>
 						</div>
@@ -764,8 +762,8 @@
 	}
 
 	.sort-value.is-qualified:not(.ready-to-rank) {
-		font-size: 0.6em;
-		color: #ebffe6;
+		font-size: 0.8em;
+		color: #ffffffd6;
 	}
 
 	.modes-list-container {
@@ -901,6 +899,16 @@
 		border-radius: 8px;
 		z-index: 2;
 		overflow: hidden;
+	}
+
+	.hover-overlay {
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		width: 100%;
+		height: 1.87em;
+		background-color: #00000099;
+		z-index: 3;
 	}
 
 	.placeholder {
@@ -1197,7 +1205,7 @@
 		}
 
 		.sort-value.is-qualified:not(.ready-to-rank) {
-			font-size: 0.45em;
+			font-size: 0.7em;
 		}
 
 		.desktop-only {

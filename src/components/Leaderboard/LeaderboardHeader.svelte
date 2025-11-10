@@ -131,7 +131,7 @@
 					{#if song.externalStatuses}
 						<div class="song-statuses">
 							{#if leaderboard.stats && leaderboard.stats.status != DifficultyStatus.unranked}
-								<SongStatus songStatus={wrapBLStatus(leaderboard.stats.status)} />
+								<SongStatus songStatus={wrapBLStatus(leaderboard.stats.status)} difficulty={leaderboard.difficultyBl} />
 							{/if}
 							{#each leaderboard.song.externalStatuses as songStatus}
 								<SongStatus {songStatus} />
