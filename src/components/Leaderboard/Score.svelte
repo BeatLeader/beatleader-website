@@ -73,6 +73,7 @@
 	$: platformDescription = describePlatform(score?.score?.platform);
 	$: title = headset?.name + controllerDescription + (platformDescription?.description ? '\n' + platformDescription?.description : '');
 	$: headsetStyle = `width: 1.2em; height: 1.2em; filter: ${headset?.color}`;
+	$: isScoreLink = type !== 'accsaber';
 </script>
 
 {#if score}
@@ -172,6 +173,11 @@
 					{/if}
 				{/if}
 			</div>
+			{#if isScoreLink}
+				<a href="/score/{score?.score?.id}" class="arrow-link-mobile" on:click|preventDefault|stopPropagation={() => navigate(`/score/${score?.score?.id}`)}>
+					<i class="arrowheadright-icon" />
+				</a>
+			{/if}
 		</div>
 		<div class="mobile-second-line">
 			{#if !noReplayInLeaderboard && type !== 'accsaber'}
@@ -231,6 +237,12 @@
 			{/if}
 
 			<PlayerPerformance type={badgesType} service={type} songScore={score} {modifiers} {selectedMetric} on:badge-click />
+
+			{#if isScoreLink}
+				<a href="/score/{score?.score?.id}" class="arrow-link-desktop" on:click|preventDefault|stopPropagation={() => navigate(`/score/${score?.score?.id}`)}>
+					<i class="arrowheadright-icon" />
+				</a>
+			{/if}
 		</div>
 	</div>
 
@@ -401,6 +413,14 @@
 		align-self: center;
 	}
 
+	.arrow-link-desktop {
+		color: #ffffff54;
+	}
+
+	.arrow-link-mobile {
+		display: none;
+	}
+
 	:global(.non-subscribed) {
 		opacity: 0.5 !important;
 	}
@@ -451,6 +471,23 @@
 
 		.mobile-second-line :global(.player-performance) {
 			width: 100%;
+		}
+
+		.arrow-link-mobile {
+			display: block;
+			color: #ffffff54;
+			width: 1em;
+			height: 1.5em;
+		}
+
+		.arrow-link-mobile i::after {
+			width: 1.5em;
+			height: 1.5em;
+			margin-left: 0;
+		}
+
+		.arrow-link-desktop {
+			display: none;
 		}
 	}
 </style>
