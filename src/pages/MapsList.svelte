@@ -807,7 +807,7 @@
 	}
 
 	function onScroll() {
-		if (isAutoScrolling) return;
+		if (isAutoScrolling || !location.href.includes('maps')) return;
 
 		const containerTop = window.scrollY;
 		if (containerTop < 100) {
