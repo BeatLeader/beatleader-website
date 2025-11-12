@@ -61,8 +61,16 @@
 		}
 
 		if (parseInt(Number('0x' + leaderboard.song.id.replaceAll('x', '')), 10) < 270435) {
-			ellegibleForNomination = false;
-			return;
+			if (
+				!(
+					leaderboard.difficultyBl.status == DifficultyStatus.ranked &&
+					leaderboard.difficultyBl.rankedTime &&
+					leaderboard.difficultyBl.rankedTime > 1733011200
+				)
+			) {
+				ellegibleForNomination = false;
+				return;
+			}
 		}
 
 		// if (parseInt(Number('0x' + leaderboard.song.id.replaceAll('x', '')), 10) >= 270435) {

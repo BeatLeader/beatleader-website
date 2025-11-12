@@ -344,6 +344,7 @@
 					<BigButton label="All Maps" destination="/maps/all" />
 					<BigButton label="Events" destination="/events" />
 					<BigButton label="Playlists" destination="/playlists/featured/1" />
+					<BigButton label="Beasties" destination="/beasties/nominations" />
 				</div>
 			</div>
 

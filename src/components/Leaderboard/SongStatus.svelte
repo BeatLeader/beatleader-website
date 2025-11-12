@@ -42,6 +42,7 @@
 	function calculateQualifiedRankedWeek(difficulty) {
 		if (!difficulty) return;
 		if (difficulty.status != DifficultyStatus.qualified && difficulty.status != DifficultyStatus.ranked) return;
+		if (difficulty.status == DifficultyStatus.ranked && !difficulty.rankedTime) return;
 		const now = new Date();
 		const day = now.getUTCDay();
 		const daysUntilFriday = (5 - day + 7) % 7 || 7;

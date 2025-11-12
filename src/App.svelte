@@ -68,6 +68,7 @@
 		ScorePage: () => import('./pages/Score.svelte'),
 		NominatedScores: () => import('./pages/NominatedScores.svelte'),
 		BadgesPage: () => import('./pages/Badges.svelte'),
+		BeastiesNominations: () => import('./pages/BeastiesNominations.svelte'),
 	};
 
 	export let url = '';
@@ -284,7 +285,12 @@
 <Router {url}>
 	<Nav class={$configStore?.preferences?.theme} {openModal} {closeModal} />
 	<Notifications zIndex={10000} item={NotificationComponent}>
-		<SimpleModal closeButton={false} styleWindow={{width: '90vw', height: '65vh'}} styleContent={{padding: 0, 'margin-bottom': '-0.5em'}} bind:openFunction={openModal} bind:closeFunction={closeModal}>
+		<SimpleModal
+			closeButton={false}
+			styleWindow={{width: '90vw', height: '65vh'}}
+			styleContent={{padding: 0, 'margin-bottom': '-0.5em'}}
+			bind:openFunction={openModal}
+			bind:closeFunction={closeModal}>
 			<main bind:this={mainEl} class={$configStore?.preferences?.theme}>
 				<div class="ssr-page-container">
 					<Route path="/">
@@ -322,6 +328,11 @@
 					<Route path="/sotwnominations" let:location>
 						{#await pageImports.NominatedScores() then module}
 							<svelte:component this={module.default} {location} />
+						{/await}
+					</Route>
+					<Route path="/beasties/nominations">
+						{#await pageImports.BeastiesNominations() then module}
+							<svelte:component this={module.default} />
 						{/await}
 					</Route>
 					<Route path="/privacy">
