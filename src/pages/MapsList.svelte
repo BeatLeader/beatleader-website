@@ -973,12 +973,18 @@
 		}}
 		on:touchmove={e => {
 			if (scrollContainer && !$configStore.preferences.mapsFiltersOpen && e.touches.length > 0 && lastY !== null) {
-				e.preventDefault();
-				e.stopImmediatePropagation();
-
+				const isAtTop = asideContainer.scrollTop <= 0;
+				const isAtBottom = asideContainer.scrollTop + asideContainer.clientHeight >= asideContainer.scrollHeight - 1;
 				const newY = e.touches[0].clientY;
 				const delta = lastY - newY;
-				scrollContainer.scrollTop += delta;
+				const scrollingDown = delta > 0;
+
+				if ((scrollingDown && isAtBottom) || (!scrollingDown && isAtTop)) {
+					e.preventDefault();
+					e.stopImmediatePropagation();
+					scrollContainer.scrollTop += delta;
+				}
+				
 				lastY = newY;
 			}
 		}}
@@ -1500,7 +1506,8 @@
 		-ms-overflow-style: none;
 		scrollbar-width: none;
 		z-index: 6;
-		overscroll-behavior: none;
+		overscroll-behavior: contain;
+		-webkit-overflow-scrolling: touch;
 	}
 
 	aside::-webkit-scrollbar {
