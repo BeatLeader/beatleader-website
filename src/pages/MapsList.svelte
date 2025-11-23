@@ -670,7 +670,7 @@
 	function generatePlaylist() {
 		makingPlaylist = true;
 
-		playlists.generatePlaylist(mapCount, {...currentFilters, duplicateDiffs, playlistTitle}, () => {
+		playlists.generatePlaylist(mapCount, {...currentFilters, type: currentType, duplicateDiffs, playlistTitle}, () => {
 			navigate('/playlists');
 		});
 	}
