@@ -153,25 +153,25 @@
 				],
 			},
 		},
-		{
-			component: CarouselCard,
-			props: {
-				title: 'TriSync Tournament 2025',
-				body: 'A tournament where 2 players control 1 saber each and play the map together at the same time!',
-				imageUrl: '/assets/Discover/trisynctournament2025.jpg',
-				targetUrl: 'https://challonge.com/trisync',
-				forcedColor: 'black',
-				linkName: 'contest info page',
-				buttons: [
-					{
-						text: 'Watch translations!',
-						type: 'twitch',
-						url: 'https://www.twitch.tv/trisynctournament',
-						iconFa: 'fab fa-twitch',
-					},
-				],
-			},
-		},
+		// {
+		// 	component: CarouselCard,
+		// 	props: {
+		// 		title: 'TriSync Tournament 2025',
+		// 		body: 'A tournament where 2 players control 1 saber each and play the map together at the same time!',
+		// 		imageUrl: '/assets/Discover/trisynctournament2025.jpg',
+		// 		targetUrl: 'https://challonge.com/trisync',
+		// 		forcedColor: 'black',
+		// 		linkName: 'contest info page',
+		// 		buttons: [
+		// 			{
+		// 				text: 'Watch translations!',
+		// 				type: 'twitch',
+		// 				url: 'https://www.twitch.tv/trisynctournament',
+		// 				iconFa: 'fab fa-twitch',
+		// 			},
+		// 		],
+		// 	},
+		// },
 		// {
 		// 	component: CarouselCard,
 		// 	props: {

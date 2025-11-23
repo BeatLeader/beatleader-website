@@ -254,7 +254,7 @@
 
 <section class="align-content">
 	<article class="page-content" transition:fade|global>
-		<EventBanner />
+		<!-- <EventBanner /> -->
 		<div class="ranking-switcher">
 			<TabSwitcher
 				values={tabOptions}
