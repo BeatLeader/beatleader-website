@@ -22,6 +22,7 @@
 	let nominationError = null;
 
 	function fetchNominationStatus(score) {
+		nominationStatus = null;
 		fetch(`${BL_API_URL}score/nominations/${score.score.id}`, {credentials: 'include'}).then(async d => {
 			if (d.status == 200) {
 				nominationStatus = parseInt(await d.text());
@@ -137,14 +138,15 @@
 			{#if score?.score?.externalStatuses?.length}
 				<ScoreExternalStatuses statuses={score?.score?.externalStatuses} />
 			{/if}
-			{#if nominationStatus}
+			{#if nominationStatus !== null}
 				<div class="nomination-container">
 					{#if nominationError}
 						<span class="error-description">{nominationError}</span>
-					{:else if nominationStatus == 1}
+					{:else if nominationStatus == 1 || nominationStatus == 0}
 						<Button
-							title="Nominate this for the Score Of The Week"
+							title={nominationStatus == 1 ? "Nominate this for the Score Of The Week" : "You can nominate up to 28 scores per 2 weeks. Check Cube Community Youtube Channel on Wednesday for results and come back to nominate again."}
 							label="Nominate"
+							disabled={nominationStatus == 0}
 							iconFa="fas fa-award"
 							on:click={() => {
 								openNomination();
