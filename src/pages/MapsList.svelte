@@ -82,6 +82,8 @@
 		{key: 'date_from', default: null, process: processIntFilter},
 		{key: 'date_to', default: null, process: processIntFilter},
 		{key: 'date_range', default: 'upload', process: processStringFilter},
+		{key: 'duration_from', default: undefined, process: processFloatFilter},
+		{key: 'duration_to', default: undefined, process: processFloatFilter},
 		{key: 'sortBy', default: null, process: processStringFilter},
 		{key: 'order', default: 'desc', process: processStringFilter},
 		{key: 'mode', default: null, process: processStringFilter},
@@ -636,6 +638,25 @@
 		navigateToCurrentPageAndFilters();
 	}
 
+	function onDurationChanged(event) {
+		if (!Array.isArray(event?.detail?.values) || event.detail.values.length !== 2) return;
+
+		const minDuration = 0;
+		const maxDuration = 600; // 10 minutes in seconds
+
+		if (minDuration != event.detail.values[0] || Number.isFinite(currentFilters.duration_from)) {
+			currentFilters.duration_from = Number.isFinite(event.detail.values[0]) ? event.detail.values[0] : undefined;
+		}
+
+		if (maxDuration != event.detail.values[1] || Number.isFinite(currentFilters.duration_to)) {
+			currentFilters.duration_to = Number.isFinite(event.detail.values[1]) ? event.detail.values[1] : undefined;
+		}
+
+		resetCache();
+		navigateToCurrentPageAndFilters();
+	}
+	const debouncedOnDurationChanged = debounce(onDurationChanged, FILTERS_DEBOUNCE_MS);
+
 	function onMappersChange(event) {
 		currentFilters.mappers = event.detail.join(',');
 
@@ -737,6 +758,23 @@
 			filters.push(`with star rating above ${formatNumber(currentFilters.stars_from, 1)}`);
 		} else if (currentFilters.stars_to) {
 			filters.push(`with star rating below ${formatNumber(currentFilters.stars_to, 1)}`);
+		}
+
+		// Duration
+		const formatDuration = secs => {
+			const mins = Math.floor(secs / 60);
+			const remainingSecs = secs % 60;
+			return `${mins}:${remainingSecs.toString().padStart(2, '0')}`;
+		};
+		
+		if (Number.isFinite(currentFilters.duration_from) && Number.isFinite(currentFilters.duration_to)) {
+			filters.push(
+				`with duration between ${formatDuration(currentFilters.duration_from)} and ${formatDuration(currentFilters.duration_to)}`
+			);
+		} else if (Number.isFinite(currentFilters.duration_from)) {
+			filters.push(`with duration above ${formatDuration(currentFilters.duration_from)}`);
+		} else if (Number.isFinite(currentFilters.duration_to)) {
+			filters.push(`with duration below ${formatDuration(currentFilters.duration_to)}`);
 		}
 
 		// Difficulty
@@ -902,6 +940,7 @@
 		currentFilters.techrating_from ||
 		currentFilters.techrating_to
 	);
+	let isDurationFilterOpen = !!(Number.isFinite(currentFilters.duration_from) || Number.isFinite(currentFilters.duration_to));
 
 	let isPlaylistOpen = false;
 	let lastY = null;
@@ -984,7 +1023,7 @@
 					e.stopImmediatePropagation();
 					scrollContainer.scrollTop += delta;
 				}
-				
+
 				lastY = newY;
 			}
 		}}
@@ -1235,6 +1274,65 @@
 								type={Math.abs(dateFromUnix(currentFilters.date_from)?.getTime() - lastYear.getTime()) < 600000 ? 'primary' : 'default'}
 								on:click={() => onDateRangeChange({detail: {from: lastYear, to: null}})} />
 						</div>
+					</div>
+				{/if}
+			</section>
+
+			<section class="filter dropdown-filter" class:has-value={!!(Number.isFinite(currentFilters.duration_from) || Number.isFinite(currentFilters.duration_to))}>
+				<div class="dropdown-header" on:click={() => (isDurationFilterOpen = !isDurationFilterOpen)}>
+					<div class="header-content">
+						<i class="fas fa-clock" />
+						<span>Duration</span>
+					</div>
+					<i class="fas fa-chevron-{isDurationFilterOpen ? 'up' : 'down'}" />
+				</div>
+
+				{#if isDurationFilterOpen}
+					{@const formatDuration = (secs, showAny = true) => {
+						if (!Number.isFinite(secs)) return showAny ? 'Any' : '';
+						const mins = Math.floor(secs / 60);
+						const remainingSecs = secs % 60;
+						return `${mins}:${remainingSecs.toString().padStart(2, '0')}`;
+					}}
+					<div class="dropdown-content" transition:fade>
+						<section class="filter">
+							<label>
+								Duration
+								<span>{formatDuration(currentFilters.duration_from)}</span> to
+								<span>{formatDuration(currentFilters.duration_to)}</span>
+								{#if Number.isFinite(currentFilters.duration_from) || Number.isFinite(currentFilters.duration_to)}
+									<button
+										class="remove-type"
+										title="Remove"
+										on:click={() => {
+											currentFilters.duration_from = undefined;
+											currentFilters.duration_to = undefined;
+											resetCache();
+											navigateToCurrentPageAndFilters();
+										}}><i class="fas fa-xmark" /></button>
+								{/if}
+							</label>
+							<RangeSlider
+								range
+								min={0}
+								max={600}
+								step={1}
+								values={[
+									Number.isFinite(currentFilters.duration_from) ? currentFilters.duration_from : Number.NEGATIVE_INFINITY,
+									Number.isFinite(currentFilters.duration_to) ? currentFilters.duration_to : Number.POSITIVE_INFINITY,
+								]}
+								float
+								hoverable
+								pips
+								pipstep={120}
+								all="label"
+								formatter={v => {
+									const mins = Math.floor(v / 60);
+									const secs = v % 60;
+									return `${mins}:${secs.toString().padStart(2, '0')}`;
+								}}
+								on:change={debouncedOnDurationChanged} />
+						</section>
 					</div>
 				{/if}
 			</section>

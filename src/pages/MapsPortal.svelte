@@ -115,44 +115,44 @@
 		// 		],
 		// 	},
 		// },
-		{
-			component: CarouselCard,
-			props: {
-				title: 'PokéSaber 2',
-				body: 'A tourney with an unique Health & Stamina systems, team-based Adrenaline & Fatigue events. Signups are open!',
-				imageUrl: '/assets/Discover/pokesaber2.jpg',
-				targetUrl: 'https://beatkhana.com/tournaments/PokeSaber2/general',
-				forcedColor: 'black',
-				linkName: 'contest info page',
-				buttons: [
-					{
-						text: 'Sign up!',
-						type: 'primary',
-						url: 'https://beatkhana.com/tournaments/PokeSaber2/general',
-						iconFa: 'fa fa-sign-in-alt',
-					},
-				],
-			},
-		},
-		{
-			component: CarouselCard,
-			props: {
-				title: 'Fishy Tourney 2025',
-				body: 'Just a regular trios tournament',
-				imageUrl: '/assets/Discover/fishytourney2025.jpg',
-				targetUrl: 'https://challonge.com/sjbhqjbc',
-				forcedColor: 'black',
-				linkName: 'contest info page',
-				buttons: [
-					{
-						text: 'Discord Server',
-						type: 'primary',
-						url: 'https://discord.gg/2rrtGpP2en',
-						iconFa: 'fab fa-discord',
-					},
-				],
-			},
-		},
+		// {
+		// 	component: CarouselCard,
+		// 	props: {
+		// 		title: 'PokéSaber 2',
+		// 		body: 'A tourney with an unique Health & Stamina systems, team-based Adrenaline & Fatigue events. Signups are open!',
+		// 		imageUrl: '/assets/Discover/pokesaber2.jpg',
+		// 		targetUrl: 'https://beatkhana.com/tournaments/PokeSaber2/general',
+		// 		forcedColor: 'black',
+		// 		linkName: 'contest info page',
+		// 		buttons: [
+		// 			{
+		// 				text: 'Sign up!',
+		// 				type: 'primary',
+		// 				url: 'https://beatkhana.com/tournaments/PokeSaber2/general',
+		// 				iconFa: 'fa fa-sign-in-alt',
+		// 			},
+		// 		],
+		// 	},
+		// },
+		// {
+		// 	component: CarouselCard,
+		// 	props: {
+		// 		title: 'Fishy Tourney 2025',
+		// 		body: 'Just a regular trios tournament',
+		// 		imageUrl: '/assets/Discover/fishytourney2025.jpg',
+		// 		targetUrl: 'https://challonge.com/sjbhqjbc',
+		// 		forcedColor: 'black',
+		// 		linkName: 'contest info page',
+		// 		buttons: [
+		// 			{
+		// 				text: 'Discord Server',
+		// 				type: 'primary',
+		// 				url: 'https://discord.gg/2rrtGpP2en',
+		// 				iconFa: 'fab fa-discord',
+		// 			},
+		// 		],
+		// 	},
+		// },
 		// {
 		// 	component: CarouselCard,
 		// 	props: {
@@ -191,25 +191,25 @@
 		// 		],
 		// 	},
 		// },
-		{
-			component: CarouselCard,
-			props: {
-				title: 'The Swedish Tournament!',
-				body: '',
-				imageUrl: '/assets/Discover/BSSEC.png',
-				targetUrl: 'https://beatsabersweden.se/events/swedishChampionships25',
-				forcedColor: 'black',
-				linkName: 'contest info page',
-				buttons: [
-					{
-						text: 'Join Discord Server',
-						type: 'primary',
-						url: 'https://discord.gg/WqczySs',
-						iconFa: 'fab fa-discord',
-					},
-				],
-			},
-		},
+		// {
+		// 	component: CarouselCard,
+		// 	props: {
+		// 		title: 'The Swedish Tournament!',
+		// 		body: '',
+		// 		imageUrl: '/assets/Discover/BSSEC.png',
+		// 		targetUrl: 'https://beatsabersweden.se/events/swedishChampionships25',
+		// 		forcedColor: 'black',
+		// 		linkName: 'contest info page',
+		// 		buttons: [
+		// 			{
+		// 				text: 'Join Discord Server',
+		// 				type: 'primary',
+		// 				url: 'https://discord.gg/WqczySs',
+		// 				iconFa: 'fab fa-discord',
+		// 			},
+		// 		],
+		// 	},
+		// },
 		// {
 		// 	component: CarouselCard,
 		// 	props: {
@@ -349,15 +349,15 @@
 			</div>
 
 			<div class="items">
-				<HeaderCard text="Tournaments" />
+				<!-- <HeaderCard text="Tournaments" />
 				<FeaturedCarousel cards={tournamentCards} {cardWidthRatio} height={carouselHeight} autoMoveInterval="8000" showBigButtons />
-				<div style="margin-bottom: -2.5em;" />
+				<div style="margin-bottom: -2.5em;" /> -->
 				<!--<EventCard
 					text="Early 2024 Ranked event!"
 					body="Check out what was ranked and compete for a badge."
 					image="/assets/Main/landing.webp"
 					button={{url: '/event/44', label: 'Event', icon: 'fas fa-rocket'}} />-->
-				<div style="margin-bottom: 1em;" />
+				<!-- <div style="margin-bottom: 1em;" /> -->
 				<HeaderCard text="Discover" />
 				<FeaturedCarousel {cards} {cardWidthRatio} height={carouselHeight} autoMoveInterval="8000" showBigButtons />
 				<div style="margin-bottom: 0.5em;" />

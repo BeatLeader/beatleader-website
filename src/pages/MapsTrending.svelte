@@ -42,7 +42,7 @@
 		topPlayedNewMaps = topPlayedNewMaps;
 
 		fetch(
-			`${BL_API_URL}maps?leaderboardContext=general&page=1&type=all&date_from=${unixOneDayAgo}&date_range=score&sortBy=playcount&order=desc&count=5&allTypes=0&allRequirements=0`,
+			`${BL_API_URL}maps?leaderboardContext=general&page=1&type=all&date_from=${unixOneDayAgo}&date_range=score&sortBy=playcount&order=desc&count=5&allTypes=0&allRequirements=0&duration_from=40`,
 			{credentials: 'include'}
 		)
 			.then(res => res.json())
@@ -57,7 +57,7 @@
 			});
 
 		fetch(
-			`${BL_API_URL}maps?leaderboardContext=general&page=1&type=all&date_from=${unixOneWeekAgo}&date_range=score&sortBy=playcount&order=desc&count=5&allTypes=0&allRequirements=0`,
+			`${BL_API_URL}maps?leaderboardContext=general&page=1&type=all&date_from=${unixOneWeekAgo}&date_range=score&sortBy=playcount&order=desc&count=5&allTypes=0&allRequirements=0&duration_from=40`,
 			{credentials: 'include'}
 		)
 			.then(res => res.json())
@@ -72,7 +72,7 @@
 			});
 
 		fetch(
-			`${BL_API_URL}maps?leaderboardContext=general&page=1&type=all&date_from=${unixOneMonthAgo}&date_range=upload&sortBy=voting&order=desc&count=5&allTypes=0&allRequirements=0`,
+			`${BL_API_URL}maps?leaderboardContext=general&page=1&type=all&date_from=${unixOneMonthAgo}&date_range=upload&sortBy=voting&order=desc&count=5&allTypes=0&allRequirements=0&duration_from=40`,
 			{credentials: 'include'}
 		)
 			.then(res => res.json())
@@ -87,7 +87,7 @@
 			});
 
 		fetch(
-			`${BL_API_URL}maps?leaderboardContext=general&page=1&type=all&date_from=${unixOneWeekAgo}&date_range=upload&sortBy=playcount&order=desc&count=5&allTypes=0&allRequirements=0`,
+			`${BL_API_URL}maps?leaderboardContext=general&page=1&type=all&date_from=${unixOneWeekAgo}&date_range=upload&sortBy=playcount&order=desc&count=5&allTypes=0&allRequirements=0&duration_from=40`,
 			{credentials: 'include'}
 		)
 			.then(res => res.json())
@@ -121,7 +121,7 @@
 <ContentBox cls="maps-trending-container">
 	<div class="maps-trending-section">
 		<ContentBox cls="maps-trending-section-box">
-			<a href="/maps/all/1?date_from={unixOneDayAgo}&date_range=score&sortBy=playcount" class="maps-trending-section-header">
+			<a href="/maps/all/1?date_from={unixOneDayAgo}&date_range=score&sortBy=playcount&duration_from=40" class="maps-trending-section-header">
 				<span class="maps-trending-section-title">Top Played Today</span>
 				<i class="fas fa-arrow-right"></i>
 			</a>
@@ -135,7 +135,7 @@
 			</div>
 		</ContentBox>
 		<ContentBox cls="maps-trending-section-box">
-			<a href="/maps/all/1?date_from={unixOneWeekAgo}&date_range=score&sortBy=playcount" class="maps-trending-section-header">
+			<a href="/maps/all/1?date_from={unixOneWeekAgo}&date_range=score&sortBy=playcount&duration_from=40" class="maps-trending-section-header">
 				<span class="maps-trending-section-title">Top Played This Week</span>
 				<i class="fas fa-arrow-right"></i>
 			</a>
@@ -149,7 +149,7 @@
 			</div>
 		</ContentBox>
 		<ContentBox cls="maps-trending-section-box">
-			<a href="/maps/all/1?date_from={unixOneWeekAgo}&date_range=upload&sortBy=playcount" class="maps-trending-section-header">
+			<a href="/maps/all/1?date_from={unixOneWeekAgo}&date_range=upload&sortBy=playcount&duration_from=40" class="maps-trending-section-header">
 				<span class="maps-trending-section-title">Top Played New Maps</span>
 				<i class="fas fa-arrow-right"></i>
 			</a>
@@ -179,7 +179,7 @@
 			</div>
 		</ContentBox>
 		<ContentBox cls="maps-trending-section-box">
-			<a href="/maps/all/1?date_from={unixOneMonthAgo}&date_range=upload&sortBy=voting" class="maps-trending-section-header">
+			<a href="/maps/all/1?date_from={unixOneMonthAgo}&date_range=upload&sortBy=voting&duration_from=40" class="maps-trending-section-header">
 				<span class="maps-trending-section-title">Top Voted New Maps</span>
 				<i class="fas fa-arrow-right"></i>
 			</a>
