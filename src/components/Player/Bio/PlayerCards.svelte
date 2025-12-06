@@ -2,6 +2,7 @@
 	import {createEventDispatcher} from 'svelte';
 	import RankedMapper from './RankedMapper.svelte';
 	import ClanFounder from './ClanFounder.svelte';
+	import OfficialMapper from './OfficialMapper.svelte';
 	import {GLOBAL_LEADERBOARD_TYPE} from '../../../utils/format';
 	import {BL_API_URL} from '../../../network/queues/beatleader/api-queue';
 	import Spinner from '../../Common/Spinner.svelte';
@@ -33,8 +34,11 @@
 
 	let rankedmaps = null;
 	let topmap = null;
+	let officialmaps = null;
+	let officialtopmap = null;
 
 	let cachedMapperId = null;
+	let cachedOfficialMapperId = null;
 
 	let sortBy = null;
 
@@ -53,17 +57,31 @@
 		}
 	}
 
+	async function fetchOfficialMapper(mapperId) {
+		if (cachedOfficialMapperId == mapperId) return;
+		cachedOfficialMapperId = mapperId;
+		const response = mapperId
+			? await fetch(`${BL_API_URL}player/${mapperId}/officialmaps?sortBy=${sortBy}&leaderboardContext=${GLOBAL_LEADERBOARD_TYPE}`)
+			: null;
+		officialmaps = !response?.ok ? null : await response.json();
+		if (officialmaps) {
+			officialtopmap = officialmaps.maps[0];
+		}
+	}
+
 	function updateSortBy(newSortBy) {
 		cachedMapperId = null;
+		cachedOfficialMapperId = null;
 		sortBy = newSortBy;
 	}
 
 	$: updateSortBy(editModel ? editModel?.data?.rankedMapperSort : profileSettings?.rankedMapperSort);
 
 	$: mapperPromise = fetchRankedMapper(playerInfo?.mapperId, sortBy);
+	$: officialMapperPromise = fetchOfficialMapper(playerInfo?.mapperId);
 	$: clanPromise = fetchClan(playerId);
 
-	$: promises = Promise.all([clanPromise, mapperPromise]);
+	$: promises = Promise.all([clanPromise, mapperPromise, officialMapperPromise]);
 	$: promises?.then(() => {
 		setInterval(() => dispatch('height-changed'), 400);
 	});
@@ -84,6 +102,13 @@
 						on:sort-changed={e => {
 							updateSortBy(e.detail);
 						}} />
+				{/if}
+				{#if officialmaps}
+					<OfficialMapper
+						mapperId={playerInfo.mapperId}
+						rankedmaps={officialmaps}
+						topmap={officialtopmap}
+					/>
 				{/if}
 				{#if clan}
 					<ClanFounder {clan} />
