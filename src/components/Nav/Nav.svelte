@@ -7,7 +7,6 @@
 	import followed from '../../stores/beatleader/followed';
 	import {configStore} from '../../stores/config';
 	import {opt} from '../../utils/js';
-	import {mobileTouch} from '../../svelte-utils/actions/mobile-touch';
 	import {clickOutside} from '../../svelte-utils/actions/click-outside';
 	import {isTouchDevice} from '../../utils/is-touch';
 	import {search} from '../../stores/search';
@@ -222,7 +221,6 @@
 		currenturl = window.location.href;
 	}
 
-	
 	const logOut = async () => {
 		openModal(LogOutConfirm, {
 			confirm: () => {
@@ -267,9 +265,12 @@
 			class="logo-link"
 			href="/"
 			on:click|preventDefault={() => {
-				if (!isTouchDevice()) navigate('/');
-			}}
-			use:mobileTouch={() => (testMenuShown = true)}>
+				if (!isTouchDevice()) {
+					navigate('/');
+				} else {
+					testMenuShown = !testMenuShown;
+				}
+			}}>
 			<div class="logo-container desktop-and-up">
 				<img src="/assets/logo.webp" class="logo" alt="" />
 				<div class="logo-name">
@@ -335,9 +336,12 @@
 				aria-label="My profile"
 				class="me-link"
 				on:click|preventDefault={() => {
-					if (!isTouchDevice()) navigateToPlayer(player);
-				}}
-				use:mobileTouch={() => (accountMenuShown = !accountMenuShown)}>
+					if (!isTouchDevice()) {
+						navigateToPlayer(player);
+					} else {
+						accountMenuShown = !accountMenuShown;
+					}
+				}}>
 				{#if opt(player, 'playerInfo.avatar')}
 					<Avatar {player} />
 				{:else}
@@ -403,7 +407,7 @@
 		Search
 	</a>
 
-	<div class="right mobile-menu nav-button" use:mobileTouch={() => (mobileMenuShown = !mobileMenuShown)}>
+	<div class="right mobile-menu nav-button" on:click|preventDefault={() => (mobileMenuShown = !mobileMenuShown)}>
 		<div class="hamburger">
 			<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
 				><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
@@ -521,7 +525,7 @@
 				</div>
 
 				<div class="dropdown-item">
-					<a href="https://beatleader.wiki/" aria-label="Wiki">
+					<a href="https://beatleader.wiki/" aria-label="Wiki" on:click|preventDefault={() => window.open('https://beatleader.wiki/', '_blank')}>
 						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 							<path
 								stroke-linecap="round"
@@ -534,7 +538,7 @@
 				</div>
 
 				<div class="dropdown-item">
-					<a href="https://github.com/BeatLeader" aria-label="Source">
+					<a href="https://github.com/BeatLeader" aria-label="Source" on:click|preventDefault={() => window.open('https://github.com/BeatLeader', '_blank')}>
 						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
 						</svg>
@@ -578,7 +582,7 @@
 				</div>
 
 				<div class="dropdown-item">
-					<a href="https://twitter.com/beatleader_" aria-label="Twitter">
+					<a href="https://twitter.com/beatleader_" aria-label="Twitter" on:click|preventDefault={() => window.open('https://twitter.com/beatleader_', '_blank')}>
 						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 							<path
 								stroke-linecap="round"
@@ -591,7 +595,7 @@
 				</div>
 
 				<div class="dropdown-item">
-					<a href="https://discord.gg/2RG5YVqtG6" aria-label="Discord">
+					<a href="https://discord.gg/2RG5YVqtG6" aria-label="Discord" on:click|preventDefault={() => window.open('https://discord.gg/2RG5YVqtG6', '_blank')}>
 						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 							<path
 								stroke-linecap="round"
@@ -604,7 +608,7 @@
 				</div>
 
 				<div class="dropdown-item">
-					<a href="https://patreon.com/BeatLeader" aria-label="Patreon">
+					<a href="https://patreon.com/BeatLeader" aria-label="Patreon" on:click|preventDefault={() => window.open('https://patreon.com/BeatLeader', '_blank')}>
 						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 							<path
 								stroke-linecap="round"
