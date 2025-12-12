@@ -28,6 +28,24 @@
 				</div>
 			{/if}
 
+			{#if diff.chains}
+				<div>
+					<i class="fas fa-link" /> Chain links:
+					<strong>
+						<Value value={diff.chains} digits={0} />
+					</strong>
+				</div>
+			{/if}
+
+			{#if diff.sliders}
+				<div>
+					<i class="fas fa-arrows-turn-to-dots" /> Arcs:
+					<strong>
+						<Value value={diff.sliders} digits={0} />
+					</strong>
+				</div>
+			{/if}
+
 			{#if leaderboard?.song?.bpm}
 				<div>
 					<i class="fas fa-drum" /> BPM:
