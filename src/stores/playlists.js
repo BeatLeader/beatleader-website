@@ -292,7 +292,7 @@ export default () => {
 
 		let url = substituteVarsUrl(
 			BL_API_URL +
-				'playlist/generate?count=${count}&type=${type}&search=${search}&title=${playlistTitle}&stars_from=${stars_from}&stars_to=${stars_to}&accrating_from=${accrating_from}&accrating_to=${accrating_to}&passrating_from=${passrating_from}&passrating_to=${passrating_to}&techrating_from=${techrating_from}&techrating_to=${techrating_to}&duration_from=${duration_from}&duration_to=${duration_to}&date_from=${date_from}&date_to=${date_to}&date_range=${date_range}&sortBy=${sortBy}&order=${order}&mytype=${mytype}&mode=${mode}&difficulty=${difficulty}&count=${count}&mapType=${mapType}&allTypes=${allTypes}&duplicate_diffs=${duplicateDiffs}&mapRequirements=${mapRequirements}&songStatus=${songStatus}&allRequirements=${allRequirements}&playlistIds=${playlistIds}&mappers=${mappers}',
+				'playlist/generate?count=${count}&type=${type}&search=${search}&noSearchSort=${noSearchSort}&title=${playlistTitle}&stars_from=${stars_from}&stars_to=${stars_to}&accrating_from=${accrating_from}&accrating_to=${accrating_to}&passrating_from=${passrating_from}&passrating_to=${passrating_to}&techrating_from=${techrating_from}&techrating_to=${techrating_to}&duration_from=${duration_from}&duration_to=${duration_to}&date_from=${date_from}&date_to=${date_to}&date_range=${date_range}&sortBy=${sortBy}&order=${order}&thenSortBy=${thenSort}&thenOrder=${thenOrder}&mytype=${mytype}&mode=${mode}&difficulty=${difficulty}&count=${count}&mapType=${mapType}&allTypes=${allTypes}&duplicate_diffs=${duplicateDiffs}&mapRequirements=${mapRequirements}&songStatus=${songStatus}&allRequirements=${allRequirements}&playlistIds=${playlistIds}&mappers=${mappers}',
 			{count, ...filters},
 			true,
 			true
@@ -328,7 +328,7 @@ export default () => {
 
 		let url = substituteVarsUrl(
 			BL_API_URL +
-				'playlist/scores/generate?playerId=${playerId}&leaderboardContext=${leaderboardContext}&page=${page}&sortBy=${sortBy}&order=${order}&search=${search}&diff=${diff}&mode=${mode}&requirements=${requirements}&type=${songType}&hmd=${hmd}&modifiers=${modifiers}&stars_from=${starsFrom}&stars_to=${starsTo}&eventId=${eventId}&count=${count}&duplicate_diffs=${duplicateDiffs}',
+				'playlist/scores/generate?playerId=${playerId}&leaderboardContext=${leaderboardContext}&page=${page}&sortBy=${sortBy}&order=${order}&thenSortBy=${thenSort}&thenOrder=${thenOrder}&search=${search}&noSearchSort=${noSearchSort}&diff=${diff}&mode=${mode}&requirements=${requirements}&type=${songType}&hmd=${hmd}&modifiers=${modifiers}&stars_from=${starsFrom}&stars_to=${starsTo}&eventId=${eventId}&count=${count}&duplicate_diffs=${duplicateDiffs}',
 			{
 				count,
 				playerId,

@@ -24,6 +24,8 @@
 	let focusableItems = null;
 	let focusedItemIndex = 0;
 
+	let currentValue = value;
+
 	window.addEventListener('resize', onResize);
 
 	function toggleDropdown() {
@@ -34,7 +36,7 @@
 	}
 
 	function selectOption(option) {
-		value = valueSelector(option);
+		currentValue = valueSelector(option);
 		toggleDropdown();
 		dispatch('change', option);
 	}
@@ -80,11 +82,17 @@
 		}
 	}
 
+	function refreshValue(newValue) {
+		currentValue = newValue;
+	}
+
 	onDestroy(() => {
 		var overlay = document.getElementById('overlay-wrapper');
 		if (overlay) overlay.remove();
 		window.removeEventListener('resize', onResize);
 	});
+
+	$: refreshValue(value);
 </script>
 
 <div class="dropdown" use:clickOutside={{callback: () => (isOpened = false)}}>
@@ -97,10 +105,10 @@
 		on:click={onClickHeader}
 		on:keydown={onKeyDownHeader}>
 		<div class="dropdown-header-text" style="padding-left: {fontPadding}em">
-			{#if options?.length > 0 && value != null && options.find(x => valueSelector(x) == value)?.icon}
-				<i class="fa {options.find(x => valueSelector(x) == value).icon}" style="margin-right: {fontPadding}em" />
+			{#if options?.length > 0 && currentValue != null && options.find(x => valueSelector(x) == currentValue)?.icon}
+				<i class="fa {options.find(x => valueSelector(x) == currentValue).icon}" style="margin-right: {fontPadding}em" />
 			{/if}
-			{options?.length > 0 ? (value != null ? nameSelector(options.find(x => valueSelector(x) == value)) : nullPlaceholder) : 'No options'}
+			{options?.length > 0 ? (currentValue != null ? nameSelector(options.find(x => valueSelector(x) == currentValue)) : nullPlaceholder) : 'No options'}
 		</div>
 		<div style="padding: 0 {fontPadding}em 0 {fontPadding * 2}em">
 			<i class="fa fa-chevron-down dropdown-arrow {isOpened ? 'opened' : ''}" />
@@ -118,15 +126,28 @@
 				class="dropdown-menu"
 				style="margin-top: {pxToEm(header.clientHeight) + 0.3}em; min-width: {header.clientWidth}px">
 				{#each options as item}
-					{#if valueSelector(item) != value}
-						<!-- svelte-ignore a11y-click-events-have-key-events -->
-						<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
-						<div tabindex="0" class="dropdown-item" style="font-size: {menuFontSize}em" on:click={selectOption(item)}>
-							{#if item.icon}
-								<i class="fa {item.icon} dropdown-item-icon" style="margin-right: {fontPadding}em" />
-							{/if}
-							{nameSelector(item).trim()}
-						</div>
+					{#if valueSelector(item) != currentValue}
+						{#if item.url}
+							<a
+								href={item.url}
+								target="_blank"
+								tabindex="0"
+								class="dropdown-item"
+								style="font-size: {menuFontSize}em"
+								on:click|preventDefault|stopPropagation={selectOption(item)}>
+								{#if item.icon}
+									<i class="fa {item.icon} dropdown-item-icon" style="margin-right: {fontPadding}em" />
+								{/if}
+								{nameSelector(item).trim()}
+							</a>
+						{:else}
+							<div tabindex="0" class="dropdown-item" style="font-size: {menuFontSize}em" on:click={selectOption(item)}>
+								{#if item.icon}
+									<i class="fa {item.icon} dropdown-item-icon" style="margin-right: {fontPadding}em" />
+								{/if}
+								{nameSelector(item).trim()}
+							</div>
+						{/if}
 					{/if}
 				{/each}
 			</div>

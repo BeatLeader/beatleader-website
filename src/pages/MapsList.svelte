@@ -95,6 +95,9 @@
 		{key: 'allRequirements', default: 0, process: processIntFilter},
 		{key: 'mappers', default: null, process: processStringFilter},
 		{key: 'playlistIds', default: null, process: processStringFilter},
+		{key: 'noSearchSort', default: false, process: processBoolFilter},
+		{key: 'thenSort', default: 'timestamp', process: processStringFilter},
+		{key: 'thenOrder', default: 'desc', process: processStringFilter},
 	];
 
 	const buildFiltersFromLocation = createBuildFiltersFromLocation(params, filters => {
@@ -367,6 +370,8 @@
 
 		sortValue = currentFilters.sortBy;
 		orderValue = currentFilters.order;
+		thenSortValue = currentFilters.thenSort;
+		thenOrderValue = currentFilters.thenOrder;
 		dateRangeValue = currentFilters.date_range;
 
 		sortValues = sortValues1.map(v => {
@@ -607,6 +612,30 @@
 		navigateToCurrentPageAndFilters();
 	}
 
+	let thenSortValue = 'timestamp';
+	let thenOrderValue = 'desc';
+	let showOtherSorting = false;
+
+	function onThenSortChange(event) {
+		if (!event?.detail?.value || event.detail.value == currentFilters.thenSort) return null;
+
+		currentFilters.thenSort = event.detail.value;
+
+		resetCache();
+
+		navigateToCurrentPageAndFilters();
+	}
+
+	function onThenOrderChange(event) {
+		if (!event?.detail?.value || event.detail.value == currentFilters.thenOrder) return null;
+
+		currentFilters.thenOrder = event.detail.value;
+
+		resetCache();
+
+		navigateToCurrentPageAndFilters();
+	}
+
 	let dateRangeOptions1 = [
 		{value: 'upload', name: 'Map upload', icon: 'fa-upload'},
 		{value: 'score', name: 'Recent score', icon: 'fa-calculator'},
@@ -766,7 +795,7 @@
 			const remainingSecs = secs % 60;
 			return `${mins}:${remainingSecs.toString().padStart(2, '0')}`;
 		};
-		
+
 		if (Number.isFinite(currentFilters.duration_from) && Number.isFinite(currentFilters.duration_to)) {
 			filters.push(
 				`with duration between ${formatDuration(currentFilters.duration_from)} and ${formatDuration(currentFilters.duration_to)}`
@@ -1031,11 +1060,62 @@
 		on:touchcancel={() => (lastY = null)}
 		bind:this={asideContainer}>
 		<AsideBox title="Filters" boolname={window?.innerWidth < 767 ? 'mapsFiltersOpenMobile' : 'mapsFiltersOpen'} faicon="fas fa-filter">
-			<div class="sorting-options">
-				<Select bind:value={sortValue} on:change={onSortChange} fontSize="0.8" options={sortValues} />
-				<Select bind:value={orderValue} on:change={onOrderChange} fontSize="0.8" options={orderValues} />
+			<div class="search-and-orders">
+				{#if currentFilters.search?.length}
+					<div class="sorting-options">
+						<Select
+							value={currentFilters.noSearchSort ? 'ignore' : 'relevance'}
+							fontSize="0.8"
+							options={[
+								{value: 'relevance', name: 'Relevance', title: 'Sort by search relevance first', icon: 'fa-magnifying-glass'},
+								{value: 'ignore', name: 'Ignore Relevance', title: 'Skip relevance sorting, return all matches', icon: 'fa-list'},
+							]}
+							on:change={event => {
+								if (!event?.detail?.value) return;
+								currentFilters.noSearchSort = event.detail.value === 'ignore';
+								resetCache();
+								navigateToCurrentPageAndFilters();
+							}} />
+						{#if !currentFilters.noSearchSort}
+							<Select value="desc" fontSize="0.8" options={[{value: 'desc', name: 'Descending', icon: 'fa-arrow-down'}]} />
+						{/if}
+					</div>
+					{#if !currentFilters.noSearchSort}
+						<span
+							title="Maps, tied after sorting by the main criteria will be then sorted in groups by additional criteria"
+							class="then-sort-label">
+							<div class="line-thing"></div>
+							<span>then sort</span>
+							<div class="line-thing"></div></span>
+					{/if}
+				{/if}
+				<div class="sorting-options">
+					<Select bind:value={sortValue} on:change={onSortChange} fontSize="0.8" options={sortValues} />
+					<Select bind:value={orderValue} on:change={onOrderChange} fontSize="0.8" options={orderValues} />
+					<div class="score-options-section">
+						<span
+							class="beat-savior-reveal clickable"
+							class:opened={showOtherSorting}
+							on:click={() => (showOtherSorting = !showOtherSorting)}
+							title="Show details">
+							<i class="fas fa-chevron-down" />
+						</span>
+					</div>
+				</div>
+				{#if showOtherSorting}
+					<span
+						title="Maps, tied after sorting by the main criteria will be then sorted in groups by additional criteria"
+						class="then-sort-label">
+						<div class="line-thing"></div>
+						<span>then sort</span>
+						<div class="line-thing"></div></span>
+					<div class="sorting-options">
+						<Select bind:value={thenSortValue} on:change={onThenSortChange} fontSize="0.8" options={sortValues} />
+						<Select bind:value={thenOrderValue} on:change={onThenOrderChange} fontSize="0.8" options={orderValues} />
+					</div>
+				{/if}
 			</div>
-			<section class="filter">
+			<section class="filter search-filter">
 				<input
 					on:input={debounce(onSearchChanged, FILTERS_DEBOUNCE_MS)}
 					type="text"
@@ -1278,7 +1358,9 @@
 				{/if}
 			</section>
 
-			<section class="filter dropdown-filter" class:has-value={!!(Number.isFinite(currentFilters.duration_from) || Number.isFinite(currentFilters.duration_to))}>
+			<section
+				class="filter dropdown-filter"
+				class:has-value={!!(Number.isFinite(currentFilters.duration_from) || Number.isFinite(currentFilters.duration_to))}>
 				<div class="dropdown-header" on:click={() => (isDurationFilterOpen = !isDurationFilterOpen)}>
 					<div class="header-content">
 						<i class="fas fa-clock" />
@@ -1582,7 +1664,53 @@
 		display: flex;
 		gap: 0.5em;
 		position: relative;
-		margin-bottom: 1.5em;
+	}
+
+	.search-and-orders {
+		display: flex;
+		flex-direction: column;
+		margin-bottom: 1em;
+		gap: 0.5em;
+	}
+
+	.search-filter {
+		margin-bottom: 1em;
+	}
+
+	.then-sort-label {
+		width: 100%;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		color: grey;
+		font-size: 12px;
+	}
+
+	.line-thing {
+		flex: 1;
+		height: 1px;
+		background-color: gray;
+	}
+
+	.score-options-section {
+		display: grid;
+		justify-items: center;
+		height: 1.65em;
+	}
+
+	.beat-savior-reveal {
+		align-self: end;
+		cursor: pointer;
+		transition: transform 500ms;
+		transform-origin: 0.42em 0.8em;
+	}
+
+	.beat-savior-reveal.opened {
+		transform: rotateZ(180deg);
+	}
+
+	.clickable {
+		cursor: pointer;
 	}
 
 	article {

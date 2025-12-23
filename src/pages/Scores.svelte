@@ -113,6 +113,7 @@
 		{key: 'players', default: null, process: processStringFilter},
 		{key: 'modifiers', default: null, process: processStringFilter},
 		{key: 'playlistIds', default: null, process: processStringFilter},
+		{key: 'noSearchSort', default: false, process: processBoolFilter},
 	];
 
 	const buildFiltersFromLocation = createBuildFiltersFromLocation(params, filters => {
@@ -683,17 +684,27 @@
 				{#if currentFilters.search?.length}
 					<div class="sorting-options">
 						<Select
-							value="relevance"
+							value={currentFilters.noSearchSort ? 'ignore' : 'relevance'}
 							fontSize="0.8"
-							options={[{value: 'relevance', name: 'Relevance', title: 'Sort by search relevance', icon: 'fa-magnifying-glass'}]} />
+							options={[
+								{value: 'relevance', name: 'Relevance', title: 'Sort by search relevance first', icon: 'fa-magnifying-glass'},
+								{value: 'ignore', name: 'Ignore Relevance', title: 'Skip relevance sorting, return all matches', icon: 'fa-list'},
+							]}
+							on:change={event => {
+								if (!event?.detail?.value) return;
+								currentFilters.noSearchSort = event.detail.value === 'ignore';
+								navigateToCurrentPageAndFilters();
+							}} />
 						<Select value="desc" fontSize="0.8" options={[{value: 'desc', name: 'Descending', icon: 'fa-arrow-down'}]} />
 					</div>
-					<span
-						title="Scores, tied after sorting by the main criteria will be then sorted in groups by additional criteria"
-						class="then-sort-label">
-						<div class="line-thing"></div>
-						<span>then sort</span>
-						<div class="line-thing"></div></span>
+					{#if !currentFilters.noSearchSort}
+						<span
+							title="Scores, tied after sorting by the main criteria will be then sorted in groups by additional criteria"
+							class="then-sort-label">
+							<div class="line-thing"></div>
+							<span>then sort</span>
+							<div class="line-thing"></div></span>
+					{/if}
 				{/if}
 				<div class="sorting-options">
 					<Select bind:value={sortValue} on:change={onSortChange} fontSize="0.8" options={sortValues} />

@@ -76,6 +76,16 @@ export default () => {
 			}
 		}
 
+		// Validate thenSort parameter
+		if (currentServiceParams?.thenSort) {
+			const serviceValidSorts = validSorts[service] ?? [];
+			if (!serviceValidSorts.includes(currentServiceParams.thenSort)) {
+				// If invalid, remove thenSort
+				currentServiceParams.thenSort = null;
+				currentServiceParams.thenOrder = null;
+			}
+		}
+
 		if (!init && currentService === 'scores') {
 			localStorage.setItem(STORE_SORTING_KEY, currentServiceParams.sort);
 			localStorage.setItem(STORE_ORDER_KEY, currentServiceParams.order);
@@ -96,69 +106,162 @@ export default () => {
 		const serviceDefaultParams = getDefaultParams(service);
 
 		switch (service) {
-			case 'beatsavior':
-				return update(
-					{
-						sort: paramsArr[1] ?? serviceDefaultParams?.sort,
-						order: 'desc',
-						page: paramsArr[2] ?? serviceDefaultParams?.page,
-					},
-					service,
-					true
-				);
-
-			case 'accsaber':
-				return update(
-					{
-						type: paramsArr[1] ?? serviceDefaultParams?.type,
-						sort: paramsArr[2] ?? serviceDefaultParams?.sort,
-						order: (paramsArr[2] ?? serviceDefaultParams?.sort) === 'rank' ? 'asc' : 'desc',
-						page: paramsArr[3] ?? serviceDefaultParams?.page,
-					},
-					service,
-					true
-				);
-
-			case 'scores':
-			default:
+			case 'beatsavior': {
 				const urlParams = new URLSearchParams(window?.location?.search);
-				let eventId = urlParams.get('eventId') ?? null;
-				if (eventId?.length) {
-					eventId = parseInt(eventId, 10);
-					if (!isNaN(eventId)) update({filters: {eventId}});
-				}
+				const querySort = urlParams.get('sort');
+				
+				// Old format: beatsavior/{sort}/{page} - New format: beatsavior/{page}?sort=...
+				const hasOldFormat = paramsArr[1] && validSorts.beatsavior.includes(paramsArr[1]);
+				const sort = querySort ?? (hasOldFormat ? paramsArr[1] : null) ?? serviceDefaultParams?.sort;
+				const page = hasOldFormat ? (paramsArr[2] ?? serviceDefaultParams?.page) : (paramsArr[1] ?? serviceDefaultParams?.page);
+				
+				return update(
+					{
+						sort,
+						order: 'desc',
+						page,
+					},
+					service,
+					true
+				);
+			}
 
+			case 'accsaber': {
+				const urlParams = new URLSearchParams(window?.location?.search);
+				const querySort = urlParams.get('sort');
+				const queryOrder = urlParams.get('order');
+				
+				// Old format: accsaber/{type}/{sort}/{page} - New format: accsaber/{type}/{page}?sort=...&order=...
+				const type = paramsArr[1] ?? serviceDefaultParams?.type;
+				const hasOldFormat = paramsArr[2] && validSorts.accsaber.includes(paramsArr[2]);
+				const sort = querySort ?? (hasOldFormat ? paramsArr[2] : null) ?? serviceDefaultParams?.sort;
+				const order = queryOrder ?? (hasOldFormat && paramsArr[2] === 'rank' ? 'asc' : null) ?? (sort === 'rank' ? 'asc' : 'desc');
+				const page = hasOldFormat ? (paramsArr[3] ?? serviceDefaultParams?.page) : (paramsArr[2] ?? serviceDefaultParams?.page);
+				
+				return update(
+					{
+						type,
+						sort,
+						order,
+						page,
+					},
+					service,
+					true
+				);
+			}
+
+			case 'attempts': {
+				const urlParams = new URLSearchParams(window?.location?.search);
+				const querySort = urlParams.get('sort');
+				const queryOrder = urlParams.get('order');
+				
+				// Old format: attempts/{sort}/{order}/{page} - New format: attempts/{page}?sort=...&order=...
+				const hasOldFormat = paramsArr[1] && validSorts.attempts.includes(paramsArr[1]);
+				const sort = querySort ?? (hasOldFormat ? paramsArr[1] : null) ?? serviceDefaultParams?.sort;
+				const order = queryOrder ?? (hasOldFormat ? paramsArr[2] : null) ?? serviceDefaultParams?.order;
+				const page = hasOldFormat ? (paramsArr[3] ?? serviceDefaultParams?.page) : (paramsArr[1] ?? serviceDefaultParams?.page);
+
+				// Collect filters
 				const filters = {};
 				for (const [key, value] of urlParams.entries()) {
-					filters[key] = value;
+					if (!['sort', 'order'].includes(key)) {
+						filters[key] = value;
+					}
 				}
 
 				return update(
 					{
-						sort: paramsArr[1] ?? serviceDefaultParams?.sort,
-						order: paramsArr[2] ?? serviceDefaultParams?.order,
-						page: paramsArr[3] ?? serviceDefaultParams?.page,
+						sort,
+						order,
+						page,
 						filters,
 					},
 					service,
 					true
 				);
+			}
+
+			case 'scores':
+			default: {
+				const urlParams = new URLSearchParams(window?.location?.search);
+				
+				// Extract sort params from query (new format) or fall back to path (old format for backward compatibility)
+				const querySort = urlParams.get('sort');
+				const queryOrder = urlParams.get('order');
+				const thenSort = urlParams.get('thenSort');
+				const thenOrder = urlParams.get('thenOrder');
+				const noSearchSort = urlParams.get('noSearchSort') === 'true';
+
+				// Determine sort/order: prefer query params, fall back to path params (backward compatibility)
+				// Old format: scores/{sort}/{order}/{page} - New format: scores/{page}?sort=...&order=...
+				const hasOldFormat = paramsArr[1] && validSorts.scores.includes(paramsArr[1]);
+				const sort = querySort ?? (hasOldFormat ? paramsArr[1] : null) ?? serviceDefaultParams?.sort;
+				const order = queryOrder ?? (hasOldFormat ? paramsArr[2] : null) ?? serviceDefaultParams?.order;
+				// Page is in path: new format scores/{page}, old format scores/{sort}/{order}/{page}
+				const page = hasOldFormat ? (paramsArr[3] ?? serviceDefaultParams?.page) : (paramsArr[1] ?? serviceDefaultParams?.page);
+
+				// Collect remaining filters (excluding sort params we already extracted)
+				const filters = {};
+				for (const [key, value] of urlParams.entries()) {
+					if (!['sort', 'order', 'thenSort', 'thenOrder', 'noSearchSort'].includes(key)) {
+						filters[key] = value;
+					}
+				}
+
+				return update(
+					{
+						sort,
+						order,
+						page,
+						filters,
+						noSearchSort,
+						...(thenSort ? {thenSort} : {}),
+						...(thenOrder ? {thenOrder} : {}),
+					},
+					service,
+					true
+				);
+			}
 		}
 	};
 
-	const buildSearchFromFilters = (params, filters) => {
-		if (!filters) return '';
-
+	const buildSearchParams = (sortParams = {}, filters = {}) => {
 		const searchParams = new URLSearchParams();
-		Object.entries(filters).forEach(([key, value]) => {
-			if (value && key != 'stars') {
-				searchParams.append(key, value);
-			}
-		});
+		const {sort, order, thenSort, thenOrder, noSearchSort, defaultSort, defaultOrder} = sortParams;
 
-		const stars = filters['stars'];
-		if (stars) {
-			searchParams.append('stars', `${stars.from},${stars.to}`);
+		// Add sort params to query (only if different from defaults)
+		if (sort && sort !== defaultSort) {
+			searchParams.append('sort', sort);
+		}
+		if (order && order !== defaultOrder) {
+			searchParams.append('order', order);
+		}
+
+		// Add secondary sort params
+		if (thenSort) {
+			searchParams.append('thenSort', thenSort);
+		}
+		if (thenOrder) {
+			searchParams.append('thenOrder', thenOrder);
+		}
+
+		// Add noSearchSort if true (skip relevance sorting for search)
+		if (noSearchSort) {
+			searchParams.append('noSearchSort', 'true');
+		}
+
+		// Add filters
+		if (filters) {
+			Object.entries(filters).forEach(([key, value]) => {
+				if (value && key != 'stars') {
+					searchParams.append(key, value);
+				}
+			});
+
+			const stars = filters['stars'];
+			if (stars) {
+				searchParams.append('stars', `${stars.from},${stars.to}`);
+			}
 		}
 
 		const result = searchParams.toString();
@@ -183,29 +286,93 @@ export default () => {
 		}
 
 		switch (service) {
-			case 'beatsavior':
-				return `${service}/${effectiveParams.sort}${noPage ? '' : `/${effectiveParams.page}`}`;
+			case 'beatsavior': {
+				const queryStr = buildSearchParams(
+					{
+						sort: effectiveParams.sort,
+						order: effectiveParams.order,
+						defaultSort: serviceDefaultParams.sort,
+						defaultOrder: serviceDefaultParams.order,
+					},
+					{}
+				);
+				const pageNum = effectiveParams.page;
+				const hasNonDefaultPage = !noPage && pageNum && pageNum != serviceDefaultParams.page;
+				
+				if (hasNonDefaultPage) {
+					return `${service}/${pageNum}${queryStr}`;
+				} else if (queryStr) {
+					return `${service}${queryStr}`;
+				}
+				return service;
+			}
 
-			case 'accsaber':
-				return `${service}/${effectiveParams.type}/${effectiveParams.sort}${noPage ? '' : `/${effectiveParams.page}`}`;
+			case 'accsaber': {
+				const queryStr = buildSearchParams(
+					{
+						sort: effectiveParams.sort,
+						order: effectiveParams.order,
+						defaultSort: serviceDefaultParams.sort,
+						defaultOrder: effectiveParams.sort === 'rank' ? 'asc' : 'desc',
+					},
+					{}
+				);
+				const pageNum = effectiveParams.page;
+				const typeParam = effectiveParams.type;
+				const hasNonDefaultPage = !noPage && pageNum && pageNum != serviceDefaultParams.page;
+				const hasNonDefaultType = typeParam && typeParam !== serviceDefaultParams.type;
+				
+				if (hasNonDefaultPage) {
+					return `${service}/${typeParam}/${pageNum}${queryStr}`;
+				} else if (queryStr || hasNonDefaultType) {
+					return `${service}/${typeParam}${queryStr}`;
+				}
+				return service;
+			}
 
 			case 'scores':
-				const sort = effectiveParams.sort;
-				const order = effectiveParams.order;
-				const page = effectiveParams.page;
-
-				let result = '';
-				if (
-					service != 'scores' || // This condition seems redundant as we are in the 'scores' case
-					sort != serviceDefaultParams?.sort ||
-					order != serviceDefaultParams?.order ||
-					page != serviceDefaultParams?.page
-				) {
-					result = `${service}/${sort}/${order}${noPage ? '' : `/${page}`}`;
+				const queryString = buildSearchParams(
+					{
+						sort: effectiveParams.sort,
+						order: effectiveParams.order,
+						thenSort: effectiveParams.thenSort,
+						thenOrder: effectiveParams.thenOrder,
+						noSearchSort: effectiveParams.noSearchSort,
+						defaultSort: serviceDefaultParams.sort,
+						defaultOrder: serviceDefaultParams.order,
+					},
+					effectiveParams.filters
+				);
+				// Page goes in path: scores/{page}?query
+				const pageNum = effectiveParams.page;
+				const hasNonDefaultPage = !noPage && pageNum && pageNum != serviceDefaultParams.page;
+				
+				if (hasNonDefaultPage) {
+					return `scores/${pageNum}${queryString}`;
+				} else if (queryString) {
+					return `scores${queryString}`;
 				}
-				return `${result}${effectiveParams?.filters ? buildSearchFromFilters(getDefaultParams(service)?.filters, effectiveParams.filters) : ''}`;
-			case 'attempts':
-				return `${service}/${effectiveParams.sort}/${effectiveParams.order}${noPage ? '' : `/${effectiveParams.page}`}`;
+				return '';
+			case 'attempts': {
+				const queryStr = buildSearchParams(
+					{
+						sort: effectiveParams.sort,
+						order: effectiveParams.order,
+						defaultSort: serviceDefaultParams.sort,
+						defaultOrder: serviceDefaultParams.order,
+					},
+					effectiveParams.filters
+				);
+				const pageNum = effectiveParams.page;
+				const hasNonDefaultPage = !noPage && pageNum && pageNum != serviceDefaultParams.page;
+				
+				if (hasNonDefaultPage) {
+					return `${service}/${pageNum}${queryStr}`;
+				} else if (queryStr) {
+					return `${service}${queryStr}`;
+				}
+				return service;
+			}
 		}
 	};
 
