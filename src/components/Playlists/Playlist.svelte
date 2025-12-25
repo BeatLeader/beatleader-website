@@ -101,6 +101,7 @@
 	let canInstall = true;
 
 	async function retrieveOwner(playlist, currentPlayerId) {
+		if (!playlist) return;
 		var newOwners = [];
 		canModify = true;
 		if (playlist?.customData?.owner) {
@@ -214,6 +215,8 @@
 
 	let songList = [];
 	function updateSongList(songs, page, itemsPerPage) {
+		if (!songs) return;
+
 		songList = songs
 			.slice(
 				totalItems > itemsPerPage ? page * itemsPerPage : 0,
@@ -268,7 +271,7 @@
 			if (newList.length > itemsPerPage) {
 				index -= newList.length - itemsPerPage;
 			}
-			const objIndex = songs.findIndex(item => item.hash === songHash || item.id === songHash);
+			const objIndex = songs?.findIndex(item => item.hash === songHash || item.id === songHash);
 			if (objIndex > (page + 1) * itemsPerPage) {
 				index += 1;
 			}
@@ -278,15 +281,15 @@
 	}
 
 	function moveUp(song) {
-		let index = songs.findIndex(item => item.hash === song.song.hash || item.id === song.song.hash);
+		let index = songs?.findIndex(item => item.hash === song.song.hash || item.id === song.song.hash);
 		if (index > 0) {
 			store.reorder(localPlaylistId, song.song.hash, index - 1, song.song);
 		}
 	}
 
 	function moveDown(song) {
-		let index = songs.findIndex(item => item.hash === song.song.hash || item.id === song.song.hash);
-		if (index < songs.length - 1) {
+		let index = songs?.findIndex(item => item.hash === song.song.hash || item.id === song.song.hash);
+		if (index < songs?.length - 1) {
 			store.reorder(localPlaylistId, song.song.hash, index + 1, song.song);
 		}
 	}
@@ -311,9 +314,9 @@
 	let submissions = [8, 26, 37, 43, 47, 49, 50, 53, 54, 57, 25, 31, 42, 48, 55];
 
 	$: setPlaylist(playlistExport);
-	$: songs = playlist.songs;
-	$: totalItems = songs.length;
-	$: updatePage(songs.length);
+	$: songs = playlist?.songs;
+	$: totalItems = songs?.length;
+	$: updatePage(songs?.length);
 	$: updateSongList(songs, page, itemsPerPage);
 	$: retrieveOwner(playlist, currentPlayerId);
 	$: updateExpanded(expanded);
@@ -384,7 +387,7 @@
 						{/each}
 					{/if}
 
-					<span class="songs">{playlist.songs.length} songs</span>
+					<span class="songs">{playlist.songs?.length ?? 0} songs</span>
 				</div>
 
 				<div class="buttons-container">
@@ -506,7 +509,7 @@
 				{/if}
 			</div>
 		{/if}
-		{#if detailsOpened && songList && songs}
+		{#if detailsOpened && songList && songs?.length}
 			<Pager bind:currentPage={page} bind:itemsPerPage {totalItems} {itemsPerPageValues} on:page-changed={onPageChanged} dnd={true} />
 		{/if}
 	</div>
