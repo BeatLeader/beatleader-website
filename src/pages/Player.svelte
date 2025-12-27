@@ -35,6 +35,8 @@
 
 	const STORE_SORTING_KEY = 'PlayerScoreSorting';
 	const STORE_ORDER_KEY = 'PlayerScoreOrder';
+	const ATTEMPTS_STORE_SORTING_KEY = 'PlayerAttemptsSorting';
+	const ATTEMPTS_STORE_ORDER_KEY = 'PlayerAttemptsOrder';
 
 	export let initialPlayerId = null;
 	export let initialParams = null;
@@ -49,17 +51,17 @@
 	const account = createAccountStore();
 	const {open, close} = getContext('simple-modal');
 
-	function processInitialParams(params) {
+	function processInitialParams(params, location) {
 		const serviceInfo = serviceParamsManager.initFromUrl(params);
 
-		if (!params || !params.length) {
+		if (!location?.search?.length) {
 			refreshSavedParams();
 		}
 
 		service = serviceInfo.service;
 		serviceParams = serviceInfo.params;
 	}
-	processInitialParams(initialParams);
+	processInitialParams(initialParams, location);
 
 	let playerStore = createPlayerInfoWithScoresStore(initialPlayerId, service, serviceParams);
 
@@ -74,23 +76,37 @@
 		}
 	}
 
-	async function refreshSavedParams() {
-		let params = serviceParamsManager.getParams();
-		const scoresSortOptions = configStore.get('preferences').scoresSortOptions;
-		if (scoresSortOptions === 'last') {
-			const sortingOption = localStorage.getItem(STORE_SORTING_KEY) ?? 'pp';
+	function applySortingParams(params, currentService) {
+		const preferences = configStore.get('preferences');
+		
+		const isAttempts = currentService === 'attempts';
+		const sortOptions = isAttempts 
+			? preferences.attemptsSortOptions 
+			: preferences.scoresSortOptions;
+		const sortingKey = isAttempts ? ATTEMPTS_STORE_SORTING_KEY : STORE_SORTING_KEY;
+		const orderKey = isAttempts ? ATTEMPTS_STORE_ORDER_KEY : STORE_ORDER_KEY;
+		const defaultSort = isAttempts ? 'date' : 'pp';
+		
+		if (sortOptions === 'last') {
+			const sortingOption = localStorage.getItem(sortingKey) ?? defaultSort;
 			if (sortingOption) {
 				params.sort = sortingOption;
 			}
-			const orderOption = localStorage.getItem(STORE_ORDER_KEY) ?? 'desc';
+			const orderOption = localStorage.getItem(orderKey) ?? 'desc';
 			if (orderOption) {
 				params.order = orderOption;
 			}
 		} else {
-			params.sort = scoresSortOptions;
+			params.sort = sortOptions;
 		}
+	}
 
-		changeParams(currentPlayerId, serviceParamsManager.getService(), params);
+	function refreshSavedParams() {
+		let params = serviceParamsManager.getParams();
+		const currentService = serviceParamsManager.getService();
+		applySortingParams(params, currentService);
+
+		changeParams(currentPlayerId, currentService, params);
 	}
 
 	const accSaberService = createAccSaberService();
@@ -134,7 +150,9 @@
 		const newService = event?.detail ?? null;
 		if (!newService) return;
 
+		applySortingParams(serviceParams, newService);
 		serviceParamsManager.update({}, newService);
+		
 		updateUrl();
 	}
 

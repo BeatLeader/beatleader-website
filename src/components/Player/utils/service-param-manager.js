@@ -1,5 +1,7 @@
 const STORE_SORTING_KEY = 'PlayerScoreSorting';
 const STORE_ORDER_KEY = 'PlayerScoreOrder';
+const ATTEMPTS_STORE_SORTING_KEY = 'PlayerAttemptsSorting';
+const ATTEMPTS_STORE_ORDER_KEY = 'PlayerAttemptsOrder';
 
 // Define valid sort keys for each service
 const validSorts = {
@@ -86,9 +88,14 @@ export default () => {
 			}
 		}
 
-		if (!init && currentService === 'scores') {
-			localStorage.setItem(STORE_SORTING_KEY, currentServiceParams.sort);
-			localStorage.setItem(STORE_ORDER_KEY, currentServiceParams.order);
+		if (!init) {
+			if (currentService === 'scores') {
+				localStorage.setItem(STORE_SORTING_KEY, currentServiceParams.sort);
+				localStorage.setItem(STORE_ORDER_KEY, currentServiceParams.order);
+			} else if (currentService === 'attempts') {
+				localStorage.setItem(ATTEMPTS_STORE_SORTING_KEY, currentServiceParams.sort);
+				localStorage.setItem(ATTEMPTS_STORE_ORDER_KEY, currentServiceParams.order);
+			}
 		}
 
 		return get();

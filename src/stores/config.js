@@ -30,6 +30,7 @@ export const DEFAULT_CONFIG = {
 		ppMetric: 'weighted',
 		iconsOnAvatars: 'show',
 		scoresSortOptions: 'last',
+		attemptsSortOptions: 'last',
 		theme: 'ree-dark',
 		oneclick: 'modassistant',
 		webPlayer: 'beatleader',
@@ -83,6 +84,7 @@ export const DEFAULT_CONFIG = {
 		showFeaturedScoreOnScores: true,
 		showFiltersOnScores: true,
 		showFiltersOnScoresMobile: false,
+		scoreSortingStyle: 'select',
 
 		beatTheHeatShown: false,
 		adoventShown: false,

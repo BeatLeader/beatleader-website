@@ -42,8 +42,29 @@
 		{name: 'Mistakes', value: 'mistakes'},
 	];
 
+	const attemptsSortOptions = [
+		{name: 'Last selected option', value: 'last'},
+		{name: 'PP', value: 'pp'},
+		{name: 'Date', value: 'date'},
+		{name: 'Accuracy', value: 'acc'},
+		{name: 'Rank', value: 'rank'},
+		{name: 'Play count', value: 'playCount'},
+		{name: 'Pauses', value: 'pauses'},
+		{name: 'Streak', value: 'maxStreak'},
+		{name: 'Mistakes', value: 'mistakes'},
+	];
+
+	const scoreSortingStyleOptions = [
+		{name: 'Dropdown selector', value: 'select'},
+		{name: 'Button switcher', value: 'switcher'},
+	];
+
+	const DEFAULT_SCORE_SORTING_STYLE = 'select';
+
 	let currentAvatarIcons = DEFAULT_AVATAR_ICONS;
 	let currentSortOption = DEFAULT_SORT_VALUE;
+	let currentAttemptsSortOption = DEFAULT_SORT_VALUE;
+	let currentScoreSortingStyle = DEFAULT_SCORE_SORTING_STYLE;
 	let currentDaysToCompare = DEFAULT_DAYS_TO_COMPARE;
 	let currentDaysOfHistory = DEFAULT_DAYS_OF_HISTORY;
 	let currentGraphHeight = DEFAULT_GRAPH_HEIGHT;
@@ -53,6 +74,10 @@
 			currentAvatarIcons = config?.preferences?.iconsOnAvatars ?? DEFAULT_AVATAR_ICONS;
 		if (config?.preferences?.scoresSortOptions != currentSortOption)
 			currentSortOption = config?.preferences?.scoresSortOptions ?? DEFAULT_SORT_VALUE;
+		if (config?.preferences?.attemptsSortOptions != currentAttemptsSortOption)
+			currentAttemptsSortOption = config?.preferences?.attemptsSortOptions ?? DEFAULT_SORT_VALUE;
+		if (config?.preferences?.scoreSortingStyle != currentScoreSortingStyle)
+			currentScoreSortingStyle = config?.preferences?.scoreSortingStyle ?? DEFAULT_SCORE_SORTING_STYLE;
 		if (config?.preferences?.daysToCompare != currentDaysToCompare)
 			currentDaysToCompare = config?.preferences?.daysToCompare ?? DEFAULT_DAYS_TO_COMPARE;
 		if (config?.preferences?.daysOfHistory != currentDaysOfHistory)
@@ -128,6 +153,8 @@
 
 	$: settempsetting('iconsOnAvatars', currentAvatarIcons);
 	$: settempsetting('scoresSortOptions', currentSortOption);
+	$: settempsetting('attemptsSortOptions', currentAttemptsSortOption);
+	$: settempsetting('scoreSortingStyle', currentScoreSortingStyle);
 	$: settempsetting('daysToCompare', currentDaysToCompare);
 	$: settempsetting('daysOfHistory', currentDaysOfHistory);
 	$: settempsetting('graphHeight', currentGraphHeight);
@@ -183,9 +210,19 @@
 			<Select bind:value={currentAvatarIcons} options={avatarIcons} />
 		</section>
 
+		<section class="option" id="profile-sort-style">
+			<label title="Choose between dropdown selector or button switcher for score sorting">Score sorting style</label>
+			<Select bind:value={currentScoreSortingStyle} options={scoreSortingStyleOptions} />
+		</section>
+
 		<section class="option" id="profile-sort">
-			<label title="How to sort scores by defauls">Sort scores by</label>
+			<label title="How to sort scores by default">Sort scores by</label>
 			<Select bind:value={currentSortOption} options={sortOptions} />
+		</section>
+
+		<section class="option" id="profile-attempts-sort">
+			<label title="How to sort attempts by default">Sort attempts by</label>
+			<Select bind:value={currentAttemptsSortOption} options={attemptsSortOptions} />
 		</section>
 
 		<section class="option" id="profile-days-compare">
