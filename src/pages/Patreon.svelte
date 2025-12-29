@@ -170,7 +170,7 @@
 						<Button
 							iconFa="fas fa-download"
 							title={!loggedInPlayer || !isSupporter ? 'Log in on the top of the Page and Link Patreon' : 'Download Reesabers for 1.40.8'}
-							label="Quest 1.40.8 (v0.3.17)"
+							label="Quest 1.40.8 (v0.3.18)"
 							disabled={!loggedInPlayer || !isSupporter}
 							type="green"
 							on:click={() => {
@@ -180,7 +180,7 @@
 				{:else}
 					<div class="benefit-button-top-container">
 						<div class="benefit-button-container">
-							<span>PC (v0.3.17):</span>
+							<span>PC (v0.3.18):</span>
 							<Button
 								iconFa="fas fa-download"
 								title={!loggedInPlayer || !isSupporter
@@ -207,7 +207,7 @@
 							<Button
 								iconFa="fas fa-download"
 								title={!loggedInPlayer || !isSupporter ? 'Log in on the top of the Page and Link Patreon' : 'Download Reesabers for 1.40.8'}
-								label="Quest 1.40.8 (v0.3.17)"
+								label="Quest 1.40.8 (v0.3.18)"
 								disabled={!loggedInPlayer || !isSupporter}
 								type="green"
 								on:click={() => {
