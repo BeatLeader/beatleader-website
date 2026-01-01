@@ -9,6 +9,7 @@
 	import {fetchJson} from '../network/fetch';
 	import {BL_API_URL, CURRENT_URL} from '../network/queues/beatleader/api-queue';
 	import BigButton from '../components/Maps/BigButton.svelte';
+	import BigButtonWithBg from '../components/Maps/BigButtonWithBg.svelte';
 	import EventCard from '../components/Maps/EventCard.svelte';
 	import {MetaTags} from 'svelte-meta-tags';
 	import ssrConfig from '../ssr-config';
@@ -310,13 +311,53 @@
 		}
 	}
 
+	const VOTING_DEADLINE = 1768435199;
+
+	let timeLeft = '';
+	let votingClosed = false;
+	let timerInterval;
+
+	function updateTimer() {
+		const now = Math.floor(Date.now() / 1000);
+		const remaining = VOTING_DEADLINE - now;
+
+		if (remaining <= 0) {
+			votingClosed = true;
+			timeLeft = '';
+			if (timerInterval) {
+				clearInterval(timerInterval);
+				timerInterval = null;
+			}
+			return;
+		}
+
+		const days = Math.floor(remaining / 86400);
+		const hours = Math.floor((remaining % 86400) / 3600);
+		const minutes = Math.floor((remaining % 3600) / 60);
+		const seconds = remaining % 60;
+
+		let parts = [];
+		if (days > 0) parts.push(`${days}d`);
+		if (hours > 0 || days > 0) parts.push(`${hours}h`);
+		if (minutes > 0 || hours > 0 || days > 0) parts.push(`${minutes}m`);
+		parts.push(`${seconds}s`);
+
+		timeLeft = parts.join(' ');
+	}
+
 	onMount(() => {
 		updateCardWidthRatio();
 		window.addEventListener('resize', updateCardWidthRatio);
+
+		updateTimer();
+		timerInterval = setInterval(updateTimer, 1000);
 	});
 
 	onDestroy(() => {
 		window.removeEventListener('resize', updateCardWidthRatio);
+		if (timerInterval) {
+			clearInterval(timerInterval);
+		}
 	});
 
 	$: getLatestMapOfTheWeek();
@@ -341,10 +382,23 @@
 
 			<div class="buttons-container">
 				<div class="buttons">
+					<BigButtonWithBg label="Beasties Voting" destination="https://mappingawards.saeraphinx.dev/finalists" bgColor="linear-gradient(140deg, rgba(35, 35, 35, 1) 0%, rgb(76 26 92) 100%)" image="/assets/beastsabericonbig.webp" />
+					<BigButtonWithBg label="BeatKhana Voting" destination="https://beatkhana.com/vote" bgColor="linear-gradient(145deg, rgba(35, 35, 35, 1) 0%, rgb(64 105 111) 100%)" image="/assets/beatkhanaiconbig.webp" />
+				</div>
+				<div class="timer">
+					{#if votingClosed}
+						<p class="closed">Votes are closed!</p>
+					{:else}
+						<p>Only <span class="countdown">{timeLeft}</span> left to vote</p>
+					{/if}
+				</div>
+			</div>
+
+			<div class="buttons-container">
+				<div class="buttons">
 					<BigButton label="All Maps" destination="/maps/all" />
 					<BigButton label="Events" destination="/events" />
 					<BigButton label="Playlists" destination="/playlists/featured/1" />
-					<BigButton label="Beasties" destination="/beasties/nominations" />
 				</div>
 			</div>
 
@@ -460,6 +514,31 @@
 		--webkit-backface-visibility: hidden;
 		-webkit-backdrop-filter: blur(10px) opacity(0.5);
 		border-radius: 0.5em;
+	}
+
+	.timer {
+		text-align: center;
+		font-size: 0.9em;
+		opacity: 0.8;
+		margin-top: -2em;
+		margin-bottom: -2em;
+	}
+
+	.timer p {
+		margin: 0;
+	}
+
+	.timer .countdown {
+		font-family: 'Courier New', monospace;
+		font-weight: bold;
+		color: #ffcc00;
+		font-size: 1.2em;
+	}
+
+	.timer .closed {
+		color: #ff6b6b;
+		font-weight: bold;
+		font-size: 1.2em;
 	}
 
 	@media screen and (max-width: 1920px) {

@@ -467,7 +467,7 @@
 							type="button" />
 					{/if}
 				{/if}
-				<div class={state.classContent} class:content={!unstyled} style={cssContent}>
+				<div class={state.classContent} class:dialog-content={!unstyled} style={cssContent}>
 					<svelte:component this={Component} {...props} />
 				</div>
 			</div>
@@ -518,7 +518,7 @@
 		background: white;
 	}
 
-	.content {
+	.dialog-content {
 		position: relative;
 		padding: 1rem;
 		max-height: calc(100vh - 4rem);

@@ -9,7 +9,7 @@
 	import {produce} from 'immer';
 	import beastsabericonthick from '../../resources/beastsabericonthick.svg';
 	import {BL_API_URL} from '../../network/queues/beatleader/api-queue';
-	import BeastiesNomination from './BeastiesNomination.svelte';
+	// import BeastiesNomination from './BeastiesNomination.svelte';
 	import {getContext} from 'svelte';
 
 	// async function updateVerifiedMapperId(mapperId, hash) {
@@ -92,36 +92,36 @@
 			});
 	}
 
-	function toggleFirstUsage() {
-		$configStore = produce($configStore, draft => {
-			draft.preferences.beastiesNominationsBanner2025 = false;
-		});
-	}
+	// function toggleFirstUsage() {
+	// 	$configStore = produce($configStore, draft => {
+	// 		draft.preferences.beastiesNominationsBanner2025 = false;
+	// 	});
+	// }
 
-	function openBestiesNomination() {
-		toggleFirstUsage();
-		open(BeastiesNomination, {
-			leaderboard,
-			diffs,
-			currentNominations,
-			confirm: () => {
-				close();
-			},
-			cancel: () => {
-				close();
-			},
-			wasNominated: () => {
-				fetchNomination(leaderboard);
-			},
-		});
-	}
+	// function openBestiesNomination() {
+	// 	toggleFirstUsage();
+	// 	open(BeastiesNomination, {
+	// 		leaderboard,
+	// 		diffs,
+	// 		currentNominations,
+	// 		confirm: () => {
+	// 			close();
+	// 		},
+	// 		cancel: () => {
+	// 			close();
+	// 		},
+	// 		wasNominated: () => {
+	// 			fetchNomination(leaderboard);
+	// 		},
+	// 	});
+	// }
 
 	$: isRanked = leaderboard?.stats?.status === DifficultyStatus.ranked;
 	$: isQualified = leaderboard?.stats?.status === DifficultyStatus.qualified;
 	$: isNominated = leaderboard?.stats?.status === DifficultyStatus.nominated;
 
 	$: reweight = leaderboard?.reweight;
-	$: leaderboard && $account.player && fetchNomination(leaderboard);
+	// $: leaderboard && $account.player && fetchNomination(leaderboard);
 
 	$: isAdmin = $account.player && $account.player.playerInfo.role && $account.player.playerInfo.role.includes('admin');
 	$: isRT = isAdmin || ($account.player && $account.player.playerInfo.role && $account.player.playerInfo.role.includes('rankedteam'));
@@ -229,7 +229,7 @@
 				}} />
 		{/if}
 
-		{#if ellegibleForNomination}
+		<!-- {#if ellegibleForNomination}
 			{#if $configStore.preferences.beastiesNominationsBanner2025}
 				<div class="beastsaber-banner">
 					<Button
@@ -255,7 +255,7 @@
 						openBestiesNomination();
 					}} />
 			{/if}
-		{/if}
+		{/if} -->
 	{:else}
 		<Spinner />
 	{/if}

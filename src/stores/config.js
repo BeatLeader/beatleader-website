@@ -29,6 +29,7 @@ export const DEFAULT_CONFIG = {
 	preferences: {
 		ppMetric: 'weighted',
 		iconsOnAvatars: 'show',
+		rankedSortOptions: 'last',
 		scoresSortOptions: 'last',
 		attemptsSortOptions: 'last',
 		theme: 'ree-dark',
@@ -90,6 +91,7 @@ export const DEFAULT_CONFIG = {
 		adoventShown: false,
 		batleaderShown: false,
 		askOnLogOut: true,
+		beastiesFinalistsPopupShown: false,
 	},
 	scorePreferences: {
 		badgeRows: 2,
