@@ -33,6 +33,8 @@
 	import AdoventCongratulation from '../components/Player/AdoventCongratulation.svelte';
 	import BatLeaderCongratulation from '../components/Player/BatLeaderCongratulation.svelte';
 
+	const RANKED_STORE_SORTING_KEY = 'PlayerRankedSorting';
+	const RANKED_STORE_ORDER_KEY = 'PlayerRankedOrder';
 	const STORE_SORTING_KEY = 'PlayerScoreSorting';
 	const STORE_ORDER_KEY = 'PlayerScoreOrder';
 	const ATTEMPTS_STORE_SORTING_KEY = 'PlayerAttemptsSorting';
@@ -79,13 +81,26 @@
 	function applySortingParams(params, currentService) {
 		const preferences = configStore.get('preferences');
 		
-		const isAttempts = currentService === 'attempts';
-		const sortOptions = isAttempts 
-			? preferences.attemptsSortOptions 
-			: preferences.scoresSortOptions;
-		const sortingKey = isAttempts ? ATTEMPTS_STORE_SORTING_KEY : STORE_SORTING_KEY;
-		const orderKey = isAttempts ? ATTEMPTS_STORE_ORDER_KEY : STORE_ORDER_KEY;
-		const defaultSort = isAttempts ? 'date' : 'pp';
+		let sortOptions, sortingKey, orderKey, defaultSort;
+		
+		if (currentService === 'ranked') {
+			sortOptions = preferences.rankedSortOptions;
+			sortingKey = RANKED_STORE_SORTING_KEY;
+			orderKey = RANKED_STORE_ORDER_KEY;
+			defaultSort = 'pp';
+		} else if (currentService === 'attempts') {
+			sortOptions = preferences.attemptsSortOptions;
+			sortingKey = ATTEMPTS_STORE_SORTING_KEY;
+			orderKey = ATTEMPTS_STORE_ORDER_KEY;
+			defaultSort = 'date';
+		} else {
+			sortOptions = preferences.scoresSortOptions;
+			sortingKey = STORE_SORTING_KEY;
+			orderKey = STORE_ORDER_KEY;
+			defaultSort = 'pp';
+		}
+
+		params.filters.songType = currentService === 'ranked' ? 'ranked' : null;
 		
 		if (sortOptions === 'last') {
 			const sortingOption = localStorage.getItem(sortingKey) ?? defaultSort;

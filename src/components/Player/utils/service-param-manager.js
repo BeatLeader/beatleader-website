@@ -1,3 +1,5 @@
+const RANKED_STORE_SORTING_KEY = 'PlayerRankedSorting';
+const RANKED_STORE_ORDER_KEY = 'PlayerRankedOrder';
 const STORE_SORTING_KEY = 'PlayerScoreSorting';
 const STORE_ORDER_KEY = 'PlayerScoreOrder';
 const ATTEMPTS_STORE_SORTING_KEY = 'PlayerAttemptsSorting';
@@ -5,6 +7,23 @@ const ATTEMPTS_STORE_ORDER_KEY = 'PlayerAttemptsOrder';
 
 // Define valid sort keys for each service
 const validSorts = {
+	ranked: [
+		'pp',
+		'accPP',
+		'passPP',
+		'techPP',
+		'date',
+		'acc',
+		'rank',
+		'stars',
+		'playCount',
+		'pauses',
+		'maxStreak',
+		'replaysWatched',
+		'mistakes',
+		'sotwNominations',
+		'scoreValue',
+	],
 	scores: [
 		'pp',
 		'accPP',
@@ -31,12 +50,14 @@ export default () => {
 	let currentService = null;
 	let currentServiceParams = {};
 
-	const getAllServices = () => ['scores', 'attempts', 'beatsavior', 'accsaber'];
+	const getAllServices = () => ['ranked', 'scores', 'attempts', 'beatsavior', 'accsaber'];
 
 	const get = () => ({service: currentService, params: currentServiceParams});
 
 	const getDefaultParams = service => {
 		switch (service) {
+			case 'ranked':
+				return {sort: 'pp', order: 'desc', page: 1, filters: {songType: 'ranked'}};
 			case 'beatsavior':
 				return {sort: 'date', order: 'desc', page: 1, filters: {}};
 			case 'attempts':
@@ -89,7 +110,10 @@ export default () => {
 		}
 
 		if (!init) {
-			if (currentService === 'scores') {
+			if (currentService === 'ranked') {
+				localStorage.setItem(RANKED_STORE_SORTING_KEY, currentServiceParams.sort);
+				localStorage.setItem(RANKED_STORE_ORDER_KEY, currentServiceParams.order);
+			} else if (currentService === 'scores') {
 				localStorage.setItem(STORE_SORTING_KEY, currentServiceParams.sort);
 				localStorage.setItem(STORE_ORDER_KEY, currentServiceParams.order);
 			} else if (currentService === 'attempts') {
@@ -182,6 +206,43 @@ export default () => {
 						order,
 						page,
 						filters,
+					},
+					service,
+					true
+				);
+			}
+
+			case 'ranked': {
+				const urlParams = new URLSearchParams(window?.location?.search);
+				
+				const querySort = urlParams.get('sort');
+				const queryOrder = urlParams.get('order');
+				const thenSort = urlParams.get('thenSort');
+				const thenOrder = urlParams.get('thenOrder');
+				const noSearchSort = urlParams.get('noSearchSort') === 'true';
+
+				const hasOldFormat = paramsArr[1] && validSorts.ranked.includes(paramsArr[1]);
+				const sort = querySort ?? (hasOldFormat ? paramsArr[1] : null) ?? serviceDefaultParams?.sort;
+				const order = queryOrder ?? (hasOldFormat ? paramsArr[2] : null) ?? serviceDefaultParams?.order;
+				const page = hasOldFormat ? (paramsArr[3] ?? serviceDefaultParams?.page) : (paramsArr[1] ?? serviceDefaultParams?.page);
+
+				// Collect remaining filters (excluding sort params we already extracted)
+				const filters = {songType: 'ranked'}; // Always enforce ranked filter
+				for (const [key, value] of urlParams.entries()) {
+					if (!['sort', 'order', 'thenSort', 'thenOrder', 'noSearchSort', 'songType'].includes(key)) {
+						filters[key] = value;
+					}
+				}
+
+				return update(
+					{
+						sort,
+						order,
+						page,
+						filters,
+						noSearchSort,
+						...(thenSort ? {thenSort} : {}),
+						...(thenOrder ? {thenOrder} : {}),
 					},
 					service,
 					true
@@ -337,7 +398,35 @@ export default () => {
 				return service;
 			}
 
-			case 'scores':
+			case 'ranked': {
+				// Exclude songType from filters since it's hardcoded for ranked
+				const rankedFilters = {...effectiveParams.filters};
+				delete rankedFilters.songType;
+				
+				const rankedQueryStr = buildSearchParams(
+					{
+						sort: effectiveParams.sort,
+						order: effectiveParams.order,
+						thenSort: effectiveParams.thenSort,
+						thenOrder: effectiveParams.thenOrder,
+						noSearchSort: effectiveParams.noSearchSort,
+						defaultSort: serviceDefaultParams.sort,
+						defaultOrder: serviceDefaultParams.order,
+					},
+					rankedFilters
+				);
+				const rankedPageNum = effectiveParams.page;
+				const rankedHasNonDefaultPage = !noPage && rankedPageNum && rankedPageNum != serviceDefaultParams.page;
+				
+				if (rankedHasNonDefaultPage) {
+					return `ranked/${rankedPageNum}${rankedQueryStr}`;
+				} else if (rankedQueryStr) {
+					return `ranked${rankedQueryStr}`;
+				}
+				return 'ranked';
+			}
+
+			case 'scores': {
 				const queryString = buildSearchParams(
 					{
 						sort: effectiveParams.sort,
@@ -360,6 +449,7 @@ export default () => {
 					return `scores${queryString}`;
 				}
 				return '';
+			}
 			case 'attempts': {
 				const queryStr = buildSearchParams(
 					{

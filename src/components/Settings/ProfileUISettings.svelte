@@ -31,6 +31,17 @@
 		{name: 'Always hide', value: 'hide'},
 	];
 
+	const rankedSortOptions = [
+		{name: 'Last selected option', value: 'last'},
+		{name: 'PP', value: 'pp'},
+		{name: 'Date', value: 'date'},
+		{name: 'Accuracy', value: 'acc'},
+		{name: 'Rank', value: 'rank'},
+		{name: 'Stars', value: 'stars'},
+		{name: 'Pauses', value: 'pauses'},
+		{name: 'Mistakes', value: 'mistakes'},
+	];
+
 	const sortOptions = [
 		{name: 'Last selected option', value: 'last'},
 		{name: 'PP', value: 'pp'},
@@ -62,6 +73,7 @@
 	const DEFAULT_SCORE_SORTING_STYLE = 'select';
 
 	let currentAvatarIcons = DEFAULT_AVATAR_ICONS;
+	let currentRankedSortOption = DEFAULT_SORT_VALUE;
 	let currentSortOption = DEFAULT_SORT_VALUE;
 	let currentAttemptsSortOption = DEFAULT_SORT_VALUE;
 	let currentScoreSortingStyle = DEFAULT_SCORE_SORTING_STYLE;
@@ -72,6 +84,8 @@
 	function onConfigUpdated(config) {
 		if (config?.preferences?.iconsOnAvatars != currentAvatarIcons)
 			currentAvatarIcons = config?.preferences?.iconsOnAvatars ?? DEFAULT_AVATAR_ICONS;
+		if (config?.preferences?.rankedSortOptions != currentRankedSortOption)
+			currentRankedSortOption = config?.preferences?.rankedSortOptions ?? DEFAULT_SORT_VALUE;
 		if (config?.preferences?.scoresSortOptions != currentSortOption)
 			currentSortOption = config?.preferences?.scoresSortOptions ?? DEFAULT_SORT_VALUE;
 		if (config?.preferences?.attemptsSortOptions != currentAttemptsSortOption)
@@ -152,6 +166,7 @@
 	$: onConfigUpdated(configStore && $configStore ? $configStore : null);
 
 	$: settempsetting('iconsOnAvatars', currentAvatarIcons);
+	$: settempsetting('rankedSortOptions', currentRankedSortOption);
 	$: settempsetting('scoresSortOptions', currentSortOption);
 	$: settempsetting('attemptsSortOptions', currentAttemptsSortOption);
 	$: settempsetting('scoreSortingStyle', currentScoreSortingStyle);
@@ -215,8 +230,13 @@
 			<Select bind:value={currentScoreSortingStyle} options={scoreSortingStyleOptions} />
 		</section>
 
+		<section class="option" id="profile-ranked-sort">
+			<label title="How to sort ranked scores by default">Sort ranked by</label>
+			<Select bind:value={currentRankedSortOption} options={rankedSortOptions} />
+		</section>
+
 		<section class="option" id="profile-sort">
-			<label title="How to sort scores by default">Sort scores by</label>
+			<label title="How to sort all scores by default">Sort all scores by</label>
 			<Select bind:value={currentSortOption} options={sortOptions} />
 		</section>
 

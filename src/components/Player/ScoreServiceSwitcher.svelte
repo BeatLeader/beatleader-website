@@ -15,6 +15,7 @@
 	import createServiceParamsManager from './utils/service-param-manager';
 	import Select from '../Settings/Select.svelte';
 	import Switcher from '../Common/Switcher.svelte';
+	import Button from '../Common/Button.svelte';
 	import editModel from '../../stores/beatleader/profile-edit-model';
 
 	export let playerId = null;
@@ -51,33 +52,121 @@
 	};
 
 	// Build clean URL for service tabs (without carrying over current service params)
-	const buildServiceTabUrl = (serviceId) => {
+	const buildServiceTabUrl = serviceId => {
 		const prefix = `/u/${playerAlias}`;
 		// For service tabs, just use the service path without any query params
-		return serviceId === 'scores' ? prefix : `${prefix}/${serviceId}`;
+		// 'ranked' is the default, so it doesn't need a path segment
+		return serviceId === 'ranked' ? prefix : `${prefix}/${serviceId}`;
 	};
 
 	// Sort options data (shared between Switcher and Select)
+	const getRankedSortOptions = () => [
+		{id: 'pp', label: 'PP', title: 'Sort by PP', iconFa: 'fa fa-cubes', url: buildUrl('ranked', {sort: 'pp'})},
+		{id: 'accPP', label: 'Acc PP', title: 'Sort by acc PP', iconFa: 'fa fa-arrows-to-dot', url: buildUrl('ranked', {sort: 'accPP'})},
+		{
+			id: 'passPP',
+			label: 'Pass PP',
+			title: 'Sort by pass PP',
+			iconFa: 'fa fa-person-walking-dashed-line-arrow-right',
+			url: buildUrl('ranked', {sort: 'passPP'}),
+		},
+		{
+			id: 'techPP',
+			label: 'Tech PP',
+			title: 'Sort by tech PP',
+			iconFa: 'fa fa-arrows-split-up-and-left',
+			url: buildUrl('ranked', {sort: 'techPP'}),
+		},
+		{id: 'date', label: 'Date', title: 'Sort by date', iconFa: 'fa fa-clock', url: buildUrl('ranked', {sort: 'date'})},
+		{id: 'acc', label: 'Acc', title: 'Sort by accuracy', iconFa: 'fa fa-crosshairs', url: buildUrl('ranked', {sort: 'acc'})},
+		{
+			id: 'scoreValue',
+			label: 'Score',
+			title: 'Sort by modified score value',
+			iconFa: 'fa fa-coins',
+			url: buildUrl('ranked', {sort: 'scoreValue'}),
+		},
+		{id: 'rank', label: 'Rank', title: 'Sort by rank', iconFa: 'fa fa-list-ol', url: buildUrl('ranked', {sort: 'rank'})},
+		{id: 'stars', label: 'Stars', title: 'Sort by song stars', iconFa: 'fa fa-star', url: buildUrl('ranked', {sort: 'stars'})},
+		{
+			id: 'playCount',
+			label: 'Plays',
+			title: `Sort by attempt count${player?.profileSettings?.showStatsPublic == false ? ' (this player has attempts hidden)' : ''}`,
+			iconFa: 'fa fa-repeat',
+			url: buildUrl('ranked', {sort: 'playCount'}),
+			disabled: player?.profileSettings?.showStatsPublic == false,
+		},
+		{id: 'pauses', label: 'Pauses', title: 'Sort by pauses', iconFa: 'fa fa-pause', url: buildUrl('ranked', {sort: 'pauses'})},
+		{id: 'maxStreak', label: 'Streak', title: 'Sort by 115 streak', iconFa: 'icon115s', url: buildUrl('ranked', {sort: 'maxStreak'})},
+		{
+			id: 'sotwNominations',
+			label: 'Nominations',
+			title: 'Sort by nominations for Best Of The Week',
+			iconFa: 'fas fa-award',
+			url: buildUrl('ranked', {sort: 'sotwNominations'}),
+		},
+		{
+			id: 'replaysWatched',
+			label: 'Watched',
+			title: 'Sort by replay watched',
+			iconFa: 'fa fa-eye',
+			url: buildUrl('ranked', {sort: 'replaysWatched'}),
+		},
+		{id: 'mistakes', label: 'Mistakes', title: 'Sort by mistakes', iconFa: 'icon-mistakes', url: buildUrl('ranked', {sort: 'mistakes'})},
+	];
+
 	const getScoresSortOptions = () => [
 		{id: 'pp', label: 'PP', title: 'Sort by PP', iconFa: 'fa fa-cubes', url: buildUrl('scores', {sort: 'pp'})},
 		{id: 'accPP', label: 'Acc PP', title: 'Sort by acc PP', iconFa: 'fa fa-arrows-to-dot', url: buildUrl('scores', {sort: 'accPP'})},
-		{id: 'passPP', label: 'Pass PP', title: 'Sort by pass PP', iconFa: 'fa fa-person-walking-dashed-line-arrow-right', url: buildUrl('scores', {sort: 'passPP'})},
-		{id: 'techPP', label: 'Tech PP', title: 'Sort by tech PP', iconFa: 'fa fa-arrows-split-up-and-left', url: buildUrl('scores', {sort: 'techPP'})},
+		{
+			id: 'passPP',
+			label: 'Pass PP',
+			title: 'Sort by pass PP',
+			iconFa: 'fa fa-person-walking-dashed-line-arrow-right',
+			url: buildUrl('scores', {sort: 'passPP'}),
+		},
+		{
+			id: 'techPP',
+			label: 'Tech PP',
+			title: 'Sort by tech PP',
+			iconFa: 'fa fa-arrows-split-up-and-left',
+			url: buildUrl('scores', {sort: 'techPP'}),
+		},
 		{id: 'date', label: 'Date', title: 'Sort by date', iconFa: 'fa fa-clock', url: buildUrl('scores', {sort: 'date'})},
 		{id: 'acc', label: 'Acc', title: 'Sort by accuracy', iconFa: 'fa fa-crosshairs', url: buildUrl('scores', {sort: 'acc'})},
-		{id: 'scoreValue', label: 'Score', title: 'Sort by modified score value', iconFa: 'fa fa-coins', url: buildUrl('scores', {sort: 'scoreValue'})},
+		{
+			id: 'scoreValue',
+			label: 'Score',
+			title: 'Sort by modified score value',
+			iconFa: 'fa fa-coins',
+			url: buildUrl('scores', {sort: 'scoreValue'}),
+		},
 		{id: 'rank', label: 'Rank', title: 'Sort by rank', iconFa: 'fa fa-list-ol', url: buildUrl('scores', {sort: 'rank'})},
 		{id: 'stars', label: 'Stars', title: 'Sort by song stars', iconFa: 'fa fa-star', url: buildUrl('scores', {sort: 'stars'})},
 		{
-			id: 'playCount', label: 'Plays',
+			id: 'playCount',
+			label: 'Plays',
 			title: `Sort by attempt count${player?.profileSettings?.showStatsPublic == false ? ' (this player has attempts hidden)' : ''}`,
-			iconFa: 'fa fa-repeat', url: buildUrl('scores', {sort: 'playCount'}),
+			iconFa: 'fa fa-repeat',
+			url: buildUrl('scores', {sort: 'playCount'}),
 			disabled: player?.profileSettings?.showStatsPublic == false,
 		},
 		{id: 'pauses', label: 'Pauses', title: 'Sort by pauses', iconFa: 'fa fa-pause', url: buildUrl('scores', {sort: 'pauses'})},
 		{id: 'maxStreak', label: 'Streak', title: 'Sort by 115 streak', iconFa: 'icon115s', url: buildUrl('scores', {sort: 'maxStreak'})},
-		{id: 'sotwNominations', label: 'Nominations', title: 'Sort by nominations for Best Of The Week', iconFa: 'fas fa-award', url: buildUrl('scores', {sort: 'sotwNominations'})},
-		{id: 'replaysWatched', label: 'Watched', title: 'Sort by replay watched', iconFa: 'fa fa-eye', url: buildUrl('scores', {sort: 'replaysWatched'})},
+		{
+			id: 'sotwNominations',
+			label: 'Nominations',
+			title: 'Sort by nominations for Best Of The Week',
+			iconFa: 'fas fa-award',
+			url: buildUrl('scores', {sort: 'sotwNominations'}),
+		},
+		{
+			id: 'replaysWatched',
+			label: 'Watched',
+			title: 'Sort by replay watched',
+			iconFa: 'fa fa-eye',
+			url: buildUrl('scores', {sort: 'replaysWatched'}),
+		},
 		{id: 'mistakes', label: 'Mistakes', title: 'Sort by mistakes', iconFa: 'icon-mistakes', url: buildUrl('scores', {sort: 'mistakes'})},
 	];
 
@@ -86,7 +175,13 @@
 		{id: 'date', label: 'Date', title: 'Sort by date', iconFa: 'fa fa-clock', url: buildUrl('attempts', {sort: 'date'})},
 		{id: 'acc', label: 'Acc', title: 'Sort by accuracy', iconFa: 'fa fa-crosshairs', url: buildUrl('attempts', {sort: 'acc'})},
 		{id: 'rank', label: 'Rank', title: 'Sort by rank', iconFa: 'fa fa-list-ol', url: buildUrl('attempts', {sort: 'rank'})},
-		{id: 'playCount', label: 'Plays', title: 'Sort by attempt count', iconFa: 'fa fa-repeat', url: buildUrl('attempts', {sort: 'playCount'})},
+		{
+			id: 'playCount',
+			label: 'Plays',
+			title: 'Sort by attempt count',
+			iconFa: 'fa fa-repeat',
+			url: buildUrl('attempts', {sort: 'playCount'}),
+		},
 		{id: 'pauses', label: 'Pauses', title: 'Sort by pauses', iconFa: 'fa fa-pause', url: buildUrl('attempts', {sort: 'pauses'})},
 		{id: 'maxStreak', label: 'Streak', title: 'Sort by 115 streak', iconFa: 'icon115s', url: buildUrl('attempts', {sort: 'maxStreak'})},
 		{id: 'mistakes', label: 'Mistakes', title: 'Sort by mistakes', iconFa: 'icon-mistakes', url: buildUrl('attempts', {sort: 'mistakes'})},
@@ -105,20 +200,16 @@
 		{id: 'rank', label: 'Rank', title: 'Sort by rank', iconFa: 'fa fa-list-ol', url: buildUrl('accsaber', {sort: 'rank'})},
 	];
 
-	const getOrderOptions = () => [
-		{id: 'asc', label: 'Ascending', title: 'Sort ascending', iconFa: 'fa-arrow-up'},
-		{id: 'desc', label: 'Descending', title: 'Sort descending', iconFa: 'fa-arrow-down'},
-	];
-
 	// Convert Switcher format (id/label/iconFa) to Select format (value/name/icon)
-	const toSelectOptions = (switcherValues) => switcherValues.map(v => ({
-		value: v.id,
-		name: v.label,
-		title: v.title,
-		icon: v.iconFa,
-		url: v.url,
-		disabled: v.disabled,
-	}));
+	const toSelectOptions = switcherValues =>
+		switcherValues.map(v => ({
+			value: v.id,
+			name: v.label,
+			title: v.title,
+			icon: v.iconFa,
+			url: v.url,
+			disabled: v.disabled,
+		}));
 
 	let allServices = [];
 	function updateAllServices(playerAlias, serviceParams, useSwitcher) {
@@ -126,124 +217,131 @@
 		const sortPropKey = useSwitcher ? 'values' : 'options';
 		const eventIdKey = useSwitcher ? 'id' : 'value';
 
-		const createSortOnChange = (serviceId, toggleOrder = false) => event => {
-			const sortValue = event?.detail?.[eventIdKey];
-			if (!sortValue) return null;
+		const createSortOnChange =
+			(serviceId, toggleOrder = false) =>
+			event => {
+				const sortValue = event?.detail?.[eventIdKey];
+				if (!sortValue) return null;
 
-			// In edit mode with Switcher, toggle visibility instead of changing sort
-			if ($editModel && useSwitcher) {
-				if (!$editModel.data.profileAppearance) $editModel.data.profileAppearance = [];
+				// In edit mode with Switcher, toggle visibility instead of changing sort
+				if ($editModel && useSwitcher) {
+					if (!$editModel.data.profileAppearance) $editModel.data.profileAppearance = [];
 
-				const filterName = `ss-${sortValue}`;
-				if ($editModel.data.profileAppearance.includes(filterName)) {
-					$editModel.data.profileAppearance = $editModel.data.profileAppearance.filter(s => s !== filterName);
-				} else {
-					$editModel.data.profileAppearance = [...$editModel.data.profileAppearance, filterName];
+					const filterName = `ss-${sortValue}`;
+					if ($editModel.data.profileAppearance.includes(filterName)) {
+						$editModel.data.profileAppearance = $editModel.data.profileAppearance.filter(s => s !== filterName);
+					} else {
+						$editModel.data.profileAppearance = [...$editModel.data.profileAppearance, filterName];
+					}
+					return null;
 				}
-				return null;
-			}
 
-			const changes = {sort: sortValue};
-			if (toggleOrder && useSwitcher && serviceParams?.sort === sortValue) {
-				changes.order = serviceParams?.order === 'asc' ? 'desc' : 'asc';
-			}
-			// Clear secondary sort if it matches the new primary sort
-			if (serviceId === 'scores' && serviceParams?.thenSort === sortValue) {
-				changes.thenSort = null;
-				changes.thenOrder = null;
-			}
-			dispatch('service-params-change', changes);
-		};
+				const changes = {sort: sortValue};
+				if (toggleOrder && useSwitcher && serviceParams?.sort === sortValue) {
+					changes.order = serviceParams?.order === 'asc' ? 'desc' : 'asc';
+				}
+				// Clear secondary sort if it matches the new primary sort
+				if (serviceId === 'scores' && serviceParams?.thenSort === sortValue) {
+					changes.thenSort = null;
+					changes.thenOrder = null;
+				}
+				dispatch('service-params-change', changes);
+			};
 
-		const createOrderOnChange = () => event => {
-			const orderValue = event?.detail?.[eventIdKey];
-			if (!orderValue) return null;
-			dispatch('service-params-change', {order: orderValue});
-		};
-
+		const rankedSortValues = getRankedSortOptions();
 		const scoresSortValues = getScoresSortOptions();
 		const attemptsSortValues = getAttemptsSortOptions();
 		const beatsaviorSortValues = getBeatsaviorSortOptions();
 		const accsaberSortValues = getAccsaberSortOptions();
-		const orderValues = getOrderOptions();
 
 		allServices = [
 			{
+				id: 'ranked',
+				label: 'Ranked',
+				icon: '<i class="fa-solid fa-medal"></i>',
+				cls: 'service-tab-button',
+				url: buildServiceTabUrl('ranked'),
+				switcherComponents: useSwitcher
+					? [
+							{
+								component: Switcher,
+								props: {class: 'score-sorting', values: rankedSortValues},
+								key: 'sort',
+								onChange: createSortOnChange('ranked', true),
+							},
+						]
+					: [
+							{
+								component: Select,
+								props: {
+									class: 'score-sorting',
+									fontSize: '0.8',
+									fontPadding: '0.3',
+									options: toSelectOptions(rankedSortValues),
+								},
+								key: 'sort',
+								onChange: createSortOnChange('ranked', false),
+							},
+						],
+			},
+			{
 				id: 'scores',
-				label: 'Scores',
-				icon: '<div class="beatleader-icon"></div>',
+				label: 'All Scores',
+				icon: '<i class="fa-solid fa-list-check"></i>',
 				cls: 'service-tab-button',
 				url: buildServiceTabUrl('scores'),
-				switcherComponents: useSwitcher ? [
-					{
-						component: Switcher,
-						props: {class: 'score-sorting', values: scoresSortValues},
-						key: 'sort',
-						onChange: createSortOnChange('scores', true),
-					},
-				] : [
-					{
-						component: Select,
-						props: {
-							class: 'score-sorting',
-							fontSize: '0.8',
-							fontPadding: '0.3',
-							options: toSelectOptions(scoresSortValues),
-						},
-						key: 'sort',
-						onChange: createSortOnChange('scores', false),
-					},
-					{
-						component: Select,
-						props: {
-							class: 'score-sorting',
-							fontSize: '0.8',
-							fontPadding: '0.3',
-							options: toSelectOptions(orderValues),
-						},
-						key: 'order',
-						onChange: createOrderOnChange(),
-					},
-				],
+				switcherComponents: useSwitcher
+					? [
+							{
+								component: Switcher,
+								props: {class: 'score-sorting', values: scoresSortValues},
+								key: 'sort',
+								onChange: createSortOnChange('scores', true),
+							},
+						]
+					: [
+							{
+								component: Select,
+								props: {
+									class: 'score-sorting',
+									fontSize: '0.8',
+									fontPadding: '0.3',
+									options: toSelectOptions(scoresSortValues),
+								},
+								key: 'sort',
+								onChange: createSortOnChange('scores', false),
+							},
+						],
 			},
 			{
 				id: 'attempts',
 				label: 'Attempts',
-				icon: '<div class="beatleader-icon"></div>',
+				icon: '<i class="fa-solid fa-person-falling-burst"></i>',
 				cls: 'service-tab-button',
 				url: buildServiceTabUrl('attempts'),
 				availabilityTitle: `This player's attempts are private`,
-				switcherComponents: useSwitcher ? [
-					{
-						component: Switcher,
-						props: {class: 'score-sorting', values: attemptsSortValues},
-						key: 'sort',
-						onChange: createSortOnChange('attempts', true),
-					},
-				] : [
-					{
-						component: Select,
-						props: {
-							class: 'score-sorting',
-							fontSize: '0.8',
-							fontPadding: '0.3',
-							options: toSelectOptions(attemptsSortValues),
-						},
-						key: 'sort',
-						onChange: createSortOnChange('attempts', false),
-					},
-					{
-						component: Select,
-						props: {
-							class: 'score-sorting',
-							fontSize: '0.8',
-							fontPadding: '0.3',
-							options: toSelectOptions(orderValues),
-						},
-						key: 'order',
-						onChange: createOrderOnChange(),
-					},
-				],
+				switcherComponents: useSwitcher
+					? [
+							{
+								component: Switcher,
+								props: {class: 'score-sorting', values: attemptsSortValues},
+								key: 'sort',
+								onChange: createSortOnChange('attempts', true),
+							},
+						]
+					: [
+							{
+								component: Select,
+								props: {
+									class: 'score-sorting',
+									fontSize: '0.8',
+									fontPadding: '0.3',
+									options: toSelectOptions(attemptsSortValues),
+								},
+								key: 'sort',
+								onChange: createSortOnChange('attempts', false),
+							},
+						],
 			},
 			{
 				id: 'beatsavior',
@@ -251,37 +349,28 @@
 				cls: 'mode-tab-button',
 				icon: '<div class="beatsavior-icon"></div>',
 				url: buildServiceTabUrl('beatsavior'),
-				switcherComponents: useSwitcher ? [
-					{
-						component: Switcher,
-						props: {values: beatsaviorSortValues},
-						key: 'sort',
-						onChange: createSortOnChange('beatsavior', true),
-					},
-				] : [
-					{
-						component: Select,
-						props: {
-							class: 'score-sorting',
-							fontSize: '0.8',
-							fontPadding: '0.3',
-							options: toSelectOptions(beatsaviorSortValues),
-						},
-						key: 'sort',
-						onChange: createSortOnChange('beatsavior', false),
-					},
-					{
-						component: Select,
-						props: {
-							class: 'score-sorting',
-							fontSize: '0.8',
-							fontPadding: '0.3',
-							options: toSelectOptions(orderValues),
-						},
-						key: 'order',
-						onChange: createOrderOnChange(),
-					},
-				],
+				switcherComponents: useSwitcher
+					? [
+							{
+								component: Switcher,
+								props: {values: beatsaviorSortValues},
+								key: 'sort',
+								onChange: createSortOnChange('beatsavior', true),
+							},
+						]
+					: [
+							{
+								component: Select,
+								props: {
+									class: 'score-sorting',
+									fontSize: '0.8',
+									fontPadding: '0.3',
+									options: toSelectOptions(beatsaviorSortValues),
+								},
+								key: 'sort',
+								onChange: createSortOnChange('beatsavior', false),
+							},
+						],
 			},
 			{
 				id: 'accsaber',
@@ -290,60 +379,50 @@
 				icon: '<div class="accsaber-icon"></div>',
 				url: buildServiceTabUrl('accsaber'),
 				availabilityTitle: `AccSaber info is not available for this player`,
-				switcherComponents: useSwitcher ? [
-					{
-						component: Switcher,
-						key: 'type',
-						onChange: event => {
-							if (!event?.detail?.id) return null;
-							dispatch('service-params-change', {type: event?.detail?.id});
-						},
-					},
-					{
-						component: Switcher,
-						key: 'sort',
-						props: {values: accsaberSortValues},
-						onChange: createSortOnChange('accsaber', true),
-					},
-				] : [
-					{
-						component: Select,
-						props: {
-							class: 'score-sorting',
-							fontSize: '0.8',
-							fontPadding: '0.3',
-							options: [],
-						},
-						key: 'type',
-						onChange: event => {
-							if (!event?.detail?.value) return null;
-							dispatch('service-params-change', {type: event?.detail?.value});
-						},
-					},
-					{
-						component: Select,
-						key: 'sort',
-						props: {
-							class: 'score-sorting',
-							fontSize: '0.8',
-							fontPadding: '0.3',
-							options: toSelectOptions(accsaberSortValues),
-						},
-						onChange: createSortOnChange('accsaber', false),
-					},
-					{
-						component: Select,
-						props: {
-							class: 'score-sorting',
-							fontSize: '0.8',
-							fontPadding: '0.3',
-							options: toSelectOptions(orderValues),
-							defaultValue: serviceParams?.order ?? 'desc',
-						},
-						key: 'order',
-						onChange: createOrderOnChange(),
-					},
-				],
+				switcherComponents: useSwitcher
+					? [
+							{
+								component: Switcher,
+								key: 'type',
+								onChange: event => {
+									if (!event?.detail?.id) return null;
+									dispatch('service-params-change', {type: event?.detail?.id});
+								},
+							},
+							{
+								component: Switcher,
+								key: 'sort',
+								props: {values: accsaberSortValues},
+								onChange: createSortOnChange('accsaber', true),
+							},
+						]
+					: [
+							{
+								component: Select,
+								props: {
+									class: 'score-sorting',
+									fontSize: '0.8',
+									fontPadding: '0.3',
+									options: [],
+								},
+								key: 'type',
+								onChange: event => {
+									if (!event?.detail?.value) return null;
+									dispatch('service-params-change', {type: event?.detail?.value});
+								},
+							},
+							{
+								component: Select,
+								key: 'sort',
+								props: {
+									class: 'score-sorting',
+									fontSize: '0.8',
+									fontPadding: '0.3',
+									options: toSelectOptions(accsaberSortValues),
+								},
+								onChange: createSortOnChange('accsaber', false),
+							},
+						],
 			},
 		];
 	}
@@ -355,7 +434,7 @@
 			await Promise.all([accSaberService.isDataForPlayerAvailable(player).then(r => (r ? 'accsaber' : null))])
 		).filter(s => s);
 
-		let newAvailableServiceNames = ['scores'];
+		let newAvailableServiceNames = ['ranked', 'scores'];
 
 		if (additionalServices?.length) {
 			newAvailableServiceNames = newAvailableServiceNames.concat(additionalServices);
@@ -399,12 +478,12 @@
 		useSwitcher,
 		profileAppearance
 	) {
-		const sortingOrFilteringAppearance = (profileAppearance ?? []).filter(a => a.startsWith('ss-') || a.startsWith('sf-'));
+		const sortingOrFilteringAppearance = profileAppearance?.filter(a => a.startsWith('ss-') || a.startsWith('sf-'));
 
 		const commonFilters = [];
 
 		// In edit mode with switcher, force scores service
-		const effectiveService = ($editModel && useSwitcher) ? 'scores' : service;
+		const effectiveService = $editModel && useSwitcher ? 'scores' : service;
 
 		return allServices
 			.filter(s => availableServiceNames.includes(s?.id))
@@ -414,7 +493,7 @@
 				const serviceDef = {...s};
 
 				// For Switcher mode: apply profileAppearance filtering to values
-				if (useSwitcher) {
+				if (useSwitcher && (serviceDef.id === 'scores' || serviceDef.id === 'ranked')) {
 					serviceDef.switcherComponents = serviceDef.switcherComponents.map(c => ({
 						...c,
 						props: {
@@ -428,12 +507,13 @@
 													effectiveService != 'scores' ||
 													$editModel ||
 													serviceParams?.sort == v.id ||
-													sortingOrFilteringAppearance.includes(`ss-${v?.id ?? ''}`)
+													!sortingOrFilteringAppearance ||
+													sortingOrFilteringAppearance?.includes(`ss-${v?.id ?? ''}`)
 											)
 											.map(v => ({
 												...v,
 												title: $editModel ? 'Click to toggle' : v.title,
-												cls: !sortingOrFilteringAppearance.includes(`ss-${v?.id ?? ''}`) ? 'hidden' : '',
+												cls: sortingOrFilteringAppearance?.includes(`ss-${v?.id ?? ''}`) ? 'hidden' : '',
 											})),
 									}
 								: null),
@@ -450,9 +530,10 @@
 				}
 
 				switch (effectiveService) {
+					case 'ranked':
 					case 'scores':
 					case 'attempts':
-						if (availableServiceNames.includes('scores')) {
+						if (availableServiceNames.includes('ranked') || availableServiceNames.includes('scores')) {
 							serviceDef.filters = commonFilters
 								.filter(f => f.props.id != 'search' || playerId != SPECIAL_PLAYER_ID)
 
@@ -533,6 +614,7 @@
 											title: 'Filter by map type',
 											open: !!serviceParams?.filters?.songType,
 											defaultValue: serviceParams?.filters?.songType ?? null,
+											hidden: effectiveService === 'ranked',
 											values: [
 												{id: null, name: 'All'},
 												{id: 'ranked', name: 'Ranked'},
@@ -625,12 +707,14 @@
 							}
 
 							// For Switcher mode: add hidden property based on profileAppearance
-							if (useSwitcher) {
+							if (useSwitcher && (serviceDef.id === 'scores' || serviceDef.id === 'ranked')) {
 								serviceDef.filters = serviceDef.filters.map(f => ({
 									...f,
 									props: {
 										...f.props,
-										hidden: !sortingOrFilteringAppearance.includes(`sf-${f?.props?.id ?? ''}`) && !serviceParams?.filters?.[f?.props?.id],
+										hidden:
+											f?.props?.hidden ||
+											(sortingOrFilteringAppearance?.includes(`sf-${f?.props?.id ?? ''}`) && !serviceParams?.filters?.[f?.props?.id]),
 									},
 								}));
 							}
@@ -643,34 +727,34 @@
 						serviceDef.filters = [...commonFilters];
 						break;
 
-				case 'accsaber':
-					serviceDef.filters = [...commonFilters];
+					case 'accsaber':
+						serviceDef.filters = [...commonFilters];
 
-					if (accSaberCategories?.length) {
-						const typeComponent = serviceDef.switcherComponents.find(c => c?.key === 'type');
-						if (typeComponent) {
-							if (useSwitcher) {
-								typeComponent.props = {
-									...typeComponent.props,
-									values: accSaberCategories.map(c => ({
-										id: c.name,
-										label: c.displayName ?? c.name,
-										url: buildUrl('accsaber', {type: c.name}),
-									})),
-								};
-							} else {
-								typeComponent.props = {
-									...typeComponent.props,
-									options: accSaberCategories.map(c => ({
-										value: c.name,
-										name: c.displayName ?? c.name,
-										url: buildUrl('accsaber', {type: c.name}),
-									})),
-								};
+						if (accSaberCategories?.length) {
+							const typeComponent = serviceDef.switcherComponents.find(c => c?.key === 'type');
+							if (typeComponent) {
+								if (useSwitcher) {
+									typeComponent.props = {
+										...typeComponent.props,
+										values: accSaberCategories.map(c => ({
+											id: c.name,
+											label: c.displayName ?? c.name,
+											url: buildUrl('accsaber', {type: c.name}),
+										})),
+									};
+								} else {
+									typeComponent.props = {
+										...typeComponent.props,
+										options: accSaberCategories.map(c => ({
+											value: c.name,
+											name: c.displayName ?? c.name,
+											url: buildUrl('accsaber', {type: c.name}),
+										})),
+									};
+								}
 							}
 						}
-					}
-					break;
+						break;
 				}
 
 				serviceDef.switcherComponents = serviceDef.switcherComponents
@@ -683,12 +767,12 @@
 							const valuesArray = c.props?.values ?? [];
 							const currentValue = valuesArray.find(v => v?.id === serviceParams?.[key]) ?? null;
 							const loadingVal = valuesArray.find(v => v?.id === loadingServiceParams?.[key]) ?? null;
-							
+
 							// Update the icon to show sort direction for the current sort button
 							if (key === 'sort' && currentValue?.iconFa) {
 								currentValue.iconFa = `fa fa-long-arrow-alt-${serviceParams?.order === 'asc' ? 'up' : 'down'}`;
 							}
-							
+
 							c.props.value = currentValue;
 							c.props.loadingValue = loadingVal;
 						} else {
@@ -766,7 +850,7 @@
 
 	function addThenSort() {
 		if (service !== 'scores') return;
-		
+
 		const sortComponent = serviceObj?.switcherComponents?.find(c => c.key === 'sort');
 		const availableOptions = sortComponent?.props?.options?.filter(o => o.value !== serviceParams?.sort) ?? [];
 		const defaultThenSort = availableOptions[0]?.value ?? 'date';
@@ -774,7 +858,7 @@
 		hasThenSort = true;
 		thenSort = defaultThenSort;
 		thenOrder = 'desc';
-		
+
 		dispatch('service-params-change', {
 			thenSort: defaultThenSort,
 			thenOrder: 'desc',
@@ -782,7 +866,6 @@
 	}
 
 	function removeThenSort() {
-
 		hasThenSort = false;
 
 		dispatch('service-params-change', {
@@ -832,10 +915,7 @@
 		<!-- Switcher mode: show buttons inline -->
 		{#if serviceObj?.switcherComponents?.length}
 			{#each serviceObj.switcherComponents as component (`${serviceObj?.id ?? ''}${component.key ?? 'sort'}`)}
-				<svelte:component 
-					this={component.component} 
-					{...component.props} 
-					on:change={component.onChange ?? null} />
+				<svelte:component this={component.component} {...component.props} on:change={component.onChange ?? null} />
 			{/each}
 		{/if}
 	{:else}
@@ -862,34 +942,42 @@
 			{/if}
 			{#if serviceObj?.switcherComponents?.length}
 				{#each serviceObj.switcherComponents.filter(c => c.key !== 'thenSort' && c.key !== 'thenOrder') as component (`${serviceObj?.id ?? ''}${component.key ?? 'sort'}`)}
-					<svelte:component 
-						this={component.component} 
-						{...component.props} 
+					<svelte:component
+						this={component.component}
+						{...component.props}
 						options={component.props?.options?.filter(o => !hasThenSort || o.value !== serviceParams?.thenSort)}
 						on:change={component.onChange ?? null} />
 				{/each}
 			{/if}
+			<Button
+				cls="order-toggle"
+				iconFa="fas {serviceParams?.order === 'asc' ? 'fa-arrow-up' : 'fa-arrow-down'}"
+				label={serviceParams?.order === 'asc' ? 'Ascending' : 'Descending'}
+				title={serviceParams?.order === 'asc' ? 'Ascending' : 'Descending'}
+				on:click={() => dispatch('service-params-change', {order: serviceParams?.order === 'asc' ? 'desc' : 'asc'})} />
 			{#if hasThenSort}
 				<span>then by</span>
-				{#each serviceObj?.switcherComponents?.filter(c => c.key === 'sort' || c.key === 'order') ?? [] as component (`thenSort-${component.key}`)}
-					<svelte:component 
-						this={component.component} 
-						{...component.props} 
-						options={component.props?.options?.filter(o => component.key !== 'sort' || o.value !== serviceParams?.sort)}
-						value={component.key === 'sort' ? thenSort : thenOrder}
+				{#each serviceObj?.switcherComponents?.filter(c => c.key === 'sort') ?? [] as component (`thenSort-${component.key}`)}
+					<svelte:component
+						this={component.component}
+						{...component.props}
+						options={component.props?.options?.filter(o => o.value !== serviceParams?.sort)}
+						value={thenSort}
 						on:change={event => {
 							if (!event?.detail?.value) return;
-							if (component.key === 'sort') {
-								dispatch('service-params-change', { thenSort: event.detail.value });
-							} else {
-								dispatch('service-params-change', { thenOrder: event.detail.value });
-							}
+							dispatch('service-params-change', {thenSort: event.detail.value});
 						}} />
 				{/each}
+				<Button
+					cls="order-toggle"
+					iconFa="fas {thenOrder === 'asc' ? 'fa-arrow-up' : 'fa-arrow-down'}"
+					label={thenOrder === 'asc' ? 'Ascending' : 'Descending'}
+					title={thenOrder === 'asc' ? 'Ascending' : 'Descending'}
+					on:click={() => dispatch('service-params-change', {thenOrder: thenOrder === 'asc' ? 'desc' : 'asc'})} />
 				<button class="remove-then-sort" on:click={removeThenSort} title="Remove secondary sort" aria-label="Remove secondary sort">
 					<i class="fas fa-times"></i>
 				</button>
-			{:else if service === 'scores'}
+			{:else if service === 'scores' || service === 'ranked'}
 				<button class="add-then-sort" on:click={addThenSort} title="Add secondary sort" aria-label="Add secondary sort">
 					<i class="fas fa-plus"></i>
 				</button>
@@ -935,14 +1023,18 @@
 	}
 
 	.service-switcher {
-		margin-top: -2.37em;
+		margin-top: -2em;
 		margin-bottom: 1.3em;
 		margin-left: -0.5em;
 	}
 
+	:global(.service-switcher .switch-types) {
+		gap: 0.15em;
+	}
+
 	:global(.service-tab-button) {
 		margin-bottom: -0.5em !important;
-		height: 2.5em;
+		height: 2em;
 		border-radius: 12px 12px 0 0 !important;
 	}
 
@@ -955,6 +1047,7 @@
 		display: flex;
 		gap: 0.3em;
 		align-items: center;
+		flex-wrap: wrap;
 	}
 
 	.add-then-sort,
@@ -976,6 +1069,16 @@
 
 	.remove-then-sort {
 		color: #ff6b6b;
+	}
+
+	:global(.order-toggle.button) {
+		font-size: 0.85em;
+		padding: 0.5em 0.4em;
+		height: 2em;
+		margin-bottom: 0;
+		background-color: var(--dimmed);
+		border-radius: 0.25rem;
+		color: white !important;
 	}
 
 	/* Edit mode styles for Switcher customization */
@@ -1010,5 +1113,32 @@
 	.edit-enabled :global(.score-filters .filter.hidden:hover) {
 		filter: none;
 		opacity: 0.5 !important;
+	}
+
+	@media screen and (max-width: 500px) {
+		.service-switcher {
+			margin-top: -3.3em;
+		}
+
+		:global(.service-switcher .switch-types) {
+			font-size: 0.7em;
+		}
+		:global(.service-switcher .switch-types .button) {
+			display: flex;
+			flex-direction: column;
+			height: 4em;
+			padding-top: 0.5em;
+			padding-bottom: 0.1em;
+		}
+		:global(.service-switcher .switch-types .button .icon) {
+			margin-right: 0 !important;
+			margin-left: 0 !important;
+			font-size: 1.5em;
+		}
+
+		:global(.service-switcher .switch-types .button .accsaber-icon) {
+			margin-top: -0.2em;
+			height: 110%;
+		}
 	}
 </style>
