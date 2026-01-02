@@ -61,7 +61,7 @@
 	$: leaderboardGroup = leaderboard?.leaderboardGroup;
 	$: song = leaderboard?.song;
 	$: hash = song?.hash;
-	$: coverUrl = song?.fullImageUrl ?? song?.imageUrl ?? (hash ? `${BS_CDN}/${encodeURIComponent(hash.toLowerCase())}.jpg` : null);
+	$: coverUrl = song?.fullCoverImage ?? song?.coverImage ?? (hash ? `${BS_CDN}/${encodeURIComponent(hash.toLowerCase())}.jpg` : null);
 	$: leaderboardCaptor = leaderboard?.topClan;
 
 	$: explicity = song?.explicity;

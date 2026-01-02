@@ -16,7 +16,7 @@ export default (options = {}) => {
 
 		var result = data
 			.map(s => {
-				const {id, hash, name, subName, author, mapper, image: imageUrl} = s;
+				const {id, hash, name, subName, author, mapper, coverImage} = s;
 				return s.difficulties.map(difficulty => {
 					const {stars, difficultyName: diff, modeName: type} = difficulty;
 
@@ -29,7 +29,7 @@ export default (options = {}) => {
 						subName,
 						author,
 						mapper,
-						imageUrl,
+						coverImage,
 						stars,
 						diff,
 						diffInfo,

@@ -167,9 +167,9 @@ export const processLeaderboard = led => {
 			return cum;
 		},
 		{
-			imageUrl: led?.song?.coverImage,
+			coverImage: led?.song?.coverImage,
 			mappers: led?.song?.mappers,
-			fullImageUrl: led?.song?.fullCoverImage,
+			fullCoverImage: led?.song?.fullCoverImage,
 			downloadUrl: led?.song?.downloadUrl,
 			explicity: led?.song?.explicity,
 			videoPreviewUrl: led?.song?.videoPreviewUrl,

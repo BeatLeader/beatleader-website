@@ -10,7 +10,7 @@
 	$: song = leaderboard?.song;
 	$: player = score?.player;
 
-	$: image = song?.imageUrl ?? '';
+	$: image = song?.coverImage ?? '';
 	$: title = `${player?.name} on ${song?.name} by ${song?.author}`;
 	$: description = `
         #${score?.score?.rank} with ${Math.round(score?.score?.acc, 2)}%${score?.score?.pp ? 'and ' + Math.round(score?.score?.pp, 2) + 'pp' : ''}${score?.score?.mods?.length ? '(' + score?.score?.mods.join(',') + ')' : ''}

@@ -70,7 +70,7 @@
 	$: leaderboard = $leaderboardStore?.leaderboard;
 	$: song = leaderboard?.song;
 
-	$: song && drawCinematics(cinematicsCanvas, song.imageUrl);
+	$: song && drawCinematics(cinematicsCanvas, song.coverImage);
 	$: difficulty = leaderboard?.difficulty;
 	$: scores = $leaderboardStore?.scores?.map(s => ({...s, leaderboard: leaderboard})) ?? null;
 </script>
@@ -102,7 +102,7 @@
 						<canvas bind:this={cinematicsCanvas} style="position: absolute; width: 100%; height: 100%; opacity: 0" />
 					</div>
 				</div>
-				<SongInfo {score} {leaderboard} />
+				<SongInfo {score} {leaderboard} {song}/>
 				<ScoreHeader {score} />
 				<PlayerInfo
 					{score}

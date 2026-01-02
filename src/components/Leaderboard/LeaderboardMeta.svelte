@@ -7,7 +7,7 @@
 	export let song;
 
 	$: diffInfo = leaderboard?.diffInfo ? getHumanDiffInfo(leaderboard.diffInfo) : null;
-	$: image = song?.imageUrl ?? '';
+	$: image = song?.coverImage ?? '';
 
 	$: title = song?.name + ' | ' + diffInfo?.fullName + ' | Beat Saber leaderboard';
 	$: description =
