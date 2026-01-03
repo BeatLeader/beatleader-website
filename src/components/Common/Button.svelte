@@ -252,7 +252,7 @@
 		border-radius: 0.2em;
 		font-size: inherit;
 		cursor: pointer;
-		color: var(--btn-color, #363636) !important;
+		color: var(--btn-color, #363636);
 		background-color: var(--btn-bg-color, #3273dc);
 		outline: none !important;
 		box-shadow: none;

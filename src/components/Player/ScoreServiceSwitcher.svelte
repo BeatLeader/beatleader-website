@@ -840,7 +840,7 @@
 	let thenOrder = null;
 
 	function updateHasThenSort(service, serviceParams) {
-		hasThenSort = service === 'scores' && !!serviceParams?.thenSort;
+		hasThenSort = (service === 'scores' || service === 'ranked') && !!serviceParams?.thenSort;
 	}
 
 	function updateThenSort(service, serviceParams) {
@@ -849,7 +849,7 @@
 	}
 
 	function addThenSort() {
-		if (service !== 'scores') return;
+		if (service !== 'scores' && service !== 'ranked') return;
 
 		const sortComponent = serviceObj?.switcherComponents?.find(c => c.key === 'sort');
 		const availableOptions = sortComponent?.props?.options?.filter(o => o.value !== serviceParams?.sort) ?? [];
@@ -1069,16 +1069,6 @@
 
 	.remove-then-sort {
 		color: #ff6b6b;
-	}
-
-	:global(.order-toggle.button) {
-		font-size: 0.85em;
-		padding: 0.5em 0.4em;
-		height: 2em;
-		margin-bottom: 0;
-		background-color: var(--dimmed);
-		border-radius: 0.25rem;
-		color: white !important;
 	}
 
 	/* Edit mode styles for Switcher customization */

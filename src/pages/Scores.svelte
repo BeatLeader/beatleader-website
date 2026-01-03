@@ -249,9 +249,7 @@
 
 		currentPage = newPage;
 		sortValue = currentFilters.sort;
-		orderValue = currentFilters.order;
 		thenSortValue = currentFilters.thenSort;
-		thenOrderValue = currentFilters.thenOrder;
 
 		if (setUrl) {
 			const query = buildSearchFromFiltersWithDefaults(currentFilters, params);
@@ -448,16 +446,8 @@
 		navigateToCurrentPageAndFilters(true);
 	}
 
-	let orderValues = [
-		{value: 'asc', name: 'Ascending', icon: 'fa-arrow-up'},
-		{value: 'desc', name: 'Descending', icon: 'fa-arrow-down'},
-	];
-	let orderValue = orderValues[0].value;
-
-	function onOrderChange(event) {
-		if (!event?.detail?.value || event.detail.value == currentFilters.order) return null;
-
-		currentFilters.order = event.detail.value;
+	function onOrderChange() {
+		currentFilters.order = currentFilters.order === 'asc' ? 'desc' : 'asc';
 
 		navigateToCurrentPageAndFilters();
 	}
@@ -523,12 +513,8 @@
 		navigateToCurrentPageAndFilters();
 	}
 
-	let thenOrderValue = orderValues[0].value;
-
-	function onThenOrderChange(event) {
-		if (!event?.detail?.value || event.detail.value == currentFilters.thenOrder) return null;
-
-		currentFilters.thenOrder = event.detail.value;
+	function onThenOrderChange() {
+		currentFilters.thenOrder = currentFilters.thenOrder === 'asc' ? 'desc' : 'asc';
 
 		navigateToCurrentPageAndFilters();
 	}
@@ -708,7 +694,12 @@
 				{/if}
 				<div class="sorting-options">
 					<Select bind:value={sortValue} on:change={onSortChange} fontSize="0.8" options={sortValues} />
-					<Select bind:value={orderValue} on:change={onOrderChange} fontSize="0.8" options={orderValues} />
+					<Button
+						cls="order-toggle"
+						iconFa="fas {currentFilters.order === 'asc' ? 'fa-arrow-up' : 'fa-arrow-down'}"
+						label={currentFilters.order === 'asc' ? 'Ascending' : 'Descending'}
+						title={currentFilters.order === 'asc' ? 'Ascending' : 'Descending'}
+						on:click={onOrderChange} />
 					<div class="score-options-section">
 						<span
 							class="beat-savior-reveal clickable"
@@ -728,7 +719,12 @@
 						<div class="line-thing"></div></span>
 					<div class="sorting-options">
 						<Select bind:value={thenSortValue} on:change={onThenSortChange} fontSize="0.8" options={thenSortValues} />
-						<Select bind:value={thenOrderValue} on:change={onThenOrderChange} fontSize="0.8" options={orderValues} />
+						<Button
+							cls="order-toggle"
+							iconFa="fas {currentFilters.thenOrder === 'asc' ? 'fa-arrow-up' : 'fa-arrow-down'}"
+							label={currentFilters.thenOrder === 'asc' ? 'Ascending' : 'Descending'}
+							title={currentFilters.thenOrder === 'asc' ? 'Ascending' : 'Descending'}
+							on:click={onThenOrderChange} />
 					</div>
 				{/if}
 			</div>

@@ -201,7 +201,6 @@
 		currentFilters = newFilters;
 
 		sortValue = currentFilters.sortBy;
-		orderValue = currentFilters.order;
 		dateRangeValue = currentFilters.date_range;
 
 		sortValues = sortValues1.map(v => {
@@ -422,16 +421,8 @@
 		navigateToCurrentPageAndFilters();
 	}
 
-	let orderValues = [
-		{value: 'asc', name: 'Ascending', icon: 'fa-arrow-up'},
-		{value: 'desc', name: 'Descending', icon: 'fa-arrow-down'},
-	];
-	let orderValue = orderValues[0].value;
-
-	function onOrderChange(event) {
-		if (!event?.detail?.value || event.detail.value == currentFilters.order) return null;
-
-		currentFilters.order = event.detail.value;
+	function onOrderChange() {
+		currentFilters.order = currentFilters.order === 'asc' ? 'desc' : 'asc';
 
 		currentPage = 1;
 
@@ -635,7 +626,12 @@
 
 			<div class="sorting-options">
 				<Select bind:value={sortValue} on:change={onSortChange} fontSize="0.8" options={sortValues} />
-				<Select bind:value={orderValue} on:change={onOrderChange} fontSize="0.8" options={orderValues} />
+				<Button
+					cls="order-toggle"
+					iconFa="fas {currentFilters.order === 'asc' ? 'fa-arrow-up' : 'fa-arrow-down'}"
+					label={currentFilters.order === 'asc' ? 'Ascending' : 'Descending'}
+					title={currentFilters.order === 'asc' ? 'Ascending' : 'Descending'}
+					on:click={onOrderChange} />
 			</div>
 
 			<h2 class="title is-5">Filters</h2>

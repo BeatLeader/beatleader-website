@@ -70,9 +70,18 @@
 		{name: 'Button switcher', value: 'switcher'},
 	];
 
+	const defaultServiceOptions = [
+		{name: 'Last selected', value: 'last'},
+		{name: 'Ranked', value: 'ranked'},
+		{name: 'All Scores', value: 'scores'},
+		{name: 'Attempts', value: 'attempts'},
+	];
+
 	const DEFAULT_SCORE_SORTING_STYLE = 'select';
+	const DEFAULT_SERVICE = 'last';
 
 	let currentAvatarIcons = DEFAULT_AVATAR_ICONS;
+	let currentDefaultService = DEFAULT_SERVICE;
 	let currentRankedSortOption = DEFAULT_SORT_VALUE;
 	let currentSortOption = DEFAULT_SORT_VALUE;
 	let currentAttemptsSortOption = DEFAULT_SORT_VALUE;
@@ -84,6 +93,8 @@
 	function onConfigUpdated(config) {
 		if (config?.preferences?.iconsOnAvatars != currentAvatarIcons)
 			currentAvatarIcons = config?.preferences?.iconsOnAvatars ?? DEFAULT_AVATAR_ICONS;
+		if (config?.preferences?.defaultService != currentDefaultService)
+			currentDefaultService = config?.preferences?.defaultService ?? DEFAULT_SERVICE;
 		if (config?.preferences?.rankedSortOptions != currentRankedSortOption)
 			currentRankedSortOption = config?.preferences?.rankedSortOptions ?? DEFAULT_SORT_VALUE;
 		if (config?.preferences?.scoresSortOptions != currentSortOption)
@@ -171,6 +182,7 @@
 	$: settempsetting('attemptsSortOptions', currentAttemptsSortOption);
 	$: settempsetting('scoreSortingStyle', currentScoreSortingStyle);
 	$: settempsetting('daysToCompare', currentDaysToCompare);
+	$: settempsetting('defaultService', currentDefaultService);
 	$: settempsetting('daysOfHistory', currentDaysOfHistory);
 	$: settempsetting('graphHeight', currentGraphHeight);
 
@@ -228,6 +240,11 @@
 		<section class="option" id="profile-sort-style">
 			<label title="Choose between dropdown selector or button switcher for score sorting">Score sorting style</label>
 			<Select bind:value={currentScoreSortingStyle} options={scoreSortingStyleOptions} />
+		</section>
+
+		<section class="option" id="profile-default-service">
+			<label title="Default score service when opening a profile">Default service</label>
+			<Select bind:value={currentDefaultService} options={defaultServiceOptions} />
 		</section>
 
 		<section class="option" id="profile-ranked-sort">

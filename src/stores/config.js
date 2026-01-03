@@ -29,6 +29,7 @@ export const DEFAULT_CONFIG = {
 	preferences: {
 		ppMetric: 'weighted',
 		iconsOnAvatars: 'show',
+		defaultService: 'last',
 		rankedSortOptions: 'last',
 		scoresSortOptions: 'last',
 		attemptsSortOptions: 'last',

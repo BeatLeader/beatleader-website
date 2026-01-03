@@ -3,6 +3,7 @@
 	import {GLOBAL_LEADERBOARD_TYPE} from '../../utils/format';
 	import {dateFromUnix, formatDateRelative} from '../../utils/date';
 	import Select from '../Settings/Select.svelte';
+	import Button from '../Common/Button.svelte';
 	import {RANKING_SORT_BY_VALUES, RANKING_TYPE_VALUES, RANKING_PP_TYPE_VALUES, RANKING_SORT_STAT_KEYS} from './rankingSortConstants';
 
 	const dispatch = createEventDispatcher();
@@ -17,11 +18,6 @@
 
 	let allSortValues = RANKING_SORT_BY_VALUES;
 	let currentSortValue = filters.sortBy ?? 'pp';
-
-	let orderValues = [
-		{value: 'asc', name: 'Ascending', icon: 'fa-arrow-up'},
-		{value: 'desc', name: 'Descending', icon: 'fa-arrow-down'},
-	];
 	let currentOrderValue = filters.order ?? 'desc';
 
 	function onSwitcherChanged(e) {
@@ -41,21 +37,36 @@
 	}
 </script>
 
-<nav class="switcher-nav">
-	{#if RANKING_SORT_STAT_KEYS[currentSortValue].general}
-		<Select bind:value={currentPpTypeValue} options={allPpTypeValues} fontSize={0.8} fontPadding={0.2} on:change={onPPTypeChanged} />
-	{/if}
-	<Select bind:value={currentSortValue} options={allSortValues} fontSize={0.8} fontPadding={0.2} on:change={onSwitcherChanged} />
-	{#if RANKING_SORT_STAT_KEYS[currentSortValue].ranked}
-		<Select bind:value={currentTypeValue} options={allTypeValues} fontSize={0.8} fontPadding={0.2} on:change={onTypeChanged} />
-	{/if}
-	<Select bind:value={currentOrderValue} options={orderValues} fontSize={0.8} fontPadding={0.2} on:change={onOrderChanged} />
-</nav>
+<div class="search-and-orders">
+	<div class="sorting-options">
+		{#if RANKING_SORT_STAT_KEYS[currentSortValue].general}
+			<Select bind:value={currentPpTypeValue} options={allPpTypeValues} fontSize={0.8} fontPadding={0.4} on:change={onPPTypeChanged} />
+		{/if}
+		<Select bind:value={currentSortValue} options={allSortValues} fontSize={0.8} fontPadding={0.4} on:change={onSwitcherChanged} />
+		{#if RANKING_SORT_STAT_KEYS[currentSortValue].ranked}
+			<Select bind:value={currentTypeValue} options={allTypeValues} fontSize={0.8} fontPadding={0.4} on:change={onTypeChanged} />
+		{/if}
+		<Button
+			cls="order-toggle"
+			iconFa="fas {currentOrderValue === 'asc' ? 'fa-arrow-up' : 'fa-arrow-down'}"
+			label={currentOrderValue === 'asc' ? 'Ascending' : 'Descending'}
+			title={currentOrderValue === 'asc' ? 'Ascending' : 'Descending'}
+			on:click={() => dispatch('order-changed', currentOrderValue === 'asc' ? 'desc' : 'asc')} />
+	</div>
+</div>
 
 <style>
-	.switcher-nav {
+	.search-and-orders {
 		display: flex;
-		gap: 0.4em;
+		flex-direction: column;
 		margin-bottom: 1em;
+		gap: 0.5em;
+	}
+
+	.sorting-options {
+		display: flex;
+		justify-content: left;
+		align-items: center;
+		gap: 0.3em;
 	}
 </style>

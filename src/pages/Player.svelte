@@ -114,6 +114,11 @@
 		} else {
 			params.sort = sortOptions;
 		}
+
+		if (params.thenSort == params.sort) {
+			params.thenSort = null;
+			params.thenOrder = null;
+		}
 	}
 
 	function refreshSavedParams() {

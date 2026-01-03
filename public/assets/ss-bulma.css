@@ -12278,6 +12278,15 @@ body::-webkit-scrollbar-track {
 	background: rgb(36 74 74 / 81%) !important;
 }
 
+.order-toggle.button {
+	font-size: 0.8em !important;
+    padding: 0.1em 0.4em !important;
+    margin-bottom: 0 !important;
+    background-color: var(--dimmed) !important;
+    border-radius: 0.25rem !important;
+    color: white !important;
+}
+
 .player-score .inc,
 .song-score .dec {
 	color: inherit;

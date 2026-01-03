@@ -1,9 +1,12 @@
+import {configStore} from '../../../stores/config';
+
 const RANKED_STORE_SORTING_KEY = 'PlayerRankedSorting';
 const RANKED_STORE_ORDER_KEY = 'PlayerRankedOrder';
 const STORE_SORTING_KEY = 'PlayerScoreSorting';
 const STORE_ORDER_KEY = 'PlayerScoreOrder';
 const ATTEMPTS_STORE_SORTING_KEY = 'PlayerAttemptsSorting';
 const ATTEMPTS_STORE_ORDER_KEY = 'PlayerAttemptsOrder';
+const LAST_SERVICE_KEY = 'PlayerLastService';
 
 // Define valid sort keys for each service
 const validSorts = {
@@ -110,6 +113,9 @@ export default () => {
 		}
 
 		if (!init) {
+			// Save last used service
+			localStorage.setItem(LAST_SERVICE_KEY, currentService);
+
 			if (currentService === 'ranked') {
 				localStorage.setItem(RANKED_STORE_SORTING_KEY, currentServiceParams.sort);
 				localStorage.setItem(RANKED_STORE_ORDER_KEY, currentServiceParams.order);
@@ -127,12 +133,29 @@ export default () => {
 
 	const clearServiceParams = () => (currentServiceParams = {});
 
+	const getConfiguredDefaultService = () => {
+		const availableServices = getAllServices();
+		const preferences = configStore?.get('preferences');
+		const defaultServicePref = preferences?.defaultService ?? 'last';
+
+		if (defaultServicePref === 'last') {
+			const lastService = localStorage.getItem(LAST_SERVICE_KEY);
+			if (lastService && availableServices.includes(lastService)) {
+				return lastService;
+			}
+		} else if (availableServices.includes(defaultServicePref)) {
+			return defaultServicePref;
+		}
+
+		return availableServices?.[0] ?? 'ranked';
+	};
+
 	const initFromUrl = (url = null) => {
 		const availableServices = getAllServices();
-		const defaultService = availableServices?.[0] ?? 'scores';
+		const defaultService = getConfiguredDefaultService();
 		const paramsArr = url ? url.split('/') : [defaultService];
 
-		const service = paramsArr[0] ?? 'scores';
+		const service = paramsArr[0] && availableServices.includes(paramsArr[0]) ? paramsArr[0] : defaultService;
 
 		const serviceDefaultParams = getDefaultParams(service);
 
