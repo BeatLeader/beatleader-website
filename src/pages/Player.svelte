@@ -32,6 +32,7 @@
 	import BeatTheHeatCongratulation from '../components/Player/BeatTheHeatCongratulation.svelte';
 	import AdoventCongratulation from '../components/Player/AdoventCongratulation.svelte';
 	import BatLeaderCongratulation from '../components/Player/BatLeaderCongratulation.svelte';
+	import LoveLiveCongratulation from '../components/LoveLive/LoveLiveCongratulation.svelte';
 
 	const RANKED_STORE_SORTING_KEY = 'PlayerRankedSorting';
 	const RANKED_STORE_ORDER_KEY = 'PlayerRankedOrder';
@@ -293,6 +294,52 @@
 		});
 	}
 
+	let loveLiveChecked = false;
+	async function checkLoveLiveNewIdols(isMain) {
+		if (!isMain) return;
+		if (loveLiveChecked) return;
+		loveLiveChecked = true;
+
+		try {
+			const response = await fetch(`${BL_API_URL}event/lovelive/status`, {credentials: 'include'});
+			if (!response.ok) return;
+
+			const status = await response.json();
+			if (!status?.songs) return;
+
+			const newIdols = status.songs
+				.filter(song => song.isNew && song.score)
+				.map(song => song.idolDescription);
+
+			if (newIdols.length > 0) {
+				open(LoveLiveCongratulation, {
+					newIdols,
+					confirm: () => {
+						close();
+						markLoveLiveIdolsAsSeen();
+					},
+					cancel: () => {
+						close();
+						markLoveLiveIdolsAsSeen();
+					},
+				});
+			}
+		} catch (err) {
+			console.error('Failed to check Love Live status:', err);
+		}
+	}
+
+	async function markLoveLiveIdolsAsSeen() {
+		try {
+			await fetch(`${BL_API_URL}event/lovelive/markseen`, {
+				method: 'POST',
+				credentials: 'include',
+			});
+		} catch (err) {
+			console.error('Failed to mark idols as seen:', err);
+		}
+	}
+
 	$: paramsStore = playerStore ? playerStore.params : null;
 
 	$: currentPlayerId = $paramsStore.currentPlayerId;
@@ -345,6 +392,7 @@
 	$: showBeatTheHeatCongratulation(isMain, achievements, $configStore.preferences.beatTheHeatShown);
 	$: showAdoventCongratulation(isMain, achievements, $configStore.preferences.adoventShown);
 	$: showBatLeaderCongratulation(isMain, achievements, $configStore.preferences.batLeaderShown);
+	$: checkLoveLiveNewIdols(isMain);
 	
 	$: editing = new URLSearchParams(location?.search).get('edit') ?? null;
 	$: playerPage && toggleRandomImageOnHover(playerPage, playerInfo?.clans?.filter(cl => cl.tag == 'SABA').length);

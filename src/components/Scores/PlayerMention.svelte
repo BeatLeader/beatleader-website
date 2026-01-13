@@ -2,6 +2,7 @@
 	import {BL_API_URL} from '../../network/queues/beatleader/api-queue';
 	import processPlayer from '../../network/clients/beatleader/player/process';
 	import PlayerName from './PlayerName.svelte';
+	import {navigate} from 'svelte-routing';
 
 	export let playerId;
 
@@ -19,7 +20,7 @@
 </script>
 
 {#if player}
-	<PlayerName {player} showRank={false} cls="player-mention-link" />
+	<PlayerName {player} showRank={false} cls="player-mention-link" on:click={() => navigate(`/u/${player.alias ?? player.playerId}`)} />
 {/if}
 
 <style>

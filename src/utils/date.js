@@ -224,7 +224,7 @@ export function formatDateRelative(val, roundFunc = Math.floor, unit = 'auto', l
 							numeric: 'always',
 							style: 'long',
 						});
-						return rtfNumeric.format(-1, 'month');
+						return rtfNumeric.format(monthDiff > 0 ? -1 : 1, 'month');
 					}
 					return rtf.format(-monthDiff, 'month');
 				}

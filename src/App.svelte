@@ -26,6 +26,7 @@
 	const pageImports = {
 		RankingPage: () => import('./pages/Ranking.svelte'),
 		EventPage: () => import('./pages/Event.svelte'),
+		LoveLivePage: () => import('./pages/LoveLive.svelte'),
 		LeaderboardPage: () => import('./pages/Leaderboard.svelte'),
 		LeaderboardsPage: () => import('./pages/Leaderboards.svelte'),
 		LeaderboardsLoloppe: () => import('./pages/LeaderboardsLoloppe.svelte'),
@@ -153,6 +154,7 @@
 <div bind:this={mobileTooltip} class="mobile-tooltip" />
 <div class="main-background" />
 <TournamentTopBanner />
+
 <!-- <BeatCancerTopBanner /> -->
 <!-- {#if $account?.player && $configStore.preferences.followersBecomingPublic}
 	<div class="reebanner">
@@ -481,6 +483,11 @@
 					<Route path="/event/building-blocks-2024" let:location>
 						{#await pageImports.BuildingBlocks2024() then module}
 							<svelte:component this={module.default} {location} />
+						{/await}
+					</Route>
+					<Route path="/event/lovelive">
+						{#await pageImports.LoveLivePage() then module}
+							<svelte:component this={module.default} />
 						{/await}
 					</Route>
 					<Route path="/event/:eventId/*page" let:params let:location>

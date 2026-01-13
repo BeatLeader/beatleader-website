@@ -22,8 +22,9 @@
 
 	import Spinner from '../Common/Spinner.svelte';
 	import {GLOBAL_LEADERBOARD_TYPE} from '../../utils/format';
-	import {BL_RENDERER_API_URL} from '../../network/queues/beatleader/api-queue';
+	import {BL_API_URL, BL_RENDERER_API_URL} from '../../network/queues/beatleader/api-queue';
 	import SummaryBox from './Summary/SummaryBox.svelte';
+	import {navigate} from 'svelte-routing';
 	import Followers from './Bio/Followers.svelte';
 	import Socials from './Bio/Socials.svelte';
 	import Snow from '../Common/Snow.svelte';
@@ -248,6 +249,81 @@
 
 	let zIndex = 0;
 
+	// Love Live canvas state
+	let loveLiveCanvas = null;
+	let loveLiveStickers = [];
+
+	async function fetchLoveLiveCanvas(playerId) {
+		if (!playerId) {
+			loveLiveCanvas = null;
+			loveLiveStickers = [];
+			return;
+		}
+
+		try {
+			const response = await fetch(`${BL_API_URL}event/lovelive/canvas/${playerId}`);
+			if (!response.ok) {
+				loveLiveCanvas = null;
+				loveLiveStickers = [];
+				return;
+			}
+			loveLiveCanvas = await response.json();
+
+			// Parse canvasState JSON string
+			if (loveLiveCanvas?.canvasState) {
+				try {
+					loveLiveStickers = JSON.parse(loveLiveCanvas.canvasState);
+				} catch (e) {
+					loveLiveStickers = [];
+				}
+			} else {
+				loveLiveStickers = [];
+			}
+		} catch (err) {
+			loveLiveCanvas = null;
+			loveLiveStickers = [];
+		}
+	}
+
+	function getLoveLiveStickerImage(sticker) {
+		if (!loveLiveCanvas) return null;
+
+		if (sticker.type === 'decoration' && loveLiveCanvas.decorations) {
+			const decoration = loveLiveCanvas.decorations.find(s => s.id === sticker.stickerId);
+			if (decoration?.bigPictureRegular) {
+				return decoration.bigPictureRegular;
+			}
+		}
+
+		// Search in songs (idol descriptions)
+		if (loveLiveCanvas.songs) {
+			const song = loveLiveCanvas.songs.find(s => s.idolDescription?.id === sticker.stickerId);
+			if (song?.idolDescription?.bigPictureRegular) {
+				return song.idolDescription.bigPictureRegular;
+			}
+		}
+
+		// Search in bonus idols
+		if (loveLiveCanvas.bonusIdols) {
+			const bonusIdol = loveLiveCanvas.bonusIdols.find(s => s.id === sticker.stickerId);
+			if (bonusIdol?.bigPictureRegular) {
+				return bonusIdol.bigPictureRegular;
+			}
+		}
+
+		// Search in decorations
+		
+
+		return null;
+	}
+
+	function getLoveLiveBackground() {
+		if (!loveLiveCanvas?.backgrounds || !loveLiveCanvas?.backgroundId) return null;
+		return loveLiveCanvas.backgrounds.find(bg => bg.id === loveLiveCanvas.backgroundId);
+	}
+
+	$: fetchLoveLiveCanvas(playerId);
+
 	$: cover && drawCinematics(cinematicsCanvas, cover);
 
 	onMount(() => {
@@ -413,7 +489,50 @@
 	</div>
 </ContentBox>
 
+<!-- <ContentBox>
+	<div class="experience-container">
+		<div class="experience-icon-and-level">
+			<img src="/assets/level1.png" alt="Level" />
+			<span>Level: <b>{2}</b></span>
+		</div>
+		<div class="experience-bar-and-progress">
+			<div class="experience-bar">
+				<div class="experience-bar-fill" style="width: {323 / 1000 * 100}%"></div>
+			</div>
+			<span><b>{323}</b></span>
+		</div>
+	</div>
+</ContentBox> -->
+
 <SummaryBox {playerId} {playerData} {scoresStats} {accBadges} {skeleton} {profileAppearance} {ssBadges} bind:editModel={$editModel} />
+
+{#if loveLiveStickers?.length > 0}
+	<ContentBox cls="lovelive-canvas-box">
+		<div class="lovelive-canvas-header">
+			<h3>💖 My Idol Board</h3>
+			<Button label="View Event" on:click={() => navigate('/event/lovelive')} />
+		</div>
+		<div class="lovelive-scroll-container">
+			<div class="lovelive-canvas-display">
+				{#if getLoveLiveBackground()}
+					<div class="lovelive-canvas-bg" style="background-image: url({getLoveLiveBackground().imageUrl})" />
+				{/if}
+				<div class="lovelive-canvas-grid"></div>
+				{#each loveLiveStickers as sticker}
+					<div
+						class="lovelive-placed-sticker"
+						style="
+							left: calc(50% + {sticker.x}px);
+							top: {sticker.y}px;
+							transform: translate(-50%, -50%) rotate({sticker.rotation || 0}deg) scale({sticker.scale || 1});
+						">
+						<img src={getLoveLiveStickerImage(sticker)} alt="Sticker" />
+					</div>
+				{/each}
+			</div>
+		</div>
+	</ContentBox>
+{/if}
 
 <style>
 	.player-general-info {
@@ -535,6 +654,43 @@
 		height: 110%;
 	}
 
+	.experience-container {
+		display: flex;
+		justify-content: center;
+		gap: 1em;
+	}
+
+	.experience-icon-and-level {
+		display: flex;
+		align-items: center;
+		gap: 0.5em;
+	}
+
+	.experience-bar-and-progress {
+		display: flex;
+		align-items: center;
+		gap: 0.5em;
+	}
+
+	.experience-bar {
+		width: 100%;
+		height: 10px;
+		background-color: #0000004f;
+		border-radius: 5px;
+	}
+
+	.experience-bar-fill {
+		height: 100%;
+		background-color: #0000004f;
+		border-radius: 5px;
+	}
+
+	.experience-bar-fill-fill {
+		height: 100%;
+		background-color: #0000004f;
+		border-radius: 5px;
+	}
+
 	:global(.shareButton) {
 		font-size: 1.5em !important;
 		position: absolute !important;
@@ -621,5 +777,112 @@
 		:global(.profile-box) {
 			border-radius: 0 !important;
 		}
+
+		.lovelive-canvas-display {
+			height: 250px;
+		}
+
+		.lovelive-scroll-container {
+			overflow-x: auto;
+		}
+	}
+
+	/* Love Live Canvas Styles */
+	:global(.lovelive-canvas-box) {
+		border-radius: 12px !important;
+		padding: 0.4em !important;
+	}
+
+	.lovelive-canvas-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 0.75rem;
+	}
+
+	.lovelive-canvas-header h3 {
+		margin: 0;
+		font-size: 1.1rem;
+		background: linear-gradient(90deg, #ff6b9d, #ffa8c9);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+	}
+
+	.lovelive-link {
+		background: rgba(255, 107, 157, 0.2);
+		border: 1px solid rgba(255, 107, 157, 0.4);
+		color: #ffa8c9;
+		padding: 0.4em 0.8em;
+		border-radius: 6px;
+		cursor: pointer;
+		font-size: 0.85rem;
+		transition: all 0.2s ease;
+	}
+
+	.lovelive-link:hover {
+		background: rgba(255, 107, 157, 0.3);
+		border-color: rgba(255, 107, 157, 0.6);
+	}
+
+	.lovelive-link i {
+		margin-left: 0.4em;
+		font-size: 0.8em;
+	}
+
+	.lovelive-scroll-container {
+		max-width: calc(100vw - 4.5em);
+		overflow: hidden;
+		border-radius: 10px;
+		-webkit-overflow-scrolling: touch;
+		touch-action: pan-x;
+	}
+
+	.lovelive-canvas-display {
+		position: relative;
+		min-width: 800px;
+		width: 100%;
+		height: 350px;
+		background: linear-gradient(135deg, #2a1a3a 0%, #1a0a2a 100%);
+		border-radius: 10px;
+		overflow: visible;
+		contain: none;
+		transform: translateZ(0);
+	}
+
+	.lovelive-canvas-bg {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		pointer-events: none;
+		background-repeat: repeat-x;
+		background-size: contain;
+	}
+
+	.lovelive-canvas-grid {
+		position: absolute;
+		inset: 0;
+		background-image: linear-gradient(rgba(255, 107, 157, 0.08) 1px, transparent 1px),
+			linear-gradient(90deg, rgba(255, 107, 157, 0.08) 1px, transparent 1px);
+		background-size: 40px 40px;
+		pointer-events: none;
+	}
+
+	.lovelive-placed-sticker {
+		position: absolute;
+		width: 80px;
+		height: 80px;
+		flex-shrink: 0;
+	}
+
+	.lovelive-placed-sticker img {
+		width: 80px;
+		height: 80px;
+		min-width: 80px;
+		min-height: 80px;
+		object-fit: contain;
+		filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
+		flex-shrink: 0;
 	}
 </style>

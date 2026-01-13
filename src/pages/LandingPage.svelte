@@ -75,8 +75,8 @@
 			</div>
 		</ContentBox>
 		<span class="event-promotion-title"
-			>Latest BeatLeader competitive event featuring new ranked maps!</span>
-		<!-- <EventBanner wideScreen={true} /> -->
+			>Latest event from Symphonic: massive mapper collaboration to map songs for every idol in Love Live!</span>
+		<EventBanner wideScreen={true} />
 		<div class="two-boxes">
 			<ContentBox cls="landing-box">
 				<span class="box-headline">We aggregate the data from other cool projects to help you play better.</span>

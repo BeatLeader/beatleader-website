@@ -122,12 +122,12 @@
 
 		currentPage = event.detail.page + 1;
 
-		updateCurrentFiltersFromParams();
+		navigateToCurrentPageAndFilters();
 	}
 
 	function navigateToCurrentPageAndFilters(replace) {
 		const query = buildSearchFromFiltersWithDefaults(currentFilters, params);
-		const url = `/event/${currentEventId}/${currentPage}${query.length ? '?' + query : ''}`;
+		const url = `/event/${currentEvent?.pageAlias ?? currentEventId}/${currentPage}${query.length ? '?' + query : ''}`;
 		if (replace) {
 			window.history.replaceState({}, '', url);
 		} else {
