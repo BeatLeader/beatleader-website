@@ -524,7 +524,8 @@
 						style="
 							left: calc(50% + {sticker.x}px);
 							top: {sticker.y}px;
-							transform: translate(-50%, -50%) rotate({sticker.rotation || 0}deg) scale({sticker.scale || 1});
+							z-index: {(sticker.layerIndex || 0) + 10};
+							transform: translate(-50%, -50%) rotate({sticker.rotation || 0}deg) scale({sticker.mirrored ? -1 : 1}, 1) scale({sticker.scale || 1});
 						">
 						<img src={getLoveLiveStickerImage(sticker)} alt="Sticker" />
 					</div>
@@ -831,11 +832,13 @@
 	}
 
 	.lovelive-scroll-container {
-		max-width: calc(100vw - 4.5em);
+		max-width: calc(100vw - 0.8em);
 		overflow: hidden;
 		border-radius: 10px;
 		-webkit-overflow-scrolling: touch;
 		touch-action: pan-x;
+		display: flex;
+    	justify-content: center;
 	}
 
 	.lovelive-canvas-display {

@@ -210,23 +210,22 @@
 			}
 		}
 
-		// Check if clicking on a sticker
-		for (let i = placedStickers.length - 1; i >= 0; i--) {
+		// Check if clicking on a sticker (check in z-index order, highest first)
+		const sortedIndices = placedStickers
+			.map((s, i) => ({index: i, layerIndex: s.layerIndex || 0}))
+			.sort((a, b) => b.layerIndex - a.layerIndex)
+			.map(s => s.index);
+
+		for (const i of sortedIndices) {
 			const sticker = placedStickers[i];
 			if (isPointInSticker(x, y, sticker)) {
 				selectedSticker = i;
 
-				// Check if clicking on rotation handle
 				isDragging = true;
 				dragOffset = {
 					x: x - sticker.x,
 					y: y - sticker.y,
 				};
-
-				// Move to top
-				const [selected] = placedStickers.splice(i, 1);
-				placedStickers = [...placedStickers, selected];
-				selectedSticker = placedStickers.length - 1;
 				return;
 			}
 		}
@@ -382,6 +381,29 @@
 		}
 	}
 
+	function mirrorSelectedSticker() {
+		if (selectedSticker !== null) {
+			placedStickers[selectedSticker].mirrored = !placedStickers[selectedSticker].mirrored;
+			placedStickers = [...placedStickers];
+		}
+	}
+
+	function moveSelectedStickerUp() {
+		if (selectedSticker !== null) {
+			const currentZ = placedStickers[selectedSticker].layerIndex || 0;
+			placedStickers[selectedSticker].layerIndex = currentZ + 1;
+			placedStickers = [...placedStickers];
+		}
+	}
+
+	function moveSelectedStickerDown() {
+		if (selectedSticker !== null) {
+			const currentZ = placedStickers[selectedSticker].layerIndex || 0;
+			placedStickers[selectedSticker].layerIndex = currentZ - 1;
+			placedStickers = [...placedStickers];
+		}
+	}
+
 	async function saveCanvas() {
 		saving = true;
 		try {
@@ -392,6 +414,8 @@
 				y: Math.round(s.y),
 				rotation: Math.round(s.rotation || 0),
 				scale: Math.round((s.scale || 1) * 100) / 100,
+				mirrored: s.mirrored || false,
+				layerIndex: s.layerIndex || 0,
 			}));
 
 			const response = await fetch(`${BL_API_URL}event/lovelive/canvas`, {
@@ -516,7 +540,10 @@
 							<h2>Your Idol Board</h2>
 							<div class="canvas-actions">
 								{#if selectedSticker !== null}
-									<Button iconFa="fas fa-trash" label="Delete" on:click={deleteSelectedSticker} />
+									<Button iconFa="fas fa-arrow-up" title="Bring Forward" on:click={moveSelectedStickerUp} />
+									<Button iconFa="fas fa-arrow-down" title="Send Backward" on:click={moveSelectedStickerDown} />
+									<Button iconFa="fas fa-arrows-left-right" title="Mirror" on:click={mirrorSelectedSticker} />
+									<Button iconFa="fas fa-trash" title="Delete" on:click={deleteSelectedSticker} />
 								{/if}
 								{#if hasChanges}
 									<Button iconFa="fas fa-undo" label="Cancel" on:click={cancelChanges} />
@@ -548,7 +575,8 @@
 										style="
 										left: calc(50% + {sticker.x}px);
 										top: {sticker.y}px;
-										transform: translate(-50%, -50%) rotate({sticker.rotation || 0}deg) scale({sticker.scale || 1});
+										z-index: {(sticker.layerIndex || 0) + 10};
+										transform: translate(-50%, -50%) rotate({sticker.rotation || 0}deg) scale({sticker.mirrored ? -1 : 1}, 1) scale({sticker.scale || 1});
 									">
 										<img src={getStickerImage(sticker)} alt={sticker.name} draggable="false" />
 										{#if selectedSticker === index}
