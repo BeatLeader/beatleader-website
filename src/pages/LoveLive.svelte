@@ -208,12 +208,22 @@
 				initialDistance = Math.sqrt(Math.pow(x - sticker.x, 2) + Math.pow(y - sticker.y, 2));
 				return;
 			}
+			// Treat selected sticker as opaque - if clicking on it, keep it selected
+			else if (isPointInSticker(x, y, sticker)) {
+				isDragging = true;
+				dragOffset = {
+					x: x - sticker.x,
+					y: y - sticker.y,
+				};
+				return;
+			}
 		}
 
 		// Check if clicking on a sticker (check in z-index order, highest first)
+		// Use array index as tiebreaker - later in array = rendered on top
 		const sortedIndices = placedStickers
 			.map((s, i) => ({index: i, layerIndex: s.layerIndex || 0}))
-			.sort((a, b) => b.layerIndex - a.layerIndex)
+			.sort((a, b) => (b.layerIndex - a.layerIndex) || (b.index - a.index))
 			.map(s => s.index);
 
 		for (const i of sortedIndices) {
