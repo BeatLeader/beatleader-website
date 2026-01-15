@@ -177,6 +177,33 @@
 								downloadQmod('1.40.8');
 							}} />
 					</div>
+
+					{#if loggedInPlayer && isSupporter}
+						<div class="versions-list">
+							<span
+								class="beat-savior-reveal clickable"
+								class:opened={showOtherVersions}
+								on:click={() => (showOtherVersions = !showOtherVersions)}
+								on:keydown={() => (showOtherVersions = !showOtherVersions)}
+								title="Show ReeSabers downloads for other versions">
+								{#if showOtherVersions}
+									Hide versions
+								{:else}
+									Other versions
+								{/if}
+
+								<i class="fas fa-chevron-down" />
+							</span>
+
+							{#if showOtherVersions}
+								<a href={BL_API_URL + 'questreesabersversion?version=1.40.7'}> Version for Quest 1.40.7 (v0.3.15)</a>
+								<a href={BL_API_URL + 'questreesabersversion?version=1.40.6'}> Version for Quest 1.40.6 (v0.3.14)</a>
+								<a href={BL_API_URL + 'questreesabersversion?version=1.40.4'}> Version for Quest 1.40.4 (v0.3.13)</a>
+								<a href={BL_API_URL + 'questreesabersversion?version=1.35.0'}> Version for Quest 1.35.0 (v0.3.9)</a>
+								<a href={BL_API_URL + 'questreesabersversion?version=1.28.0'}> Version for Quest 1.28.0 (v0.3.9)</a>
+							{/if}
+						</div>
+					{/if}
 				{:else}
 					<div class="benefit-button-top-container">
 						<div class="benefit-button-container">
