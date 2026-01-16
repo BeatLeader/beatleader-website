@@ -382,20 +382,6 @@
 
 			<div class="buttons-container">
 				<div class="buttons">
-					<BigButtonWithBg label="Beasties Voting" destination="https://mappingawards.saeraphinx.dev/finalists" bgColor="linear-gradient(140deg, rgba(35, 35, 35, 1) 0%, rgb(76 26 92) 100%)" image="/assets/beastsabericonbig.webp" />
-					<BigButtonWithBg label="BeatKhana Voting" destination="https://beatkhana.com/vote" bgColor="linear-gradient(145deg, rgba(35, 35, 35, 1) 0%, rgb(64 105 111) 100%)" image="/assets/beatkhanaiconbig.webp" />
-				</div>
-				<div class="timer">
-					{#if votingClosed}
-						<p class="closed">Votes are closed!</p>
-					{:else}
-						<p>Only <span class="countdown">{timeLeft}</span> left to vote</p>
-					{/if}
-				</div>
-			</div>
-
-			<div class="buttons-container">
-				<div class="buttons">
 					<BigButton label="All Maps" destination="/maps/all" />
 					<BigButton label="Events" destination="/events" />
 					<BigButton label="Playlists" destination="/playlists/featured/1" />

@@ -20,7 +20,6 @@
 	import {Svrollbar} from 'svrollbar';
 	import {produce} from 'immer';
 	import TournamentTopBanner from './components/Common/TournamentTopBanner.svelte';
-	import BeastiesFinalistsPopup from './pages/BeastiesFinalistsPopup.svelte';
 
 	// Dynamic imports for pages
 	const pageImports = {
@@ -287,7 +286,6 @@
 {/if} -->
 <Router {url}>
 	<Nav class={$configStore?.preferences?.theme} {openModal} {closeModal} />
-	<BeastiesFinalistsPopup {openModal} {closeModal} />
 	<Notifications zIndex={10000} item={NotificationComponent}>
 		<SimpleModal
 			closeButton={false}
