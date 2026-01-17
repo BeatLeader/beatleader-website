@@ -196,6 +196,7 @@
 							</span>
 
 							{#if showOtherVersions}
+							    <a href={BL_API_URL + 'questreesabersversion?version=1.40.8_036'}> Version for Quest 1.40.8 (v0.3.16)</a>
 								<a href={BL_API_URL + 'questreesabersversion?version=1.40.7'}> Version for Quest 1.40.7 (v0.3.15)</a>
 								<a href={BL_API_URL + 'questreesabersversion?version=1.40.6'}> Version for Quest 1.40.6 (v0.3.14)</a>
 								<a href={BL_API_URL + 'questreesabersversion?version=1.40.4'}> Version for Quest 1.40.4 (v0.3.13)</a>
@@ -270,9 +271,12 @@
 							</span>
 
 							{#if showOtherVersions}
+								<a href={BL_API_URL + 'reesabersversion?version=1.40.0_036'}> Version for PC 1.38-1.40.8 (v0.3.16)</a>
+								<a href={BL_API_URL + 'reesabersversion?version=1.29.1_036'}> Version for PC 1.29.1 (v0.3.16)</a>
 								<a href={BL_API_URL + 'reesabersversion?version=1.37.5'}> Version for PC 1.37.4-1.37.5 (v0.3.9)</a>
 								<a href={BL_API_URL + 'reesabersversion?version=1.35.0'}> Version for PC 1.35.0-1.37.3 (v0.3.11)</a>
 								<a href={BL_API_URL + 'reesabersversion?version=1.34.0'}> Version for PC 1.34.2 (v0.3.8)</a>
+								<a href={BL_API_URL + 'questreesabersversion?version=1.40.8_036'}> Version for Quest 1.40.8 (v0.3.16)</a>
 								<a href={BL_API_URL + 'questreesabersversion?version=1.40.7'}> Version for Quest 1.40.7 (v0.3.15)</a>
 								<a href={BL_API_URL + 'questreesabersversion?version=1.40.6'}> Version for Quest 1.40.6 (v0.3.14)</a>
 								<a href={BL_API_URL + 'questreesabersversion?version=1.40.4'}> Version for Quest 1.40.4 (v0.3.13)</a>
