@@ -69,15 +69,15 @@
 								<div class="benefit-button-container">
 									<Button
 										iconFa="fa-solid fa-download"
-										label="Quest 1.28"
-										type="primary"
-										url={BL_API_URL + 'reesaberstibytes?version=1.28.0&platform=quest'}
-										onlyurl={true} />
-									<Button
-										iconFa="fa-solid fa-download"
 										label="Quest 1.37"
 										type="primary"
 										url={BL_API_URL + 'reesaberstibytes?version=1.37.0&platform=quest'}
+										onlyurl={true} />
+									<Button
+										iconFa="fa-solid fa-download"
+										label="Quest 1.40.8"
+										type="primary"
+										url={BL_API_URL + 'reesaberstibytes?version=1.40.8&platform=quest'}
 										onlyurl={true} />
 								</div>
 
@@ -90,9 +90,9 @@
 										onlyurl={true} />
 									<Button
 										iconFa="fa-solid fa-download"
-										label="PC 1.37+"
+										label="PC 1.38-1.40.8"
 										type="primary"
-										url={BL_API_URL + 'reesaberstibytes?version=1.37.0&platform=pc'}
+										url={BL_API_URL + 'reesaberstibytes?version=1.40.0&platform=pc'}
 										onlyurl={true} />
 								</div>
 								<a href="https://beatleader.wiki/en/reesabers/support">and check the wiki on what to do next</a>
