@@ -223,7 +223,7 @@
 		// Use array index as tiebreaker - later in array = rendered on top
 		const sortedIndices = placedStickers
 			.map((s, i) => ({index: i, layerIndex: s.layerIndex || 0}))
-			.sort((a, b) => (b.layerIndex - a.layerIndex) || (b.index - a.index))
+			.sort((a, b) => b.layerIndex - a.layerIndex || b.index - a.index)
 			.map(s => s.index);
 
 		for (const i of sortedIndices) {
@@ -707,7 +707,7 @@
 						<Button iconFa="fas fa-compact-disc" label="Complete Event Playlist" on:click={() => navigate('/playlist/101750')} />
 					</div>
 				{:else if currentMode.value == 'leaderboard'}
-					<PlaylistEventPlayers {location} eventId={currentEvent.id} currentEvent={currentEvent} />
+					<PlaylistEventPlayers {location} eventId={currentEvent.id} {currentEvent} />
 				{:else if currentMode.value == 'faq'}
 					<div class="faq">
 						<h2>FAQ</h2>
@@ -754,7 +754,10 @@
 							laid the groundwork for school idols, <i>Aqours</i> built the skyscrapers on top of it by experimenting in different genres
 							and redefining the sounds and culture of idols altogether.
 							<br /><br />
-
+							Much like Chika had hoped to achieve in the anime, the real-life locations of Uchiura and Numazu - where the anime is based - have
+							had their economies revitalized by the show, drawing in thousands of tourists hoping to visit the accurately-portrayed landmarks
+							featured in the anime.
+							<br /><br />
 							<b>Love Live! Nijigasaki High School Club</b> is a completely separate series that focuses more on the general concepts of
 							what a School Idol could be and how everyone's differences are what make them so unique and special. It's got everything a
 							Love Live fan could ask for: gorgeous animation and background art, incredibly-animated performances, some of the best musical

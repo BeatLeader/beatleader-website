@@ -253,6 +253,22 @@
 	let loveLiveCanvas = null;
 	let loveLiveStickers = [];
 
+	const LOVE_LIVE_BASE_WIDTH = 1532;
+	const LOVE_LIVE_BASE_HEIGHT = 400;
+
+	let loveLiveCanvasDisplayEl;
+	let loveLiveCanvasScale = 1;
+	let loveLiveCanvasHeight = LOVE_LIVE_BASE_HEIGHT;
+	let loveLiveCanvasResizeObserver;
+
+	function updateLoveLiveCanvasLayout() {
+		if (!loveLiveCanvasDisplayEl) return;
+		const width = loveLiveCanvasDisplayEl.getBoundingClientRect().width;
+		if (!width) return;
+		loveLiveCanvasScale = width / LOVE_LIVE_BASE_WIDTH;
+		loveLiveCanvasHeight = LOVE_LIVE_BASE_HEIGHT * loveLiveCanvasScale;
+	}
+
 	async function fetchLoveLiveCanvas(playerId) {
 		if (!playerId) {
 			loveLiveCanvas = null;
@@ -323,6 +339,13 @@
 	}
 
 	$: fetchLoveLiveCanvas(playerId);
+	$: if (loveLiveCanvasDisplayEl) {
+		updateLoveLiveCanvasLayout();
+		if (!loveLiveCanvasResizeObserver && typeof ResizeObserver !== 'undefined') {
+			loveLiveCanvasResizeObserver = new ResizeObserver(updateLoveLiveCanvasLayout);
+			loveLiveCanvasResizeObserver.observe(loveLiveCanvasDisplayEl);
+		}
+	}
 
 	$: cover && drawCinematics(cinematicsCanvas, cover);
 
@@ -332,6 +355,8 @@
 
 	onDestroy(() => {
 		window.removeEventListener('beforeunload', handleBeforeUnload);
+		loveLiveCanvasResizeObserver?.disconnect();
+		loveLiveCanvasResizeObserver = null;
 	});
 </script>
 
@@ -513,7 +538,7 @@
 			<Button label="View Event" on:click={() => navigate('/event/lovelive')} />
 		</div>
 		<div class="lovelive-scroll-container">
-			<div class="lovelive-canvas-display">
+			<div class="lovelive-canvas-display" bind:this={loveLiveCanvasDisplayEl} style="height: {loveLiveCanvasHeight}px;">
 				{#if getLoveLiveBackground()}
 					<div class="lovelive-canvas-bg" style="background-image: url({getLoveLiveBackground().imageUrl})" />
 				{/if}
@@ -522,10 +547,10 @@
 					<div
 						class="lovelive-placed-sticker"
 						style="
-							left: calc(50% + {sticker.x}px);
-							top: {sticker.y}px;
+							left: calc(50% + {sticker.x * loveLiveCanvasScale}px);
+							top: {sticker.y * loveLiveCanvasScale}px;
 							z-index: {(sticker.layerIndex || 0) + 10};
-							transform: translate(-50%, -50%) rotate({sticker.rotation || 0}deg) scale({sticker.mirrored ? -1 : 1}, 1) scale({sticker.scale || 1});
+							transform: translate(-50%, -50%) rotate({sticker.rotation || 0}deg) scale({sticker.mirrored ? -1 : 1}, 1) scale({(sticker.scale || 1) * loveLiveCanvasScale});
 						">
 						<img src={getLoveLiveStickerImage(sticker)} alt="Sticker" />
 					</div>
@@ -779,12 +804,12 @@
 			border-radius: 0 !important;
 		}
 
-		.lovelive-canvas-display {
-			height: 250px;
-		}
-
 		.lovelive-scroll-container {
 			overflow-x: auto;
+		}
+
+		.lovelive-canvas-display {
+			min-width: 560px !important;
 		}
 	}
 
@@ -845,7 +870,6 @@
 		position: relative;
 		min-width: 800px;
 		width: 100%;
-		height: 350px;
 		background: linear-gradient(135deg, #2a1a3a 0%, #1a0a2a 100%);
 		border-radius: 10px;
 		overflow: visible;

@@ -25,10 +25,6 @@
 	<DialogContent title="New Idols Unlocked!" okButton="Yay!" okButtonType="green" on:confirm={confirm} on:cancel={cancel}>
 		<div slot="content">
 			<div class="top-container">
-				<div class="confetti-container">
-					<Confetti duration={3000} x={[-0.25, -1]} y={[-1, 1]} colorArray={['#ff6b9d', '#ffa8c9', '#ffcce0', '#ff85b3']} />
-					<Confetti duration={3000} x={[0.25, 1]} y={[-1, 1]} colorArray={['#ff6b9d', '#ffa8c9', '#ffcce0', '#ff85b3']} />
-				</div>
 
 				<div class="header-section">
 					<h2>💖 Congratulations! 💖</h2>
