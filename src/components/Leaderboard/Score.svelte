@@ -36,13 +36,30 @@
 	const dispatch = createEventDispatcher();
 
 	const {open} = getContext('simple-modal');
-	const showPreview = previewLink => {
-		if (document.body.clientWidth < 800 || $configStore.preferences.linkOption == 'newtab') {
+	const showPreview = (e, previewLink) => {
+		if (e.ctrlKey || e.metaKey || window.event.ctrlKey ) {
+			openInBackground(previewLink);
+		} else if (document.body.clientWidth < 800 || $configStore.preferences.linkOption == 'newtab') {
 			window.open(previewLink, '_blank');
 		} else {
 			open(Preview, {previewLink});
 		}
 	};
+
+	function openInBackground(url) {
+		const a = document.createElement('a');
+		a.href = url;
+		a.setAttribute('target', '_blank');
+
+		let evt = new MouseEvent('click', {
+			bubbles: true,
+			cancelable: true,
+			view: window,
+			ctrlKey: true,
+			metaKey: true,
+		});
+		a.dispatchEvent(evt);
+	}
 
 	function navigateToPlayer(player) {
 		if (!player) return;
@@ -202,7 +219,7 @@
 						{#if $configStore?.leaderboardPreferences?.show?.analyzer !== false}
 							<Button
 								url={`${BL_ANALYZER_URL}?scoreId=${score?.score.id}`}
-								on:click={() => showPreview(`${BL_ANALYZER_URL}?scoreId=${score?.score.id}`)}
+								on:click={(e) => showPreview(e, `${BL_ANALYZER_URL}?scoreId=${score?.score.id}`)}
 								cls={'replay-button-alt' + (isPatron(accountRoles) ? '' : ' non-subscribed')}
 								icon="<div class='analyzer-icon'></div>"
 								title={'Reeplay Analyzer' + (isPatron(accountRoles) ? '' : ' (requires Patreon subscription)')}
@@ -215,8 +232,8 @@
 										? 'https://allpoland.github.io/ArcViewer/?scoreID='
 										: `${BL_REPLAYS_URL}?scoreId=`
 								}${score?.score.id}`}
-								on:click={() =>
-									showPreview(
+								on:click={(e) =>
+									showPreview(e,
 										`${
 											$configStore.preferences.webPlayer == 'arcviewer'
 												? 'https://allpoland.github.io/ArcViewer/?scoreID='

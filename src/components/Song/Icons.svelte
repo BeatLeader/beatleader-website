@@ -34,8 +34,10 @@
 	export let batleRoyale = false;
 
 	const {open, close} = getContext('simple-modal');
-	const showPreview = previewLink => {
-		if (document.body.clientWidth < 800 || $configStore.preferences.linkOption == 'newtab') {
+	const showPreview = (e, previewLink) => {
+		if (e.ctrlKey || e.metaKey || window.event.ctrlKey ) {
+			openInBackground(previewLink);
+		} else if (document.body.clientWidth < 800 || $configStore.preferences.linkOption == 'newtab') {
 			window.open(previewLink, '_blank');
 		} else {
 			open(Preview, {previewLink: previewLink});
@@ -158,6 +160,21 @@
 		} else if (scoreId) {
 			return `${BL_ANALYZER_URL}?scoreId=${scoreId}`;
 		}
+	}
+
+	function openInBackground(url) {
+		const a = document.createElement('a');
+		a.href = url;
+		a.setAttribute('target', '_blank');
+
+		let evt = new MouseEvent('click', {
+			bubbles: true,
+			cancelable: true,
+			view: window,
+			ctrlKey: true,
+			metaKey: true,
+		});
+		a.dispatchEvent(evt);
 	}
 
 	$: updateIcons(icons);
@@ -365,7 +382,7 @@
 			{#if shownIcons.includes('preview')}
 				<Button
 					url={previewUrl}
-					on:click={() => showPreview(previewUrl)}
+					on:click={(e) => showPreview(e, previewUrl)}
 					iconFa="fa fa-play-circle"
 					title="Map preview"
 					animated={true}
@@ -376,7 +393,7 @@
 		{#if shownIcons.includes('analyzer') && analyzerUrl && analyzerUrl.length}
 			<Button
 				url={analyzerUrl}
-				on:click={() => showPreview(analyzerUrl)}
+				on:click={(e) => showPreview(e, analyzerUrl)}
 				cls={(altReplay ? 'replay-button-alt' : 'replay-button') + (isPatron($account?.player?.playerInfo?.role) ? '' : ' non-subscribed')}
 				icon="<img src='/assets/analyzer.webp'>"
 				title={'Reeplay analyzer' + (isPatron($account?.player?.playerInfo?.role) ? '' : ' (requires Patreon subscription)')}
@@ -387,7 +404,7 @@
 		{#if shownIcons.includes('replay') && replayUrl && replayUrl.length}
 			<Button
 				url={replayUrl}
-				on:click={() => showPreview(replayUrl)}
+				on:click={(e) => showPreview(e, replayUrl)}
 				cls={altReplay ? 'replay-button-alt' : 'replay-button'}
 				icon="<img src='/assets/{altReplay ? `replays.svg` : `bs-pepe.gif`}'>"
 				title="Replay"
@@ -398,7 +415,7 @@
 		{#if shownIcons.includes('altReplay') && altReplayUrl && altReplayUrl.length}
 			<Button
 				url={altReplayUrl}
-				on:click={() => showPreview(altReplayUrl)}
+				on:click={(e) => showPreview(e, altReplayUrl)}
 				cls={altReplay ? 'replay-button-alt' : 'replay-button'}
 				icon="<img src='/assets/ArcViewerIcon.webp'>"
 				title="Replay"
