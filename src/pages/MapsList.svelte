@@ -1591,7 +1591,6 @@
 
 	.page-content {
 		width: 100%;
-		overscroll-behavior: none;
 		-ms-overflow-style: none;
 		scrollbar-width: none;
 	}
