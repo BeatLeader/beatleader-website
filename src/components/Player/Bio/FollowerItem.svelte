@@ -81,7 +81,7 @@
 		</div>
 	{/if}
 	{#if mutual}
-		<i class="fas fa-handshake-angle" title="Mutually follows you!" />
+		<i class="fas fa-handshake-angle" title={$account?.player?.playerId == playerId ? 'Mutually follows you!' : 'Mutual follower'} />
 	{/if}
 	<div class="name-and-buttons">
 		<div class="name-and-status">
