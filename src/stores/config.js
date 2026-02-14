@@ -93,6 +93,7 @@ export const DEFAULT_CONFIG = {
 		batleaderShown: false,
 		askOnLogOut: true,
 		beastiesFinalistsPopupShown: false,
+		openedLovege2026: false,
 	},
 	scorePreferences: {
 		badgeRows: 2,

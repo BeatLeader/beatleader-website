@@ -19,6 +19,7 @@
 	import {globalHistory} from 'svelte-routing/src/history';
 	import {GLOBAL_LEADERBOARD_TYPE, setLeaderboardType} from '../../utils/format';
 	import LogOutConfirm from './LogOutConfirm.svelte';
+	import {LottiePlayer} from '@lottiefiles/svelte-lottie-player';
 
 	let className = null;
 	export {className as class};
@@ -221,6 +222,7 @@
 		currenturl = window.location.href;
 	}
 
+
 	const logOut = async () => {
 		openModal(LogOutConfirm, {
 			confirm: () => {
@@ -234,6 +236,13 @@
 		});
 	};
 
+	let unreadValentines = null;
+	function checkUnreadValentines(account) {
+		if (!account) return;
+
+		unreadValentines = account?.valentines?.find(v => !v.viewed);
+	}
+
 	$: updateHref();
 	$: player = $account?.player;
 	$: starredFollowedIds = player?.profileSettings?.starredFriends ?? [];
@@ -246,6 +255,7 @@
 		.concat(newSettingsAvailable ? ['New settings are available:'].concat(newSettingsAvailable) : [])
 		.join('\n');
 	$: $account?.clanRequest ? checkClanInvites() : null;
+	$: $account?.valentines ? checkUnreadValentines($account) : null;
 	$: clanInviteBadgeTitle = clansNotification ? clansNotification : '';
 </script>
 
@@ -388,6 +398,25 @@
 		</a>
 	{/if}
 
+	<a
+		class="heart-link mobile-only"
+		href="/lovege"
+		on:click|preventDefault={() => {
+			navigate('/lovege');
+		}}>
+		<div class="lottie-heart">
+			{#if $configStore?.preferences?.openedLovege2026 || !$configStore?.preferences?.openedLovege2026}
+			<LottiePlayer
+				speed="1"
+				width="1.3em"
+				height="1.3em"
+				autoplay
+				loop={unreadValentines || !$configStore?.preferences?.openedLovege2026}
+				controls={false}
+				src={`/assets/animations/lovege-${unreadValentines ? 'message' : 'clickme'}.json`} />
+				{/if}
+		</div>
+	</a>
 	<a href="/ranking/1" aria-label="Ranking" on:click|preventDefault={() => navigate('/ranking/1')}>
 		<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
 			<path
@@ -652,6 +681,26 @@
 
 				<span class="search-hint">Ctrl + /</span>
 			</div>
+		</a>
+
+		<a
+			class="heart-link"
+			href="/lovege"
+			on:click|preventDefault={() => {
+				navigate('/lovege');
+			}}>
+			{#if $configStore?.preferences?.openedLovege2026 || !$configStore?.preferences?.openedLovege2026}
+			<div class="lottie-heart">
+				<LottiePlayer
+					speed="1"
+					width="1.3em"
+					height="1.3em"
+					autoplay
+					loop={unreadValentines || !$configStore?.preferences?.openedLovege2026}
+					controls={false}
+					src={`/assets/animations/lovege-${unreadValentines ? 'message' : 'clickme'}.json`} />
+			</div>
+			{/if}
 		</a>
 
 		<a
@@ -935,6 +984,35 @@
 
 	.search-hint {
 		display: none !important;
+	}
+
+	.heart-link:hover {
+		background-color: #ffffff !important;
+	}
+
+	.heart-link.mobile-only {
+		align-items: center;
+		align-self: center;
+		justify-content: center;
+		margin-bottom: 0.8em;
+		padding-right: 0;
+    	padding-left: 0;
+	}
+
+	.lottie-heart {
+		margin-top: 0.08em;
+		width: 1.4em;
+		height: 1.4em;
+	}
+
+	.mobile-only .lottie-heart {
+		margin-top: 0.08em;
+		width: 2em;
+		height: 2em;
+	}
+
+	.heart-link:hover .heart-button {
+		color: white;
 	}
 
 	@media (pointer: coarse) {

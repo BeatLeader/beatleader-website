@@ -29,12 +29,12 @@
 		{
 			component: CarouselCard,
 			props: {
-				title: 'Cube Community Summer Highlights',
+				title: 'Cube Community Fall Highlights',
 				body: '',
-				imageUrl: '/assets/Discover/cc-summer-highlights-2025.jpg',
-				targetUrl: 'https://youtu.be/EC0BpTOhTMI',
+				imageUrl: '/assets/Discover/cc-fall-highlights-2025.jpg',
+				targetUrl: 'https://youtu.be/fmO0JR3UFqY',
 				linkName: 'YouTube',
-				forcedColor: '#cf861f',
+				forcedColor: '#120739',
 			},
 		},
 		{
