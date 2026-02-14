@@ -308,7 +308,7 @@
 			if (!status?.songs) return;
 
 			const newIdols = status.songs
-				.filter(song => song.isNew && song.score)
+				.filter(song => song.isNew)
 				.map(song => song.idolDescription);
 
 			if (newIdols.length > 0) {

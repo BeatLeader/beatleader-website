@@ -16,8 +16,14 @@
 	}
 
 	// Pick a random reward gif from idols that have one
+	const ALL_MAPS_IDOL_ID = 67;
+	$: allMapsIdol = newIdols.find(idol => idol.id === ALL_MAPS_IDOL_ID);
 	$: idolsWithGif = newIdols.filter(idol => idol.rewardGif);
-	$: randomGif = idolsWithGif.length > 0 ? idolsWithGif[Math.floor(Math.random() * idolsWithGif.length)].rewardGif : null;
+	$: randomGif = allMapsIdol?.rewardGif
+		? allMapsIdol.rewardGif
+		: idolsWithGif.length > 0
+			? idolsWithGif[Math.floor(Math.random() * idolsWithGif.length)].rewardGif
+			: null;
 	$: reportViewed();
 </script>
 
@@ -25,15 +31,25 @@
 	<DialogContent title="New Idols Unlocked!" okButton="Yay!" okButtonType="green" on:confirm={confirm} on:cancel={cancel}>
 		<div slot="content">
 			<div class="top-container">
+				{#if allMapsIdol}
+					<div class="confetti-container">
+						<Confetti duration={20000} x={[-0.25, -1.5]} y={[-2, 2]} colorArray={['#ff6b9d', '#ffa8c9', '#ffcce0', '#ff85b3']} />
+						<Confetti duration={20000} x={[0.25, 1.5]} y={[-2, 2]} colorArray={['#ff6b9d', '#ffa8c9', '#ffcce0', '#ff85b3']} />
+					</div>
+				{/if}
 
 				<div class="header-section">
 					<h2>💖 Congratulations! 💖</h2>
-					<p>You've unlocked {newIdols.length} new idol{newIdols.length > 1 ? 's' : ''}</p>
+					{#if allMapsIdol}
+						<p>You've unlocked all the idols in the event!</p>
+					{:else}
+						<p>You've unlocked {newIdols.length} new idol{newIdols.length > 1 ? 's' : ''}</p>
+					{/if}
 				</div>
 
 				<div class="idols-grid">
 					{#each newIdols as idol}
-						<div class="idol-card" title={idol.description}>
+						<div class="idol-card" title={idol.description} class:all-maps-idol={allMapsIdol}>
 							<img src={idol.bigPictureRegular || idol.smallPictureRegular} alt={idol.name} class="idol-image" />
 							<span class="idol-name">{idol.name}</span>
 						</div>
@@ -41,10 +57,16 @@
 				</div>
 
 				{#if randomGif}
-					<img src={randomGif} alt="Celebration" class="reward-gif" />
+					<img src={randomGif} alt="Celebration" class="reward-gif" class:all-maps-idol={allMapsIdol} />
 				{/if}
 
-				<a href="/event/lovelive" on:click|preventDefault|stopPropagation={() => navigate('/event/lovelive')} class="footer-text">Head to the "Love Live! Birthday Pack" event page to add them to your board!</a>
+				{#if allMapsIdol}
+					<a href="/event/lovelive" on:click|preventDefault|stopPropagation={() => navigate('/event/lovelive')} class="footer-text"
+						>Thank you for playing! We hope you had fun and enjoyed the event! 🫡</a>
+				{:else}
+					<a href="/event/lovelive" on:click|preventDefault|stopPropagation={() => navigate('/event/lovelive')} class="footer-text"
+						>Head to the "Love Live! Birthday Pack" event page to add them to your board!</a>
+				{/if}
 			</div>
 		</div>
 	</DialogContent>
@@ -76,14 +98,15 @@
 	.confetti-container {
 		position: absolute;
 		display: flex;
-		justify-content: space-between;
-		align-items: center;
+		justify-content: center;
+		padding-top: 12em;
 		top: 0;
 		left: 0;
 		width: 100%;
 		height: 100%;
-		z-index: 0;
+		z-index: 1;
 		pointer-events: none;
+		overflow: hidden;
 	}
 
 	.header-section {
@@ -151,6 +174,16 @@
 		filter: drop-shadow(0 4px 8px rgba(255, 107, 157, 0.3));
 	}
 
+	.idol-card.all-maps-idol {
+		background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 107, 157, 0.15));
+		border-color: rgba(255, 215, 0, 0.5);
+		padding: 1rem;
+	}
+
+	.reward-gif.all-maps-idol {
+		max-width: 35em;
+	}
+
 	.idol-name {
 		font-size: 0.85rem;
 		color: #ffa8c9;
@@ -192,6 +225,10 @@
 		.idol-image {
 			width: 50px;
 			height: 50px;
+		}
+
+		.reward-gif.all-maps-idol {
+			max-width: 18em;
 		}
 
 		.idol-name {

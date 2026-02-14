@@ -90,7 +90,7 @@
 	function checkForNewIdols() {
 		if (!playerStatus?.songs) return;
 
-		const newIdols = playerStatus.songs.filter(song => song.isNew && song.score).map(song => song.idolDescription);
+		const newIdols = playerStatus.songs.filter(song => song.isNew).map(song => song.idolDescription);
 
 		if (newIdols.length > 0) {
 			showCongratulationPopup(newIdols);
@@ -161,7 +161,9 @@
 	// Sort songs by birthday for calendar layout
 	function getSortedSongs() {
 		if (!playerStatus?.songs) return [];
-		return [...playerStatus.songs].sort((a, b) => a.idolDescription.birthday - b.idolDescription.birthday);
+		var sortedSongs = [...playerStatus.songs];
+		sortedSongs.filter(song => song.song);
+		return sortedSongs.sort((a, b) => a.idolDescription.birthday - b.idolDescription.birthday);
 	}
 
 	// Helper to convert mouse X to center-relative X
