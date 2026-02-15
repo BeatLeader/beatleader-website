@@ -128,7 +128,7 @@
 		// Add unlocked idols from passed songs
 		if (playerStatus?.songs) {
 			playerStatus.songs.forEach(songStatus => {
-				if (songStatus.score) {
+				if (songStatus.score || songStatus.idolDescription.id == 67) {
 					availableStickers.push({
 						type: 'idol',
 						...songStatus.idolDescription,
@@ -162,7 +162,7 @@
 	function getSortedSongs() {
 		if (!playerStatus?.songs) return [];
 		var sortedSongs = [...playerStatus.songs];
-		sortedSongs.filter(song => song.song);
+		sortedSongs = sortedSongs.filter(song => song.song);
 		return sortedSongs.sort((a, b) => a.idolDescription.birthday - b.idolDescription.birthday);
 	}
 
@@ -636,15 +636,16 @@
 					<!-- Sticker palette -->
 					<div class="sticker-palette">
 						<h3>Your Stickers</h3>
-						{#if playerStatus.songs.filter(song => song.score).length === 0}
+						{#if playerStatus.songs.filter(song => song.score || song.idolDescription.id == 67).length === 0}
 							<p class="no-stickers">
 								Pass <a href="#" on:click|preventDefault|stopPropagation={() => onTypeChange({detail: modes[1]})}>maps</a> to unlock stickers!
 							</p>
 						{:else}
 							<div class="sticker-grid">
-								{#each playerStatus.songs.filter(song => song.score).map(song => song.idolDescription) as sticker}
+								{#each playerStatus.songs.filter(song => song.score || song.idolDescription.id == 67).map(song => song.idolDescription) as sticker}
 									<div
 										class="palette-sticker"
+										class:special={sticker.id == 67}
 										on:mousedown={e => startPaletteDrag({type: 'idol', ...sticker}, e)}
 										on:touchstart={e => startPaletteDrag({type: 'idol', ...sticker}, e)}
 										role="button"
@@ -1230,6 +1231,10 @@
 		height: 50px;
 		object-fit: contain;
 		border-radius: 8px;
+	}
+
+	.palette-sticker.special {
+		box-shadow: #fffc27 0px 0px 10px;
 	}
 
 	.palette-sticker.bonus img {
