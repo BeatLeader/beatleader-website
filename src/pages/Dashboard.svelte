@@ -8,7 +8,7 @@
 	import FollowedRanking from '../components/Dashboard/FollowedRanking.svelte';
 	import FollowedScores from '../components/Dashboard/FollowedScores.svelte';
 	import BlueSkyTimeline from '../components/Dashboard/BlueSkyTimeline.svelte';
-	import EventBanner from '../components/Event/EventBanner.svelte';
+	// import EventBanner from '../components/Event/EventBanner.svelte';
 
 	document.body.scrollIntoView({behavior: 'smooth'});
 
@@ -24,9 +24,9 @@
 
 <article class="page-content" transition:fade|global>
 	<div class="columns is-multiline">
-		<div class="content column is-full is-full-fullhd">
+		<!-- <div class="content column is-full is-full-fullhd">
 			<EventBanner wideScreen={true} />
-		</div>
+		</div> -->
 		<div class="content column is-full is-two-fifths-fullhd">
 			<FollowedRanking />
 			<div class="twitterEmbed">

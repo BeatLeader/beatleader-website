@@ -211,22 +211,24 @@
 			<ContentBox cls="lovege-box">
 				<div class="lovege-container">
 					<span class="header-title">Messages to you:</span>
-					{#each incomingMessages as player}
-						<div class="list-item">
-							<div class="player-and-views">
-								<div class="player-info">
-									<Avatar {player} />
-									<PlayerNameWithFlag {player} on:click={player ? () => navigateToPlayer(player.playerId) : null} />
+					<div class="list-container">
+						{#each incomingMessages as player}
+							<div class="list-item">
+								<div class="player-and-views">
+									<div class="player-info">
+										<Avatar {player} />
+										<PlayerNameWithFlag {player} on:click={player ? () => navigateToPlayer(player.playerId) : null} />
+									</div>
+									<span>{player.views} replays watched</span>
 								</div>
-								<span>{player.views} replays watched</span>
+								<Button
+									iconFa="fas {faIconForOpenButton(player)}"
+									title={titleForOpenButton(player)}
+									type="danger"
+									on:click={() => openViewMessage(player)} />
 							</div>
-							<Button
-								iconFa="fas {faIconForOpenButton(player)}"
-								title={titleForOpenButton(player)}
-								type="danger"
-								on:click={() => openViewMessage(player)} />
-						</div>
-					{/each}
+						{/each}
+					</div>
 				</div>
 			</ContentBox>
 		{/if}
@@ -244,23 +246,25 @@
 						src={`/assets/animations/lovege-incoming.json`} />
 				{:else if topPlayers.length}
 					<span class="header-title">Your most loved:</span>
-					{#each topPlayers as player, idx}
-						<div class="list-item">
-							<div class="player-and-views">
-								<div class="player-info">
-									<Avatar {player} />
-									<PlayerNameWithFlag {player} on:click={player ? () => navigateToPlayer(player.playerId) : null} />
+					<div class="list-container">
+						{#each topPlayers as player, idx}
+							<div class="list-item">
+								<div class="player-and-views">
+									<div class="player-info">
+										<Avatar {player} />
+										<PlayerNameWithFlag {player} on:click={player ? () => navigateToPlayer(player.playerId) : null} />
+									</div>
+									<span>{player.views} replays watched</span>
 								</div>
-								<span>{player.views} replays watched</span>
+								<Button
+									iconFa="fas {faIconForSendButton(player)}"
+									title={titleForSendButton(player)}
+									type="danger"
+									disabled={player.sent}
+									on:click={() => openSendMessage(player, idx)} />
 							</div>
-							<Button
-								iconFa="fas {faIconForSendButton(player)}"
-								title={titleForSendButton(player)}
-								type="danger"
-								disabled={player.sent}
-								on:click={() => openSendMessage(player, idx)} />
-						</div>
-					{/each}
+						{/each}
+					</div>
 				{:else if sendingMessage}
 					<span>Your message is on the way...</span>
 					<LottiePlayer
@@ -301,7 +305,19 @@
 	.lovege-container {
 		display: flex;
 		flex-direction: column;
+	}
+
+	.list-container {
+		display: flex;
+		flex-direction: column;
 		gap: 1em;
+		padding-top: 0.5em;
+		max-height: 17em;
+		overflow: auto;
+		padding-right: 0.5em;
+		margin-right: -0.5em;
+		padding-left: 0.2em;
+		margin-left: -0.2em;
 	}
 
 	.player-and-views {
@@ -343,9 +359,10 @@
 	}
 
 	:global(.lovege-box) {
-		max-width: 20em;
+		width: 20em;
 		max-height: 20em;
 		background-color: pink;
+		overflow: hidden;
 	}
 
 	.title {

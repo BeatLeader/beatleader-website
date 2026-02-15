@@ -6,7 +6,7 @@
 	import {MetaTags} from 'svelte-meta-tags';
 	import {CURRENT_URL} from '../network/queues/beatleader/api-queue';
 	import BlueSkyTimeline from '../components/Dashboard/BlueSkyTimeline.svelte';
-	import EventBanner from '../components/Event/EventBanner.svelte';
+	// import EventBanner from '../components/Event/EventBanner.svelte';
 
 	$: metaDescription =
 		ssrConfig.name +
@@ -76,7 +76,7 @@
 		</ContentBox>
 		<span class="event-promotion-title"
 			>Latest event from Symphonic: massive mapper collaboration to map songs for every idol in Love Live!</span>
-		<EventBanner wideScreen={true} />
+		<!-- <EventBanner wideScreen={true} /> -->
 		<div class="two-boxes">
 			<ContentBox cls="landing-box">
 				<span class="box-headline">We aggregate the data from other cool projects to help you play better.</span>
