@@ -30,7 +30,7 @@
 	import TabSwitcher from '../components/Common/TabSwitcher.svelte';
 	import AsideBox from '../components/Common/AsideBox.svelte';
 	import CountryCard from '../components/Ranking/CountryCard.svelte';
-	import EventBanner from '../components/Event/EventBanner.svelte';
+	// import EventBanner from '../components/Event/EventBanner.svelte';
 	import RankingSorters from '../components/Ranking/RankingSorters.svelte';
 
 	export let page = 1;
@@ -254,7 +254,7 @@
 
 <section class="align-content">
 	<article class="page-content" transition:fade|global>
-		<EventBanner />
+		<!-- <EventBanner /> -->
 		<div class="ranking-switcher">
 			<TabSwitcher
 				values={tabOptions}
