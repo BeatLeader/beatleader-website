@@ -20,7 +20,6 @@
 	import {Svrollbar} from 'svrollbar';
 	import {produce} from 'immer';
 	import TournamentTopBanner from './components/Common/TournamentTopBanner.svelte';
-	import LovegePage from './pages/Lovege.svelte';
 
 	// Dynamic imports for pages
 	const pageImports = {
@@ -71,7 +70,6 @@
 		NominatedScores: () => import('./pages/NominatedScores.svelte'),
 		BadgesPage: () => import('./pages/Badges.svelte'),
 		BeastiesNominations: () => import('./pages/BeastiesNominations.svelte'),
-		LovegePage: () => import('./pages/Lovege.svelte'),
 	};
 
 	export let url = '';
@@ -609,11 +607,6 @@
 					<Route path="/*">
 						{#await pageImports.NotFoundPage() then module}
 							<svelte:component this={module.default} />
-						{/await}
-					</Route>
-					<Route path="/lovege" let:location>
-						{#await pageImports.LovegePage() then module}
-							<svelte:component this={module.default} {location} />
 						{/await}
 					</Route>
 				</div>
