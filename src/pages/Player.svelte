@@ -29,10 +29,7 @@
 	import {toggleRandomImageOnHover} from '../utils/clans';
 	import {getContext} from 'svelte';
 	import {produce} from 'immer';
-	import BeatTheHeatCongratulation from '../components/Player/BeatTheHeatCongratulation.svelte';
-	import AdoventCongratulation from '../components/Player/AdoventCongratulation.svelte';
-	import BatLeaderCongratulation from '../components/Player/BatLeaderCongratulation.svelte';
-	import LoveLiveCongratulation from '../components/LoveLive/LoveLiveCongratulation.svelte';
+	import LoveLiveCongratulation from '../components/Player/LoveLiveCongratulation.svelte';
 
 	const RANKED_STORE_SORTING_KEY = 'PlayerRankedSorting';
 	const RANKED_STORE_ORDER_KEY = 'PlayerRankedOrder';
@@ -227,117 +224,28 @@
 			});
 	}
 
-	function showBeatTheHeatCongratulation(isMain, achievements, beatTheHeatShown) {
+	function showLoveLiveCongratulation(isMain, achievements, ssBadges, loveLiveShown) {
 		if (!isMain) return;
-		if (beatTheHeatShown) return;
-		const achievement = achievements.find(a => a.achievementDescriptionId == 5);
+		if (loveLiveShown) return;
+		const achievement = achievements.find(a => a.achievementDescriptionId == 8);
 		if (!achievement) return;
-
-		open(BeatTheHeatCongratulation, {
+		const badge = ssBadges?.find(b => b.title.toLowerCase().includes('love live'));
+		open(LoveLiveCongratulation, {
 			achievement,
+			badge,
 			confirm: () => {
 				close();
 				$configStore = produce($configStore, draft => {
-					draft.preferences.beatTheHeatShown = true;
+					draft.preferences.loveLiveShown = true;
 				});
 			},
 			cancel: () => {
 				close();
 				$configStore = produce($configStore, draft => {
-					draft.preferences.beatTheHeatShown = true;
+					draft.preferences.loveLiveShown = true;
 				});
 			},
 		});
-	}
-
-	function showAdoventCongratulation(isMain, achievements, adoventShown) {
-		if (!isMain) return;
-		if (adoventShown) return;
-		const achievement = achievements.find(a => a.achievementDescriptionId == 6);
-		if (!achievement) return;
-		open(AdoventCongratulation, {
-			achievement,
-			confirm: () => {
-				close();
-				$configStore = produce($configStore, draft => {
-					draft.preferences.adoventShown = true;
-				});
-			},
-			cancel: () => {
-				close();
-				$configStore = produce($configStore, draft => {
-					draft.preferences.adoventShown = true;
-				});
-			},
-		});
-	}
-
-	function showBatLeaderCongratulation(isMain, achievements, batLeaderShown) {
-		if (!isMain) return;
-		if (batLeaderShown) return;
-		const achievement = achievements.find(a => a.achievementDescriptionId == 7);
-		if (!achievement) return;
-		open(BatLeaderCongratulation, {
-			achievement,
-			confirm: () => {
-				close();
-				$configStore = produce($configStore, draft => {
-					draft.preferences.batLeaderShown = true;
-				});
-			},
-			cancel: () => {
-				close();
-				$configStore = produce($configStore, draft => {
-					draft.preferences.batLeaderShown = true;
-				});
-			},
-		});
-	}
-
-	let loveLiveChecked = false;
-	async function checkLoveLiveNewIdols(isMain) {
-		if (!isMain) return;
-		if (loveLiveChecked) return;
-		loveLiveChecked = true;
-
-		try {
-			const response = await fetch(`${BL_API_URL}event/lovelive/status`, {credentials: 'include'});
-			if (!response.ok) return;
-
-			const status = await response.json();
-			if (!status?.songs) return;
-
-			const newIdols = status.songs
-				.filter(song => song.isNew)
-				.map(song => song.idolDescription);
-
-			if (newIdols.length > 0) {
-				open(LoveLiveCongratulation, {
-					newIdols,
-					confirm: () => {
-						close();
-						markLoveLiveIdolsAsSeen();
-					},
-					cancel: () => {
-						close();
-						markLoveLiveIdolsAsSeen();
-					},
-				});
-			}
-		} catch (err) {
-			console.error('Failed to check Love Live status:', err);
-		}
-	}
-
-	async function markLoveLiveIdolsAsSeen() {
-		try {
-			await fetch(`${BL_API_URL}event/lovelive/markseen`, {
-				method: 'POST',
-				credentials: 'include',
-			});
-		} catch (err) {
-			console.error('Failed to mark idols as seen:', err);
-		}
 	}
 
 	$: paramsStore = playerStore ? playerStore.params : null;
@@ -389,10 +297,7 @@
 	$: playerId && fetchAchievements(playerId);
 	$: pinnedScoresStore.fetchScores(playerData?.playerId);
 	$: statsHistoryStore.fetchStats(playerData, $configStore.preferences.daysOfHistory);
-	$: showBeatTheHeatCongratulation(isMain, achievements, $configStore.preferences.beatTheHeatShown);
-	$: showAdoventCongratulation(isMain, achievements, $configStore.preferences.adoventShown);
-	$: showBatLeaderCongratulation(isMain, achievements, $configStore.preferences.batLeaderShown);
-	$: checkLoveLiveNewIdols(isMain);
+	$: showLoveLiveCongratulation(isMain, achievements, ssBadges, $configStore.preferences.loveLiveShown);
 	
 	$: editing = new URLSearchParams(location?.search).get('edit') ?? null;
 	$: playerPage && toggleRandomImageOnHover(playerPage, playerInfo?.clans?.filter(cl => cl.tag == 'SABA').length);

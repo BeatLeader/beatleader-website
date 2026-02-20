@@ -2,6 +2,11 @@
 	import Popover from '../Popover.svelte';
 	import AchievementDetails from './AchievementDetails.svelte';
 	import {fade} from 'svelte/transition';
+	import {getContext} from 'svelte';
+	import LoveLiveAchievementPopup from './LoveLiveAchievementPopup.svelte';
+	import AchievementPopup from './AchievementPopup.svelte';
+
+	const {open} = getContext('simple-modal');
 
 	export let achievement;
 
@@ -20,12 +25,21 @@
 				}
 			});
 	}
+
+	const showPopup = () => {
+		if (achievement.achievementDescriptionId == 8) {
+			open(LoveLiveAchievementPopup, {achievement});
+		} else {
+			open(AchievementPopup, {achievement});
+		}
+	};
 </script>
 
 <div
 	class="achievement {grade == 0 ? 'gold' : grade == 1 ? 'silver' : ''}"
 	style="background-color: {level.color}"
-	bind:this={referenceElement}>
+	bind:this={referenceElement}
+	on:click={showPopup}>
 	<img src={level.image} title={level.name} alt={level.name} />
 </div>
 

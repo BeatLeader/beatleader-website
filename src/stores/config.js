@@ -91,6 +91,7 @@ export const DEFAULT_CONFIG = {
 		beatTheHeatShown: false,
 		adoventShown: false,
 		batleaderShown: false,
+		loveLiveShown: false,
 		askOnLogOut: true,
 		beastiesFinalistsPopupShown: false,
 	},

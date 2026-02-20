@@ -2,6 +2,7 @@
 	import {getContext} from 'svelte';
 	import AchievementDetailsContent from './AchievementDetailsContent.svelte';
 	import AchievementPopup from './AchievementPopup.svelte';
+	import LoveLiveAchievementPopup from './LoveLiveAchievementPopup.svelte';
 
 	export let achievement;
 	export let showDetails = true;
@@ -11,7 +12,11 @@
 
 	const {open} = getContext('simple-modal');
 	const showPopup = () => {
-		open(AchievementPopup, {achievement});
+		if (achievement.achievementDescriptionId == 8) {
+			open(LoveLiveAchievementPopup, {achievement});
+		} else {
+			open(AchievementPopup, {achievement});
+		}
 	};
 </script>
 
