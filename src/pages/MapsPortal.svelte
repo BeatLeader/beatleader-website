@@ -31,7 +31,7 @@
 			props: {
 				title: 'Cube Community Fall Highlights',
 				body: '',
-				imageUrl: '/assets/Discover/cc-fall-highlights-2025.jpg',
+				imageUrl: '/assets/Discover/cc-fall-highlights-2025x.jpg',
 				targetUrl: 'https://youtu.be/fmO0JR3UFqY',
 				linkName: 'YouTube',
 				forcedColor: '#120739',
