@@ -719,7 +719,8 @@ html {
 	overflow-y: auto;
 	text-rendering: optimizeLegibility;
 	text-size-adjust: 100%;
-	overscroll-behavior: none;
+	overscroll-behavior-y: none;
+	overscroll-behavior-x: auto;
 	/* hide scrollbar */
 	-ms-overflow-style: none;
 	scrollbar-width: none;
