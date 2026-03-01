@@ -58,6 +58,7 @@
 		"d3": "^7.9.0",
 		"deep-equal": "^2.2.3",
 		"file-saver": "^2.0.5",
+		"flatpickr": "^4.6.13",
 		"grapesjs": "^0.22.1",
 		"grapesjs-blocks-basic": "^1.0.2",
 		"grapesjs-blocks-flexbox": "^1.0.1",
