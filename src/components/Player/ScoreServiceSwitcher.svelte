@@ -427,18 +427,10 @@
 		];
 	}
 
-	async function updateAvailableServiceNames(player, currentService, account) {
+	async function updateAvailableServiceNames(player, currentService, account, accSaberAvailable) {
 		accSaberCategories = null;
 
-		const additionalServices = (
-			await Promise.all([accSaberService.isDataForPlayerAvailable(player).then(r => (r ? 'accsaber' : null))])
-		).filter(s => s);
-
-		let newAvailableServiceNames = ['ranked', 'scores'];
-
-		if (additionalServices?.length) {
-			newAvailableServiceNames = newAvailableServiceNames.concat(additionalServices);
-		}
+		let newAvailableServiceNames = accSaberAvailable ? ['ranked', 'scores', 'accsaber'] : ['ranked', 'scores'];
 
 		if (
 			player?.profileSettings?.showStatsPublic ||
@@ -454,8 +446,21 @@
 		}
 
 		availableServiceNames = newAvailableServiceNames;
+	}
 
-		if (additionalServices.includes('accsaber')) accSaberCategories = await accSaberService.getCategories();
+	var accSaberAvailable = false;
+
+	function checkAccSaberAvailability(player) {
+		accSaberAvailable = false;
+		if (!player) return;
+		accSaberService.isDataForPlayerAvailable(player).then(r => {
+			if (r) {
+				accSaberCategories = accSaberService.getCategories();
+				accSaberAvailable = true;
+			} else {
+				accSaberAvailable = false;
+			}
+		});
 	}
 
 	function processStars(stars) {
@@ -879,7 +884,8 @@
 	$: profileAppearance = $editModel?.data?.profileAppearance ?? $account?.player?.profileSettings?.profileAppearance ?? null;
 
 	$: updateAllServices(playerAlias, serviceParams, useSwitcher);
-	$: updateAvailableServiceNames(player, service, $account);
+	$: checkAccSaberAvailability(player);
+	$: updateAvailableServiceNames(player, service, $account, accSaberAvailable);
 
 	$: availableServices = updateAvailableServices(
 		availableServiceNames,

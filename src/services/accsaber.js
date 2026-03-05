@@ -73,6 +73,7 @@ export default () => {
 
 	let playersMap = {};
 	let playerLinkMap = {};
+	let pendingPlayerChecks = {};
 	const getPlayer = async playerId => {
 		let result = [];
 
@@ -131,41 +132,59 @@ export default () => {
 
 	const isDataForPlayerAvailable = async playerData => {
 		if (!playerData?.playerId || !parseInt(playerData.playerId) || !configStore.get('preferences').showAccSaber) return false;
-		try {
-			if (playersMap[playerData.playerId] === undefined) {
-				const ids = playerData.linkedIds?.oculusPCId?.length
-					? [playerData.linkedIds.steamId, playerData.linkedIds.oculusPCId]
-					: [playerData.playerId];
-				for (let i = 0; i < ids.length; i++) {
-					const playerId = ids[i];
-					const available = await fetchGraphQL(
-						`
-			query FindPlayer($playerId: BigInt) {
-				players: overallAccSaberPlayers(condition: {playerId: $playerId}) {
-					totalCount
-				}
-			}
-			`,
-						{playerId}
-					).then(r => r.data?.players?.totalCount > 0);
 
-					if (available) {
-						playersMap[playerData.playerId] = true;
-						playerLinkMap[playerData.playerId] = playerId;
-						if (playerData.alias) {
-							playerLinkMap[playerData.alias] = playerId;
-						}
-						break;
+		const key = playerData.playerId;
+
+		if (playersMap[key] !== undefined) {
+			if (playerData.alias && playersMap[playerData.alias] === undefined) {
+				playerLinkMap[playerData.alias] = playerLinkMap[key];
+			}
+			return playersMap[key];
+		}
+
+		if (!pendingPlayerChecks[key]) {
+			pendingPlayerChecks[key] = (async () => {
+				try {
+					const ids = playerData.linkedIds?.oculusPCId?.length
+						? [playerData.linkedIds.steamId, playerData.linkedIds.oculusPCId]
+						: [key];
+					for (let i = 0; i < ids.length; i++) {
+						const playerId = ids[i];
+						const available = await fetchGraphQL(
+							`
+				query FindPlayer($playerId: BigInt) {
+					players: overallAccSaberPlayers(condition: {playerId: $playerId}) {
+						totalCount
 					}
 				}
-			}
-			if (playerData.alias && playersMap[playerData.alias] === undefined) {
-				playerLinkMap[playerData.alias] = playerLinkMap[playerData.playerId];
-			}
-			return await playersMap[playerData.playerId];
-		} catch {
-			return false;
+				`,
+							{playerId}
+						).then(r => r.data?.players?.totalCount > 0);
+
+						if (available) {
+							playersMap[key] = true;
+							playerLinkMap[key] = playerId;
+							if (playerData.alias) {
+								playerLinkMap[playerData.alias] = playerId;
+							}
+							return true;
+						}
+					}
+					playersMap[key] = false;
+					return false;
+				} catch {
+					return false;
+				} finally {
+					delete pendingPlayerChecks[key];
+				}
+			})();
 		}
+
+		const result = await pendingPlayerChecks[key];
+		if (playerData.alias && playersMap[playerData.alias] === undefined) {
+			playerLinkMap[playerData.alias] = playerLinkMap[key];
+		}
+		return result;
 	};
 
 	const getPlayerGain = (playerHistory, daysAgo = 1, maxDaysAgo = 7) =>
