@@ -27,6 +27,7 @@
 	import ScoreMeta from '../components/Score/ScoreMeta.svelte';
 	import ssrConfig from '../ssr-config';
 	import {navigate} from 'svelte-routing';
+	import { GLOBAL_LEADERBOARD_TYPE } from '../utils/format';
 
 	export let scoreId;
 
@@ -36,7 +37,7 @@
 	function fetchScore(id) {
 		score = null;
 
-		fetch(`${BL_API_URL}score/${id}`)
+		fetch(`${BL_API_URL}score/${id}?leaderboardContext=${GLOBAL_LEADERBOARD_TYPE}`)
 			.then(d => d.json())
 			.then(newScore => {
 				score = processScore({leaderboard: newScore, ...newScore});
