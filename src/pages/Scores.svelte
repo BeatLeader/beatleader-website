@@ -66,6 +66,7 @@
 	import {scrollToTargetAdjusted} from '../utils/browser';
 	import SongScore from '../components/Player/SongScore.svelte';
 	import Error from '../components/Common/Error.svelte';
+	import ConfigBoundsRange from '../components/Common/ConfigBoundsRange.svelte';
 
 	export let page = 1;
 	export let location;
@@ -99,6 +100,8 @@
 		{key: 'passrating_to', default: undefined, process: processFloatFilter},
 		{key: 'techrating_from', default: undefined, process: processFloatFilter},
 		{key: 'techrating_to', default: undefined, process: processFloatFilter},
+		{key: 'acc_from', default: undefined, process: processFloatFilter},
+		{key: 'acc_to', default: undefined, process: processFloatFilter},
 		{key: 'date_from', default: null, process: processIntFilter},
 		{key: 'date_to', default: null, process: processIntFilter},
 
@@ -378,6 +381,11 @@
 		navigateToCurrentPageAndFilters();
 	}
 
+	function accChanged() {
+		currentPage = 1;
+		navigateToCurrentPageAndFilters();
+	}
+
 	function onPlaylistIdsChange(event) {
 		currentFilters.playlistIds = event.detail.join(',');
 
@@ -399,6 +407,18 @@
 		starsChanged();
 	}
 	const debouncedOnStarsChanged = debounce(onStarsChanged, FILTERS_DEBOUNCE_MS);
+
+	function onStartAccChanged(event) {
+		currentFilters.acc_from = event.detail;
+		accChanged();
+	}
+	const debouncedOnStartAccChanged = debounce(onStartAccChanged, FILTERS_DEBOUNCE_MS);
+
+	function onEndAccChanged(event) {
+		currentFilters.acc_to = event.detail;
+		accChanged();
+	}
+	const debouncedOnEndAccChanged = debounce(onEndAccChanged, FILTERS_DEBOUNCE_MS);
 
 	function onDateRangeChange(event) {
 		if (!event?.detail) return;
@@ -568,8 +588,10 @@
 		currentFilters.passrating_from ||
 		currentFilters.passrating_to ||
 		currentFilters.techrating_from ||
-		currentFilters.techrating_to
+		currentFilters.techrating_to		
 	);
+
+	let isAccFilterOpen = !!(currentFilters.acc_from || currentFilters.acc_to);
 
 	let initialState = null;
 	let initialStateType = null;
@@ -819,6 +841,58 @@
 							multi={true}
 							on:change={onRequirementsChanged} />
 					</div>
+				{/if}
+			</section>
+
+			<section
+				class="filter dropdown-filter"
+				class:has-value={!!(
+					currentFilters.acc_from ||
+					currentFilters.acc_to
+				)}>
+				<div class="dropdown-header" on:click={() => (isAccFilterOpen = !isAccFilterOpen)}>
+					<div class="header-content">
+						<i class="fas fa-crosshairs" />
+						<span>Acc Range</span>
+					</div>
+					<i class="fas fa-chevron-{isAccFilterOpen ? 'up' : 'down'}" />
+				</div>
+
+				{#if isAccFilterOpen}
+					<section
+						class="filter">
+						<label>
+							Acc
+							<span>{formatNumber(currentFilters.acc_from * 100, 1, false, 'Any')}%</span> to
+							<span>{formatNumber(currentFilters.acc_to * 100, 1, false, 'Any')}%</span>
+							{#if currentFilters.acc_from || currentFilters.acc_to}
+								<button
+									class="remove-type"
+									title="Remove"
+									on:click={() => {
+										currentFilters.acc_from = undefined;
+										currentFilters.acc_to = undefined;
+										accChanged();
+									}}><i class="fas fa-xmark" /></button>
+							{/if}
+						</label>
+							<ConfigBoundsRange
+								absoluteMin={0}
+								absoluteMax={100}
+								step={0.001}
+								defaultMinValue={sliderLimits.MIN_ACC}
+								defaultMaxValue={sliderLimits.MAX_ACC}
+								startValue={Number.isFinite(currentFilters.acc_from) ? currentFilters.acc_from : null}
+								endValue={Number.isFinite(currentFilters.acc_to) ? currentFilters.acc_to : null}
+								minKey="scoresPage.minAcc"
+								maxKey="scoresPage.maxAcc"
+								minLabel="Min acc"
+								maxLabel="Max acc"
+								displayFactor={100}
+								suffix="%"
+								on:changeStartValue={e => debouncedOnStartAccChanged(e)}
+								on:changeEndValue={e => debouncedOnEndAccChanged(e)} />
+					</section>
 				{/if}
 			</section>
 
@@ -1091,6 +1165,7 @@
 	aside .filter {
 		margin-bottom: 1.5rem;
 		transition: opacity 300ms;
+		padding: 0.5rem;
 	}
 
 	aside .filter.disabled {

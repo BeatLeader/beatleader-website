@@ -241,6 +241,12 @@ export const DEFAULT_CONFIG = {
 		accPp: false,
 		techPp: false,
 	},
+	scoresPage: {
+		minAcc: 0.5,
+		maxAcc: 1,
+		startAcc: 0.8,
+		endAcc: 0.99,
+	},
 	playlist: {
 		itemsPerPage: 5,
 	},

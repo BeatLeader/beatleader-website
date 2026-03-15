@@ -7,10 +7,14 @@ export const Ranked_Const = {
 	MIN_STARS: 0,
 	STAR_GRANULARITY: 0.05,
 	STAR_STEP: 40,
+	MIN_ACC: 0.5,
+	MAX_ACC: 1,
 };
 export const Unranked_Const = {
 	MAX_STARS: 42,
 	MIN_STARS: 0,
 	STAR_GRANULARITY: 0.05,
 	STAR_STEP: 100,
+	MIN_ACC: 0.5,
+	MAX_ACC: 1,
 };

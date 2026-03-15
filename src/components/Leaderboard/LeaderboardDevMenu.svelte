@@ -3,6 +3,7 @@
 	import Spinner from '../Common/Spinner.svelte';
 	import createBeatSaverService from '../../services/beatmaps';
 	import {getNotificationsContext} from 'svelte-notifications';
+	import Button from '../Common/Button.svelte';
 
 	export let opened = false;
 	let title = 'Dev Menu';
@@ -22,6 +23,7 @@
 	}
 
 	let latestHash;
+	let downloadLink = null;
 	const {addNotification} = getNotificationsContext();
 
 	async function checkMapHash(hash) {
@@ -31,6 +33,11 @@
 			const songInfoValue = await beatSaverService.byHash(hash, true);
 
 			latestHash = songInfoValue?.versions[0].hash.toLowerCase() == hash.toLowerCase();
+			if (latestHash) {
+				downloadLink = songInfoValue?.versions[0].downloadURL;
+			} else {
+				downloadLink = `https://cdn.beatsaver.com/${hash}.zip`;
+			}
 		}
 	}
 
@@ -89,13 +96,18 @@
 	{#if opened && song && song.hash.length == 40}
 		<div class="aside-box" transition:slide>
 			<div class="dev-background">
+				{#if downloadLink}
+					<a href={downloadLink} target="_blank" rel="noreferrer" class="map-download-button">
+						<Button iconFa="fas fa-download" square={true} squareSize="1.4em" noMargin={true} />
+					</a>
+				{/if}
 				Hash: <small on:click={() => copyToClipboard()} title="Click to copy to clipboard">{song.hash.toUpperCase()}</small>
 				{#if latestHash}
-					<i class="fa fa-check" style="color: lime;" title="Latest map version" />
+					<i class="fa fa-check" style="color: lime; margin-left: 0.1em; margin-right: -0.1em;" title="Latest map version" />
 				{:else if latestHash == undefined}
 					<Spinner />
 				{:else}
-					<i class="fa fa-xmark" style="color: red;" title="Outdated map" />
+					<i class="fa fa-xmark" style="color: red; margin-left: 0.1em; margin-right: -0.1em;" title="Outdated map" />
 				{/if}
 				<br />
 			</div>
@@ -130,20 +142,33 @@
 	}
 
 	.aside-box {
-		display: grid;
+		display: flex;
 		align-items: center;
 		gap: 0.25em;
 		margin-top: 0.25em;
 	}
 
 	.dev-background {
-		padding: 0.7em;
+		display: flex;
+		padding: 0.4em;
 		border-radius: 0.5em;
 		background-color: #393939;
 		height: fit-content;
+		font-size: 0.97em;
+		align-items: center;
+		gap: 0.24em;
 	}
 
 	.dev-background small {
 		font-size: 0.78em;
+		margin-bottom: -0.3em;
+	}
+
+	.map-download-button {
+		margin-top: 0.1em;
+	}
+
+	:global(.map-download-button .fa-download) {
+		font-size: 0.8em;
 	}
 </style>
