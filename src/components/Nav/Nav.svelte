@@ -90,7 +90,7 @@
 		},
 		{
 			name: 'General',
-			id: '',
+			id: 'general',
 			logoBig: '/assets/logo.webp',
 			logoSmall: '/assets/logo-small.webp',
 		},
