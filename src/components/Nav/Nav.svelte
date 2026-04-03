@@ -83,12 +83,6 @@
 
 	var leaderboardTypeOptions = [
 		{
-			name: 'LeftLeader',
-			id: 'funnyv2',
-			logoBig: '/assets/logo-leftleader.webp',
-			logoSmall: '/assets/logo-small-leftleader.webp',
-		},
-		{
 			name: 'General',
 			id: '',
 			logoBig: '/assets/logo.webp',
@@ -121,7 +115,7 @@
 	];
 
 	let leaderboardType = leaderboardTypeOptions.find(
-		t => t.id == GLOBAL_LEADERBOARD_TYPE || (GLOBAL_LEADERBOARD_TYPE == 'funnyv2' && t.id == '')
+		t => t.id == GLOBAL_LEADERBOARD_TYPE || (GLOBAL_LEADERBOARD_TYPE == 'general' && t.id == '')
 	);
 
 	let signupOptions = [];
@@ -280,8 +274,8 @@
 			<div class="logo-container desktop-and-up">
 				<img src="/assets/logo.webp" class="logo" alt="" />
 				<div class="logo-name">
-					<span class="name">LeftLeader</span>
-					{#if leaderboardType.id != 'funnyv2'}
+					<span class="name">BEATLEADER</span>
+					{#if leaderboardType.id != ''}
 						<span class="leaderboard-type">{leaderboardType.name}</span>
 					{/if}
 				</div>
@@ -290,7 +284,7 @@
 			<div class="logo-container tablet">
 				<img src="/assets/logo-small.webp" class="logo" alt="" />
 				<div class="logo-name">
-					<span class="name">LL</span>
+					<span class="name">BL</span>
 					{#if leaderboardType.id != ''}
 						<span class="leaderboard-type">{leaderboardType.name}</span>
 					{/if}
@@ -299,8 +293,8 @@
 
 			<div class="logo-container up-to-tablet">
 				<img src="/assets/logo-small.webp" class="logo" alt="" />
-				{#if leaderboardType.id != 'funnyv2'}
-					<span class="leaderboard-type">{ leaderboardType.id != 'general' ? leaderboardType.name : 'LeftRightLeader'}</span>
+				{#if leaderboardType.id != 'general'}
+					<span class="leaderboard-type">{leaderboardType.name}</span>
 				{/if}
 			</div>
 		</a>

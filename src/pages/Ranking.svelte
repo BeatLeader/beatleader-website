@@ -23,7 +23,7 @@
 	import {BL_API_URL} from '../network/queues/beatleader/api-queue';
 
 	import {produce} from 'immer';
-	import {dateFromUnix, formatDateRelative} from '../utils/date';
+	import {dateFromUnix} from '../utils/date';
 	import DatePicker from '../components/Common/DatePicker.svelte';
 	import Button from '../components/Common/Button.svelte';
 	import {GLOBAL_LEADERBOARD_TYPE} from '../utils/format';
@@ -32,6 +32,7 @@
 	import CountryCard from '../components/Ranking/CountryCard.svelte';
 	// import EventBanner from '../components/Event/EventBanner.svelte';
 	import RankingSorters from '../components/Ranking/RankingSorters.svelte';
+
 	export let page = 1;
 	export let location;
 
@@ -254,26 +255,6 @@
 <section class="align-content">
 	<article class="page-content" transition:fade|global>
 		<!-- <EventBanner /> -->
-		{#if GLOBAL_LEADERBOARD_TYPE == 'funnyv2'}
-			<ContentBox cls="funnyv2-banner-box">
-				<div class="funnyv2-banner">
-					<span>For years players have been asking how to improve their left hand accuracy. Even the top players.</span><br />
-					<span>So we started wondering, could this be the holy grail of measuring player skill?</span><br />
-
-					<br /><br />
-					<span>Behold, the biggest change to the ranking system in years: <b>LeftLeader</b></span><br />
-					<span>Right hand will no longer poison the PP!</span><br />
-					<span><b>From now on, score from the right hand will be substracted!</b></span><br />
-					<span>Good luck competing, top 10 before the {formatDateRelative(dateFromUnix(1775336400))} will receive badges!</span><br />
-
-					<span
-						>Use <a href="https://github.com/NSGolova/LeftLeaderCounter/releases/tag/v0.0.1">Counters</a> for the Counters+ mod to get in-game
-						score with the new rules.</span><br /><br /><br />
-					<span class="small-text"
-						>If you want to return to the old unfair double handed land, use the context selector in the top left corner of the page.</span>
-				</div>
-			</ContentBox>
-		{/if}
 		<div class="ranking-switcher">
 			<TabSwitcher
 				values={tabOptions}
@@ -891,11 +872,6 @@
 		display: flex;
 		align-items: center;
 		gap: 0.5rem;
-	}
-
-	.small-text {
-		font-size: 0.8em;
-		color: var(--faded);
 	}
 
 	.dropdown-content {

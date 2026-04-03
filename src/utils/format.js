@@ -13,7 +13,7 @@ if (window.location.host.includes('preview')) {
 if (parseInt(location.host.split('.')[location.host.split('.').length - 1])) {
 	lcount = 4;
 }
-export var GLOBAL_LEADERBOARD_TYPE = location.host.split('.').length > lcount ? location.host.split('.')[0] : 'funnyv2';
+export var GLOBAL_LEADERBOARD_TYPE = location.host.split('.').length > lcount ? location.host.split('.')[0] : 'general';
 
 export function setLeaderboardType(newType) {
 	GLOBAL_LEADERBOARD_TYPE = newType;
