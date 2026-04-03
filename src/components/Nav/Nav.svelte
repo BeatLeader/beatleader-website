@@ -324,8 +324,8 @@
 					<a
 						style="display: block; width: 100%"
 						href={currenturl.replace(
-							location.protocol + '//' + normalizedId(leaderboardType.id == 'funnyv2' ? '' : leaderboardType.id),
-							location.protocol + '//' + normalizedId(item.id == 'funnyv2' ? '' : item.id)
+							location.protocol + '//' + normalizedId(leaderboardType.id),
+							location.protocol + '//' + normalizedId(item.id)
 						)}>
 						<i class={item.icon} />
 						{item.name}
