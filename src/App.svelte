@@ -26,6 +26,7 @@
 		RankingPage: () => import('./pages/Ranking.svelte'),
 		EventPage: () => import('./pages/Event.svelte'),
 		LoveLivePage: () => import('./pages/LoveLive.svelte'),
+		RocketLeaguePackPage: () => import('./pages/RocketLeaguePack.svelte'),
 		LeaderboardPage: () => import('./pages/Leaderboard.svelte'),
 		LeaderboardsPage: () => import('./pages/Leaderboards.svelte'),
 		LeaderboardsLoloppe: () => import('./pages/LeaderboardsLoloppe.svelte'),
@@ -485,6 +486,11 @@
 					</Route>
 					<Route path="/event/lovelive">
 						{#await pageImports.LoveLivePage() then module}
+							<svelte:component this={module.default} />
+						{/await}
+					</Route>
+					<Route path="/event/rocketleaguevol2">
+						{#await pageImports.RocketLeaguePackPage() then module}
 							<svelte:component this={module.default} />
 						{/await}
 					</Route>

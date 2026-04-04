@@ -23,9 +23,9 @@
 				<PlayerNameWithFlag
 					player={event.leader}
 					playerClickFilter={`eventId=${event.id}`}
-					playerClickFilterFull={eventId == 81 ? `${BL_API_URL.replace('api', 'leftleader')}u/${event?.leader?.alias ?? event?.leader?.playerId}` : null}
+					playerClickFilterFull={event.id == 81 ? `${BL_API_URL.replace('api', 'leftleader')}u/${event?.leader?.alias ?? event?.leader?.playerId}` : null}
 					on:click={e => {
-						navigate(eventId == 81 ? `${BL_API_URL.replace('api', 'leftleader')}u/${event?.leader?.alias ?? event?.leader?.playerId}` : `/u/${event?.leader?.id}?eventId=${event.id}`);
+						navigate(event.id == 81 ? `${BL_API_URL.replace('api', 'leftleader')}u/${event?.leader?.alias ?? event?.leader?.playerId}` : `/u/${event?.leader?.id}?eventId=${event.id}`);
 						e.stopPropagation();
 					}} />
 			</div>
