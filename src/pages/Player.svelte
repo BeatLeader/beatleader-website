@@ -95,7 +95,7 @@
 			sortOptions = preferences.scoresSortOptions;
 			sortingKey = STORE_SORTING_KEY;
 			orderKey = STORE_ORDER_KEY;
-			defaultSort = 'pp';
+			defaultSort = 'date';
 		}
 
 		params.filters.songType = currentService === 'ranked' ? 'ranked' : null;

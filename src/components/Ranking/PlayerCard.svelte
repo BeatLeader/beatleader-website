@@ -25,6 +25,7 @@
 	export let numRank = 1;
 
 	export let playerClickFilter = null;
+	export let playerClickFilterFull = null;
 	export let maxRank = 1;
 	export let maxCountryRank = 1;
 	export let maxNumRank = 1;
@@ -36,7 +37,7 @@
 	function navigateToPlayer(player) {
 		if (!player) return;
 
-		navigate(`/u/${player.alias ?? player.playerId}${playerClickFilter ? '?' + playerClickFilter : ''}`);
+		navigate(playerClickFilterFull ?? `/u/${player.alias ?? player.playerId}${playerClickFilter ? '?' + playerClickFilter : ''}`);
 	}
 
 	function onPlayerClick(event, player) {
@@ -147,7 +148,7 @@
 </script>
 
 <a
-	href={`/u/${player.alias ?? player.playerId}${playerClickFilter ? '?' + playerClickFilter : ''}`}
+	href={playerClickFilterFull ?? `/u/${player.alias ?? player.playerId}${playerClickFilter ? '?' + playerClickFilter : ''}`}
 	class={`player-card ${$configStore.rankingList.ppToTheLeft ? 'with-pp-on-left' : ''} ${playerId == player.playerId ? 'current' : ''} ${
 		showRainbow(player) ? 'rainbow' : ''
 	}`}

@@ -16,6 +16,7 @@
 	import {configStore} from '../../stores/config';
 
 	import Spinner from '../Common/Spinner.svelte';
+	import {BL_API_URL} from '../../network/queues/beatleader/api-queue';
 
 	const participantsImport24 = () => import('../../others/bswc2024').then(m => m.participants);
 	const participantsImport25 = () => import('../../others/bswc2025').then(m => m.participants);
@@ -173,6 +174,7 @@
 					{player}
 					playerId={mainPlayerId}
 					{playerClickFilter}
+					playerClickFilterFull={eventId == 81 ? `${BL_API_URL.replace('api', 'leftleader')}u/${player?.alias ?? player?.playerId}` : null}
 					{currentFilters}
 					value={sortValue?.value(player)}
 					valueProps={eventId == 32 || eventId == 48

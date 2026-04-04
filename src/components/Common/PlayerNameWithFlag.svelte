@@ -12,6 +12,7 @@
 	export let type = null;
 	export let hideFlag = false;
 	export let withCrown = false;
+	export let playerClickFilterFull = null;
 	export let playerClickFilter = null;
 	export let disablePopover = false;
 
@@ -23,7 +24,7 @@
 </script>
 
 <a
-	href={`/u/${playerId}${type ? '/' + type : ''}/1${playerClickFilter ? '?' + playerClickFilter : ''}`}
+	href={playerClickFilterFull ?? `/u/${playerId}${type ? '/' + type : ''}/1${playerClickFilter ? '?' + playerClickFilter : ''}`}
 	class="player-name clickable has-pointer-events"
 	bind:this={referenceElement}
 	on:click|preventDefault={e => {

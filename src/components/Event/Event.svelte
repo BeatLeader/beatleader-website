@@ -4,6 +4,7 @@
 	import {dateFromUnix, formatDate, formatDateRelative} from '../../utils/date';
 	import Button from '../Common/Button.svelte';
 	import PlayerNameWithFlag from '../Common/PlayerNameWithFlag.svelte';
+	import {BL_API_URL} from '../../network/queues/beatleader/api-queue';
 
 	export let event;
 	export let withLeader = true;
@@ -22,8 +23,9 @@
 				<PlayerNameWithFlag
 					player={event.leader}
 					playerClickFilter={`eventId=${event.id}`}
+					playerClickFilterFull={eventId == 81 ? `${BL_API_URL.replace('api', 'leftleader')}u/${event?.leader?.alias ?? event?.leader?.playerId}` : null}
 					on:click={e => {
-						navigate(`/u/${event?.leader?.id}?eventId=${event.id}`);
+						navigate(eventId == 81 ? `${BL_API_URL.replace('api', 'leftleader')}u/${event?.leader?.alias ?? event?.leader?.playerId}` : `/u/${event?.leader?.id}?eventId=${event.id}`);
 						e.stopPropagation();
 					}} />
 			</div>

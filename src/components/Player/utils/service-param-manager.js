@@ -62,8 +62,8 @@ export default () => {
 			case 'ranked':
 				return {sort: 'pp', order: 'desc', page: 1, filters: {songType: 'ranked'}};
 			case 'beatsavior':
-				return {sort: 'date', order: 'desc', page: 1, filters: {}};
 			case 'attempts':
+			case 'scores':
 				return {sort: 'date', order: 'desc', page: 1, filters: {}};
 			case 'accsaber':
 				return {type: 'overall', order: 'desc', sort: 'ap', page: 1, filters: {}};
