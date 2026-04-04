@@ -41,8 +41,12 @@
 				{#if type === 'alert'}
 					<Button label={okButton} type={okButtonType} disabled={okButtonDisabled} on:click={() => dispatch('confirm')} />
 				{:else if type === 'confirm' || type === 'update'}
-					<Button label={okButton} type={okButtonType} disabled={okButtonDisabled} on:click={() => dispatch('confirm')} />
-					<Button label={cancelButton} type="default" disabled={cancelButtonDisabled} on:click={() => dispatch('cancel')} />
+				    {#if okButton}
+						<Button label={okButton} type={okButtonType} disabled={okButtonDisabled} on:click={() => dispatch('confirm')} />
+					{/if}
+					{#if cancelButton}
+						<Button label={cancelButton} type="default" disabled={cancelButtonDisabled} on:click={() => dispatch('cancel')} />
+					{/if}
 				{/if}
 			</slot></span>
 	</slot>

@@ -1,12 +1,14 @@
 <script>
 	import {createEventDispatcher} from 'svelte';
 	import Spinner from './Spinner.svelte';
+	import FaSvgIcon from './FaSvgIcon.svelte';
 
 	const dispatch = createEventDispatcher();
 
 	export let label = '';
 	export let icon = null;
 	export let iconFa = null;
+	export let iconSvg = null;
 	export let disabled = false;
 	export let type = 'default';
 	export let cls = '';
@@ -14,6 +16,7 @@
 	export let noMargin = false;
 	export let color = null;
 	export let bgColor = null;
+	export let activeBgColor = null;
 	export let notSelected = false;
 	export let options = null;
 	export let selectedOption = null;
@@ -176,7 +179,7 @@
 		target={urltarget}
 		style="--btn-color:{color ? color : selectedType.color}; --btn-bg-color: {bgColor
 			? bgColor
-			: selectedType.bgColor}; --border:{selectedType.border};--active-color: {selectedType.activeColor}; --active-bg-color: {selectedType.activeBgColor}; --active-border: {selectedType.activeBorder}; --margin: {margin}; --btn-padding: {btnPadding}; --btn-margin: {btnMargin}; {square
+			: selectedType.bgColor}; --border:{selectedType.border};--active-color: {selectedType.activeColor}; --active-bg-color: {activeBgColor ? activeBgColor : selectedType.activeBgColor}; --active-border: {selectedType.activeBorder}; --margin: {margin}; --btn-padding: {btnPadding}; --btn-margin: {btnMargin}; {square
 			? `width:${squareSize};height:${squareSize};`
 			: ''};
 			--hovered-scale:{hoveredScale};
@@ -198,6 +201,7 @@
 		class:disabled
 		bind:this={buttonElement}>
 		{#if icon && !loading}<span class="icon">{@html icon}</span>{/if}
+		{#if iconSvg && !loading}<FaSvgIcon src={iconSvg} />{/if}
 		{#if iconFa && !loading}<i class={iconFa} />{/if}
 		{#if loading}<i><Spinner /></i>{/if}
 		{#if label?.length}<span>{label}</span>{/if}
@@ -207,7 +211,7 @@
 	<button
 		style="--btn-color:{color ? color : selectedType.color}; --btn-bg-color: {bgColor
 			? bgColor
-			: selectedType.bgColor}; --border:{selectedType.border};--active-color: {selectedType.activeColor}; --active-bg-color: {selectedType.activeBgColor}; --active-border: {selectedType.activeBorder}; --margin: {margin}; --btn-padding: {btnPadding}; --btn-margin: {btnMargin};{square
+			: selectedType.bgColor}; --border:{selectedType.border};--active-color: {selectedType.activeColor}; --active-bg-color: {activeBgColor ? activeBgColor : selectedType.activeBgColor}; --active-border: {selectedType.activeBorder}; --margin: {margin}; --btn-padding: {btnPadding}; --btn-margin: {btnMargin};{square
 			? `width:${squareSize};height:${squareSize};`
 			: ''};
 			--hovered-scale:{hoveredScale};
@@ -226,6 +230,7 @@
 		bind:this={buttonElement}>
 		{#if icon}<span class="icon">{@html icon}</span>{/if}
 		{#if iconFa && !loading}<i class={iconFa} />{/if}
+		{#if iconSvg && !loading}<FaSvgIcon src={iconSvg} />{/if}
 		{#if loading}<i><Spinner /></i>{/if}
 		{#if label?.length}<span>{label}</span>{/if}
 		<slot />

@@ -89,6 +89,12 @@
 			logoSmall: '/assets/logo-small.webp',
 		},
 		{
+			name: 'LeftLeader',
+			id: 'leftleader',
+			logoBig: '/assets/logo.webp',
+			logoSmall: '/assets/logo-small.webp',
+		},
+		{
 			name: 'No modifiers',
 			id: 'nomods',
 			logoBig: '/assets/logo-no-pause.webp',
