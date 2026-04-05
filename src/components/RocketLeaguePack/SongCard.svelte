@@ -36,7 +36,7 @@
                 ✓ {(songStatus.score.accuracy * 100).toFixed(2)}%
             </div>
         {:else}
-            <div class="locked-badge">🔒 Pass to unlock</div>
+            <div class="locked-badge">Not played yet</div>
         {/if}
     </div>
 </a>

@@ -169,6 +169,7 @@
 	}
 
 	$: OPScores = isMain && $scoresStore?.length && $scoresStore.find(s => s.score?.mods?.includes('OP'));
+	$: showStatsPublic = !isMain && player?.profileSettings?.showStatsPublic;
 </script>
 
 <div bind:this={scoresBoxEl}>
@@ -188,6 +189,9 @@
 		on:service-params-change={onServiceParamsChanged} />
 
 	<div class="darkened-background scores-container">
+		{#if showStatsPublic == false && currentServiceParams?.sort == 'playCount'}
+			<p class="private-attempts-note">Note: This player has attempts hidden.</p>
+		{/if}
 		{#if $scoresStore && $scoresStore.length}
 			<div class="song-scores grid-transition-helper">
 				{#each $scoresStore as songScore, idx ((songScore?.id ?? songScore?.score?.leaderboardId ?? '') + (songScore?.score?.timeset ?? songScore?.score?.score ?? '') + (songScore?.score?.attemptsCount ?? '') + currentService + (songScore?.timeSet ?? songScore?.player?.playerId ?? ''))}
@@ -276,6 +280,7 @@
 			currentPage={page - 1}
 			fixedItemsPerPage={itemsPerPage}
 			loadingPage={$pending?.serviceParams?.page ? $pending.serviceParams.page - 1 : null}
+			showHistogram={!(showStatsPublic == false && currentServiceParams?.sort == 'playCount')}
 			on:page-changed={onPageChanged} />
 	{/if}
 
@@ -321,6 +326,11 @@
 		gap: 0.5em;
 		margin-top: 0.5em;
 		margin-bottom: -0.6em;
+	}
+
+	.private-attempts-note {
+		color: #ffff007a;
+    	padding-top: 0.5em;
 	}
 
 	:global(.unconstrained-pager .fas) {

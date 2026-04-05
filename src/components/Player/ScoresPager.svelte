@@ -22,6 +22,7 @@
 	export let currentPage = 0;
 	export let loadingPage = null;
 	export let fixedItemsPerPage = null;
+	export let showHistogram = true;
 
 	const DEBOUNCE_THRESHOLD = 1000;
 
@@ -246,7 +247,7 @@
 	mode={totalItems ? 'pages' : 'simple'}
 	on:page-changed />
 
-{#if $configStore.profileParts.histogram && groupedPlayerScores?.length}
+{#if $configStore.profileParts.histogram && groupedPlayerScores?.length && showHistogram}
 	<section class="scores-date-browse">
 		<ChartBrowser
 			data={groupedPlayerScores}

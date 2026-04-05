@@ -168,7 +168,7 @@
 				<br />
 				<div class="subtitle">
 					Sonoluminn gathered a team of mappers to bring you a fresh beats from the Rocket League!<br />
-					12 fire Monstercat tracks from the iconic football game are waiting for you to enjoy in Beat Saber!
+					21 fire Monstercat tracks from the iconic football game are waiting for you to enjoy in Beat Saber!
 				</div>
 				<div class="subtitle">
 					Compete on the maps to receive special badges for the top 3 in the event!
