@@ -9,6 +9,7 @@
 	import {DateTime} from 'luxon';
 	import stringify from 'json-stable-stringify';
 	import {configStore} from '../../../stores/config';
+	import {createEventDispatcher} from 'svelte';
 
 	export let playerId = null;
 
@@ -17,6 +18,7 @@
 
 	const pageContainer = getContext('pageContainer');
 	const statsHistoryStore = createStatsHistoryStore();
+	const dispatch = createEventDispatcher();
 
 	let canvas = null;
 	let chart = null;
@@ -237,6 +239,10 @@
 			chart.options.scales = {x: xAxis, ...yAxes};
 			chart.update();
 		}
+
+		setTimeout(() => {
+			dispatch('height-changed');
+		}, 200);
 	}
 
 	let debouncedChartHash = null;
