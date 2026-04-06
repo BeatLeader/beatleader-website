@@ -169,7 +169,7 @@
 	}
 
 	$: OPScores = isMain && $scoresStore?.length && $scoresStore.find(s => s.score?.mods?.includes('OP'));
-	$: showStatsPublic = !isMain && player?.profileSettings?.showStatsPublic;
+	$: showStatsPublic = isMain || player?.profileSettings?.showStatsPublic;
 </script>
 
 <div bind:this={scoresBoxEl}>

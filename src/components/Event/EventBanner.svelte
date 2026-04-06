@@ -83,6 +83,7 @@
 		padding: 0 !important;
 		border-radius: 0.5em;
 		cursor: pointer;
+		z-index: 0 !important;
 	}
 
 	.event-container {

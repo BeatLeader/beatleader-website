@@ -878,7 +878,7 @@
 						</label>
 							<ConfigBoundsRange
 								absoluteMin={0}
-								absoluteMax={100}
+								absoluteMax={1}
 								step={0.001}
 								defaultMinValue={sliderLimits.MIN_ACC}
 								defaultMaxValue={sliderLimits.MAX_ACC}

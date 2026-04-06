@@ -335,7 +335,7 @@
 	$: canIncreaseMin = minValue < maxValue - step - EPSILON;
 	$: canDecreaseMax = maxValue > minValue + step + EPSILON;
 	$: canIncreaseMax = maxValue < absoluteMax - EPSILON;
-	$: pipPrecision = displayStep >= 0.1 ? 0 : Math.min(displayPrecision, 1);
+	$: pipPrecision = displayStep >= 0.1 && Math.round(pipInterval) == pipInterval && Math.round(minValue * 100) == minValue * 100 ? 0 : Math.min(displayPrecision, 1);
 	$: longestPipLabelLength = Math.max(
 		formatPipValue(displayMinValue, 0, 0).length,
 		formatPipValue(displayMaxValue, 0, 100).length
