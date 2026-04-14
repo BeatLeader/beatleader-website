@@ -454,6 +454,16 @@
 							<svelte:component this={module.default} {location} />
 						{/await}
 					</Route>
+					<Route path="/maps/suggestions/:leaderboardId" let:params let:location>
+						{#await pageImports.SongSuggestMap() then module}
+							<svelte:component this={module.default} leaderboardId={params.leaderboardId} {location} />
+						{/await}
+					</Route>
+					<Route path="/maps/suggestions" let:location>
+						{#await pageImports.SongSuggestMap() then module}
+							<svelte:component this={module.default} {location} />
+						{/await}
+					</Route>
 					<Route path="/maps/:type/*page" let:params let:location>
 						{#await pageImports.MapsPage() then module}
 							<svelte:component this={module.default} page={params.page} type={params.type} {location} />

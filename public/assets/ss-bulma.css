@@ -12036,10 +12036,7 @@ select {
 
 .tech-icon {
 	width: 100% !important;
-	height: 200% !important;
-	margin-bottom: 10% !important;
-	margin-top: -90% !important;
-	transform: translate(0px, 10%);
+	height: 100% !important;
 	background-size: cover !important;
 	background-repeat: no-repeat !important;
 	background-image: url('./tech.svg') !important;
@@ -12059,6 +12056,46 @@ select {
 	background-size: cover !important;
 	background-repeat: no-repeat !important;
 	background-image: url('./speed.svg') !important;
+}
+
+.fitbeat-icon {
+	width: 100% !important;
+	height: 100% !important;
+	background-size: cover !important;
+	background-repeat: no-repeat !important;
+	background-image: url('./fitbeat.svg') !important;
+}
+
+.linear-icon {
+	width: 100%;
+	height: 100%;
+	background-size: cover !important;
+	background-repeat: no-repeat !important;
+	background-image: url('./linear.svg') !important;
+}
+
+.bombReset-icon {
+	width: 100% !important;
+	height: 100% !important;
+	background-size: cover !important;
+	background-repeat: no-repeat !important;
+	background-image: url('./bombavoidance.svg') !important;
+}
+
+.metronome-icon {
+	width: 100%;
+	height: 100%;
+	background-size: cover !important;
+	background-repeat: no-repeat !important;
+	background-image: url('./metronome.svg') !important;
+}
+
+.obstacle-icon {
+	width: 100%;
+	height: 100%;
+	background-size: cover !important;
+	background-repeat: no-repeat !important;
+	background-image: url('./obstacle.svg') !important;
 }
 
 .ok-icon {

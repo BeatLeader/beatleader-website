@@ -8,22 +8,34 @@
 
 {#if type}
 	{#each typeList as type, idx}
-		<span class="type" style="color: {type.textColor}; background-color: {type.color}; " title={type.title} on:click>
-			{type.name}
+
+		<span class="type-icon" style="border: 2px solid {type.foregroundColor};">
+			<div class={type.icon} title={type.title} />
 		</span>
 	{/each}
 {/if}
 
 <style>
-	.type {
-		display: flex;
-		font-weight: 600;
-		font-size: 0.8em;
-		padding: 1px 2px;
-		min-width: 1.5em;
-		max-height: 1.5em;
-		border-radius: 4px;
-		height: 2em;
+	.type-icon {
 		align-items: center;
+		background: #000000d1;
+		border-radius: 50%;
+		display: inline-flex;
+		font-size: 12px;
+		height: 26px;
+		justify-content: center;
+		margin: 1px;
+		pointer-events: auto;
+		width: 26px;
+		color: white;
+		opacity: 0.8;
+	}
+
+	@media screen and (max-width: 767px) {
+		.type-icon {
+			height: 20px;
+			width: 20px;
+			padding-top: 0;
+		}
 	}
 </style>

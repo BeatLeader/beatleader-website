@@ -901,35 +901,66 @@ export const typesMap = {
 	tech: 2,
 	midspeed: 4,
 	speed: 8,
+	fitbeat: 16,
+	linear: 32,
+	bombReset: 64,
 };
 export const typesDescription = {
 	acc: {
 		title: 'Slower map suitable for high accuracy plays.',
 		name: 'acc',
 		icon: 'acc-icon',
-		color: 'purple',
+		foregroundColor: 'purple',
+		backgroundColor: '#80008036',
 		textColor: 'white',
 	},
 	tech: {
 		title: 'Tech map with quirky patterns',
 		name: 'tech',
 		icon: 'tech-icon',
-		color: 'red',
+		foregroundColor: 'red',
+		backgroundColor: '#ff000036',
 		textColor: 'white',
 	},
 	midspeed: {
 		title: 'Medium speed map with regular patterns',
 		name: 'midspeed',
 		icon: 'midspeed-icon',
-		color: 'green',
+		foregroundColor: 'green',
+		backgroundColor: '#00800036',
 		textColor: 'white',
 	},
 	speed: {
 		title: 'High speed map. Please warm up before playing!',
 		name: 'speed',
 		icon: 'speed-icon',
-		color: 'orange',
-		textColor: 'black',
+		foregroundColor: 'orange',
+		backgroundColor: '#ffa50036',
+		textColor: 'white',
+	},
+	fitbeat: {
+		title: 'Maps that focus on moving the player with walls (mostly crouch walls, but also dodge walls)',
+		name: 'fitbeat',
+		icon: 'fitbeat-icon',
+		foregroundColor: 'purple',
+		backgroundColor: '#80008036',
+		textColor: 'white',
+	},
+	linear: {
+		title: 'Maps with low amount of repositioning and rotation required.',
+		name: 'linear',
+		icon: 'linear-icon',
+		foregroundColor: 'blue',
+		backgroundColor: '#0000ff36',
+		textColor: 'white',
+	},
+	bombReset: {
+		title: 'Maps that focus on bomb resets.',
+		name: 'bombReset',
+		icon: 'bombReset-icon',
+		foregroundColor: 'red',
+		backgroundColor: '#ff000036',
+		textColor: 'white',
 	},
 };
 
@@ -1099,56 +1130,56 @@ export const requirementsDescription = {
 		title: 'Map requires Vivify mod (new modcharts)',
 		name: 'Vivify',
 		icon: 'fas fa-mountain-city',
-		color: '#ffd43b',
-		textColor: 'black',
+		foregroundColor: '#ffd43b',
+		textColor: 'white',
 	},
 	chroma: {
 		title: 'Map uses Chroma mod (rich visual effects)',
 		name: 'Chroma',
 		icon: 'fas fa-palette',
-		color: 'red',
+		foregroundColor: 'red',
 		textColor: 'white',
 	},
 	noodles: {
 		title: 'Map requires Noodle Extensions mod (modcharts)',
 		name: 'Noodle Extensions',
 		icon: 'fas fa-mountain-sun',
-		color: 'yellow',
-		textColor: 'black',
+		foregroundColor: 'yellow',
+		textColor: 'white',
 	},
 	mappingExtensions: {
 		title: 'Map requires Mapping Extensions mod',
 		name: 'Mapping Extensions',
 		icon: 'fas fa-trowel-bricks',
-		color: 'blue',
+		foregroundColor: 'blue',
 		textColor: 'white',
 	},
 	cinema: {
 		title: 'Map uses Cinema mod (video on background)',
 		name: 'Cinema',
 		icon: 'fas fa-panorama',
-		color: 'orange',
-		textColor: 'black',
+		foregroundColor: 'orange',
+		textColor: 'white',
 	},
 	V3: {
 		title: 'Map with arcs and/or chains.',
 		name: 'V3 Notes',
 		icon: 'v3-icon',
-		color: 'purple',
+		foregroundColor: 'purple',
 		textColor: 'white',
 	},
 	vnjs: {
 		title: 'v4.1 Map with variable note speed. Works only on Beat Saber 1.40+',
 		name: 'VNJS',
 		icon: 'vnjs-icon',
-		color: 'grey',
+		foregroundColor: 'grey',
 		textColor: 'white',
 	},
 	gls: {
 		title: 'Fancy group lighting (V3|V4 lights)',
 		name: 'GLS',
 		icon: 'gls-icon',
-		color: 'purple',
+		foregroundColor: 'purple',
 		textColor: 'white',
 	},
 };
@@ -1404,8 +1435,8 @@ export function describeMapCardsOption(option) {
 			return 'Scores in card';
 		case 'starsInCard':
 			return 'Stars in card';
-		case 'mapType':
-			return 'Map type';
+		case 'mapTypeOnHover':
+			return 'Map type on hover';
 	}
 }
 
@@ -1462,6 +1493,27 @@ export function getSongSortingValue(song, diff, sortingKey, status) {
 			return diff[sortingKey] ? `${diff[sortingKey].toFixed(2)}★` : null;
 		}
 		return song.difficulties[0][sortingKey] ? `${song.difficulties[0][sortingKey].toFixed(2)}★` : null;
+	}
+
+	if (sortingKey == 'linearPercentage') {
+		if (diff) {
+			return diff.linearPercentage ? `${(diff.linearPercentage * 100).toFixed(2)}%` : null;
+		}
+		return song.difficulties[0].linearPercentage ? `${(song.difficulties[0].linearPercentage * 100).toFixed(2)}%` : null;
+	}
+
+	if (sortingKey == 'multiRating') {
+		if (diff) {
+			return diff.multiRating ? `${diff.multiRating.toFixed(2)}` : null;
+		}
+		return song.difficulties[0].multiRating ? `${song.difficulties[0].multiRating.toFixed(2)}` : null;
+	}
+
+	if (sortingKey == 'ebpm') {
+		if (diff) {
+			return diff.peakSustainedEBPM ? `${diff.peakSustainedEBPM.toFixed(2)} EBPM` : null;
+		}
+		return song.difficulties[0].peakSustainedEBPM ? `${song.difficulties[0].peakSustainedEBPM.toFixed(2)} EBPM` : null;
 	}
 
 	if (sortingKey == 'voting') {
