@@ -142,6 +142,7 @@ export const DEFAULT_CONFIG = {
 		showClanCaptureInList: true,
 		alwaysShowAuthorHint: false,
 		showSubtitleInHeader: true,
+		showCustomDifficultyNames: true,
 
 		show: {
 			avatar: true,
@@ -234,6 +235,8 @@ export const DEFAULT_CONFIG = {
 		download: false,
 	},
 	ppCurve: {
+		minAcc: 0.5,
+		maxAcc: 1,
 		startAcc: 0.6,
 		endAcc: 1,
 
@@ -267,7 +270,7 @@ export const DEFAULT_CONFIG = {
 		requirements: true,
 		scoresInCard: true,
 		starsInCard: true,
-		mapType: false,
+		mapTypeOnHover: true,
 	},
 
 	histogram: {

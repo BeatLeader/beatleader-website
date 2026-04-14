@@ -139,7 +139,7 @@
 
 		<ContentBox cls="stats-and-summary-box frosted">
 			<div class="stats-container darkened-background">
-				<LeaderboardStats {leaderboard} />
+				<LeaderboardStats {leaderboard} compact={true} />
 			</div>
 		</ContentBox>
 

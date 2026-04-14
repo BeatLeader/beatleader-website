@@ -488,6 +488,12 @@
 						</div>
 					{/if}
 
+					{#if mapType && isHovered && $configStore.mapCards.mapTypeOnHover}
+						<div transition:fly|local={{x: 40, duration: 300, y: 0}} class="map-type-description">
+							<MapTypeDescription type={mapType} />
+						</div>
+					{/if}
+
 					<a
 						on:click|preventDefault|stopPropagation={() => {
 							if (isSelectionInsideElement(mapCardElement, window.getSelection())) return;
@@ -523,9 +529,7 @@
 										<SongStatus {songStatus} />
 									{/each}
 								{/if}
-								{#if mapType && $configStore.mapCards.mapType}
-									<MapTypeDescription type={mapType} />
-								{/if}
+								
 							</div>
 						</div>
 					</a>
@@ -728,6 +732,25 @@
 	}
 
 	:global(.requirements-icons:has(> :nth-child(4))) {
+		width: 4em;
+	}
+
+	.map-type-description {
+		position: absolute;
+		top: 0em;
+		left: 7.5em;
+		width: 2em;
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: start;
+		align-items: center;
+		gap: 0.2em;
+		z-index: 2;
+		padding-top: 0.6em;
+		padding-left: 0.13em;
+	}
+
+	:global(.map-type-description:has(> :nth-child(4))) {
 		width: 4em;
 	}
 
@@ -1283,6 +1306,11 @@
 		}
 
 		.requirements-icons {
+			padding-top: 0.5em;
+			left: 0.4em;
+		}
+
+		.map-type-description {
 			padding-top: 0.5em;
 			left: 0.4em;
 		}

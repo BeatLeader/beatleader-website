@@ -297,7 +297,6 @@
 	$: playerId && fetchAchievements(playerId);
 	$: pinnedScoresStore.fetchScores(playerData?.playerId);
 	$: statsHistoryStore.fetchStats(playerData, $configStore.preferences.daysOfHistory);
-	$: showLoveLiveCongratulation(isMain, achievements, ssBadges, $configStore.preferences.loveLiveShown);
 	
 	$: editing = new URLSearchParams(location?.search).get('edit') ?? null;
 	$: playerPage && toggleRandomImageOnHover(playerPage, playerInfo?.clans?.filter(cl => cl.tag == 'SABA').length);

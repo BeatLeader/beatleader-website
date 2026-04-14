@@ -9,7 +9,6 @@
 	import Icons from '../Song/Icons.svelte';
 	import {formatDiffStatus, DifficultyStatus, wrapBLStatus} from '../../utils/beatleader/format';
 	import {dateFromUnix, formatDate, formatDateRelative} from '../../utils/date';
-	import MapRequirementDescription from './MapRequirementDescription.svelte';
 	import LeaderboardStats from './LeaderboardStats.svelte';
 	import {configStore} from '../../stores/config';
 	import SongStatus from './SongStatus.svelte';
@@ -19,6 +18,7 @@
 	import MapTriangleSmall from './MapTriangleSmall.svelte';
 	import TriangleMobilePopup from './TriangleMobilePopup.svelte';
 	import {BS_CDN} from '../../network/queues/beatleader/page-queue';
+	import MapTypeDescriptionMobile from '../Maps/List/MapTypeDescription.svelte';
 
 	export let leaderboard;
 	export let leaderboardStore;
@@ -87,8 +87,12 @@
 				src={coverUrl ? `${coverUrl}${shouldBlur && !isBlurred ? '?original=true' : ''}` : ''}
 				alt="Map cover"
 				style={shouldBlur ? 'cursor: pointer;' : ''}
-				on:click={() => (isBlurred = !isBlurred)}
-			/>
+				on:click={() => (isBlurred = !isBlurred)} />
+			{#if leaderboard?.stats?.type}
+				<div class="map-type-container-mobile mobile-only">
+					<MapTypeDescriptionMobile type={leaderboard?.stats.type} />
+				</div>
+			{/if}
 		</div>
 
 		<div class="main-container">
@@ -117,7 +121,7 @@
 
 						{#if $configStore?.leaderboardPreferences?.showStatsInHeader}
 							<div class="stats-container desktop-only">
-								<LeaderboardStats {leaderboard} />
+								<LeaderboardStats {leaderboard} compact={true} />
 							</div>
 						{/if}
 						{#if $configStore?.leaderboardPreferences?.showHashInHeader}
@@ -147,19 +151,14 @@
 			</div>
 			<div class="title-and-buttons desktop-only">
 				<div class="header-triangle-part">
-					<h2 class="title is-6" style="display: contents;">
-						{#if leaderboard.stats && leaderboard.stats.passRating}
+					{#if leaderboard.stats && leaderboard.stats.passRating}
+						<div class="triangle-container">
 							<MapTriangle width="8em" height="8em" mapRating={ratings ?? leaderboard.stats} showRatings={true} />
-						{/if}
-					</h2>
-					{#if leaderboard?.stats?.requirements || leaderboard?.stats?.type}
-						<div class="requirements">
-							{#if leaderboard?.stats?.type}
-								<MapTypeDescription type={leaderboard?.stats.type} />
-							{/if}
-							{#if leaderboard?.stats?.requirements}
-								<MapRequirementDescription type={leaderboard?.stats.requirements} />
-							{/if}
+						</div>
+					{/if}
+					{#if leaderboard?.stats?.type}
+						<div class="map-type-container">
+							<MapTypeDescription type={leaderboard?.stats.type} />
 						</div>
 					{/if}
 				</div>
@@ -203,7 +202,7 @@
 
 	{#if $configStore?.leaderboardPreferences?.showStatsInHeader}
 		<div class="stats-container mobile-only">
-			<LeaderboardStats {leaderboard} />
+			<LeaderboardStats {leaderboard} compact={true} />
 		</div>
 	{/if}
 	{#if $configStore?.leaderboardPreferences?.showHashInHeader}
@@ -316,6 +315,7 @@
 		border-radius: 8px;
 		z-index: 1;
 		overflow: hidden;
+		position: relative;
 	}
 
 	.map-cover {
@@ -376,6 +376,7 @@
 		align-items: center;
 		flex: 1;
 		z-index: 1;
+		gap: 0.1em;
 	}
 
 	.header-top-part {
@@ -468,16 +469,37 @@
 		font-family: inherit;
 	}
 
-	.requirements {
+	.header-triangle-part:not(:has(.triangle-container)) .map-type-container {
+		justify-content: end;
+		min-width: 9.8em;
+		margin-right: -0.5em;
+	}
+
+	.map-type-container {
 		display: flex;
 		flex-wrap: wrap;
 		justify-content: center;
 		align-items: center;
 		gap: 0.2em;
 		row-gap: 0.5em;
-		padding-top: 0.7em;
-		padding-bottom: 0.7em;
 		max-width: 11em;
+	}
+
+	.map-type-container-mobile {
+		display: flex;
+		position: absolute;
+		flex-wrap: wrap;
+		justify-content: end;
+		align-items: center;
+		gap: 0.2em;
+		row-gap: 0.5em;
+		right: 0.2em;
+		max-width: 2em;
+		top: 0.2em;
+	}
+
+	.stats-container {
+		justify-content: flex-start !important;
 	}
 
 	header small {

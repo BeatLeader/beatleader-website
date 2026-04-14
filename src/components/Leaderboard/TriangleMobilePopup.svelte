@@ -1,6 +1,5 @@
 <script>
 	import MapTriangle from '../Common/MapTriangle.svelte';
-	import MapRequirementDescription from './MapRequirementDescription.svelte';
 	import MapTypeDescription from './MapTypeDescription.svelte';
 
 	export let leaderboard;
@@ -17,9 +16,6 @@
 		<div class="requirements">
 			{#if leaderboard?.stats?.type}
 				<MapTypeDescription type={leaderboard?.stats.type} />
-			{/if}
-			{#if leaderboard?.stats?.requirements}
-				<MapRequirementDescription type={leaderboard?.stats.requirements} />
 			{/if}
 		</div>
 	{/if}

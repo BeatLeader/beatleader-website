@@ -1426,7 +1426,7 @@
 				</div>
 
 				{#if isCategoryFilterOpen}
-					<div class="dropdown-content" transition:fade>
+					<div class="dropdown-content category-filter" transition:fade>
 						<Select
 							bind:value={currentFilters.allTypes}
 							on:change={() => onCategoryModeChanged()}
@@ -1456,7 +1456,7 @@
 				</div>
 
 				{#if isRequirementsFilterOpen}
-					<div class="dropdown-content" transition:fade>
+					<div class="dropdown-content category-filter" transition:fade>
 						<Select
 							bind:value={currentFilters.allRequirements}
 							on:change={() => onCategoryModeChanged()}
@@ -1709,6 +1709,12 @@
 		cursor: pointer;
 	}
 
+	.category-filter {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5em;
+	}
+
 	article {
 		width: calc(100% - 25em);
 		overflow-x: hidden;
@@ -1784,15 +1790,6 @@
 
 	aside :global(.switch-types) {
 		justify-content: flex-start;
-	}
-
-	aside :global(.switch-types .icon) {
-		width: 1.8em !important;
-		margin-left: -0.4em !important;
-	}
-
-	aside h2:not(:first-of-type) {
-		margin-top: 1.5em;
 	}
 
 	aside :global(.rangeSlider.pip-labels) {
@@ -2004,7 +2001,7 @@
 
 	.no-maps-found {
 		width: 70vw;
-		height: 100%;
+		height: 80vh;
 		text-align: center;
 		align-content: center;
 	}

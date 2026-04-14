@@ -79,6 +79,8 @@
 
 	const starGeneratorStore = createStarGeneratorStore();
 
+	let fullLeaderboard = null;
+
 	$: leaderboard = songScore?.leaderboard ?? null;
 	$: score = songScore?.score ?? null;
 	$: fetchBeatSavior(songScore);
@@ -101,9 +103,9 @@
 {#if songScore}
 	<section class="details">
 		{#if beatSavior}
-			{#if $configStore?.scoreDetailsPreferences?.showMapInfo}
+			{#if $configStore?.scoreDetailsPreferences?.showMapInfo && fullLeaderboard}
 				<div class="tab">
-					<LeaderboardStats {leaderboard} />
+					<LeaderboardStats leaderboard={fullLeaderboard} compact={true} />
 				</div>
 			{/if}
 			<div class="stats-grid">
@@ -141,7 +143,8 @@
 					withoutDiffSwitcher={true}
 					withoutHeader={true}
 					{fixedBrowserTitle}
-					higlightedScore={score} />
+					higlightedScore={score}
+					on:leaderboard-fetched={(e) => fullLeaderboard = e?.detail} />
 			</div>
 		{/if}
 		{#if $configStore?.scoreDetailsPreferences?.showHistory && !noSsLeaderboard}

@@ -490,20 +490,20 @@
 
 <section class="chart" style="--height: {height}px">
 	<canvas class="chartjs" bind:this={canvas} {height} />
+	<div class="chart-toggle-unranked {supporter ? '' : 'disabled-toggle'}">
+		<Switch
+			value={showUnrankedMapsOnGraph}
+			label="Show unranked"
+			title={supporter ? 'Show all maps with stars on them' : 'Subscribe to BeatLeader Patreon to have ratings on all maps'}
+			fontSize={12}
+			design="slider"
+			on:click={() => {
+				if (supporter) boolflip('showUnrankedMapsOnGraph');
+			}} />
+	</div>
 	{#if isLoading}
 		<Spinner width="10em" height="10em" />
 	{:else if !selectedPlaylist}
-		<div class="chart-toggle-unranked {supporter ? '' : 'disabled-toggle'}">
-			<Switch
-				value={showUnrankedMapsOnGraph}
-				label="Show unranked"
-				title={supporter ? 'Show all maps with stars on them' : 'Subscribe to BeatLeader Patreon to have ratings on all maps'}
-				fontSize={12}
-				design="slider"
-				on:click={() => {
-					if (supporter) boolflip('showUnrankedMapsOnGraph');
-				}} />
-		</div>
 		<Button
 			cls="chart-new-playlist"
 			iconFa="fas fa-plus-square"

@@ -330,6 +330,7 @@
 	$: showGraph = $configStore?.leaderboardPreferences?.showGraphOption ?? false;
 	$: showAccGraph = $configStore?.leaderboardPreferences?.showAccGraph ?? false;
 	$: alwaysShowAuthorHint = $configStore?.leaderboardPreferences?.alwaysShowAuthorHint ?? false;
+	$: showCustomDifficultyNames = $configStore?.leaderboardPreferences?.showCustomDifficultyNames ?? true;
 
 	$: showClanInHeader = $configStore?.leaderboardPreferences?.showClanCaptureInHeader ?? false;
 	$: showClanInList = $configStore?.leaderboardPreferences?.showClanCaptureInList ?? false;
@@ -485,6 +486,14 @@
 							fontSize={12}
 							design="slider"
 							on:click={() => configStore.settempsetting('leaderboardPreferences', 'showClanCaptureInList', !showClanInList)} />
+					</div>
+					<div title="Show custom difficulty names">
+						<Switch
+							value={showCustomDifficultyNames}
+							label="Show custom difficulty names"
+							fontSize={12}
+							design="slider"
+							on:click={() => configStore.settempsetting('leaderboardPreferences', 'showCustomDifficultyNames', !showCustomDifficultyNames)} />
 					</div>
 				</div>
 			</section>

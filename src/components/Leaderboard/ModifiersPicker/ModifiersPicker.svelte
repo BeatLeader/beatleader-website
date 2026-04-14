@@ -3,50 +3,74 @@
 	import {deepClone} from '../../../utils/js';
 	import Button from '../../Common/Button.svelte';
 	import DialogContent from '../../Common/DialogContent.svelte';
-	import Switch from '../../Common/Switch.svelte';
+	import Select from '../../Settings/Select.svelte';
 
 	export let selected = '';
 	export let onchange;
 	export let oncancel;
 
-	let any = false;
-	let none = false;
-	let not = false;
+	let include = true;
+	let exclusive = true;
 	let modifiers = deepClone(ModifiersList.filter(m => !m.hideInFilter));
+	let selectedModifiers = [];
+	let hasState = false;
+
+	function setAllModifiersSelected(selected) {
+		modifiers.forEach(m => (m.selected = selected));
+		modifiers = modifiers;
+	}
+
+	function resetState() {
+		include = true;
+		exclusive = true;
+		setAllModifiersSelected(false);
+	}
 
 	function selectDefault(selected) {
+		resetState();
+
 		if (!selected) return;
 
-		selected.split(',').forEach(element => {
+		var elements = selected.split(',').filter(Boolean);
+
+		if (elements.includes('none')) {
+			include = false;
+			exclusive = false;
+			setAllModifiersSelected(true);
+			return;
+		}
+
+		elements.forEach(element => {
 			var modifier = modifiers.find(m => m.id == element);
 			if (modifier) {
 				modifier.selected = true;
 			}
 
-			if (element == 'any') {
-				any = true;
+			if (element == 'not') {
+				include = false;
 			}
 
-			if (element == 'none') {
-				none = true;
-			}
-			if (element == 'not') {
-				not = true;
+			if (element == 'any') {
+				exclusive = false;
 			}
 		});
+
+		modifiers = modifiers;
 	}
 
 	function modifiersUpdated(save) {
 		if (save) {
 			var selectedModifiers = modifiers.filter(m => m.selected).map(m => m.id);
-			if (any) {
+			if (!include && !exclusive && selectedModifiers.length == modifiers.length) {
+				onchange('none');
+				return;
+			}
+
+			if (!exclusive) {
 				selectedModifiers.push('any');
 			}
 
-			if (none) {
-				selectedModifiers.push('none');
-			}
-			if (not) {
+			if (!include) {
 				selectedModifiers.push('not');
 			}
 
@@ -58,12 +82,16 @@
 	}
 
 	function reset() {
-		modifiers.forEach(m => (m.selected = false));
-		modifiers = modifiers;
+		resetState();
+	}
+
+	function selectAll() {
+		setAllModifiersSelected(true);
 	}
 
 	$: selectDefault(selected);
-	$: hasState = modifiers.find(m => m.selected);
+	$: selectedModifiers = modifiers.filter(m => m.selected);
+	$: hasState = !!selectedModifiers.length || !include || !exclusive;
 </script>
 
 <div class="dialog-container">
@@ -77,49 +105,43 @@
 		on:cancel={() => modifiersUpdated(false)}>
 		<div slot="content">
 			<div class="switch-container">
-				<Switch
-					value={none}
-					label="Hide all"
-					title="Hide ALL scores with modifiers"
-					fontSize={16}
-					design="slider"
-					on:click={() => (none = !none)} />
-				{#if !none}
-					{#if !not}
-						<Switch
-							value={any}
-							label="Any selected"
-							title="Show score with ANY selected modifier"
-							fontSize={16}
-							design="slider"
-							on:click={() => (any = !any)} />
-					{/if}
-					<Switch
-						value={not}
-						label="Exclude selected"
-						title="Show score without ANY selected modifier"
-						fontSize={16}
-						design="slider"
-						on:click={() => (not = !not)} />
-				{/if}
+				Scores
+				<Select
+					bind:value={include}
+					fontSize="0.8"
+					options={[
+						{name: 'with', value: true},
+						{name: 'without', value: false},
+					]} />
+				<Select
+					bind:value={exclusive}
+					fontSize="0.8"
+					options={[
+						{name: 'all', value: true},
+						{name: 'any', value: false},
+					]} />
+				selected modifiers
 			</div>
-			{#if !none}
-				<div class="modifiers-list">
-					{#each modifiers as modifier}
-						<div
-							class="modifier {modifier.selected ? 'selected' : ''}"
-							on:click={() => (modifier.selected = !modifier.selected)}
-							on:keypress={() => (modifier.selected = !modifier.selected)}>
-							<span class="modifier-title"><i>{modifier.name}</i> </span>
-							<img src={'/assets/' + modifier.icon} alt={modifier.name + ' icon'} class="modifier-icon" />
-						</div>
-					{/each}
-				</div>
-				{#if hasState}
-					<div class="reset-button">
-						<Button label="Reset" title="Unselect all modifiers" on:click={() => reset()} />
+			<div class="modifiers-list">
+				{#each modifiers as modifier}
+					<div
+						class="modifier {modifier.selected ? 'selected' : ''}"
+						on:click={() => (modifier.selected = !modifier.selected)}
+						on:keypress={() => (modifier.selected = !modifier.selected)}>
+						<span class="modifier-title"><i>{modifier.name}</i> </span>
+						<img src={'/assets/' + modifier.icon} alt={modifier.name + ' icon'} class="modifier-icon" />
 					</div>
-				{/if}
+				{/each}
+			</div>
+			{#if hasState}
+				<div class="reset-button">
+					<Button label="Reset" title="Unselect all modifiers" on:click={() => reset()} />
+				</div>
+			{/if}
+			{#if selectedModifiers.length != modifiers.length}
+				<div class="reset-button">
+					<Button label="Select all" title="Select all modifiers" on:click={() => selectAll()} />
+				</div>
 			{/if}
 		</div>
 	</DialogContent>
@@ -183,7 +205,8 @@
 		right: 1em;
 		top: 1.3em;
 		display: flex;
-		grid-gap: 1em;
+		grid-gap: 0.4em;
+		align-items: center;
 	}
 
 	.reset-button {

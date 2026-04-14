@@ -29,6 +29,7 @@
 	import Socials from './Bio/Socials.svelte';
 	import Snow from '../Common/Snow.svelte';
 	import Cat from '../Common/Cat.svelte';
+	import ExperienceBlock from './Profile/ExperienceBlock.svelte';
 
 	export let playerData;
 	export let isLoading = false;
@@ -214,7 +215,7 @@
 	$: name = playerData && playerData.name ? playerData.name : null;
 	$: ({playerInfo, scoresStats, accBadges, ssBadges} = processPlayerData(playerData));
 	$: updateRoles(playerInfo?.role ?? null);
-
+	$: isMain = playerId && $account?.id === playerId;
 	$: isAdmin = $account?.player?.role?.includes('admin');
 	$: profileAppearance = playerData?.profileSettings?.profileAppearance;
 	$: cover = !$editModel?.avatarOverlayEdit && ($editModel ? $editModel?.data?.profileCover : playerData?.profileSettings?.profileCover);
@@ -414,20 +415,7 @@
 	</div>
 </ContentBox>
 
-<!-- <ContentBox>
-	<div class="experience-container">
-		<div class="experience-icon-and-level">
-			<img src="/assets/level1.png" alt="Level" />
-			<span>Level: <b>{2}</b></span>
-		</div>
-		<div class="experience-bar-and-progress">
-			<div class="experience-bar">
-				<div class="experience-bar-fill" style="width: {323 / 1000 * 100}%"></div>
-			</div>
-			<span><b>{323}</b></span>
-		</div>
-	</div>
-</ContentBox> -->
+<ExperienceBlock {playerInfo} canPrestige={isMain} />
 
 <SummaryBox {playerId} {playerData} {scoresStats} {accBadges} {skeleton} {profileAppearance} {ssBadges} bind:editModel={$editModel} />
 
@@ -549,43 +537,6 @@
 		width: 110%;
 		z-index: -1;
 		height: 110%;
-	}
-
-	.experience-container {
-		display: flex;
-		justify-content: center;
-		gap: 1em;
-	}
-
-	.experience-icon-and-level {
-		display: flex;
-		align-items: center;
-		gap: 0.5em;
-	}
-
-	.experience-bar-and-progress {
-		display: flex;
-		align-items: center;
-		gap: 0.5em;
-	}
-
-	.experience-bar {
-		width: 100%;
-		height: 10px;
-		background-color: #0000004f;
-		border-radius: 5px;
-	}
-
-	.experience-bar-fill {
-		height: 100%;
-		background-color: #0000004f;
-		border-radius: 5px;
-	}
-
-	.experience-bar-fill-fill {
-		height: 100%;
-		background-color: #0000004f;
-		border-radius: 5px;
 	}
 
 	:global(.shareButton) {

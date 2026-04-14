@@ -72,6 +72,7 @@
 	import LeaderboardAsideBox from '../components/Common/AsideBox.svelte';
 	import LeaderboardDevMenu from '../components/Leaderboard/LeaderboardDevMenu.svelte';
 	import {GLOBAL_LEADERBOARD_TYPE} from '../utils/format';
+	import LeaderboardDetails from '../components/Leaderboard/Details/LeaderboardDetails.svelte';
 
 	export let leaderboardId;
 	export let type = 'global';
@@ -82,7 +83,6 @@
 	export let withoutHeader = false;
 	export let fixedBrowserTitle = null;
 	export let higlightedScore = null;
-	export let iconsInInfo = false;
 	export let noReplayInLeaderboard = false;
 	export let separatePage = false;
 
@@ -185,6 +185,11 @@
 	let modifiedTech = null;
 	let modifiedStars = null;
 	let selectedModifiers = [];
+
+	function leaderboardFetched(leaderboard) {
+		if (!leaderboard) return;
+		dispatch('leaderboard-fetched', leaderboard);
+	}
 
 	function initRatings(leaderboard) {
 		modifiedPass = leaderboard?.stats?.passRating;
@@ -348,6 +353,22 @@
 		changeParams(currentLeaderboardId, currentType, 1, currentFilters, !dontNavigate, false);
 	}
 
+	function formatCustomDifficultyName(diff) {
+		var result = diff.customDifficultyName;
+		if (result.length > 25) {
+			result = result.substring(0, 20) + '...';
+		}
+		return result.replaceAll('\n', ' ');
+	}
+
+	function customDifficultyTooltip(diff) {
+		if (!diff.customDifficultyName || !$configStore.leaderboardPreferences.showCustomDifficultyNames) return null;
+		if (diff.customDifficultyName.length > 20) {
+			return `${diff.name} (${diff.customDifficultyName})`;
+		}
+		return diff.name;
+	}
+
 	function processDiffs(diffArray, song, leaderboardId) {
 		if (!diffArray?.length || !song) return {};
 
@@ -398,8 +419,9 @@
 					...d,
 					color: starsToBackgroundColor(d, $configStore),
 					textColor: starsToColor(d, $configStore),
-					label: d.name + (d.stars ? '\n' + d.stars.toFixed(1) + '★' : ''),
-					cls: 'diff-tab-button',
+					label: (d.customDifficultyName && $configStore.leaderboardPreferences.showCustomDifficultyNames ? formatCustomDifficultyName(d) : d.name) + (d.stars ? '\n' + d.stars.toFixed(1) + '★' : ''),
+					cls: 'diff-tab-button' + (d.customDifficultyName && $configStore.leaderboardPreferences.showCustomDifficultyNames ? ' custom-difficulty' : ''),
+					title: d.customDifficultyName && $configStore.leaderboardPreferences.showCustomDifficultyNames ? customDifficultyTooltip(d) : null,
 					url: `/leaderboard/${currentType}/${d.leaderboardId}`,
 				});
 			}
@@ -760,6 +782,7 @@
 	$: clanRankingList = $leaderboardStore?.clanRanking;
 	$: leaderboard = $leaderboardStore?.leaderboard;
 	$: song = $leaderboardStore?.leaderboard?.song;
+	$: leaderboardFetched(leaderboard);
 
 	$: initRatings(leaderboard);
 
@@ -1103,11 +1126,7 @@
 				{#if !separatePage}
 					{#if showStats && leaderboard?.stats}
 						<div class="stats-with-icons">
-							<LeaderboardStats {leaderboard} />
-
-							{#if iconsInInfo}
-								<Icons {song} {diffInfo} mapCheck={true} />
-							{/if}
+							<LeaderboardStats {leaderboard} compact={true} />
 						</div>
 					{/if}
 				{/if}
@@ -1200,16 +1219,10 @@
 				<LeaderboardAsideBox title="Map Details" faicon="fas fa-magnifying-glass" boolname="leaderboardStatsShown">
 					{#if leaderboard?.stats}
 						<div class="stats-with-icons">
-							<PredictedAccGraph {leaderboard} {selectedModifiers} />
-							{#if !$configStore?.leaderboardPreferences?.showStatsInHeader}
-								<LeaderboardStats {leaderboard} />
-							{/if}
+							<LeaderboardDetails {leaderboard} {selectedModifiers}  />
+							
 							{#if $configStore?.leaderboardPreferences?.showDevMenu}
 								<LeaderboardDevMenu {leaderboard} {song} />
-							{/if}
-
-							{#if iconsInInfo}
-								<Icons {song} {diffInfo} mapCheck={true} />
 							{/if}
 						</div>
 					{/if}
@@ -1352,6 +1365,10 @@
 		border-radius: 12px 12px 0 0 !important;
 		min-width: 7em;
 		max-width: 7em;
+	}
+
+	:global(.diff-tab-button.custom-difficulty) {
+		max-width: unset;
 	}
 
 	:global(.diff-tab-button span) {
@@ -1619,6 +1636,10 @@
 
 		:global(.diff-tab-button span) {
 			font-size: 0.85em;
+		}
+
+		:global(.diff-tab-button.custom-difficulty span) {
+			font-size: 0.7em;
 		}
 
 		:global(.mode-tab-button) {

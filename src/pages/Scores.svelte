@@ -67,6 +67,7 @@
 	import SongScore from '../components/Player/SongScore.svelte';
 	import Error from '../components/Common/Error.svelte';
 	import ConfigBoundsRange from '../components/Common/ConfigBoundsRange.svelte';
+	import ModifiersPicker from '../components/Leaderboard/ModifiersPicker/ModifiersPickerCompact.svelte';
 
 	export let page = 1;
 	export let location;
@@ -443,6 +444,12 @@
 		navigateToCurrentPageAndFilters();
 	}
 
+	function onModifiersChanged(event) {
+		currentFilters.modifiers = event;
+		currentPage = 1;
+		navigateToCurrentPageAndFilters();
+	}
+
 	var showAllRatings = false;
 
 	function updateProfileSettings(account) {
@@ -590,6 +597,8 @@
 		currentFilters.techrating_from ||
 		currentFilters.techrating_to		
 	);
+
+	let isModifiersFilterOpen = !!currentFilters.modifiers;
 
 	let isAccFilterOpen = !!(currentFilters.acc_from || currentFilters.acc_to);
 
@@ -1064,6 +1073,28 @@
 							on:change={e => debouncedOnStarsChanged(e, 'techrating')}
 							disabled={starFiltersDisabled} />
 					</section>
+				{/if}
+			</section>
+
+			<section class="filter dropdown-filter" class:has-value={!!currentFilters.mapType}>
+				<div class="dropdown-header" on:click={() => (isModifiersFilterOpen = !isModifiersFilterOpen)}>
+					<div class="header-content">
+						<i class="fas fa-tags" />
+						<span>Modifiers-</span>
+					</div>
+					<i class="fas fa-chevron-{isModifiersFilterOpen ? 'up' : 'down'}" />
+				</div>
+
+				{#if isModifiersFilterOpen}
+					<div class="dropdown-content" transition:fade>
+						<ModifiersPicker
+							selected={currentFilters.modifiers}
+							onchange={e => onModifiersChanged(e)}
+							oncancel={() => {
+								currentFilters.modifiers = null;
+								modifiersChanged();
+							}} />
+					</div>
 				{/if}
 			</section>
 
