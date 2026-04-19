@@ -268,7 +268,7 @@
 						<label class="mobile-only">S!</label>
 					</div>
 				</div>
-			{:else if $rewindTimer.hours > 2}
+			{:else if $rewindTimer.hours < -2}
 				<span class="replayed-link-text desktop-only">2025 BeastSaber Awards Premiered!</span>
 				<span class="replayed-link-text mobile-only">Mapping Awards OUT!</span>
 			{:else}
