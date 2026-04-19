@@ -12031,7 +12031,7 @@ select {
 	height: 100% !important;
 	background-size: cover !important;
 	background-repeat: no-repeat !important;
-	background-image: url('./acc.svg') !important;
+	background-image: url('./seal.svg') !important;
 }
 
 .tech-icon {
@@ -12039,7 +12039,7 @@ select {
 	height: 100% !important;
 	background-size: cover !important;
 	background-repeat: no-repeat !important;
-	background-image: url('./tech.svg') !important;
+	background-image: url('./snek.svg') !important;
 }
 
 .midspeed-icon {

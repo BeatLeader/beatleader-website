@@ -1130,7 +1130,7 @@ export const requirementsDescription = {
 		title: 'Map requires Vivify mod (new modcharts)',
 		name: 'Vivify',
 		icon: 'fas fa-mountain-city',
-		foregroundColor: '#ffd43b',
+		foregroundColor: '#004658',
 		textColor: 'white',
 	},
 	chroma: {
@@ -1144,7 +1144,7 @@ export const requirementsDescription = {
 		title: 'Map requires Noodle Extensions mod (modcharts)',
 		name: 'Noodle Extensions',
 		icon: 'fas fa-mountain-sun',
-		foregroundColor: 'yellow',
+		foregroundColor: '#006fa4',
 		textColor: 'white',
 	},
 	mappingExtensions: {
