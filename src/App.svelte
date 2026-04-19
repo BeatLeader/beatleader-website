@@ -238,38 +238,41 @@
 			}}><i class="fas fa-xmark" /></button>
 	</div>
 {/if}-->
-<!-- {#if $rewindTimer && $configStore.preferences.beastiesbanner2025}
+{#if $rewindTimer && $configStore.preferences.beastiesbanner2026}
 	<div class="rewindbanner">
-		<a class="reelink" href="https://youtu.be/u7CJoYyRVWg" />
+		<a class="reelink" href="https://www.youtube.com/live/tZpEPTaWuxA" />
 		<div class="banner-spacer" />
 		<img class="cc-cover-1" src="/assets/beastsabericonbig.webp" />
 
 		<div class="rewind-text-and-timer">
 			{#if $rewindTimer.seconds > 0}
-				<span class="replayed-link-text desktop-only">2024 BeastSaber Awards in</span>
+				<span class="replayed-link-text desktop-only">2025 BeastSaber Awards in</span>
 				<span class="replayed-link-text mobile-only">Mapping Awards in</span>
 
 				<div class="timer">
 					<div class="rewind-time">
 						<span>{padNumber($rewindTimer.hours)}</span>
-						<label class="desktop-only">Hours</label>
+						<label class="desktop-only">Hour{$rewindTimer.hours > 1 ? 's' : ''}</label>
 						<label class="mobile-only">H</label>
 					</div>
 
 					<div class="rewind-time">
 						<span>{padNumber($rewindTimer.minutes)}</span>
-						<label class="desktop-only">Minutes</label>
+						<label class="desktop-only">Minute{$rewindTimer.minutes > 1 ? 's' : ''}</label>
 						<label class="mobile-only">M</label>
 					</div>
 
 					<div class="rewind-time">
 						<span>{padNumber(parseInt($rewindTimer.seconds, 10))}</span>
-						<label class="desktop-only">Seconds!</label>
+						<label class="desktop-only">Second{$rewindTimer.seconds > 1 ? 's' : ''}!</label>
 						<label class="mobile-only">S!</label>
 					</div>
 				</div>
+			{:else if $rewindTimer.hours > 2}
+				<span class="replayed-link-text desktop-only">2025 BeastSaber Awards Premiered!</span>
+				<span class="replayed-link-text mobile-only">Mapping Awards OUT!</span>
 			{:else}
-				<span class="replayed-link-text desktop-only">2024 BeastSaber Awards NOW! 🔴</span>
+				<span class="replayed-link-text desktop-only">2025 BeastSaber Awards NOW! 🔴</span>
 				<span class="replayed-link-text mobile-only">Mapping Awards NOW! 🔴</span>
 			{/if}
 		</div>
@@ -280,11 +283,11 @@
 			title="Hide banner"
 			on:click|preventDefault|stopPropagation={() => {
 				$configStore = produce($configStore, draft => {
-					draft.preferences.beastiesbanner2025 = false;
+					draft.preferences.beastiesbanner2026 = false;
 				});
 			}}><i class="fas fa-xmark" /></button>
 	</div>
-{/if} -->
+{/if}
 <Router {url}>
 	<Nav class={$configStore?.preferences?.theme} {openModal} {closeModal} />
 	<Notifications zIndex={10000} item={NotificationComponent}>

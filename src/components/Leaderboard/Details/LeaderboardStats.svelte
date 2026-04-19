@@ -223,7 +223,9 @@
 					{/if}
 					{#if diff.multiRating}
 						<div>
-							<span>|</span>
+							{#if diff.linearPercentage}
+								<span>|</span>
+							{/if}
 							<FaSvgIcon src="/assets/multirating.svg" cls="custom-icon" /> Multi Hits:
 							<strong>
 								<Value value={diff.multiRating * 100} title="Percentage of multi note hits in a map" digits={2} />%
@@ -236,7 +238,9 @@
 			{#if compact && hasExpandableStats}
 				<button
 					type="button"
-					class="stats-toggle {showAllStats ? 'opened' : ''} {leaderboard?.stats?.requirements || diff.mapVersion ? 'has-expandable-stats' : ''}"
+					class="stats-toggle {showAllStats ? 'opened' : ''} {leaderboard?.stats?.requirements || diff.mapVersion
+						? 'has-expandable-stats'
+						: ''}"
 					on:click={() => (showAllStats = !showAllStats)}
 					title={showAllStats ? 'Hide full stats' : 'Show full stats'}
 					aria-label={showAllStats ? 'Hide full stats' : 'Show full stats'}

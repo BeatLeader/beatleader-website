@@ -17,19 +17,17 @@
 	let showConfetti = false;
 
 	function prestige() {
-		// fetch(`${BL_API_URL}experience/prestige`, {method: 'POST', credentials: 'include'})
-		// 	.then(response => response.json())
-		// 	.then(data => {
-		// 		if (data.prestige > playerInfo?.prestige) {
-					
+		fetch(`${BL_API_URL}experience/prestige`, {credentials: 'include'})
+			.then(response => {
+				if (response.status === 200) {
 					animationPlayer && animationPlayer.play();
 
 					setTimeout(() => {
 						showConfetti = true;
 						prestiged = true;
 					}, 2000);
-			// 	}
-			// });
+				}
+			});
 	}
 </script>
 
@@ -72,7 +70,7 @@
 					</div>
 				{/await}
 				<div class="prestige-description">
-					<span style="z-index: 1;"><b>Current Prestige: { prestiged ? playerInfo?.prestige + 1 : playerInfo?.prestige}</b></span><br />
+					<span style="z-index: 1;"><b>Current Prestige: {prestiged ? playerInfo?.prestige + 1 : playerInfo?.prestige}</b></span><br />
 					{#if !prestiged}
 						<div class="prestige-button">
 							<Button
