@@ -1,35 +1,26 @@
 <script>
 	import ContentBox from '../../Common/ContentBox.svelte';
-	import {BL_API_URL} from '../../../network/queues/beatleader/api-queue';
 	import ToolTip from '../../Common/ToolTip.svelte';
 	import Button from '../../Common/Button.svelte';
-    import {getContext} from 'svelte';
-    import PrestigeDialog from './PrestigeDialog.svelte';
+	import {getContext} from 'svelte';
+	import PrestigeDialog from './PrestigeDialog.svelte';
+	import prestigeDescriptionsStore from '../../../stores/beatleader/prestige-descriptions';
 
 	export let playerInfo;
 	export let canPrestige = false;
 
-    const {open, close} = getContext('simple-modal');
-	let prestigeDescriptions = null;
-
-	function fetchPrestigeDescriptions() {
-		fetch(BL_API_URL + `experience/levels`)
-			.then(response => response.json())
-			.then(data => {
-				prestigeDescriptions = data;
-			});
-	}
+	const {open, close} = getContext('simple-modal');
 
 	let currentPrestigeDescription = null;
 	let requiredExperience = 0;
 
 	let experienceTooltip = null;
 	function getCurrentPrestigeDescription(playerInfo) {
-		if (!prestigeDescriptions) {
+		if (!$prestigeDescriptionsStore) {
 			currentPrestigeDescription = null;
 			return;
 		}
-		currentPrestigeDescription = prestigeDescriptions.find(prestige => prestige.level === playerInfo?.prestige);
+		currentPrestigeDescription = $prestigeDescriptionsStore.find(prestige => prestige.level === playerInfo?.prestige);
 
 		let baseExp = 500;
 		let incExp = 50;
@@ -64,11 +55,10 @@
 		});
 	}
 
-	$: !prestigeDescriptions && fetchPrestigeDescriptions();
-	$: prestigeDescriptions && playerInfo && getCurrentPrestigeDescription(playerInfo);
+	$: $prestigeDescriptionsStore && playerInfo && getCurrentPrestigeDescription(playerInfo);
 </script>
 
-{#if prestigeDescriptions && (playerInfo?.level || playerInfo?.experience || playerInfo?.prestige)}
+{#if $prestigeDescriptionsStore && (playerInfo?.level || playerInfo?.experience || playerInfo?.prestige)}
 	<ContentBox>
 		<div class="experience-container">
 			<div class="experience-icon-and-level">
@@ -83,14 +73,14 @@
 					<div class="experience-bar" class:max-level={playerInfo?.level >= 100}>
 						<div
 							class="experience-bar-fill"
-							style="width: {playerInfo?.level < 100 ? (playerInfo?.experience / requiredExperience) * 100 : 100}%">
+							style="width: {playerInfo?.level < 100 ? (playerInfo?.experience / requiredExperience) * 100 : 100}%; background-color: {currentPrestigeDescription?.color ?? 'var(--ppColour)'};">
 						</div>
 					</div>
 				</ToolTip>
 			</div>
 			{#if playerInfo?.level < 100}
 				<div class="experience-level">
-					<b>{playerInfo?.level}</b>
+					<b>{playerInfo?.level + 1}</b>
 				</div>
 			{:else if canPrestige}
 				<div class="prestige-button">
@@ -187,7 +177,6 @@
 
 	.experience-bar-fill {
 		height: 100%;
-		background-color: var(--ppColour);
 		opacity: 0.8;
 		border-radius: 5px;
 		position: relative;

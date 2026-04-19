@@ -15,7 +15,7 @@ export const SORT_BY_VALUES = [
 	{value: 'accRating', name: 'Acc rating', title: 'Sort by acc rating', icon: 'fa-crosshairs'},
 	{value: 'passRating', name: 'Pass rating', title: 'Sort by pass rating', icon: 'fa-person-walking-dashed-line-arrow-right'},
 	{value: 'techRating', name: 'Tech rating', title: 'Sort by tech rating', icon: 'fa-arrows-split-up-and-left'},
-	{value: 'multiRating', name: 'Multi rating', title: 'Sort by multi rating', icon: 'fa-diagram-project'},
+	{value: 'multiRating', name: 'Multi hits', title: 'Sort by percentage of multi note hits', icon: 'fa-diagram-project'},
 	{value: 'linearPercentage', name: 'Linear %', title: 'Sort by map linearity ratio', icon: 'linear-icon'},
 	// {value: 'voteratio', name: 'Vote ratio', title: 'Sort by vote ratio', icon: 'fa-smile-beam'},
 	// {value: 'votecount', name: 'Vote count', title: 'Sort by amount of votes for the map', icon: 'fa-calculator'},

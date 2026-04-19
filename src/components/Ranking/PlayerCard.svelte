@@ -199,6 +199,8 @@
 				<div>
 					{#if valueProps.isText}
 						{value}
+					{:else if valueProps.component}
+						<svelte:component this={valueProps.component} {value} />
 					{:else}
 						<Value {value} {...valueProps} />
 					{/if}
@@ -221,6 +223,8 @@
 			<div>
 				{#if valueProps.isText}
 					{value}
+				{:else if valueProps.component}
+					<svelte:component this={valueProps.component} {value} />
 				{:else}
 					<Value {value} {...valueProps} />
 				{/if}

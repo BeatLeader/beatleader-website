@@ -433,7 +433,6 @@ export const getPerformanceBadge = (def, score, improvements, beatSavior, modifi
 		case 'experience':
 			title = isDemo ? 'Click to setup' : `${score?.[metric] ?? 0} experience`;
 			className = 'beatSavior';
-			icon = 'fa-solid fa-award';
 
 			componentProps = {
 				onlyLabel: true,
@@ -446,7 +445,7 @@ export const getPerformanceBadge = (def, score, improvements, beatSavior, modifi
 				value: score?.[metric],
 				inline: true,
 				digits: 0,
-				suffix: ``,
+				suffix: `xp`,
 			};
 			break;
 

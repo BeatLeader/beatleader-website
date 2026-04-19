@@ -45,6 +45,7 @@
 	const HIGHLIGHT_EPSILON = 0.000001;
 	const SCRUB_THRESHOLD_PX = 4;
 	const SCRUB_PIXELS_PER_STEP = 14;
+	const CHART_CLICKABLE_INSET_PX = 2;
 
 	const highlightedPointPlugin = {
 		id: 'highlightedPoint',
@@ -206,17 +207,40 @@
 		highlightedPoint = null;
 	}
 
-	function handleChartClick(chart, event, startAcc, endAcc, logarithmic) {
-		const xScale = chart?.scales?.x;
-		const chartArea = chart?.chartArea;
-		if (!xScale || !chartArea) return;
-
+	function getChartEventCoordinates(event) {
 		const x = event?.x ?? event?.native?.offsetX ?? null;
 		const y = event?.y ?? event?.native?.offsetY ?? null;
-		if (!Number.isFinite(x) || !Number.isFinite(y)) return;
-		if (x < chartArea.left || x > chartArea.right || y < chartArea.top || y > chartArea.bottom) return;
+		if (!Number.isFinite(x) || !Number.isFinite(y)) return null;
 
-		const chartX = xScale.getValueForPixel(x);
+		return {x, y};
+	}
+
+	function isWithinChartArea(chart, event) {
+		const chartArea = chart?.chartArea;
+		const coordinates = getChartEventCoordinates(event);
+		if (!chartArea || !coordinates) return false;
+
+		return (
+			coordinates.x > chartArea.left + CHART_CLICKABLE_INSET_PX &&
+			coordinates.x < chartArea.right - CHART_CLICKABLE_INSET_PX &&
+			coordinates.y > chartArea.top + CHART_CLICKABLE_INSET_PX &&
+			coordinates.y < chartArea.bottom - CHART_CLICKABLE_INSET_PX
+		);
+	}
+
+	function handleChartHover(chart, event) {
+		const target = chart?.canvas ?? event?.native?.target;
+		if (!target?.style) return;
+
+		target.style.cursor = isWithinChartArea(chart, event) ? 'pointer' : 'default';
+	}
+
+	function handleChartClick(chart, event, startAcc, endAcc, logarithmic) {
+		const xScale = chart?.scales?.x;
+		const coordinates = getChartEventCoordinates(event);
+		if (!xScale || !coordinates || !isWithinChartArea(chart, event)) return;
+
+		const chartX = xScale.getValueForPixel(coordinates.x);
 		if (!Number.isFinite(chartX)) return;
 
 		updateHighlightedPoint(chartXToAcc(chartX, logarithmic), startAcc, endAcc, logarithmic);
@@ -657,6 +681,7 @@
 						},
 					},
 					onClick: event => handleChartClick(chart, event, startAcc, endAcc, logarithmic),
+					onHover: event => handleChartHover(chart, event),
 					scales: {
 						x: xAxis,
 						y: yAxis,
@@ -677,6 +702,7 @@
 				outlineColor: configStore.preferences.theme == 'flylight' ? '#ffffff' : '#1f1f1f',
 			};
 			chart.options.onClick = event => handleChartClick(chart, event, startAcc, endAcc, logarithmic);
+			chart.options.onHover = event => handleChartHover(chart, event);
 			chart.update();
 		}
 	}

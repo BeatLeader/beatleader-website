@@ -1076,11 +1076,11 @@
 				{/if}
 			</section>
 
-			<section class="filter dropdown-filter" class:has-value={!!currentFilters.mapType}>
+			<!-- <section class="filter dropdown-filter" class:has-value={!!currentFilters.mapType}>
 				<div class="dropdown-header" on:click={() => (isModifiersFilterOpen = !isModifiersFilterOpen)}>
 					<div class="header-content">
-						<i class="fas fa-tags" />
-						<span>Modifiers-</span>
+						<i class="fas fa-m" />
+						<span>Modifiers</span>
 					</div>
 					<i class="fas fa-chevron-{isModifiersFilterOpen ? 'up' : 'down'}" />
 				</div>
@@ -1096,7 +1096,7 @@
 							}} />
 					</div>
 				{/if}
-			</section>
+			</section> -->
 
 			<section class="filter dropdown-filter" class:has-value={!!(currentFilters.date_from || currentFilters.date_to)}>
 				<div class="dropdown-header" on:click={() => (isDateFilterOpen = !isDateFilterOpen)}>

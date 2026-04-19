@@ -415,9 +415,9 @@
 	</div>
 </ContentBox>
 
-<ExperienceBlock {playerInfo} canPrestige={isMain} />
-
 <SummaryBox {playerId} {playerData} {scoresStats} {accBadges} {skeleton} {profileAppearance} {ssBadges} bind:editModel={$editModel} />
+
+<ExperienceBlock {playerInfo} canPrestige={isMain} />
 
 <style>
 	.player-general-info {

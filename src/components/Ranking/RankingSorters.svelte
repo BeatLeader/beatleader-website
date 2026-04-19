@@ -1,7 +1,5 @@
 <script>
 	import {createEventDispatcher, onMount} from 'svelte';
-	import {GLOBAL_LEADERBOARD_TYPE} from '../../utils/format';
-	import {dateFromUnix, formatDateRelative} from '../../utils/date';
 	import Select from '../Settings/Select.svelte';
 	import Button from '../Common/Button.svelte';
 	import {RANKING_SORT_BY_VALUES, RANKING_TYPE_VALUES, RANKING_PP_TYPE_VALUES, RANKING_SORT_STAT_KEYS} from './rankingSortConstants';
@@ -31,10 +29,6 @@
 	function onPPTypeChanged(e) {
 		dispatch('pp-type-changed', currentPpTypeValue);
 	}
-
-	function onOrderChanged(e) {
-		dispatch('order-changed', currentOrderValue);
-	}
 </script>
 
 <div class="search-and-orders">
@@ -51,7 +45,10 @@
 			iconFa="fas {currentOrderValue === 'asc' ? 'fa-arrow-up' : 'fa-arrow-down'}"
 			label={currentOrderValue === 'asc' ? 'Ascending' : 'Descending'}
 			title={currentOrderValue === 'asc' ? 'Ascending' : 'Descending'}
-			on:click={() => dispatch('order-changed', currentOrderValue === 'asc' ? 'desc' : 'asc')} />
+			on:click={() => {
+				currentOrderValue = currentOrderValue === 'asc' ? 'desc' : 'asc';
+				dispatch('order-changed', currentOrderValue);
+			}} />
 	</div>
 </div>
 

@@ -6,6 +6,7 @@
 	import {debounce} from '../../utils/debounce';
 	import {formatNumber} from '../../utils/format';
 	import {opt, optSet} from '../../utils/js';
+	import Button from './Button.svelte';
 
 	const dispatch = createEventDispatcher();
 
@@ -180,7 +181,6 @@
 			shouldDispatchEndValue = true;
 		}
 
-
 		minValue = nextState.minValue;
 		maxValue = nextState.maxValue;
 		startValue = nextState.startValue;
@@ -303,7 +303,13 @@
 		const [nextStart, nextEnd] = event.detail.values ?? [];
 		if (!Number.isFinite(nextStart) || !Number.isFinite(nextEnd)) return;
 
-		setState(minValue, maxValue, startValue !== null || fromDisplayValue(nextStart) != minValue ? fromDisplayValue(nextStart) : null, endValue !== null || fromDisplayValue(nextEnd) != maxValue ? fromDisplayValue(nextEnd) : null, 'range');
+		setState(
+			minValue,
+			maxValue,
+			startValue !== null || fromDisplayValue(nextStart) != minValue ? fromDisplayValue(nextStart) : null,
+			endValue !== null || fromDisplayValue(nextEnd) != maxValue ? fromDisplayValue(nextEnd) : null,
+			'range'
+		);
 	}
 
 	function getNiceInterval(value) {
@@ -327,6 +333,8 @@
 
 	const debouncedHandleSliderChange = debounce(handleSliderChange, SLIDER_DEBOUNCE_MS);
 
+	let showRangeControls = false;
+
 	$: displayStep = Math.max(step * displayFactor, Number.EPSILON);
 	$: displayPrecision = getDecimalPlaces(displayStep);
 	$: absoluteDisplayMin = toDisplayValue(absoluteMin);
@@ -335,11 +343,11 @@
 	$: canIncreaseMin = minValue < maxValue - step - EPSILON;
 	$: canDecreaseMax = maxValue > minValue + step + EPSILON;
 	$: canIncreaseMax = maxValue < absoluteMax - EPSILON;
-	$: pipPrecision = displayStep >= 0.1 && Math.round(pipInterval) == pipInterval && Math.round(minValue * 100) == minValue * 100 ? 0 : Math.min(displayPrecision, 1);
-	$: longestPipLabelLength = Math.max(
-		formatPipValue(displayMinValue, 0, 0).length,
-		formatPipValue(displayMaxValue, 0, 100).length
-	);
+	$: pipPrecision =
+		displayStep >= 0.1 && Math.round(pipInterval) == pipInterval && Math.round(minValue * 100) == minValue * 100
+			? 0
+			: Math.min(displayPrecision, 1);
+	$: longestPipLabelLength = Math.max(formatPipValue(displayMinValue, 0, 0).length, formatPipValue(displayMaxValue, 0, 100).length);
 	$: estimatedPipLabelWidth = Math.max(48, longestPipLabelLength * APPROX_PIP_CHAR_WIDTH_PX + suffix.length * 6 + 16);
 	$: maxVisiblePipLabels = sliderWidth ? Math.max(2, Math.floor(sliderWidth / estimatedPipLabelWidth)) : DEFAULT_VISIBLE_PIP_LABELS;
 	$: rawPipInterval = (displayMaxValue - displayMinValue) / Math.max(1, maxVisiblePipLabels - 1);
@@ -352,77 +360,79 @@
 </script>
 
 <div class="bounds-range">
-	<div class="bounds-controls">
-		<div class="bound-control">
-			<span class="bound-label">{minLabel}</span>
-			<div class="bound-stepper">
-				<button
-					type="button"
-					class="bound-arrow"
-					disabled={!canDecreaseMin}
-					title={`Decrease ${minLabel}`}
-					on:pointerdown={event => startButtonHold(event, () => adjustMin(-step))}
-					on:keydown={event => handleButtonKeydown(event, () => adjustMin(-step))}>
-					<i class="fas fa-chevron-left" />
-				</button>
-				<input
-					type="number"
-					class="bound-input"
-					min={absoluteDisplayMin}
-					max={Math.min(absoluteDisplayMax, toDisplayValue(maxValue - step))}
-					step={displayStep}
-					bind:value={minFieldValue}
-					inputmode="decimal"
-					aria-label={minLabel}
-					on:change={commitMinField}
-					on:blur={commitMinField} />
-				<button
-					type="button"
-					class="bound-arrow"
-					disabled={!canIncreaseMin}
-					title={`Increase ${minLabel}`}
-					on:pointerdown={event => startButtonHold(event, () => adjustMin(step))}
-					on:keydown={event => handleButtonKeydown(event, () => adjustMin(step))}>
-					<i class="fas fa-chevron-right" />
-				</button>
+	{#if showRangeControls}
+		<div class="bounds-controls">
+			<div class="bound-control">
+				<span class="bound-label">{minLabel}</span>
+				<div class="bound-stepper">
+					<button
+						type="button"
+						class="bound-arrow"
+						disabled={!canDecreaseMin}
+						title={`Decrease ${minLabel}`}
+						on:pointerdown={event => startButtonHold(event, () => adjustMin(-step))}
+						on:keydown={event => handleButtonKeydown(event, () => adjustMin(-step))}>
+						<i class="fas fa-chevron-left" />
+					</button>
+					<input
+						type="number"
+						class="bound-input"
+						min={absoluteDisplayMin}
+						max={Math.min(absoluteDisplayMax, toDisplayValue(maxValue - step))}
+						step={displayStep}
+						bind:value={minFieldValue}
+						inputmode="decimal"
+						aria-label={minLabel}
+						on:change={commitMinField}
+						on:blur={commitMinField} />
+					<button
+						type="button"
+						class="bound-arrow"
+						disabled={!canIncreaseMin}
+						title={`Increase ${minLabel}`}
+						on:pointerdown={event => startButtonHold(event, () => adjustMin(step))}
+						on:keydown={event => handleButtonKeydown(event, () => adjustMin(step))}>
+						<i class="fas fa-chevron-right" />
+					</button>
+				</div>
 			</div>
-		</div>
 
-		<div class="bound-control">
-			<span class="bound-label">{maxLabel}</span>
-			<div class="bound-stepper">
-				<button
-					type="button"
-					class="bound-arrow"
-					disabled={!canDecreaseMax}
-					title={`Decrease ${maxLabel}`}
-					on:pointerdown={event => startButtonHold(event, () => adjustMax(-step))}
-					on:keydown={event => handleButtonKeydown(event, () => adjustMax(-step))}>
-					<i class="fas fa-chevron-left" />
-				</button>
-				<input
-					type="number"
-					class="bound-input"
-					min={Math.max(absoluteDisplayMin, toDisplayValue(minValue + step))}
-					max={absoluteDisplayMax}
-					step={displayStep}
-					bind:value={maxFieldValue}
-					inputmode="decimal"
-					aria-label={maxLabel}
-					on:change={commitMaxField}
-					on:blur={commitMaxField} />
-				<button
-					type="button"
-					class="bound-arrow"
-					disabled={!canIncreaseMax}
-					title={`Increase ${maxLabel}`}
-					on:pointerdown={event => startButtonHold(event, () => adjustMax(step))}
-					on:keydown={event => handleButtonKeydown(event, () => adjustMax(step))}>
-					<i class="fas fa-chevron-right" />
-				</button>
+			<div class="bound-control">
+				<span class="bound-label">{maxLabel}</span>
+				<div class="bound-stepper">
+					<button
+						type="button"
+						class="bound-arrow"
+						disabled={!canDecreaseMax}
+						title={`Decrease ${maxLabel}`}
+						on:pointerdown={event => startButtonHold(event, () => adjustMax(-step))}
+						on:keydown={event => handleButtonKeydown(event, () => adjustMax(-step))}>
+						<i class="fas fa-chevron-left" />
+					</button>
+					<input
+						type="number"
+						class="bound-input"
+						min={Math.max(absoluteDisplayMin, toDisplayValue(minValue + step))}
+						max={absoluteDisplayMax}
+						step={displayStep}
+						bind:value={maxFieldValue}
+						inputmode="decimal"
+						aria-label={maxLabel}
+						on:change={commitMaxField}
+						on:blur={commitMaxField} />
+					<button
+						type="button"
+						class="bound-arrow"
+						disabled={!canIncreaseMax}
+						title={`Increase ${maxLabel}`}
+						on:pointerdown={event => startButtonHold(event, () => adjustMax(step))}
+						on:keydown={event => handleButtonKeydown(event, () => adjustMax(step))}>
+						<i class="fas fa-chevron-right" />
+					</button>
+				</div>
 			</div>
 		</div>
-	</div>
+	{/if}
 
 	<div class="bounds-slider" bind:clientWidth={sliderWidth}>
 		<RangeSlider
@@ -431,7 +441,7 @@
 			max={displayMaxValue}
 			step={displayStep}
 			values={[displayStartValue, displayEndValue]}
-			suffix={suffix}
+			{suffix}
 			float
 			hoverable
 			pips
@@ -443,6 +453,8 @@
 			formatter={formatPipValue}
 			handleFormatter={formatHandleValue}
 			on:change={debouncedHandleSliderChange} />
+
+		<Button type="text" cls="config-bounds-range-controls-button" noMargin={true} iconFa="fas {showRangeControls ? 'fa-chevron-down' : 'fa-wrench'}" title={showRangeControls ? 'Hide range controls' : 'Show range controls'} on:click={() => showRangeControls = !showRangeControls} />
 	</div>
 </div>
 
@@ -522,6 +534,15 @@
 
 	.bounds-slider {
 		padding: 0 0.35rem 0 0.1rem;
+		display: flex;
+		align-items: center;
+	}
+	
+	
+	:global(.bounds-slider .rangeSlider) {
+		flex: 1;
+		margin-left: 0;
+		margin-right: 0;
 	}
 
 	:global(.bounds-slider .rangeSlider.pip-labels) {
@@ -551,6 +572,17 @@
 
 	:global(.bounds-slider .rangePips .pip:not(.first):not(.last) .pipVal) {
 		min-width: max-content;
+	}
+
+	:global(.config-bounds-range-controls-button) {
+		margin-top: -1em !important;
+    	margin-left: 0.4em !important;
+		opacity: 0.7;
+		transition: opacity 200ms;
+	}
+
+	:global(.config-bounds-range-controls-button:hover) {
+		opacity: 1;
 	}
 
 	@media screen and (max-width: 480px) {

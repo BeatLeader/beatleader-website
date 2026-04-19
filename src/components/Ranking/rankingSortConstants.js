@@ -1,4 +1,5 @@
 import {formatDateRelative, dateFromUnix} from '../../utils/date';
+import PrestigeSortingValue from './PrestigeSortingValue.svelte';
 
 export const RANKING_SORT_BY_PROPS = {
 	pp: {prefix: '', suffix: 'pp', zero: '-', digits: 2},
@@ -17,7 +18,7 @@ export const RANKING_SORT_BY_PROPS = {
 	top1Score: {digits: 0, prefix: '', suffix: ''},
 	replaysWatched: {digits: 0, prefix: '', suffix: ''},
 	level: {prefix: '', suffix: '', zero: '-', digits: 2},
-	prestige: {prefix: '', suffix: '', zero: '-', digits: 2},
+	prestige: {component: PrestigeSortingValue},
 	experience: {prefix: '', suffix: '', zero: '-', digits: 2},
 	allContextsPp: {prefix: '', suffix: 'pp', zero: '-', digits: 2},
 };
@@ -52,6 +53,12 @@ export const RANKING_SORT_BY_VALUES = [
 		name: '#1 Count',
 		title: 'Sort by number of top scores',
 		icon: 'fa fa-medal',
+	},
+	{
+		value: 'prestige',
+		name: 'Prestige',
+		title: 'Sort by prestige',
+		icon: 'fa fa-gem',
 	},
 	{
 		value: 'playCount',
@@ -119,24 +126,6 @@ export const RANKING_SORT_BY_VALUES = [
 		name: 'Watched',
 		title: 'Sort by replay watch count',
 		icon: 'fa fa-eye',
-	},
-	{
-		value: 'level',
-		name: 'Level',
-		title: 'Sort by experience level',
-		icon: 'fa fa-crosshairs',
-	},
-	{
-		value: 'prestige',
-		name: 'Prestige',
-		title: 'Sort by prestige',
-		icon: 'fa fa-crosshairs',
-	},
-	{
-		value: 'experience',
-		name: 'Experience',
-		title: 'Sort by experience value',
-		icon: 'fa fa-crosshairs',
 	},
 ];
 
@@ -259,6 +248,12 @@ const getAcc = (data, key) => (getStat(data, key) ?? 0) * 100;
 
 export function PlayerValue(player, filters) {
 	let valueResult = null;
+
+	if (filters.sortBy == 'prestige') {
+		valueResult = {prestige: player.playerInfo.prestige, level: player.playerInfo.level, experience: player.playerInfo.experience};
+		return valueResult;
+	}
+
 	const valueFunc = filters.sortBy == 'acc' || filters.sortBy == 'weightedAcc' ? getAcc : getStat;
 
 	const statKey = RANKING_SORT_STAT_KEYS[filters.sortBy];

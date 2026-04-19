@@ -3,6 +3,8 @@
 	import DialogContent from '../../Common/DialogContent.svelte';
 	import {Confetti} from 'svelte-confetti';
 	import {BL_API_URL} from '../../../network/queues/beatleader/api-queue';
+	import prestigeDescriptionsStore from '../../../stores/beatleader/prestige-descriptions';
+
 	const lottieImport = () => import('@lottiefiles/svelte-lottie-player').then(m => m.LottiePlayer);
 
 	export let playerInfo;
@@ -66,7 +68,7 @@
 							controls={false}
 							loop={false}
 							bind:this={animationPlayer}
-							src="/assets/prestige_{playerInfo?.prestige}_to_{playerInfo?.prestige + 1}.json" />
+							src={$prestigeDescriptionsStore.find(prestige => prestige.level === playerInfo?.prestige)?.prestigeAnimationLink} />
 					</div>
 				{/await}
 				<div class="prestige-description">

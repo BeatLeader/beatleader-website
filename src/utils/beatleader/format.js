@@ -955,7 +955,7 @@ export const typesDescription = {
 		textColor: 'white',
 	},
 	bombReset: {
-		title: 'Maps that focus on bomb resets.',
+		title: 'Maps that contains bomb avoidances.',
 		name: 'bombReset',
 		icon: 'bombReset-icon',
 		foregroundColor: 'red',
@@ -1504,9 +1504,9 @@ export function getSongSortingValue(song, diff, sortingKey, status) {
 
 	if (sortingKey == 'multiRating') {
 		if (diff) {
-			return diff.multiRating ? `${diff.multiRating.toFixed(2)}` : null;
+			return diff.multiRating ? `${(diff.multiRating * 100).toFixed(2)}%` : null;
 		}
-		return song.difficulties[0].multiRating ? `${song.difficulties[0].multiRating.toFixed(2)}` : null;
+		return song.difficulties[0].multiRating ? `${(song.difficulties[0].multiRating * 100).toFixed(2)}%` : null;
 	}
 
 	if (sortingKey == 'ebpm') {

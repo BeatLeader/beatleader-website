@@ -343,7 +343,10 @@
 	@media screen and (max-width: 767px) {
 		.stats {
 			font-size: 0.75em;
-		    flex-wrap: wrap;
+		}
+
+		.stats.compact {
+			column-gap: 0.2em;
 		}
 	}
 </style>
