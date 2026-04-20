@@ -15,14 +15,36 @@
 	import ssrConfig from '../ssr-config';
 
 	let cards = [
+		// {
+		// 	component: CarouselCard,
+		// 	props: {
+		// 		title: 'Extra Sensory 2 Mods and Maps are out!',
+		// 		body: '',
+		// 		imageUrl: '/assets/Discover/extra_sensory_thumbnail_2.webp',
+		// 		targetUrl: 'https://exsii.totalbs.dev/',
+		// 		linkName: 'Extra Sensory 2',
+		// 		forcedColor: 'rgb(23 27 46)',
+		// 	},
+		// },
 		{
 			component: CarouselCard,
 			props: {
-				title: 'Extra Sensory 2 Mods and Maps are out!',
+				title: 'BeastSaber Mapping Awards 2025',
 				body: '',
-				imageUrl: '/assets/Discover/extra_sensory_thumbnail_2.webp',
-				targetUrl: 'https://exsii.totalbs.dev/',
-				linkName: 'Extra Sensory 2',
+				imageUrl: '/assets/Discover/beastsaber_awards_2025.jpg',
+				targetUrl: 'https://youtu.be/52UEYJtbRJs',
+				linkName: 'YouTube',
+				forcedColor: 'black',
+			},
+		},
+		{
+			component: CarouselCard,
+			props: {
+				title: 'Return to the Spectrum of Intergalactic Happiness',
+				body: 'New Vivify event soon!',
+				imageUrl: '/assets/Discover/rsih_thumbnail.png',
+				targetUrl: 'https://youtu.be/xrBnQ9m7Pe4',
+				linkName: 'Return to the Spectrum of Intergalactic Happiness',
 				forcedColor: 'rgb(23 27 46)',
 			},
 		},

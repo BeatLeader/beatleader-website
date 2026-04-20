@@ -238,7 +238,7 @@
 			}}><i class="fas fa-xmark" /></button>
 	</div>
 {/if}-->
-{#if $rewindTimer && $configStore.preferences.beastiesbanner2026}
+<!-- {#if $rewindTimer && $configStore.preferences.beastiesbanner2026}
 	<div class="rewindbanner">
 		<a class="reelink" href="https://www.youtube.com/live/tZpEPTaWuxA" />
 		<div class="banner-spacer" />
@@ -287,7 +287,7 @@
 				});
 			}}><i class="fas fa-xmark" /></button>
 	</div>
-{/if}
+{/if} -->
 <Router {url}>
 	<Nav class={$configStore?.preferences?.theme} {openModal} {closeModal} />
 	<Notifications zIndex={10000} item={NotificationComponent}>
