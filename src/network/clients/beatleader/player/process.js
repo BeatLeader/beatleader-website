@@ -39,6 +39,7 @@ export default response => {
 		level,
 		prestige,
 		experience,
+		richPresence,
 	} = response;
 
 	let profilePicture = avatar;
@@ -134,6 +135,7 @@ export default response => {
 			prestige,
 			experience,
 			horizontalRichBio: profileSettings?.horizontalRichBio,
+			richPresence,
 		},
 		profileSettings: profileSettings
 			? {

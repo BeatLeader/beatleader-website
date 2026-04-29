@@ -15,6 +15,7 @@
 	import PinnedScores from '../Player/PinnedScores.svelte';
 	import {debounce} from '../../utils/debounce';
 	import {BL_API_URL} from '../../network/queues/beatleader/api-queue';
+	import Spinner from '../Common/Spinner.svelte';
 	import {deepClone} from '../../utils/js';
 
 	export let animationSign = 1;
@@ -77,6 +78,12 @@
 		{name: 'Attempts', value: 'attempts'},
 	];
 
+	const permissionOptions = [
+		{name: 'Private', value: 'private'},
+		{name: 'Friends', value: 'friends'},
+		{name: 'Public', value: 'public'},
+	];
+
 	const DEFAULT_SCORE_SORTING_STYLE = 'select';
 	const DEFAULT_SERVICE = 'last';
 
@@ -129,6 +136,9 @@
 
 	let isUpdating = false;
 	let followersPublic = true;
+	let richPresenceEnabled = false;
+	let streamingViewPermissions = 'private';
+	let streamingCommentPermissions = 'private';
 
 	async function toggleFollowersPublic() {
 		if (isUpdating) return;
@@ -144,9 +154,67 @@
 		}
 	}
 
+	async function toggleRichPresence() {
+		if (isUpdating) return;
+
+		const newValue = !richPresenceEnabled;
+		try {
+			isUpdating = true;
+
+			await account.update({richPresenceEnabled: newValue});
+		} finally {
+			richPresenceEnabled = newValue;
+			isUpdating = null;
+		}
+	}
+
+	async function updateStreamingViewPermissions(value) {
+		if (isUpdating) return;
+
+		try {
+			isUpdating = true;
+
+			await account.update({streamingViewPermissions: value});
+		} finally {
+			streamingViewPermissions = value;
+			isUpdating = null;
+		}
+	}
+
+	async function updateStreamingCommentPermissions(value) {
+		if (isUpdating) return;
+
+		try {
+			isUpdating = true;
+
+			await account.update({streamingCommentPermissions: value});
+		} finally {
+			streamingCommentPermissions = value;
+			isUpdating = null;
+		}
+	}
+
+	function mapStreamingPermissions(value) {
+		switch (value) {
+			case 0:
+				return 'private';
+			case 1:
+				return 'friends';
+			case 2:
+				return 'public';
+		}
+
+		return value;
+	}
+
 	function updateProfileSettings(account) {
 		if (account) {
 			followersPublic = !account.hideFriends;
+		}
+		if (account?.player?.profileSettings) {
+			richPresenceEnabled = account.player.profileSettings.richPresenceEnabled ?? false;
+			streamingViewPermissions = mapStreamingPermissions(account.player.profileSettings.streamingViewPermissions ?? 0);
+			streamingCommentPermissions = mapStreamingPermissions(account.player.profileSettings.streamingCommentPermissions ?? 0);
 		}
 	}
 
@@ -229,6 +297,38 @@
 						fontSize={12}
 						design="slider"
 						on:click={() => toggleFollowersPublic()} />
+				</div>
+			</section>
+
+			<section class="option full" id="profile-streaming">
+				<label title="Streaming and rich presence settings">Streaming & Presence (saved automatically, account synced):</label>
+				{#if isUpdating}
+					<Spinner />
+				{/if}
+				<div class="single" title="Enable rich presence for your profile">
+					<Switch
+						disabled={isUpdating}
+						value={richPresenceEnabled}
+						label="Rich presence enabled"
+						fontSize={12}
+						design="slider"
+						on:click={() => toggleRichPresence()} />
+				</div>
+				<div class="streaming-options">
+					<section class="option" id="profile-streaming-view">
+						<label title="Who can view your stream">Streaming view permissions</label>
+						<Select
+							bind:value={streamingViewPermissions}
+							options={permissionOptions}
+							on:change={e => updateStreamingViewPermissions(e.detail.value)} />
+					</section>
+					<section class="option" id="profile-streaming-comments">
+						<label title="Who can comment on your stream">Streaming comment permissions</label>
+						<Select
+							bind:value={streamingCommentPermissions}
+							options={permissionOptions}
+							on:change={e => updateStreamingCommentPermissions(e.detail.value)} />
+					</section>
 				</div>
 			</section>
 		{/if}
@@ -424,6 +524,12 @@
 		flex-wrap: wrap;
 		justify-content: space-evenly;
 		padding: 0.5em;
+	}
+	.streaming-options {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		grid-gap: 1em;
+		margin-top: 0.5em;
 	}
 	.followers-switches {
 		display: flex;

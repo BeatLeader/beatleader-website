@@ -30,6 +30,7 @@
 	import Snow from '../Common/Snow.svelte';
 	import Cat from '../Common/Cat.svelte';
 	import ExperienceBlock from './Profile/ExperienceBlock.svelte';
+	import RichPresence from './Profile/RichPresence.svelte';
 
 	export let playerData;
 	export let isLoading = false;
@@ -416,6 +417,10 @@
 </ContentBox>
 
 <SummaryBox {playerId} {playerData} {scoresStats} {accBadges} {skeleton} {profileAppearance} {ssBadges} bind:editModel={$editModel} />
+
+{#if playerData?.profileSettings?.richPresenceEnabled}
+	<RichPresence {playerId} richPresence={playerData?.playerInfo?.richPresence} />
+{/if}
 
 <ExperienceBlock {playerInfo} canPrestige={isMain} />
 
