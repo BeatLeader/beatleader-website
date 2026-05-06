@@ -21,7 +21,10 @@
 
 	const exsiiBadges = [1755, 1756];
 	const phoenixBadges = [1803, 1804, 1805];
-	const specialBadges = [...exsiiBadges, ...phoenixBadges];
+	const rsihBadges = [2030, 2031];
+	const specialBadges = [...exsiiBadges, ...phoenixBadges, ...rsihBadges];
+
+	let tvLoopState = null;
 
 	function fetchElements(badges) {
 		if (badges && badges.find(badge => specialBadges.includes(badge.id))) {
@@ -50,6 +53,14 @@
 		clearInterval(fontChangeInterval);
 		clearInterval(glitchInterval);
 		clearTimeout(touchTimeout);
+		if (tvLoopState) {
+			tvLoopState.hovered = false;
+			if (tvLoopState.cancel) tvLoopState.cancel();
+			if (tvLoopState.currentCtx && !tvLoopState.currentCtx.restored) {
+				restoreBox(tvLoopState.currentCtx);
+			}
+			tvLoopState = null;
+		}
 		portalContainer?.remove();
 		portalContainer = null;
 	});
@@ -162,6 +173,248 @@
 		});
 	}
 
+	function pickRandomVisibleContentBox() {
+		const boxes = Array.from(document.querySelectorAll('.content-box:not(.profile-box)')).filter(box => {
+			const rect = box.getBoundingClientRect();
+			if (rect.bottom < 0 || rect.top > window.innerHeight) return false;
+			if (rect.width < 50 || rect.height < 50) return false;
+			if (box.dataset.tvOccupied === '1') return false;
+			return box.offsetParent !== null;
+		});
+		if (!boxes.length) return null;
+		return boxes[Math.floor(Math.random() * boxes.length)];
+	}
+
+	function takeOverBox(box) {
+		const rect = box.getBoundingClientRect();
+		const computed = getComputedStyle(box);
+		const top = rect.top + window.scrollY;
+		const left = rect.left + window.scrollX;
+
+		const wrapper = document.createElement('div');
+		wrapper.style.position = 'absolute';
+		wrapper.style.top = `${top}px`;
+		wrapper.style.left = `${left}px`;
+		wrapper.style.width = `${rect.width}px`;
+		wrapper.style.height = `${rect.height}px`;
+		wrapper.style.borderRadius = computed.borderRadius;
+		wrapper.style.overflow = 'hidden';
+		wrapper.style.zIndex = '100';
+		wrapper.style.background = 'black';
+		wrapper.style.pointerEvents = 'none';
+
+		const video = document.createElement('video');
+		video.muted = false;
+		video.volume = 0.6;
+		video.playsInline = true;
+		video.autoplay = true;
+		video.style.width = '100%';
+		video.style.height = '100%';
+		video.style.objectFit = 'cover';
+		video.style.display = 'block';
+		wrapper.appendChild(video);
+
+		document.body.appendChild(wrapper);
+
+		const originalVisibility = box.style.visibility;
+		box.style.visibility = 'hidden';
+		box.dataset.tvOccupied = '1';
+
+		return {box, wrapper, video, originalVisibility, restored: false};
+	}
+
+	function restoreBox(ctx) {
+		if (ctx.restored) return;
+		ctx.restored = true;
+		ctx.box.style.visibility = ctx.originalVisibility;
+		delete ctx.box.dataset.tvOccupied;
+		ctx.wrapper.remove();
+	}
+
+	function waitForCanPlay(video, state) {
+		return new Promise(resolve => {
+			let done = false;
+			const cleanup = () => {
+				video.removeEventListener('canplaythrough', onLoad);
+				video.removeEventListener('canplay', onLoad);
+				video.removeEventListener('loadeddata', onLoad);
+				video.removeEventListener('error', onError);
+				if (state.cancel === onCancel) state.cancel = null;
+			};
+			const onLoad = () => {
+				if (done) return;
+				done = true;
+				cleanup();
+				resolve(true);
+			};
+			const onError = () => {
+				if (done) return;
+				done = true;
+				cleanup();
+				resolve(false);
+			};
+			const onCancel = () => {
+				if (done) return;
+				done = true;
+				cleanup();
+				resolve(true);
+			};
+
+			if (video.readyState >= 3) {
+				resolve(true);
+				return;
+			}
+
+			video.addEventListener('canplaythrough', onLoad);
+			video.addEventListener('canplay', onLoad);
+			video.addEventListener('loadeddata', onLoad);
+			video.addEventListener('error', onError);
+			state.cancel = onCancel;
+		});
+	}
+
+	function waitForVideoEnd(video, state) {
+		return new Promise(resolve => {
+			let done = false;
+			const finish = () => {
+				if (done) return;
+				done = true;
+				video.removeEventListener('ended', finish);
+				if (state && state.cancel === finish) state.cancel = null;
+				resolve();
+			};
+			video.addEventListener('ended', finish, {once: true});
+			if (state) state.cancel = finish;
+		});
+	}
+
+	function cancellableSleep(ms, state) {
+		return new Promise(resolve => {
+			let done = false;
+			const finish = () => {
+				if (done) return;
+				done = true;
+				clearTimeout(t);
+				if (state.cancel === finish) state.cancel = null;
+				resolve();
+			};
+			const t = setTimeout(finish, ms);
+			state.cancel = finish;
+		});
+	}
+
+	async function playOffAndRestore(ctx) {
+		if (ctx.restored) return;
+		ctx.video.loop = false;
+		ctx.video.src = '/assets/rsih/tv_off_effect.mp4';
+		try {
+			ctx.video.load();
+			await ctx.video.play();
+		} catch (e) {}
+		await new Promise(resolve => {
+			let done = false;
+			const finish = () => {
+				if (done) return;
+				done = true;
+				ctx.video.removeEventListener('ended', finish);
+				ctx.video.removeEventListener('error', finish);
+				clearTimeout(safety);
+				resolve();
+			};
+			ctx.video.addEventListener('ended', finish, {once: true});
+			ctx.video.addEventListener('error', finish, {once: true});
+			const safety = setTimeout(finish, 5000);
+		});
+		restoreBox(ctx);
+	}
+
+	async function runTvLoop(state) {
+		try {
+			while (state.hovered) {
+				const box = pickRandomVisibleContentBox();
+				if (!box) {
+					await cancellableSleep(500, state);
+					continue;
+				}
+
+				const ctx = takeOverBox(box);
+				state.currentCtx = ctx;
+
+				ctx.video.loop = true;
+				ctx.video.src = '/assets/rsih/tv_on_effect.mp4';
+				const tvOnStart = performance.now();
+				try {
+					ctx.video.load();
+					await ctx.video.play();
+				} catch (e) {}
+
+				let clipUrl;
+				if (Math.random() < 1 / 50) {
+					const specialNum = Math.floor(Math.random() * 2) + 1;
+					clipUrl = `/assets/rsih/clip_special_${specialNum}.mp4`;
+				} else {
+					const clipNum = Math.floor(Math.random() * 12) + 1;
+					clipUrl = `/assets/rsih/clip_${clipNum}.mp4`;
+				}
+				const preloader = document.createElement('video');
+				preloader.muted = false;
+				preloader.volume = 0.6;
+				preloader.preload = 'auto';
+				preloader.src = clipUrl;
+
+				const loadOk = await waitForCanPlay(preloader, state);
+
+				if (state.hovered && loadOk) {
+					const elapsed = performance.now() - tvOnStart;
+					const remaining = 1000 - elapsed;
+					if (remaining > 0) await cancellableSleep(remaining, state);
+				}
+
+				if (!state.hovered || !loadOk) {
+					await playOffAndRestore(ctx);
+					state.currentCtx = null;
+					if (!state.hovered) break;
+					await cancellableSleep(1000, state);
+					continue;
+				}
+
+				ctx.video.loop = false;
+				ctx.video.src = clipUrl;
+				try {
+					ctx.video.load();
+					await ctx.video.play();
+				} catch (e) {}
+
+				await waitForVideoEnd(ctx.video, state);
+
+				await playOffAndRestore(ctx);
+				state.currentCtx = null;
+
+				if (!state.hovered) break;
+
+				await cancellableSleep(1000, state);
+			}
+		} finally {
+			if (state.currentCtx && !state.currentCtx.restored) {
+				restoreBox(state.currentCtx);
+				state.currentCtx = null;
+			}
+			if (tvLoopState === state) tvLoopState = null;
+		}
+	}
+
+	function startTvLoop() {
+		if (tvLoopState) return;
+		tvLoopState = {hovered: true, cancel: null, currentCtx: null};
+		runTvLoop(tvLoopState);
+	}
+
+	function stopTvLoop() {
+		if (!tvLoopState) return;
+		tvLoopState.hovered = false;
+		if (tvLoopState.cancel) tvLoopState.cancel();
+	}
+
 	function handleMouseEnter(event, badgeId) {
 		if (placeholder) return;
 
@@ -199,11 +452,16 @@
 			isHovered = true;
 			applyMorseFontChange();
 		}
+
+		if (rsihBadges.includes(badgeId)) {
+			startTvLoop();
+		}
 	}
 
 	function handleMouseLeave() {
 		clearTimeout(startGlitchTimeout);
 		isHovered = false;
+		stopTvLoop();
 		if (glitchInterval) {
 			clearInterval(glitchInterval);
 			glitchInterval = null;
