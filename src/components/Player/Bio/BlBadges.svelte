@@ -25,6 +25,55 @@
 	const specialBadges = [...exsiiBadges, ...phoenixBadges, ...rsihBadges];
 
 	let tvLoopState = null;
+	let autoplayWithSoundCache = null;
+
+	const AUTOPLAY_PROBE_AUDIO =
+		'data:audio/mpeg;base64,/+MYxAAAAANIAUAAAASEEB/jwOFM/0MM/90b/+RhST//w4NFwOjf///PZu////9lns5GFDv//l9GlUIEEIAAAgIg8Ir/JGq3/+MYxDsLIj5QMYcoAP0dv9HIjUcH//yYSg+CIbkGP//8w0bLVjUP///3Z0x5QCAv/yLjwtGKTEFNRTMuOTeqqqqqqqqqqqqq/+MYxEkNmdJkUYc4AKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq';
+
+	function probeAutoplayWithSound(timeoutMs = 300) {
+		return new Promise(resolve => {
+			let done = false;
+			let timer;
+			let audio;
+			const finish = allowed => {
+				if (done) return;
+				done = true;
+				if (timer) clearTimeout(timer);
+				if (audio) {
+					audio.removeEventListener('play', onPlay);
+					try {
+						audio.pause();
+					} catch (e) {}
+				}
+				resolve(allowed);
+			};
+			const onPlay = () => finish(true);
+
+			try {
+				audio = new Audio();
+				audio.volume = 1;
+				audio.muted = false;
+				audio.autoplay = true;
+				audio.addEventListener('play', onPlay);
+				audio.src = AUTOPLAY_PROBE_AUDIO;
+				audio.load();
+				const promise = audio.play();
+				timer = setTimeout(() => finish(false), timeoutMs);
+				if (promise && typeof promise.then === 'function') {
+					promise.then(() => finish(true), () => finish(false));
+				}
+			} catch (e) {
+				finish(false);
+			}
+		});
+	}
+
+	async function canAutoplayWithSound() {
+		if (autoplayWithSoundCache === true) return true;
+		const result = await probeAutoplayWithSound();
+		if (result) autoplayWithSoundCache = true;
+		return result;
+	}
 
 	function fetchElements(badges) {
 		if (badges && badges.find(badge => specialBadges.includes(badge.id))) {
@@ -204,8 +253,9 @@
 		wrapper.style.pointerEvents = 'none';
 
 		const video = document.createElement('video');
-		video.muted = false;
-		video.volume = 0.6;
+		const withSound = tvLoopState?.withSound === true;
+		video.muted = !withSound;
+		if (withSound) video.volume = 0.6;
 		video.playsInline = true;
 		video.autoplay = true;
 		video.style.width = '100%';
@@ -357,8 +407,7 @@
 					clipUrl = `/assets/rsih/clip_${clipNum}.mp4`;
 				}
 				const preloader = document.createElement('video');
-				preloader.muted = false;
-				preloader.volume = 0.6;
+				preloader.muted = true;
 				preloader.preload = 'auto';
 				preloader.src = clipUrl;
 
@@ -403,10 +452,16 @@
 		}
 	}
 
-	function startTvLoop() {
+	async function startTvLoop() {
 		if (tvLoopState) return;
-		tvLoopState = {hovered: true, cancel: null, currentCtx: null};
-		runTvLoop(tvLoopState);
+		const state = {hovered: true, cancel: null, currentCtx: null, withSound: false};
+		tvLoopState = state;
+		state.withSound = await canAutoplayWithSound();
+		if (!state.hovered) {
+			if (tvLoopState === state) tvLoopState = null;
+			return;
+		}
+		runTvLoop(state);
 	}
 
 	function stopTvLoop() {
