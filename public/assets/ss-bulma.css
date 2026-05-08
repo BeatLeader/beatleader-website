@@ -12115,6 +12115,15 @@ select {
 	background-image: url('./v3.svg') !important;
 }
 
+.audiolink-icon {
+	width: 74% !important;
+	aspect-ratio: 1;
+	background-size: contain !important;
+	background-position: center !important;
+	background-repeat: no-repeat !important;
+	background-image: url('./audiolink.svg') !important;
+}
+
 .vnjs-icon {
 	width: 74% !important;
 	aspect-ratio: 1;

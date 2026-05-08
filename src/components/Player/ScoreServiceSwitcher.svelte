@@ -606,6 +606,7 @@
 												{id: requirementsMap.V3, name: 'V3'},
 												{id: requirementsMap.cinema, name: 'Cinema'},
 												{id: requirementsMap.mappingExtensions, name: 'Mapping Extensions'},
+												{id: requirementsMap.audioLink, name: 'AudioLink'},
 												{id: requirementsMap.vnjs, name: 'VNJS'},
 												{id: requirementsMap.gls, name: 'GLS'},
 											],

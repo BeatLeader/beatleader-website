@@ -1123,6 +1123,7 @@ export const requirementsMap = {
 	vnjs: 1 << 7,
 	vivify: 1 << 8,
 	gls: 1 << 10,
+	audioLink: 1 << 11,
 };
 
 export const requirementsDescription = {
@@ -1159,6 +1160,13 @@ export const requirementsDescription = {
 		name: 'Cinema',
 		icon: 'fas fa-panorama',
 		foregroundColor: 'orange',
+		textColor: 'white',
+	},
+	audioLink: {
+		title: 'Map uses AudioLink mod (visual audio sync)',
+		name: 'AudioLink',
+		icon: 'audiolink-icon',
+		foregroundColor: 'linear-gradient(to right, #00b09b, #96c93d)',
 		textColor: 'white',
 	},
 	V3: {
