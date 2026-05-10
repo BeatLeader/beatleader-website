@@ -41,9 +41,9 @@
 			component: CarouselCard,
 			props: {
 				title: 'Return to the Spectrum of Intergalactic Happiness',
-				body: 'New Vivify event soon!',
+				body: 'Vivify maps playlist is out!',
 				imageUrl: '/assets/Discover/rsih_thumbnail.png',
-				targetUrl: 'https://youtu.be/xrBnQ9m7Pe4',
+				targetUrl: 'https://beatsaver.com/playlists/1083967',
 				linkName: 'Return to the Spectrum of Intergalactic Happiness',
 				forcedColor: 'rgb(23 27 46)',
 			},
