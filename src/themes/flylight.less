@@ -172,7 +172,7 @@ input::placeholder {
   height: 43px !important;
   bottom: 5px !important;
   background-color: #b8b8b893 !important;
-  color: #757575 !important;
+  color: var(--textColor) !important;
 }
 
 .multiSelectItem_clear {
@@ -210,11 +210,11 @@ input::placeholder {
   color: #eeeeee !important;
 }
 
-.pc-download-button > .button {
+.pc-download-button[href="https://github.com/BeatLeader/beatleader-mod/releases"] > .button {
   color: #eeeeee !important;
 }
 
-.quest-download-button > .button {
+.quest-download-button[href="https://github.com/BeatLeader/beatleader-qmod/releases"] > .button {
   color: #eeeeee !important;
 }
 
@@ -713,11 +713,11 @@ section.group:nth-child(1)>section:nth-child(2) .item {
 }
 
 .qualification-description span {
-  color: #757575 !important;
+  color: var(--textColor) !important;
 }
 
 .qualification-description {
-  color: #a5a5a5 !important;
+  color: var(--textColor) !important;
 }
 
 .scores-grid.grid-transition-helper>div .button {
@@ -793,6 +793,14 @@ aside>.content-box>section>.players a {
   background-image: none !important;
 }
 
+.modifiers label{
+  background-color: var(--hover) !important;
+}
+
+.progress-bar {
+  background: var(--dimmed) !important;
+}
+
 .score-filters i {
   background-color: #ccf4ff !important;
   color: var(--textColor) !important;
@@ -809,7 +817,7 @@ aside>.content-box>section>.players a {
 }
 
 .beat-savior-reveal.clickable {
-  color: #c2c2c2;
+  color: var(--textColor) !important;
 }
 
 .svelte-y0rxya.open {
@@ -872,11 +880,11 @@ a.button :not(.replay-button-alt) {
 }
 
 h2.title {
-  color: #757575 !important;
+  color: var(--textColor) !important;
 }
 
 div.title {
-  color: #757575 !important;
+  color: var(--textColor) !important;
 }
 
 .song-score {
@@ -899,7 +907,7 @@ h1 {
 
 .navigation-item {
   background-color: #dadedf !important;
-  color: #757575 !important;
+  color: var(--textColor) !important;
 }
 
 .navigation-item:hover {
@@ -932,6 +940,10 @@ section.option:nth-child(4) {
 }
 
 .options span {
+  color: var(--textColor) !important;
+}
+
+.options label {
   color: var(--textColor) !important;
 }
 
@@ -1034,10 +1046,6 @@ section.option:nth-child(4) {
 
 .dropdown-item:hover {
   background-color: #ccf4ff !important;
-}
-
-section.option:nth-child(2) {
-  display: none;
 }
 
 .tabs-container>.options {
@@ -1359,6 +1367,18 @@ html body nav.ssr-page-container.flylight a[href="/ranking/1"] {
   -webkit-backdrop-filter: blur(10px);
 }
 
+.header-top-part h1.title span.name, h1.title span.subname{
+    color: var(--textColor) !important;
+  }
+
+.title-container span.author {
+  color: var(--textColor) !important;
+}
+
+.header-top-part h1.song-title span.name, .header-top-part h1.song-title span.subname {
+  color: var(--textColor) !important;
+}
+
 .bottom-container-background {
   background-color: #ffffffd4 !important;
 }
@@ -1396,7 +1416,7 @@ html body nav.ssr-page-container.flylight a[href="/ranking/1"] {
   }
 }
 
-.arrow-link {
+.arrow-link, .arrow-link-desktop {
   color: black !important;
 }
 
@@ -1548,8 +1568,7 @@ a.button:active { --bg-color: var(--selected) !important; }
 }
 
 .player-nickname {
-  text-shadow: none !important;
-  color: #686868 !important;
+  color: var(--textColor) !important;
 }
 
 .withCover .player-nickname {
@@ -1649,4 +1668,8 @@ a.button:active { --bg-color: var(--selected) !important; }
 
 .mini-profile-box .player-data {
   background-color: #ffffff9c !important;
+}
+
+.profile-info-container .name-and-details{
+  color: #eeeeee !important;
 }
