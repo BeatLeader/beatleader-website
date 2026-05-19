@@ -24,6 +24,7 @@
 				<Button
 					icon={currentValue.icon}
 					iconFa={currentValue.iconFa}
+					iconSvg={currentValue.iconSvg}
 					loading={multi ? Array.isArray(loadingValue) && loadingValue.includes(currentValue) : loadingValue === currentValue}
 					label={currentValue.label}
 					title={currentValue.title}

@@ -183,7 +183,8 @@
 			? `width:${squareSize};height:${squareSize};`
 			: ''};
 			--hovered-scale:{hoveredScale};
-			--animation-opacity:{animationOpacity};"
+			--animation-opacity:{animationOpacity};
+			{iconSvg ? "gap: 0.5em;" : ""}"
 		on:mousedown={HandleMouseDown}
 		on:mouseup={HandleMouseUp}
 		on:mouseleave={HandleMouseUp}
@@ -215,7 +216,8 @@
 			? `width:${squareSize};height:${squareSize};`
 			: ''};
 			--hovered-scale:{hoveredScale};
-			--animation-opacity:{animationOpacity};"
+			--animation-opacity:{animationOpacity};
+			{iconSvg ? "gap: 0.5em;" : ""}"
 		on:mousedown={HandleMouseDown}
 		on:mouseup={HandleMouseUp}
 		on:mouseleave={HandleMouseUp}

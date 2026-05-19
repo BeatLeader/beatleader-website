@@ -71,6 +71,7 @@
 		NominatedScores: () => import('./pages/NominatedScores.svelte'),
 		BadgesPage: () => import('./pages/Badges.svelte'),
 		BeastiesNominations: () => import('./pages/BeastiesNominations.svelte'),
+		GamifiedVivifyPack: () => import('./pages/GamifiedVivifyPack.svelte'),
 	};
 
 	export let url = '';
@@ -505,6 +506,11 @@
 					<Route path="/event/rocketleaguevol2">
 						{#await pageImports.RocketLeaguePackPage() then module}
 							<svelte:component this={module.default} />
+						{/await}
+					</Route>
+					<Route path="/event/gamifiedvivify" let:location>
+						{#await pageImports.GamifiedVivifyPack() then module}
+							<svelte:component this={module.default} {location} />
 						{/await}
 					</Route>
 					<Route path="/event/:eventId/*page" let:params let:location>
