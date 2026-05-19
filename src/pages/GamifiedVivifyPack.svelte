@@ -210,8 +210,8 @@
 		},
 	];
 
-	let title = 'Rocket League Vol. 2';
-	let metaDescription = 'Compete on the maps to receive special badges for the top 3 in the event!';
+	let title = 'Gamified Vivify';
+	let metaDescription = 'Compete on the maps to receive badges and game licenses.';
 </script>
 
 
@@ -309,7 +309,7 @@
 	openGraph={{
 		title,
 		description: metaDescription,
-		images: [{url: CURRENT_URL + '/assets/gamifyvivify-event.webp'}],
+		images: [{url: CURRENT_URL + '/assets/gamifyvivify-event.jpg'}],
 		siteName: ssrConfig.name,
 	}}
 	twitter={{
@@ -318,7 +318,7 @@
 		cardType: 'summary_large_image',
 		title,
 		description: metaDescription,
-		image: CURRENT_URL + '/assets/gamifyvivify-event.webp',
+		image: CURRENT_URL + '/assets/gamifyvivify-event.jpg',
 		imageAlt: metaDescription,
 	}} />
 
