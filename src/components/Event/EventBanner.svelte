@@ -318,7 +318,7 @@
 		}
 
 		.cover-logo {
-			background-image: url(/assets/lovelive_logo_mobile.webp);
+			background-image: url(/assets/gamifiedvivify_logo_mobile.webp);
 		}
 	}
 
