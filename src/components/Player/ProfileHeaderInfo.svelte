@@ -224,7 +224,7 @@
 				<div class="sponsor-message">
 					<span
 						>This message will be shown in-game for your scores.<br />
-						You can use <a class="inlineLink" href="http://digitalnativestudios.com/textmeshpro/docs/rich-text">Unity tags</a> here.</span>
+						You can use <a class="inlineLink" href="https://docs.unity3d.com/Packages/com.unity.textmeshpro@4.0/manual/RichText.html">Unity tags</a> here.</span>
 					<input type="text" bind:value={editModel.data.message} placeholder="Promotion message" class="sponsor-input" />
 				</div>
 			{/if}
