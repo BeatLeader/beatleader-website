@@ -101,6 +101,7 @@ export const DEFAULT_CONFIG = {
 		dateFormat: 'relative',
 		showHmd: true,
 		showTriangle: true,
+		showFollowedScoreIcons: false,
 	},
 	scoreBadges: [
 		[
