@@ -125,15 +125,15 @@ input {
 }
 
 .rank.tablet-and-up>.val * {
-  color: #757575 !important;
+  color: var(--textColor) !important;
 }
 
 .timeset * {
-  color: #757575 !important;
+  color: var(--textColor) !important;
 }
 
 span.main-value {
-  color: #757575 !important;
+  color: var(--textColor) !important;
 }
 
 .search-box>.content-box>main .close {
@@ -145,7 +145,7 @@ input::placeholder {
 }
 
 .player-name-and-rank>.player-name {
-  color: #757575 !important;
+  color: var(--textColor) !important;
 }
 
 .bullets span.active {
@@ -172,7 +172,7 @@ input::placeholder {
   height: 43px !important;
   bottom: 5px !important;
   background-color: #b8b8b893 !important;
-  color: #757575 !important;
+  color: var(--textColor) !important;
 }
 
 .multiSelectItem_clear {
@@ -202,29 +202,45 @@ input::placeholder {
   color: #eeeeee !important;
 }
 
+.big-landing-box h3 {
+  color: #eeeeee !important;
+}
+
+.mod-beatsaber strong {
+  color: #eeeeee !important;
+}
+
+.pc-download-button[href="https://github.com/BeatLeader/beatleader-mod/releases"] > .button {
+  color: #eeeeee !important;
+}
+
+.quest-download-button[href="https://github.com/BeatLeader/beatleader-qmod/releases"] > .button {
+  color: #eeeeee !important;
+}
+
 .features {
   position: relative;
   top: 20px;
 }
 
 .content-box h3 {
-  color: #757575 !important;
+  color: var(--textColor) !important;
 }
 
 .content-box li {
-  color: #757575 !important;
+  color: var(--textColor) !important;
 }
 
 .content-box strong {
-  color: #757575 !important;
+  color: var(--textColor) !important;
 }
 
 .login-container.login-page div {
-  color: #757575 !important;
+  color: var(--textColor) !important;
 }
 
 .login-container.login-page b {
-  color: #757575 !important;
+  color: var(--textColor) !important;
 }
 
 nav>.nav-button:hover {
@@ -324,14 +340,14 @@ div.hand-values:nth-child(1)>section:nth-child(1) {
   background-color: #ececec !important;
   padding: 2px;
   border-radius: 5px;
-  color: #757575 !important;
+  color: var(--textColor) !important;
 }
 
 div.hand-values:nth-child(2)>section:nth-child(1) {
   background-color: #ececec !important;
   padding: 2px;
   border-radius: 5px;
-  color: #757575 !important;
+  color: var(--textColor) !important;
 }
 
 .details {
@@ -341,7 +357,7 @@ div.hand-values:nth-child(2)>section:nth-child(1) {
 }
 
 .details div {
-  color: #757575 !important;
+  color: var(--textColor) !important;
 }
 
 div.leaderboard.content-box {
@@ -352,7 +368,7 @@ div.leaderboard.content-box>div .player-score {
   background-color: #ececec !important;
   padding: 5px;
   border-radius: 5px;
-  color: #757575;
+  color: var(--textColor);
 }
 
 .replay-button-alt {
@@ -390,7 +406,7 @@ div.leaderboard.content-box>div .player-score.highlight {
 }
 
 div.rank {
-  color: white !important;
+  color: var(--textColor) !important;
   border-radius: 5px !important;
 }
 
@@ -532,11 +548,11 @@ input {
 }
 
 main>.search-box>.content-box>main header {
-  color: #757575 !important;
+  color: var(--textColor) !important;
 }
 
 main>.search-box>.content-box>main section {
-  color: #757575 !important;
+  color: var(--textColor) !important;
 }
 
 .search-box>.content-box footer {
@@ -554,7 +570,7 @@ main>.search-box>.content-box>main section {
 }
 
 .search-box span {
-  color: #757575 !important;
+  color: var(--textColor) !important;
 }
 
 section.group:nth-child(1)>header:nth-child(1) {
@@ -588,16 +604,16 @@ section.group:nth-child(1)>section:nth-child(2) .item {
 }
 
 .form small {
-  color: #757575;
+  color: var(--textColor) !important;
 }
 
 .player-card>.steam-and-pp * {
-  color: #757575 !important;
+  color: var(--textColor) !important;
 }
 
 .pinned-scores h2 {
   padding: 20px !important;
-  color: #757575 !important;
+  color: var(--textColor) !important;
 }
 
 .pinned-scores>.score header {
@@ -642,8 +658,8 @@ section.group:nth-child(1)>section:nth-child(2) .item {
 }
 
 .player-card .name {
-  color: #757575 !important;
-  --dimmed: #757575;
+  color: var(--textColor) !important;
+  --dimmed: var(--textColor);
 }
 
 .clan-stats .label {
@@ -697,11 +713,21 @@ section.group:nth-child(1)>section:nth-child(2) .item {
 }
 
 .qualification-description span {
-  color: #757575 !important;
+  color: var(--textColor) !important;
 }
 
 .qualification-description {
-  color: #a5a5a5 !important;
+  color: var(--textColor) !important;
+}
+
+.qualification-description span.criteria-check {
+  color: var(--textColor) !important;
+  background: var(--foreground) !important;
+}
+
+.qualification-description .criteria-check-red {
+  color: var(--textColor) !important;
+  background: var(--foreground) !important;
 }
 
 .scores-grid.grid-transition-helper>div .button {
@@ -744,11 +770,11 @@ section.group:nth-child(1)>section:nth-child(2) .item {
 }
 
 aside>div>div h3 {
-  color: #757575 !important;
+  color: var(--textColor) !important;
 }
 
 aside>.content-box>section>.players a {
-  color: #757575 !important;
+  color: var(--textColor) !important;
 }
 
 .dialog-container {
@@ -777,9 +803,17 @@ aside>.content-box>section>.players a {
   background-image: none !important;
 }
 
+.modifiers label{
+  background-color: var(--hover) !important;
+}
+
+.progress-bar {
+  background: var(--dimmed) !important;
+}
+
 .score-filters i {
   background-color: #ccf4ff !important;
-  color: #757575 !important;
+  color: var(--textColor) !important;
 }
 
 .score-sorting a.button {
@@ -787,8 +821,13 @@ aside>.content-box>section>.players a {
   --bg-color: #ccf4ff !important;
 }
 
+.order-toggle.button {
+  color: var(--textColor) !important;
+  background-color: var(--hover) !important;
+}
+
 .beat-savior-reveal.clickable {
-  color: #c2c2c2;
+  color: var(--textColor) !important;
 }
 
 .svelte-y0rxya.open {
@@ -851,11 +890,11 @@ a.button :not(.replay-button-alt) {
 }
 
 h2.title {
-  color: #757575 !important;
+  color: var(--textColor) !important;
 }
 
 div.title {
-  color: #757575 !important;
+  color: var(--textColor) !important;
 }
 
 .song-score {
@@ -878,7 +917,7 @@ h1 {
 
 .navigation-item {
   background-color: #dadedf !important;
-  color: #757575 !important;
+  color: var(--textColor) !important;
 }
 
 .navigation-item:hover {
@@ -911,7 +950,11 @@ section.option:nth-child(4) {
 }
 
 .options span {
-  color: #757575 !important;
+  color: var(--textColor) !important;
+}
+
+.options label {
+  color: var(--textColor) !important;
 }
 
 .details-box.slice-details-container .main-grid .grid-cell :not(.highlight-l) {
@@ -1015,10 +1058,6 @@ section.option:nth-child(4) {
   background-color: #ccf4ff !important;
 }
 
-section.option:nth-child(2) {
-  display: none;
-}
-
 .tabs-container>.options {
   display: grid;
   grid-template-columns: repeat(1, 1fr) !important;
@@ -1055,11 +1094,11 @@ nav.ssr-page-container div {
 }
 
 html body nav.ssr-page-container.flylight a[href="/signin"] {
-  color: #757575 !important;
+  color: var(--textColor) !important;
 }
 
 html body nav.ssr-page-container.flylight a[href="/ranking/1"] {
-  color: #757575 !important;
+  color: var(--textColor) !important;
 }
 
 .content-box {
@@ -1175,6 +1214,10 @@ html body nav.ssr-page-container.flylight a[href="/ranking/1"] {
   }
 }
 
+.fc small {
+  color: var(--textColor) !important;
+}
+
 .beatleader-swipe-card div.chart {
   border-top: 1px solid var(--row-separator);
   border-bottom: 1px solid var(--row-separator);
@@ -1186,6 +1229,14 @@ html body nav.ssr-page-container.flylight a[href="/ranking/1"] {
 
 .beatleader-swipe-card section.chart {
   margin: 0em !important;
+}
+
+.triangle-container span.value {
+  color: var(--textColor) !important;
+}
+
+.pp-part span.value {
+  color: #0000ff !important;
 }
 
 .failed-scores {
@@ -1326,6 +1377,18 @@ html body nav.ssr-page-container.flylight a[href="/ranking/1"] {
   -webkit-backdrop-filter: blur(10px);
 }
 
+.header-top-part h1.title span.name, h1.title span.subname{
+    color: var(--textColor) !important;
+  }
+
+.title-container span.author {
+  color: var(--textColor) !important;
+}
+
+.header-top-part h1.song-title span.name, .header-top-part h1.song-title span.subname {
+  color: var(--textColor) !important;
+}
+
 .bottom-container-background {
   background-color: #ffffffd4 !important;
 }
@@ -1359,25 +1422,25 @@ html body nav.ssr-page-container.flylight a[href="/ranking/1"] {
 
 .song-score.as-box {
   .player {
-      background: #00000036 !important;
+      background: transparent !important;
   }
 }
 
-.arrow-link {
-  color: #00000054;
+.arrow-link, .arrow-link-desktop {
+  color: black !important;
 }
 
 /* Light theme polish overrides */
 :root {
   --background: #f7f9fc !important;
   --foreground: #ffffff !important;
-  --textColor: #3f3f46 !important;
+  --textColor: #1e1e1e !important;
   --linkColor: #2563eb !important;
   --linkHoverColor: #1d4ed8 !important;
 
   --color: var(--textColor) !important;
   --dimmed: #9aa3ad !important;
-  --faded: #a3a3a3 !important;
+  --faded: #3e3e3e !important;
   --selected: #e6f0ff !important;
   --hover: #f3f6fa !important;
   --highlight: #eef6ff !important;
@@ -1507,7 +1570,7 @@ a.button:active { --bg-color: var(--selected) !important; }
 }
 
 .followers-title {
-  color: #757575 !important;
+  color: var(--textColor) !important;
 }
 
 .title-and-followers:hover {
@@ -1515,8 +1578,7 @@ a.button:active { --bg-color: var(--selected) !important; }
 }
 
 .player-nickname {
-  text-shadow: none !important;
-  color: #686868 !important;
+  color: var(--textColor) !important;
 }
 
 .withCover .player-nickname {
@@ -1616,4 +1678,8 @@ a.button:active { --bg-color: var(--selected) !important; }
 
 .mini-profile-box .player-data {
   background-color: #ffffff9c !important;
+}
+
+.profile-info-container .name-and-details{
+  color: #eeeeee !important;
 }
