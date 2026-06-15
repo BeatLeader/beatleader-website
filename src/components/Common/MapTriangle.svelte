@@ -41,12 +41,7 @@
 			</div>
 			<div class="stars">
 				{#if mapRating.stars}
-					<Value
-						value={mapRating.stars}
-						digits={$configStore?.leaderboardPreferences?.showTwoDigitStarRating ? 2 : 1}
-						zero=""
-						prefix=""
-						suffix="★" />
+					<Value value={mapRating.stars} digits={2} zero="" prefix="" suffix="★" />
 				{/if}
 			</div>
 		{/if}
