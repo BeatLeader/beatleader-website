@@ -28,9 +28,9 @@ Install netlify-cli(one time setup):
 npm install netlify-cli -g
 ```
 
-Start Netlify dev environment(every time):
+Start dev environment(every time):
 ```bash
-netlify dev
+yarn dev
 ```
 
 Navigate to [localhost:8888](http://localhost:8888). You should see the app running.

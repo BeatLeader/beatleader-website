@@ -331,6 +331,7 @@
 	$: showAccGraph = $configStore?.leaderboardPreferences?.showAccGraph ?? false;
 	$: alwaysShowAuthorHint = $configStore?.leaderboardPreferences?.alwaysShowAuthorHint ?? false;
 	$: showCustomDifficultyNames = $configStore?.leaderboardPreferences?.showCustomDifficultyNames ?? true;
+	$: showTwoDigitStarRating = $configStore?.leaderboardPreferences?.showTwoDigitStarRating ?? false;
 
 	$: showClanInHeader = $configStore?.leaderboardPreferences?.showClanCaptureInHeader ?? false;
 	$: showClanInList = $configStore?.leaderboardPreferences?.showClanCaptureInList ?? false;
@@ -493,7 +494,16 @@
 							label="Show custom difficulty names"
 							fontSize={12}
 							design="slider"
-							on:click={() => configStore.settempsetting('leaderboardPreferences', 'showCustomDifficultyNames', !showCustomDifficultyNames)} />
+							on:click={() =>
+								configStore.settempsetting('leaderboardPreferences', 'showCustomDifficultyNames', !showCustomDifficultyNames)} />
+					</div>
+					<div title="Use 2-digit precision for star rating">
+						<Switch
+							value={showTwoDigitStarRating}
+							label="Use 2-digit precision for star rating"
+							fontSize={12}
+							design="slider"
+							on:click={() => configStore.settempsetting('leaderboardPreferences', 'showTwoDigitStarRating', !showTwoDigitStarRating)} />
 					</div>
 				</div>
 			</section>

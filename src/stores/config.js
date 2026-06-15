@@ -144,6 +144,7 @@ export const DEFAULT_CONFIG = {
 		alwaysShowAuthorHint: false,
 		showSubtitleInHeader: true,
 		showCustomDifficultyNames: true,
+		showTwoDigitStarRating: false,
 
 		show: {
 			avatar: true,
