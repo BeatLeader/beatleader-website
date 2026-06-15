@@ -135,12 +135,15 @@
 			<label title="Options for how maps are displayed throughout the website">Maps options:</label>
 			<div class="switches">
 				{#each mapsOptions as key}
-					<Switch
-						value={$configStore.mapsOptions[key]}
-						label={describeMapsOption(key)}
-						fontSize={12}
-						design="slider"
-						on:click={() => setroottempsetting('mapsOptions', key, !$configStore.mapsOptions[key])} />
+					{@const label = describeMapsOption(key)}
+					{#if label}
+						<Switch
+							value={$configStore.mapsOptions[key]}
+							{label}
+							fontSize={12}
+							design="slider"
+							on:click={() => setroottempsetting('mapsOptions', key, !$configStore.mapsOptions[key])} />
+					{/if}
 				{/each}
 			</div>
 		</section>
@@ -264,12 +267,15 @@
 			<label title="Options for how cards on the maps list page are displayed">Cards options:</label>
 			<div class="switches">
 				{#each mapCardsOptions as key}
-					<Switch
-						value={$configStore.mapCards[key]}
-						label={describeMapCardsOption(key)}
-						fontSize={12}
-						design="slider"
-						on:click={() => setroottempsetting('mapCards', key, !$configStore.mapCards[key])} />
+					{@const label = describeMapCardsOption(key)}
+					{#if label}
+						<Switch
+							value={$configStore.mapCards[key]}
+							{label}
+							fontSize={12}
+							design="slider"
+							on:click={() => setroottempsetting('mapCards', key, !$configStore.mapCards[key])} />
+					{/if}
 				{/each}
 			</div>
 		</section>

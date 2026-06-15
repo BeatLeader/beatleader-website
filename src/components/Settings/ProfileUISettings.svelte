@@ -296,12 +296,15 @@
 			<label title="Determines which parts of the profile to show">Profile parts to show:</label>
 			<div class="switches">
 				{#each profileParts as key}
-					<Switch
-						value={$configStore.profileParts[key]}
-						label={describeProfilePart(key)}
-						fontSize={12}
-						design="slider"
-						on:click={() => setroottempsetting('profileParts', key, !$configStore.profileParts[key])} />
+					{@const label = describeProfilePart(key)}
+					{#if label}
+						<Switch
+							value={$configStore.profileParts[key]}
+							{label}
+							fontSize={12}
+							design="slider"
+							on:click={() => setroottempsetting('profileParts', key, !$configStore.profileParts[key])} />
+					{/if}
 				{/each}
 			</div>
 		</section>
