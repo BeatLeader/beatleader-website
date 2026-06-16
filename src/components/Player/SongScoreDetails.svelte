@@ -90,6 +90,7 @@
 	$: diffInfo = leaderboard?.diffInfo;
 	$: showPredictions = !noSsLeaderboard && $configStore?.scoreDetailsPreferences?.showPredictedAcc;
 	$: scale = modifiersToSpeed(score.mods);
+	$: playedNjs = leaderboard?.difficultyBl?.njs ? leaderboard.difficultyBl.njs * scale : null;
 	$: exmachinadata = showPredictions && $starGeneratorStore[hash + diffInfo?.diff + diffInfo?.type + scale];
 	$: !exmachinadata && showPredictions && starGeneratorStore.fetchExMachina(hash, downloadUrl, diffInfo?.diff, diffInfo?.type, scale);
 	$: notes = exmachinadata?.notes;
@@ -109,7 +110,7 @@
 				</div>
 			{/if}
 			<div class="stats-grid">
-				<BeatSaviorDetails {beatSavior} showGrid={score?.replay == null} {replayAccGraphs} {underswingsData} {notes} />
+				<BeatSaviorDetails {beatSavior} showGrid={score?.replay == null} {replayAccGraphs} {underswingsData} {notes} njs={playedNjs} />
 
 				{#if score?.replay && ($configStore?.scoreDetailsPreferences?.showAccChart || $configStore?.scoreDetailsPreferences?.showSliceDetails || $configStore?.scoreDetailsPreferences?.showAccSpreadChart)}
 					<ReplayDetails {score} on:replay-was-processed={handleReplayWasProcessed} />

@@ -34,6 +34,7 @@ export const DEFAULT_CONFIG = {
 		scoresSortOptions: 'last',
 		attemptsSortOptions: 'last',
 		theme: 'ree-dark',
+		jumpDistanceMetric: 'jd',
 		oneclick: 'modassistant',
 		webPlayer: 'beatleader',
 		linkOption: 'thistab',

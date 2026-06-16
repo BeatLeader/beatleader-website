@@ -207,6 +207,12 @@
 		{name: 'Playlist picker popup', value: 'picker'},
 	];
 
+	const DEFAULT_JUMP_DISTANCE_METRIC = 'jd';
+	const jumpDistanceMetrics = [
+		{name: 'Jump Distance (JD)', value: DEFAULT_JUMP_DISTANCE_METRIC},
+		{name: 'Reaction Time (RT)', value: 'rt'},
+	];
+
 	let currentLocale = DEFAULT_LOCALE;
 	let currentScoreBadges = null;
 	let currentScoreBadgeSelected = null;
@@ -222,6 +228,7 @@
 	let currentShowHmd = true;
 	let currentShowTriangle = true;
 	let currentPlaylistOption = DEFAULT_PLAYLIST_OPTION;
+	let currentJumpDistanceMetric = DEFAULT_JUMP_DISTANCE_METRIC;
 
 	const scoreDetailsKeyDescription = {
 		showMapInfo: 'Map info',
@@ -251,6 +258,8 @@
 		if (config?.scorePreferences?.showTriangle != currentShowTriangle) currentShowTriangle = config?.scorePreferences?.showTriangle ?? true;
 		if (config?.preferences?.playlistOption != currentPlaylistOption)
 			currentPlaylistOption = config?.preferences?.playlistOption ?? DEFAULT_PLAYLIST_OPTION;
+		if (config?.preferences?.jumpDistanceMetric != currentJumpDistanceMetric)
+			currentJumpDistanceMetric = config?.preferences?.jumpDistanceMetric ?? DEFAULT_JUMP_DISTANCE_METRIC;
 		if (stringify(config?.scoreBadges) !== stringify(currentScoreBadges)) {
 			currentScoreBadges = deepClone(Object.values(config?.scoreBadges) ?? DEFAULT_CONFIG.scoreBadges);
 			currentScoreBadgeSelected = null;
@@ -362,6 +371,7 @@
 	$: configStore.settempsetting('scoreComparison', 'badgeRows', currentComparisonBadgeLayout);
 	$: configStore.settempsetting('scoreBadges', null, currentScoreBadges);
 	$: configStore.settempsetting('preferences', 'playlistOption', currentPlaylistOption);
+	$: configStore.settempsetting('preferences', 'jumpDistanceMetric', currentJumpDistanceMetric);
 
 	$: scoreDetailsPreferences = $configStore.scoreDetailsPreferences ?? {};
 	$: visibleScoreIcons = $configStore.visibleScoreIcons;
@@ -441,6 +451,12 @@
 							on:click={() => configStore.settempsetting('scoreDetailsPreferences', key, !scoreDetailsPreferences[key])} />
 					{/each}
 				</div>
+			</section>
+			<section class="option" id="score-jump-distance-metric">
+				<label
+					title="Show maps and scores either with Jump Distance (JD) or Reaction Time (RT). The other metric is shown on hover."
+					>Jump distance metric</label>
+				<Select bind:value={currentJumpDistanceMetric} options={jumpDistanceMetrics} />
 			</section>
 			<section class="option" id="score-acc-chart">
 				<label title="Determines which acc chart displays by default.">Default acc chart in details</label>

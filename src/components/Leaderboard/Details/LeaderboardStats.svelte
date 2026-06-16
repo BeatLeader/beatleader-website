@@ -3,6 +3,8 @@
 	import Value from '../../Common/Value.svelte';
 	import Duration from '../../Song/Duration.svelte';
 	import MapRequirementDescription from '../MapRequirementDescription.svelte';
+	import {configStore} from '../../../stores/config';
+	import {formatNumber, jumpDistanceToReactionTime} from '../../../utils/format';
 
 	export let leaderboard;
 	export let compact = false;
@@ -48,6 +50,8 @@
 	$: bpm = leaderboard?.song?.bpm;
 	$: halfJumpDuration = calculateHalfJumpDuration(bpm, diff?.njs, diff?.noteJumpStartBeatOffset ?? 0);
 	$: defaultJumpDistance = halfJumpDuration && bpm && diff?.njs ? (60 / bpm) * halfJumpDuration * diff.njs * 2 : null;
+	$: jumpDistanceMetric = $configStore?.preferences?.jumpDistanceMetric ?? 'jd';
+	$: defaultReactionTime = jumpDistanceToReactionTime(defaultJumpDistance, diff?.njs);
 	$: currentLeaderboardId = leaderboard?.leaderboardId ?? null;
 	$: if (currentLeaderboardId !== lastLeaderboardId) {
 		showAllStats = false;
@@ -134,10 +138,26 @@
 					</strong>
 					{#if !showCompactStats && Number.isFinite(defaultJumpDistance)}
 						<span>|</span>
-						<strong>
-							<Value value={defaultJumpDistance} title={`${diff.noteJumpStartBeatOffset ?? 0} offset`} digits={2} />
-						</strong>
-						<span title="Default map jump distance">default JD</span>
+						{#if jumpDistanceMetric === 'rt' && Number.isFinite(defaultReactionTime)}
+							<strong>
+								<Value
+									value={defaultReactionTime}
+									title={`Jump distance: ${formatNumber(defaultJumpDistance, 2)} (${diff.noteJumpStartBeatOffset ?? 0} offset)`}
+									digits={0}
+									suffix=" ms" />
+							</strong>
+							<span title="Default map reaction time">default RT</span>
+						{:else}
+							<strong>
+								<Value
+									value={defaultJumpDistance}
+									title={Number.isFinite(defaultReactionTime)
+										? `Reaction time: ${formatNumber(defaultReactionTime, 0)} ms (${diff.noteJumpStartBeatOffset ?? 0} offset)`
+										: `${diff.noteJumpStartBeatOffset ?? 0} offset`}
+									digits={2} />
+							</strong>
+							<span title="Default map jump distance">default JD</span>
+						{/if}
 					{/if}
 				</div>
 			{/if}

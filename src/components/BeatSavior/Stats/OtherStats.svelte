@@ -1,7 +1,7 @@
 <script>
 	import ssrConfig from '../../../ssr-config';
 	import {opt} from '../../../utils/js';
-	import {formatNumber, padNumber} from '../../../utils/format';
+	import {formatNumber, padNumber, jumpDistanceToReactionTime} from '../../../utils/format';
 	import {configStore} from '../../../stores/config';
 	import Value from '../../Common/Value.svelte';
 	import Badge from '../../Common/Badge.svelte';
@@ -12,6 +12,7 @@
 	export let compareTo = null;
 	export let compareToName = null;
 	export let isAverage = false;
+	export let njs = null;
 
 	function formatFailedAt(beatSavior) {
 		const endTime = opt(beatSavior, 'trackers.winTracker.endTime');
@@ -38,6 +39,9 @@
 	$: bothHandsStats = stats?.accLeft && stats?.accRight;
 
 	$: jumpDistance = beatSavior ? beatSavior.songJumpDistance : null;
+	$: jumpDistanceMetric = $configStore?.preferences?.jumpDistanceMetric ?? 'jd';
+	$: reactionTime = jumpDistanceToReactionTime(jumpDistance, njs);
+	$: compareToReactionTime = jumpDistanceToReactionTime(compareToJumpDistance, njs);
 	$: totalMistakes = stats ? stats.miss + stats.wallHit + stats.bombHit : null;
 	$: leftBadCuts = isAverage ? (stats?.leftBadCuts ?? null) : opt(beatSavior, 'trackers.hitTracker.leftBadCuts', null);
 	$: leftMissedNotes = isAverage ? (stats?.leftMiss ?? null) : opt(beatSavior, 'trackers.hitTracker.leftMiss', null);
@@ -251,11 +255,30 @@
 		{/if}
 
 		{#if jumpDistance > 0}
-			<Badge label="JD" color="white" bgColor="var(--dimmed)" fluid={true}>
-				<svelte:fragment slot="value">
-					<Value value={jumpDistance} digits={2} prevValue={compareToJumpDistance} prevAbsolute={true} prevWithSign={false} />
-				</svelte:fragment>
-			</Badge>
+			{#if jumpDistanceMetric === 'rt' && Number.isFinite(reactionTime)}
+				<Badge label="RT" color="white" bgColor="var(--dimmed)" fluid={true} title={`Jump distance: ${formatNumber(jumpDistance, 2)}`}>
+					<svelte:fragment slot="value">
+						<Value
+							value={reactionTime}
+							digits={0}
+							suffix=" ms"
+							prevValue={compareToReactionTime}
+							prevAbsolute={true}
+							prevWithSign={false} />
+					</svelte:fragment>
+				</Badge>
+			{:else}
+				<Badge
+					label="JD"
+					color="white"
+					bgColor="var(--dimmed)"
+					fluid={true}
+					title={Number.isFinite(reactionTime) ? `Reaction time: ${formatNumber(reactionTime, 0)} ms` : ''}>
+					<svelte:fragment slot="value">
+						<Value value={jumpDistance} digits={2} prevValue={compareToJumpDistance} prevAbsolute={true} prevWithSign={false} />
+					</svelte:fragment>
+				</Badge>
+			{/if}
 		{/if}
 	</div>
 {/if}

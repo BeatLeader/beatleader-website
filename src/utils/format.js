@@ -62,6 +62,12 @@ export function formatNumber(num, digits = 2, addSign = false, notANumber = null
 	);
 }
 
+export function jumpDistanceToReactionTime(jumpDistance, njs) {
+	if (!Number.isFinite(jumpDistance) || !Number.isFinite(njs) || njs <= 0) return null;
+
+	return (jumpDistance / (2 * njs)) * 1000;
+}
+
 export const padNumber = (num, pad = 2) => (Array(pad).fill('0').join('') + num).slice(-pad);
 
 export const round = (val, places = 2) => {

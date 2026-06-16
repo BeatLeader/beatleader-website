@@ -15,6 +15,7 @@
 	export let replayAccGraphs = null;
 	export let underswingsData = null;
 	export let notes;
+	export let njs = null;
 
 	let graphPageIndex = $configStore?.scoreDetailsPreferences?.defaultAccChartIndex ?? 1;
 
@@ -43,7 +44,7 @@
 		{#if showAll || $configStore?.scoreDetailsPreferences?.showScoreMetrics || $configStore?.scoreDetailsPreferences?.showHandsAcc || (showGrid && $configStore?.scoreDetailsPreferences?.showSliceDetails)}
 			<DetailsBox cls="details-and-hands">
 				{#if $configStore?.scoreDetailsPreferences?.showScoreMetrics}
-					<OtherStats {beatSavior} />
+					<OtherStats {beatSavior} {njs} />
 				{/if}
 				<div class="hands-and-grid">
 					{#if $configStore?.scoreDetailsPreferences?.showHandsAcc}
