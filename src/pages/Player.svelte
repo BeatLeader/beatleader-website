@@ -30,6 +30,7 @@
 	import {getContext} from 'svelte';
 	import {produce} from 'immer';
 	import LoveLiveCongratulation from '../components/Player/LoveLiveCongratulation.svelte';
+	import GamifiedVivifyCongratulation from '../components/Player/GamifiedVivifyCongratulation.svelte';
 
 	const RANKED_STORE_SORTING_KEY = 'PlayerRankedSorting';
 	const RANKED_STORE_ORDER_KEY = 'PlayerRankedOrder';
@@ -248,6 +249,27 @@
 		});
 	}
 
+	function showGamifiedVivifyCongratulation(isMain, ssBadges, gamifiedVivifyShown) {
+		if (!isMain) return;
+		if (gamifiedVivifyShown) return;
+		const badge = ssBadges?.find(b => b.title.toLowerCase().includes('gamified vivify'));
+		if (!badge) return;
+		open(GamifiedVivifyCongratulation, {
+			badge,
+			confirm: () => {
+				close();
+				$configStore = produce($configStore, draft => {
+					draft.preferences.gamifiedVivifyShown = true;
+				});
+			},
+			cancel: () => {
+				close();
+				$configStore = produce($configStore, draft => {
+					draft.preferences.gamifiedVivifyShown = true;
+				});
+			},
+		});
+	}
 	$: paramsStore = playerStore ? playerStore.params : null;
 
 	$: currentPlayerId = $paramsStore.currentPlayerId;
@@ -300,6 +322,7 @@
 	
 	$: editing = new URLSearchParams(location?.search).get('edit') ?? null;
 	$: playerPage && toggleRandomImageOnHover(playerPage, playerInfo?.clans?.filter(cl => cl.tag == 'SABA').length);
+	$: showGamifiedVivifyCongratulation(isMain, ssBadges, $configStore.preferences.gamifiedVivifyShown);
 </script>
 
 <svelte:head>

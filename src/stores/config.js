@@ -93,6 +93,7 @@ export const DEFAULT_CONFIG = {
 		adoventShown: false,
 		batleaderShown: false,
 		loveLiveShown: false,
+		gamifiedVivifyShown: false,
 		askOnLogOut: true,
 		beastiesFinalistsPopupShown: false,
 	},
