@@ -227,6 +227,7 @@
 	let currentTimeFormat = DEFAULT_TIME_FORMAT;
 	let currentShowHmd = true;
 	let currentShowTriangle = true;
+	let currentShowFollowedScoreIcons = false;
 	let currentPlaylistOption = DEFAULT_PLAYLIST_OPTION;
 	let currentJumpDistanceMetric = DEFAULT_JUMP_DISTANCE_METRIC;
 
@@ -256,6 +257,8 @@
 			currentTimeFormat = config?.scorePreferences?.dateFormat ?? DEFAULT_TIME_FORMAT;
 		if (config?.scorePreferences?.showHmd != currentShowHmd) currentShowHmd = config?.scorePreferences?.showHmd ?? true;
 		if (config?.scorePreferences?.showTriangle != currentShowTriangle) currentShowTriangle = config?.scorePreferences?.showTriangle ?? true;
+		if (config?.scorePreferences?.showFollowedScoreIcons != currentShowFollowedScoreIcons)
+			currentShowFollowedScoreIcons = config?.scorePreferences?.showFollowedScoreIcons ?? false;
 		if (config?.preferences?.playlistOption != currentPlaylistOption)
 			currentPlaylistOption = config?.preferences?.playlistOption ?? DEFAULT_PLAYLIST_OPTION;
 		if (config?.preferences?.jumpDistanceMetric != currentJumpDistanceMetric)
@@ -367,6 +370,7 @@
 	$: configStore.settempsetting('scorePreferences', 'dateFormat', currentTimeFormat);
 	$: configStore.settempsetting('scorePreferences', 'showHmd', currentShowHmd);
 	$: configStore.settempsetting('scorePreferences', 'showTriangle', currentShowTriangle);
+	$: configStore.settempsetting('scorePreferences', 'showFollowedScoreIcons', currentShowFollowedScoreIcons);
 	$: configStore.settempsetting('scorePreferences', 'badgeRows', currentBadgeLayout);
 	$: configStore.settempsetting('scoreComparison', 'badgeRows', currentComparisonBadgeLayout);
 	$: configStore.settempsetting('scoreBadges', null, currentScoreBadges);
@@ -419,6 +423,17 @@
 								on:click={() => configStore.settempsetting('visibleScoreIcons', key, !visibleScoreIcons[key])} />
 						{/if}
 					{/each}
+				</div>
+			</section>
+			<section class="option full" id="followed-score-icons">
+				<label title="Show score action buttons on the dashboard Scores of Followed list">Followed scores (dashboard)</label>
+				<div class="switches start">
+					<Switch
+						value={currentShowFollowedScoreIcons}
+						label="Show buttons on followed scores"
+						fontSize={12}
+						design="slider"
+						on:click={() => (currentShowFollowedScoreIcons = !currentShowFollowedScoreIcons)} />
 				</div>
 			</section>
 
