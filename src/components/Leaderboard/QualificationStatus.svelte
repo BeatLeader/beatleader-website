@@ -167,6 +167,7 @@
 		gap: 0.5em;
 		flex-direction: column;
 		margin-top: 0.25em;
+		max-width: 100%;
 	}
 
 	.beat-savior-reveal {
@@ -201,6 +202,10 @@
 		padding: 0.5em;
 		border: red solid;
 		background: #282727;
+		max-width: 100%;
+		overflow-wrap: break-word;
+		word-break: break-word;
+		box-sizing: border-box;
 	}
 
 	:global(.qualification-description) + .score-options-section {
