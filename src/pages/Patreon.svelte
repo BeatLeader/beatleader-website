@@ -160,15 +160,6 @@
 					<div class="benefit-button-container">
 						<Button
 							iconFa="fas fa-download"
-							title={!loggedInPlayer || !isSupporter ? 'Log in on the top of the Page and Link Patreon' : 'Download Reesabers for 1.37'}
-							label="Quest 1.37 (v0.3.12)"
-							disabled={!loggedInPlayer || !isSupporter}
-							on:click={() => {
-								downloadQmod('1.37.0');
-							}}
-							type="green" />
-						<Button
-							iconFa="fas fa-download"
 							title={!loggedInPlayer || !isSupporter ? 'Log in on the top of the Page and Link Patreon' : 'Download Reesabers for 1.40.8'}
 							label="Quest 1.40.8 (v0.3.19)"
 							disabled={!loggedInPlayer || !isSupporter}
@@ -200,6 +191,7 @@
 								<a href={BL_API_URL + 'questreesabersversion?version=1.40.7'}> Version for Quest 1.40.7 (v0.3.15)</a>
 								<a href={BL_API_URL + 'questreesabersversion?version=1.40.6'}> Version for Quest 1.40.6 (v0.3.14)</a>
 								<a href={BL_API_URL + 'questreesabersversion?version=1.40.4'}> Version for Quest 1.40.4 (v0.3.13)</a>
+								<a href={BL_API_URL + 'questreesabersversion?version=1.37.0'}> Version for Quest 1.37.0 (v0.3.12)</a>
 								<a href={BL_API_URL + 'questreesabersversion?version=1.35.0'}> Version for Quest 1.35.0 (v0.3.9)</a>
 								<a href={BL_API_URL + 'questreesabersversion?version=1.28.0'}> Version for Quest 1.28.0 (v0.3.9)</a>
 							{/if}
@@ -251,15 +243,6 @@
 								on:click={() => {
 									downloadQmod('1.40.8');
 								}} />
-							<Button
-								iconFa="fas fa-download"
-								title={!loggedInPlayer || !isSupporter ? 'Log in on the top of the Page and Link Patreon' : 'Download Reesabers for 1.37'}
-								label="Quest 1.37 (v0.3.12)"
-								disabled={!loggedInPlayer || !isSupporter}
-								type="green"
-								on:click={() => {
-									downloadQmod('1.37.0');
-								}} />
 						</div>
 					</div>
 
@@ -281,6 +264,10 @@
 							</span>
 
 							{#if showOtherVersions}
+								<a href={BL_API_URL + 'reesabersversion?version=1.40.0_038'}> Version for PC 1.38-1.40.8 (v0.3.18)</a>
+								<a href={BL_API_URL + 'reesabersversion?version=1.29.1_038'}> Version for PC 1.29.1 (v0.3.18)</a>
+								<a href={BL_API_URL + 'reesabersversion?version=1.40.0_037'}> Version for PC 1.38-1.40.8 (v0.3.17)</a>
+								<a href={BL_API_URL + 'reesabersversion?version=1.29.1_037'}> Version for PC 1.29.1 (v0.3.17)</a>
 								<a href={BL_API_URL + 'reesabersversion?version=1.40.0_036'}> Version for PC 1.38-1.40.8 (v0.3.16)</a>
 								<a href={BL_API_URL + 'reesabersversion?version=1.29.1_036'}> Version for PC 1.29.1 (v0.3.16)</a>
 								<a href={BL_API_URL + 'reesabersversion?version=1.37.5'}> Version for PC 1.37.4-1.37.5 (v0.3.9)</a>
@@ -290,6 +277,7 @@
 								<a href={BL_API_URL + 'questreesabersversion?version=1.40.7'}> Version for Quest 1.40.7 (v0.3.15)</a>
 								<a href={BL_API_URL + 'questreesabersversion?version=1.40.6'}> Version for Quest 1.40.6 (v0.3.14)</a>
 								<a href={BL_API_URL + 'questreesabersversion?version=1.40.4'}> Version for Quest 1.40.4 (v0.3.13)</a>
+								<a href={BL_API_URL + 'questreesabersversion?version=1.37.0'}> Version for Quest 1.37.0 (v0.3.12)</a>
 								<a href={BL_API_URL + 'questreesabersversion?version=1.35.0'}> Version for Quest 1.35.0 (v0.3.9)</a>
 								<a href={BL_API_URL + 'questreesabersversion?version=1.28.0'}> Version for Quest 1.28.0 (v0.3.9)</a>
 							{/if}
