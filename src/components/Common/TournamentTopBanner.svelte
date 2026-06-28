@@ -5,11 +5,16 @@
 
 	let ongoing = null;
 
-	const tournamentId = 'bswc-2025';
-	const tournamentName = 'BSWC 2025';
+	const tournamentId = 'bswc-2026';
+	const tournamentName = 'BSWC 2026';
 
-	// Initialize bswc2025 if it doesn't exist
-	$configStore.preferences.bswc2025 ??= [];
+	// Initialize bswc2026 if it doesn't exist
+	$configStore.preferences.bswc2026 ??= [];
+	// Remove bswc2025 entry if it exists
+	if ('bswc2025' in $configStore.preferences) {
+		delete $configStore.preferences.bswc2025;
+		$configStore = $configStore;
+	}
 
 	function getOngoing() {
 		fetchJson(`https://api.cube.community/rest/bracket/ongoing?tournamentId=${tournamentId}`).then(response => {
@@ -24,15 +29,15 @@
 	$: getOngoing();
 </script>
 
-{#if ongoing && !$configStore.preferences?.bswc2025.some(el => el === ongoing.matchId) && !$configStore.preferences?.bswc2025.some(el => el === 'all')}
+{#if ongoing && !$configStore.preferences?.bswc2026.some(el => el === ongoing.matchId) && !$configStore.preferences?.bswc2026.some(el => el === 'all')}
 	<div class="tournament-banner">
 		<div class="tournament-banner-background"></div>
 		<button
 			class="close-all-future"
-			title="Hide all BSWC banners"
+			title="Hide all BSWC 2026 banners"
 			on:click|preventDefault|stopPropagation={() => {
 				$configStore = produce($configStore, draft => {
-					draft.preferences.bswc2025.push('all');
+					draft.preferences.bswc2026.push('all');
 				});
 			}}><i class="fas fa-xmark" /> Hide All</button>
 
@@ -50,7 +55,7 @@
 			title="Dismiss this match alert"
 			on:click|preventDefault|stopPropagation={() => {
 				$configStore = produce($configStore, draft => {
-					draft.preferences.bswc2025.push(ongoing.matchId);
+					draft.preferences.bswc2026.push(ongoing.matchId);
 				});
 			}}><i class="fas fa-xmark" /></button>
 	</div>
