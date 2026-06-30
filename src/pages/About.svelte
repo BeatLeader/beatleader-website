@@ -137,6 +137,9 @@ ${BL_API_URL}players?leaderboardContext=general&page=${page}&count=100&role=supp
 			<div class="member">
 				<img src="https://cdn.assets.beatleader.com/76561198051924392R48.png" alt="Light Ai" /><a href="/u/76561198051924392">Light Ai</a>
 			</div>
+			<div class="member">
+				<img src="https://cdn.assets.beatleader.com/5374R44.png" alt="Poochy" /><a href="/u/76561199066888403">Poochy</a>
+			</div>
 		</section>
 
 		<h1 class="title is-4">Ranking Team</h1>
