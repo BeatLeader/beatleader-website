@@ -692,18 +692,44 @@
 			<ContentBox cls={modalShown ? 'inner-modal' : ''}>
 				<span>
 					<b>Bats? Ghosts? Pumpkins? It's Halloween again? 😱 </b><br /><br />
-					<PlayerMention playerId="76561198289375258" /> Mapping Group, together with <PlayerMention playerId="76561199066888403" />,<PlayerMention playerId="76561198825767745" />,<PlayerMention playerId="76561198826449821" /> prepare a new event for you: <b>BatLeader!</b> <br />
-					Play maps from <a href="https://beatsaver.com/playlists/1033478">Genres Of Halloween</a> and from <a href="https://beatsaver.com/playlists/1024073">Gone EP</a> packs, and other spooky maps from cool mappers<br /><br />
+					<PlayerMention playerId="76561198289375258" /> Mapping Group, together with <PlayerMention
+						playerId="76561199066888403" />,<PlayerMention playerId="76561198825767745" />,<PlayerMention playerId="76561198826449821" /> prepare
+					a new event for you: <b>BatLeader!</b> <br />
+					Play maps from <a href="https://beatsaver.com/playlists/1033478">Genres Of Halloween</a> and from
+					<a href="https://beatsaver.com/playlists/1024073">Gone EP</a>
+					packs, and other spooky maps from cool mappers<br /><br />
 					Earn rewards:<br />
 					• <b>Badge</b> for making it into the event's top 10<br />
 					• <b>Achievement tiers</b> for participating:<br />
-						○ Tier 1: Pass any difficulty on every map<br />
-						○ Tier 2: Pass every Expert+ difficulty<br />
-						○ Tier 3: Get 80%+ accuracy on every Expert+ difficulty<br />
+					○ Tier 1: Pass any difficulty on every map<br />
+					○ Tier 2: Pass every Expert+ difficulty<br />
+					○ Tier 3: Get 80%+ accuracy on every Expert+ difficulty<br />
 					(All tiers must be completed without No-Fail, but other negative modifiers are allowed) <br /><br />
 				</span>
 				<span>
 					<b>Have a scary weekends and holiday, many sweets and fun!🎃</b>
+				</span>
+			</ContentBox>
+		{/if}
+
+		{#if eventId == 85}
+			<ContentBox cls={modalShown ? 'inner-modal' : ''}>
+				<span>
+					Are you sitting bored at home with nothing to do, just sweating to death?<br />
+					Well, fortunately for you, <PlayerMention playerId="76561199125063205" /> and <PlayerMention playerId="76561199066888403" /> bring
+					you the latest seasonal project:<br /><br />
+					<b>BEAT THE HEAT 2026</b><br /><br />
+					Over 20 unique mappers have come together to make some absolute heater maps for you to enjoy, each with its own little summer theme
+					to them.<br />
+					Huge thanks to <PlayerMention playerId="76561198101853765" /> for providing artwork for the event ❤️ <br /><br />
+					The event will go from July 27st 7:27({formatDate(dateFromUnix(1785158820))}) through August 17st 7:27({formatDate(
+						dateFromUnix(1786973220)
+					)}). There will be an achievement for playing all the maps, and there will also be event badges given out to the top 3 players who
+					have the most event pp at the end of the event, so make sure you play while you can!
+				</span>
+				<span>
+					<br /><br />
+					<b>Prepare your swimsuit, towel, and dive into a refreshing set of new maps! Good luck!🤽</b>
 				</span>
 			</ContentBox>
 		{/if}
