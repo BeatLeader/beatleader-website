@@ -722,10 +722,10 @@
 					Over 20 unique mappers have come together to make some absolute heater maps for you to enjoy, each with its own little summer theme
 					to them.<br />
 					Huge thanks to <PlayerMention playerId="76561198101853765" /> for providing artwork for the event ❤️ <br /><br />
-					The event will go from July 27st 7:27({formatDate(dateFromUnix(1785158820))}) through August 17st 7:27({formatDate(
+					The event will go from July 27st 7:27 ({formatDate(dateFromUnix(1785158820))} for you) through August 17st 7:27 ({formatDate(
 						dateFromUnix(1786973220)
-					)}). There will be an achievement for playing all the maps, and there will also be event badges given out to the top 3 players who
-					have the most event pp at the end of the event, so make sure you play while you can!
+					)} for you). There will be an achievement for playing all the maps, and there will also be event badges given out to the top 3 players
+					who have the most event pp at the end of the event, so make sure you play while you can!
 				</span>
 				<span>
 					<br /><br />
