@@ -170,7 +170,7 @@
 
 	function previewLink(songKey, diffName, charName, mapPreviewer) {
 		if (mapPreviewer == 'chroviewer') {
-			return `https://chroviewer.com/?id=${songKey}`; // cannot determine difficulty index
+			return `https://chroviewer.com/?map=${songKey}`; // cannot determine difficulty index
 		} else {
 			return `https://allpoland.github.io/ArcViewer/?map=${songKey}${diffName ? `&difficulty=${diffName}` : ''}${
 				charName ? `&mode=${charName}` : ''
