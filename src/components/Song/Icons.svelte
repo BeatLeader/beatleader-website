@@ -144,6 +144,12 @@
 			} else if (scoreId && !attempt) {
 				return `https://allpoland.github.io/ArcViewer/?scoreID=${scoreId}`;
 			}
+		} else if (webPlayer == 'chroviewer') {
+			if (replayLink?.length) {
+				return `https://chroviewer.com/?replayURL=${replayLink}`;
+			} else if (scoreId && !attempt) {
+				return `https://chroviewer.com/?scoreIdBL=${scoreId}`;
+			}
 		} else {
 			if (replayLink?.length) {
 				return `${BL_REPLAYS_URL}?link=${replayLink}`;
@@ -159,6 +165,16 @@
 			return `${BL_ANALYZER_URL}?link=${replayLink}`;
 		} else if (scoreId) {
 			return `${BL_ANALYZER_URL}?scoreId=${scoreId}`;
+		}
+	}
+
+	function previewLink(songKey, diffName, charName, mapPreviewer) {
+		if (mapPreviewer == 'chroviewer') {
+			return `https://chroviewer.com/?id=${songKey}`; // cannot determine difficulty index
+		} else {
+			return `https://allpoland.github.io/ArcViewer/?map=${songKey}${diffName ? `&difficulty=${diffName}` : ''}${
+				charName ? `&mode=${charName}` : ''
+			}`;
 		}
 	}
 
@@ -200,9 +216,7 @@
 	$: replayUrl = webPlayerLink(replayLink, score?.id, !shownIcons.includes('altReplay') && $configStore.preferences.webPlayer, attempt);
 	$: altReplayUrl = webPlayerLink(replayLink, score?.id, 'arcviewer', attempt);
 	$: analyzerUrl = analyzerLink(replayLink, score?.id);
-	$: previewUrl = `https://allpoland.github.io/ArcViewer/?id=${songKey}${diffName ? `&difficulty=${diffName}` : ''}${
-		charName ? `&mode=${charName}` : ''
-	}`;
+	$: previewUrl = previewLink(songKey, diffName, charName, $configStore.preferences.mapPreviewer);
 
 	function handlePlaylistClick() {
 		open(PlaylistPicker, {

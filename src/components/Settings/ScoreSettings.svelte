@@ -21,6 +21,7 @@
 	const DEFAULT_SCORE_COMPARISON_METHOD = 'in-place';
 	const DEFAULT_ONECLICK_VALUE = 'modassistant';
 	const DEFAULT_WEB_PLAYER = 'beatleader';
+	const DEFAULT_MAP_PREVIEWER = 'arcviewer';
 	const DEFAULT_TIME_FORMAT = 'relative';
 	const DEFAULT_LINK_OPTION = 'thistab';
 	const DEFAULT_PLAYLIST_OPTION = 'selected';
@@ -195,7 +196,13 @@
 	const webPlayerOptions = [
 		{name: 'BeatLeader', value: DEFAULT_WEB_PLAYER},
 		{name: 'ArcViewer', value: 'arcviewer'},
+		{name: 'ChroViewer', value: 'chroviewer'},
 	];
+
+	const mapPreviewerOptions = [
+		{name: 'ArcViewer', value: DEFAULT_MAP_PREVIEWER},
+		{name: 'ChroViewer', value: 'chroviewer'},
+	]
 
 	const linkOptions = [
 		{name: 'Popup', value: DEFAULT_LINK_OPTION},
@@ -223,6 +230,7 @@
 	let currentScoreComparisonMethod = DEFAULT_SCORE_COMPARISON_METHOD;
 	let currentOneclick = DEFAULT_ONECLICK_VALUE;
 	let currentWebPlayer = DEFAULT_WEB_PLAYER;
+	let currentMapPreviewer = DEFAULT_MAP_PREVIEWER;
 	let currentLinkOption = DEFAULT_LINK_OPTION;
 	let currentTimeFormat = DEFAULT_TIME_FORMAT;
 	let currentShowHmd = true;
@@ -251,6 +259,7 @@
 			currentScoreComparisonMethod = config?.scoreComparison?.method ?? DEFAULT_SCORE_COMPARISON_METHOD;
 		if (config?.preferences?.oneclick != currentOneclick) currentOneclick = config?.preferences?.oneclick ?? DEFAULT_ONECLICK_VALUE;
 		if (config?.preferences?.webPlayer != currentWebPlayer) currentWebPlayer = config?.preferences?.webPlayer ?? DEFAULT_WEB_PLAYER;
+		if (config?.preferences?.mapPreviewer != currentMapPreviewer) currentMapPreviewer = config?.preferences?.mapPreviewer ?? DEFAULT_MAP_PREVIEWER;
 		if (config?.preferences?.linkOption != currentLinkOption) currentLinkOption = config?.preferences?.linkOption ?? DEFAULT_LINK_OPTION;
 		if (config?.scorePreferences?.dateFormat != currentTimeFormat)
 			currentTimeFormat = config?.scorePreferences?.dateFormat ?? DEFAULT_TIME_FORMAT;
@@ -363,6 +372,7 @@
 	$: configStore.settempsetting('scoreComparison', 'method', currentScoreComparisonMethod);
 	$: configStore.settempsetting('preferences', 'oneclick', currentOneclick);
 	$: configStore.settempsetting('preferences', 'webPlayer', currentWebPlayer);
+	$: configStore.settempsetting('preferences', 'mapPreviewer', currentMapPreviewer);
 	$: configStore.settempsetting('preferences', 'linkOption', currentLinkOption);
 	$: configStore.settempsetting('scorePreferences', 'dateFormat', currentTimeFormat);
 	$: configStore.settempsetting('scorePreferences', 'showHmd', currentShowHmd);
@@ -453,8 +463,7 @@
 				</div>
 			</section>
 			<section class="option" id="score-jump-distance-metric">
-				<label
-					title="Show maps and scores either with Jump Distance (JD) or Reaction Time (RT). The other metric is shown on hover."
+				<label title="Show maps and scores either with Jump Distance (JD) or Reaction Time (RT). The other metric is shown on hover."
 					>Jump distance metric</label>
 				<Select bind:value={currentJumpDistanceMetric} options={jumpDistanceMetrics} />
 			</section>
@@ -522,6 +531,10 @@
 				<Select bind:value={currentWebPlayer} options={webPlayerOptions} />
 			</section>
 		{/if}
+		<section class="option" id="score-map-previewer">
+			<label title="Which map preview player to use">Map previews</label>
+			<Select bind:value={currentMapPreviewer} options={mapPreviewerOptions} />
+		</section>
 		<section class="option" id="score-link-option">
 			<label title="Show web replays/previews on PC in a popup or open in the new tab">Open replays/previews in</label>
 			<Select bind:value={currentLinkOption} options={linkOptions} />

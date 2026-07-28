@@ -105,6 +105,9 @@
 							<span class="icon beatsavior-icon" title="BeatSavior" />
 							<span>BeatSavior</span>
 						</a>
+						<a class="source" href="https://github.com/Umbranoxio/chroviewer/" target="_blank" rel="noreferrer" style="align-self: center">
+							<span>ChroViewer</span>
+						</a>
 					</div>
 				</div>
 			</ContentBox>

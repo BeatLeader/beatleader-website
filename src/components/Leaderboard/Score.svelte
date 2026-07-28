@@ -228,16 +228,16 @@
 						{#if $configStore?.leaderboardPreferences?.show?.replay !== false}
 							<Button
 								url={`${
-									$configStore.preferences.webPlayer == 'arcviewer'
+									$configStore.preferences.webPlayer === 'arcviewer'
 										? 'https://allpoland.github.io/ArcViewer/?scoreID='
-										: `${BL_REPLAYS_URL}?scoreId=`
+										: $configStore.preferences.webPlayer ==='chroviewer' ? `https://chroviewer.com/?scoreIdBL=` :`${BL_REPLAYS_URL}?scoreId=`
 								}${score?.score.id}`}
 								on:click={(e) =>
 									showPreview(e,
 										`${
-											$configStore.preferences.webPlayer == 'arcviewer'
+											$configStore.preferences.webPlayer === 'arcviewer'
 												? 'https://allpoland.github.io/ArcViewer/?scoreID='
-												: `${BL_REPLAYS_URL}?scoreId=`
+												: $configStore.preferences.webPlayer ==='chroviewer' ? `https://chroviewer.com/?scoreIdBL=` : `${BL_REPLAYS_URL}?scoreId=`
 										}${score?.score.id}`
 									)}
 								cls="replay-button-alt"

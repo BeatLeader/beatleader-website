@@ -37,6 +37,7 @@ export const DEFAULT_CONFIG = {
 		jumpDistanceMetric: 'jd',
 		oneclick: 'modassistant',
 		webPlayer: 'beatleader',
+		mapPreviewer: 'arcviewer',
 		linkOption: 'thistab',
 		bgimage: '/assets/background.jpg',
 		bgColor: 'rgba(63, 26, 0, 0.2636)',

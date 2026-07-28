@@ -85,5 +85,6 @@
 		"svelte-confetti": "^2.1.2",
 		"svelte-select": "^4.4.7",
 		"svrollbar": "^0.12.0"
-	}
+	},
+	"packageManager": "yarn@4.17.1"
 }

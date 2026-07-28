@@ -9,12 +9,16 @@
 		if (score.replay?.length) {
 			if (webPlayer == 'arcviewer') {
 				return `https://allpoland.github.io/ArcViewer/?replayURL=${score.replay}`;
+			} else if (webPlayer == 'chroviewer') {
+				return `https://chroviewer.com/?replayUrl=${score.replay}`
 			} else {
 				return `${BL_REPLAYS_URL}?link=${score.replay}`;
 			}
 		} else if (score.id) {
 			if (webPlayer == 'arcviewer') {
 				return `https://allpoland.github.io/ArcViewer/?scoreID=${score.id}`;
+			} else if (webPlayer == 'chroviewer') {
+				return `https://chroviewer.com/?scoreIdBL=${score.id}`;
 			} else {
 				return `${BL_REPLAYS_URL}?scoreId=${score.id}`;
 			}

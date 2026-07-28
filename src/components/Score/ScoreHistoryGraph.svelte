@@ -225,16 +225,16 @@
 										{/if}
 										<Button
 											url={`${
-												$configStore.preferences.webPlayer == 'arcviewer'
+												$configStore.preferences.webPlayer === 'arcviewer'
 													? 'https://allpoland.github.io/ArcViewer/?replayURL='
-													: `${BL_REPLAYS_URL}?link=`
+													: $configStore.preferences.webPlayer ==='chroviewer' ? `https://chroviewer.com/?scoreIdBL=` :`${BL_REPLAYS_URL}?link=`
 											}${score?.replay}`}
 											on:click={() =>
 												showPreview(
 													`${
-														$configStore.preferences.webPlayer == 'arcviewer'
+														$configStore.preferences.webPlayer === 'arcviewer'
 															? 'https://allpoland.github.io/ArcViewer/?replayURL='
-															: `${BL_REPLAYS_URL}?link=`
+															: $configStore.preferences.webPlayer ==='chroviewer' ? `https://chroviewer.com/?scoreIdBL=` :`${BL_REPLAYS_URL}?link=`
 													}${score?.replay}`
 												)}
 											cls="replay-button-alt"

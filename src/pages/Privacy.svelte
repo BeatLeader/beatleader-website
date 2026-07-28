@@ -89,8 +89,8 @@
 
 		<br /><br />Does this website use third-party services?<br />
 		<b
-			>Yes! This website uses other awesome Beat Saber projects like BeatSaver, AccSaber, BeatSavior, and ArcViewer. No data is sent there,
-			but they may collect it on opening the dedicated service website</b>
+			>Yes! This website uses other awesome Beat Saber projects like BeatSaver, AccSaber, BeatSavior, ArcViewer and ChroViewer. No data is
+			sent there, but they may collect it on opening the dedicated service website</b>
 
 		<br /><br />What data does the web replay player website collect?<br />
 		<b>No data is collected.</b>
