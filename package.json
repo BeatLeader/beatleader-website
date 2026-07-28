@@ -86,5 +86,5 @@
 		"svelte-select": "^4.4.7",
 		"svrollbar": "^0.12.0"
 	},
-	"packageManager": "yarn@4.17.1"
+	"packageManager": "yarn@1.22.22"
 }
