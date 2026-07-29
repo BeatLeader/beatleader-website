@@ -172,7 +172,7 @@
 		if (mapPreviewer == 'chroviewer') {
 			return `https://chroviewer.com/?map=${songKey}`; // cannot determine difficulty index
 		} else {
-			return `https://allpoland.github.io/ArcViewer/?map=${songKey}${diffName ? `&difficulty=${diffName}` : ''}${
+			return `https://allpoland.github.io/ArcViewer/?id=${songKey}${diffName ? `&difficulty=${diffName}` : ''}${
 				charName ? `&mode=${charName}` : ''
 			}`;
 		}
