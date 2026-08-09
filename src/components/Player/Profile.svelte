@@ -433,9 +433,11 @@
 		width: 150px;
 		min-width: 150px;
 		height: 150px;
+		view-transition-name: player-avatar;
 	}
 
 	.rank-and-stats-cell {
+		view-transition-name: player-stats;
 		display: flex;
 		flex-direction: column;
 		justify-content: center;

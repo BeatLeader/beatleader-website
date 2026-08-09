@@ -87,7 +87,9 @@ export const BL_API_FIND_PLAYER_URL =
 	'players?search=${query}&leaderboardContext=${leaderboardContext}&page=${page}&count=${count}&sortBy=${sortBy}&order=${order}';
 export const BL_API_RANKING_URL =
 	BL_API_URL +
-	'players?leaderboardContext=${leaderboardContext}&page=${page}&count=${count}&sortBy=${sortBy}&mapsType=${mapsType}&ppType=${ppType}&order=${order}&countries=${countries}&friends=${friends}&search=${search}&platform=${platform}&role=${role}&hmd=${hmd}&firstScoreTime=${firstScoreTime}&recentScoreTime=${recentScoreTime}&pp_range=${pp_range}&score_range=${score_range}&ranked_score_range=${ranked_score_range}&acc_pp_range=${acc_pp_range}&tech_pp_range=${tech_pp_range}&pass_pp_range=${pass_pp_range}';
+	'v2/players?leaderboardContext=${leaderboardContext}&page=${page}&count=${count}&sortBy=${sortBy}&mapsType=${mapsType}&ppType=${ppType}&order=${order}&countries=${countries}&friends=${friends}&search=${search}&platform=${platform}&role=${role}&hmd=${hmd}&firstScoreTime=${firstScoreTime}&recentScoreTime=${recentScoreTime}&pp_range=${pp_range}&score_range=${score_range}&ranked_score_range=${ranked_score_range}&acc_pp_range=${acc_pp_range}&tech_pp_range=${tech_pp_range}&pass_pp_range=${pass_pp_range}';
+export const BL_API_PLAYER_HYDRATE_URL =
+	BL_API_URL + 'v2/player/${playerId}/hydrate?includeProfile=true&leaderboardContext=${leaderboardContext}';
 export const BL_API_EVENT_RANKING_URL =
 	BL_API_URL +
 	'event/${eventId}/players?page=${page}&sortBy=${sortBy}&mapsType=${mapsType}&order=${order}&countries=${countries}&friends=${friends}&search=${search}&platform=${platform}&role=${role}&hmd=${hmd}&pp_range=${pp_range}&score_range=${score_range}';
@@ -158,6 +160,9 @@ export default (options = {}) => {
 
 	const playerBySaver = async (playerId, priority = PRIORITY.FG_LOW, options = {}) =>
 		fetchJson(substituteVarsUrl(BL_API_PLAYER_SAVER_INFO_URL, {playerId}), options, priority);
+
+	const playerHydrate = async (playerId, priority = PRIORITY.FG_LOW, options = {}) =>
+		fetchJson(substituteVarsUrl(BL_API_PLAYER_HYDRATE_URL, {playerId}), options, priority);
 
 	const steamProfile = async (playerId, priority = PRIORITY.FG_LOW, options = {}) =>
 		fetchJson(substituteVarsUrl(STEAM_API_PROFILE_URL, {steamKey: STEAM_KEY, playerId}), options, priority);
@@ -519,6 +524,7 @@ export default (options = {}) => {
 
 		player,
 		playerBySaver,
+		playerHydrate,
 
 		steamProfile,
 		gameInfo,

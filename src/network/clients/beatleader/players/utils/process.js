@@ -63,6 +63,7 @@ export default response => {
 				clans,
 				scoreStats: player?.scoreStats ?? null,
 				profileSettings: profileSettings ?? null,
+				sortValue: player?.sortValue ?? null,
 			};
 		}),
 	};

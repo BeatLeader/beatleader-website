@@ -2,6 +2,7 @@ import createPlayerService from '../../../services/beatleader/player';
 import createScoresFetcher from './utils/scores-fetch';
 import queue from '../../../network/queues/queues';
 import {MINUTE, SECOND} from '../../../utils/date';
+import makePendingPromisePool from '../../../utils/pending-promises';
 
 let playerService = null;
 let scoresFetcher = null;
@@ -12,7 +13,13 @@ export default () => {
 
 	let firstFetch = true;
 
-	const fetchPlayerAndScores = async ({
+	const resolvePromiseOrWaitForPending = makePendingPromisePool();
+	const fetchPlayerAndScores = async (params = {}) =>
+		resolvePromiseOrWaitForPending(`playerWithScores/${params?.playerId}/${params?.service}/${JSON.stringify(params?.serviceParams)}`, () =>
+			fetchPlayerAndScoresInternal(params)
+		);
+
+	const fetchPlayerAndScoresInternal = async ({
 		playerId,
 		priority = queue.PRIORITY.FG_HIGH,
 		service = 'scores',
@@ -20,19 +27,25 @@ export default () => {
 		signal = null,
 		force = false,
 	} = {}) => {
-		const refreshInterval = firstFetch ? 5 * SECOND : MINUTE;
+		const refreshInterval = firstFetch ? 10 * SECOND : MINUTE;
+		const effectiveForce = force && !firstFetch;
 		firstFetch = false;
 
 		const scoresPromise = async () => {
 			try {
-				return await scoresFetcher.fetchLiveScores(playerId, service, serviceParams, {refreshInterval, priority, signal, force});
+				return await scoresFetcher.fetchLiveScores(playerId, service, serviceParams, {
+					refreshInterval,
+					priority,
+					signal,
+					force: effectiveForce,
+				});
 			} catch {
 				return [];
 			}
 		};
 
 		const data = await Promise.all([
-			playerService.fetchPlayerOrGetFromCache(playerId, refreshInterval, priority, signal, force),
+			playerService.fetchHydratedPlayer(playerId, refreshInterval, priority, signal, effectiveForce),
 			scoresPromise(),
 		]);
 

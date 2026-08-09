@@ -47,6 +47,13 @@ export default () => {
 	const fetchLiveScores = async (playerId, service, serviceParams = {sort: 'date', order: 'desc', page: 1}, otherParams = {}) => {
 		const processedServiceParams = processServiceParamsFilters(serviceParams);
 
+		return resolvePromiseOrWaitForPending(
+			`liveScores/${playerId}/${service}/${JSON.stringify(processedServiceParams)}/${otherParams?.force ?? false}`,
+			() => fetchLiveScoresInternal(playerId, service, processedServiceParams, otherParams)
+		);
+	};
+
+	const fetchLiveScoresInternal = async (playerId, service, processedServiceParams, otherParams = {}) => {
 		switch (service) {
 			case SPECIAL_PLAYER_ID:
 				return blScoresService.fetchFollowedScores(

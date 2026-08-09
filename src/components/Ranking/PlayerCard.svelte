@@ -16,6 +16,9 @@
 	import Popover from '../Common/Popover.svelte';
 	import {configStore} from '../../stores/config';
 	import {PlayerValue, RANKING_SORT_BY_PROPS} from './rankingSortConstants';
+	import {setPlayerSeed} from '../../stores/player-profile-seed';
+	import {preloadPlayerPage, isPlayerPageReady, prefetchPlayerProfile} from '../../utils/player-page-preload';
+	import {isViewTransitionAvailable, rememberReturnTarget, getReturningPlayerId} from '../../utils/view-transition';
 
 	export let player;
 	export let currentFilters = null;
@@ -34,10 +37,47 @@
 
 	const dispatch = createEventDispatcher();
 
+	function applyTransitionNames() {
+		if (!referenceElement) return;
+
+		const avatar = referenceElement.querySelector('.player-avatar');
+		if (avatar) avatar.style.viewTransitionName = 'player-avatar';
+
+		const nameAndRank = referenceElement.querySelector('.player-name-and-rank');
+		if (nameAndRank) nameAndRank.style.viewTransitionName = 'player-stats';
+	}
+
 	function navigateToPlayer(player) {
 		if (!player) return;
 
-		navigate(playerClickFilterFull ?? `/u/${player.alias ?? player.playerId}${playerClickFilter ? '?' + playerClickFilter : ''}`);
+		const url = playerClickFilterFull ?? `/u/${player.alias ?? player.playerId}${playerClickFilter ? '?' + playerClickFilter : ''}`;
+
+		if (playerClickFilterFull) {
+			navigate(url);
+			return;
+		}
+
+		setPlayerSeed(player);
+
+		if (isViewTransitionAvailable()) {
+			rememberReturnTarget(player.playerId);
+		}
+
+		if (document.startViewTransition && isPlayerPageReady() && isViewTransitionAvailable()) {
+			applyTransitionNames();
+			document.startViewTransition(async () => {
+				navigate(url);
+				await preloadPlayerPage();
+				await new Promise(resolve => setTimeout(resolve, 0));
+			});
+		} else {
+			navigate(url);
+		}
+	}
+
+	let returning = getReturningPlayerId() != null && getReturningPlayerId() === player?.playerId;
+	if (returning) {
+		setTimeout(() => (returning = false), 1000);
 	}
 
 	function onPlayerClick(event, player) {
@@ -149,6 +189,7 @@
 
 <a
 	href={playerClickFilterFull ?? `/u/${player.alias ?? player.playerId}${playerClickFilter ? '?' + playerClickFilter : ''}`}
+	data-player-id={player.playerId}
 	class={`player-card ${$configStore.rankingList.ppToTheLeft ? 'with-pp-on-left' : ''} ${playerId == player.playerId ? 'current' : ''} ${
 		showRainbow(player) ? 'rainbow' : ''
 	}`}
@@ -159,7 +200,10 @@
 		onPlayerClick(e, player);
 	}}
 	on:keypress={e => onPlayerClick(e, player)}
-	on:pointerover={() => hoverStats(player)}>
+	on:pointerover={() => {
+		hoverStats(player);
+		prefetchPlayerProfile(player);
+	}}>
 	<div class="player-rank" style="grid-template-columns: {firstColumnGridTemplate}">
 		<div
 			class={`rank ${rank === 1 ? 'gold' : rank === 2 ? 'silver' : rank === 3 ? 'brown' : rank >= 10000 ? 'small' : ''}`}
@@ -208,10 +252,10 @@
 			</div>
 		{/if}
 	</div>
-	<div class="player-avatar">
+	<div class="player-avatar" style={returning ? 'view-transition-name: player-avatar' : ''}>
 		<Avatar {player} />
 	</div>
-	<div class="player-name-and-rank">
+	<div class="player-name-and-rank" style={returning ? 'view-transition-name: player-stats' : ''}>
 		<PlayerNameWithFlag {player} {playerClickFilter} hideFlag={true} {withCrown} disablePopover={true} />
 
 		{#if $configStore.rankingList.showClans}

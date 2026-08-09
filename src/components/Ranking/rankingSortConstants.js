@@ -254,15 +254,20 @@ export function PlayerValue(player, filters) {
 		return valueResult;
 	}
 
-	const valueFunc = filters.sortBy == 'acc' || filters.sortBy == 'weightedAcc' ? getAcc : getStat;
-
-	const statKey = RANKING_SORT_STAT_KEYS[filters.sortBy];
-	if (statKey[filters.ppType]) {
-		valueResult = valueFunc(player, statKey[filters.ppType]);
-	} else if (statKey[filters.mapsType]) {
-		valueResult = valueFunc(player, statKey[filters.mapsType]);
+	if (player.sortValue !== undefined && player.sortValue !== null) {
+		// /v2/players returns the value of the sorted stat directly
+		valueResult = filters.sortBy == 'acc' || filters.sortBy == 'weightedAcc' ? player.sortValue * 100 : player.sortValue;
 	} else {
-		valueResult = valueFunc(player, statKey);
+		const valueFunc = filters.sortBy == 'acc' || filters.sortBy == 'weightedAcc' ? getAcc : getStat;
+
+		const statKey = RANKING_SORT_STAT_KEYS[filters.sortBy];
+		if (statKey[filters.ppType]) {
+			valueResult = valueFunc(player, statKey[filters.ppType]);
+		} else if (statKey[filters.mapsType]) {
+			valueResult = valueFunc(player, statKey[filters.mapsType]);
+		} else {
+			valueResult = valueFunc(player, statKey);
+		}
 	}
 
 	if (filters.sortBy == 'lastplay') {

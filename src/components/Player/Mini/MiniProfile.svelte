@@ -6,13 +6,21 @@
 	import ContentBox from '../../Common/ContentBox.svelte';
 	import RoleIcon from '../RoleIcon.svelte';
 	import AvatarOverlay from '../Overlay/AvatarOverlay.svelte';
-	import createPlayerInfoWithScoresStore from '../../../stores/http/http-player-with-scores-store';
+	import createPlayerService from '../../../services/beatleader/player';
 
 	export let player;
 
-	let playerStore = player && player.playerId ? createPlayerInfoWithScoresStore(player && player.playerId) : null;
+	const playerService = createPlayerService();
 
-	$: playerData = $playerStore?.name ? $playerStore : player;
+	let hydratedPlayer = null;
+	if (player?.playerId) {
+		playerService
+			.fetchHydratedPlayer(player.alias ?? player.playerId)
+			.then(data => (hydratedPlayer = data))
+			.catch(() => {});
+	}
+
+	$: playerData = hydratedPlayer?.name ? hydratedPlayer : player;
 
 	let roles = null;
 	function updateRoles(role) {

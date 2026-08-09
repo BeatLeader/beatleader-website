@@ -1,4 +1,5 @@
 import playerApiClient from '../../network/clients/beatleader/player/api';
+import playerHydrateApiClient from '../../network/clients/beatleader/player/api-hydrate';
 import playerBySaverApiClient from '../../network/clients/beatleader/player/api-saver';
 import playerFindApiClient from '../../network/clients/beatleader/players/api-player-find';
 import playerAccGraphApiClient from '../../network/clients/beatleader/accgraph/api';
@@ -87,6 +88,11 @@ export default () => {
 	const fetchPlayerOrGetFromCache = async (playerId, refreshInterval = MINUTE, priority = PRIORITY.FG_LOW, signal = null, force = false) =>
 		fetchPlayer(playerId, priority, {signal, cacheTtl: MINUTE, maxAge: force ? 0 : refreshInterval});
 
+	const fetchHydratedPlayer = async (playerId, refreshInterval = MINUTE, priority = PRIORITY.FG_LOW, signal = null, force = false) =>
+		resolvePromiseOrWaitForPending(`apiClient/hydrate/${playerId}/${force ? 0 : refreshInterval}`, () =>
+			playerHydrateApiClient.getProcessed({playerId, priority, signal, cacheTtl: MINUTE, maxAge: force ? 0 : refreshInterval})
+		);
+
 	const fetchAccGraph = async (playerId, type, no_unranked_stars, priority = PRIORITY.BG_NORMAL, throwErrors = false) => {
 		try {
 			log.trace(`Starting fetching player "${playerId}" acc graph...`, 'PlayerService');
@@ -132,6 +138,7 @@ export default () => {
 		isProfileFresh,
 		fetchPlayer,
 		fetchPlayerOrGetFromCache,
+		fetchHydratedPlayer,
 		fetchPlayerSaver,
 		findPlayer,
 		fetchAccGraph,

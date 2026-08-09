@@ -20,6 +20,7 @@
 	import {Svrollbar} from 'svrollbar';
 	import {produce} from 'immer';
 	import TournamentTopBanner from './components/Common/TournamentTopBanner.svelte';
+	import {initReturnMorph} from './utils/view-transition';
 
 	// Dynamic imports for pages
 	const pageImports = {
@@ -85,6 +86,7 @@
 
 	let mobileTooltip = null;
 	onMount(() => {
+		initReturnMorph();
 		const hideTooltip = () => (mobileTooltip ? (mobileTooltip.style.display = 'none') : null);
 		const showTooltip = (contents, x, y) => {
 			if (!mobileTooltip) return;

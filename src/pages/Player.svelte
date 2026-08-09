@@ -31,6 +31,7 @@
 	import {produce} from 'immer';
 	import LoveLiveCongratulation from '../components/Player/LoveLiveCongratulation.svelte';
 	import GamifiedVivifyCongratulation from '../components/Player/GamifiedVivifyCongratulation.svelte';
+	import {takePlayerSeed, seedToProfileData} from '../stores/player-profile-seed';
 
 	const RANKED_STORE_SORTING_KEY = 'PlayerRankedSorting';
 	const RANKED_STORE_ORDER_KEY = 'PlayerRankedOrder';
@@ -64,7 +65,18 @@
 	}
 	processInitialParams(initialParams, location);
 
-	let playerStore = createPlayerInfoWithScoresStore(initialPlayerId, service, serviceParams);
+	const seededProfile = seedToProfileData(takePlayerSeed(initialPlayerId));
+
+	let playerStore = createPlayerInfoWithScoresStore(
+		initialPlayerId,
+		service,
+		serviceParams,
+		seededProfile,
+		seededProfile ? 'seeded' : 'initial'
+	);
+	if (seededProfile) {
+		playerStore.fetch(initialPlayerId, service, serviceParams, true);
+	}
 
 	async function changeParams(newPlayerId, service, newServiceParams) {
 		if (!newPlayerId || !playerStore) return;
@@ -277,7 +289,7 @@
 
 	$: playerIsLoading = playerStore ? playerStore.isLoading : null;
 	$: playerError = playerStore ? playerStore.error : null;
-	$: skeleton = !$playerStore && $playerIsLoading;
+	$: skeleton = (!$playerStore || !$playerStore.scoreStats) && $playerIsLoading;
 	$: browserTitle = `${$playerStore?.name ?? 'Player'} / ${serviceParamsManager
 		.getCurrentServiceUrl()
 		?.split('/')
