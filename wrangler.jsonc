@@ -1,0 +1,10 @@
+{
+	"name": "beatleader-website",
+	"compatibility_date": "2026-01-01",
+	"main": "worker.js",
+	"assets": {
+		"directory": "./public",
+		"binding": "ASSETS",
+		"not_found_handling": "single-page-application"
+	}
+}
