@@ -87,7 +87,10 @@ export const BL_API_FIND_PLAYER_URL =
 	'players?search=${query}&leaderboardContext=${leaderboardContext}&page=${page}&count=${count}&sortBy=${sortBy}&order=${order}';
 export const BL_API_RANKING_URL =
 	BL_API_URL +
-	'v2/players?leaderboardContext=${leaderboardContext}&page=${page}&count=${count}&sortBy=${sortBy}&mapsType=${mapsType}&ppType=${ppType}&order=${order}&countries=${countries}&friends=${friends}&search=${search}&platform=${platform}&role=${role}&hmd=${hmd}&firstScoreTime=${firstScoreTime}&recentScoreTime=${recentScoreTime}&pp_range=${pp_range}&score_range=${score_range}&ranked_score_range=${ranked_score_range}&acc_pp_range=${acc_pp_range}&tech_pp_range=${tech_pp_range}&pass_pp_range=${pass_pp_range}';
+	'v2/players?leaderboardContext=${leaderboardContext}&page=${page}&count=${count}&sortBy=${sortBy}&mapsType=${mapsType}&ppType=${ppType}&order=${order}&countries=${countries}&showBots=${showBots}&search=${search}&platform=${platform}&role=${role}&hmd=${hmd}&firstScoreTime=${firstScoreTime}&recentScoreTime=${recentScoreTime}&pp_range=${pp_range}&score_range=${score_range}&ranked_score_range=${ranked_score_range}&acc_pp_range=${acc_pp_range}&tech_pp_range=${tech_pp_range}&pass_pp_range=${pass_pp_range}';
+export const BL_API_RANKING_FRIENDS_URL =
+	BL_API_URL +
+	'v2/players/friends?leaderboardContext=${leaderboardContext}&page=${page}&count=${count}&sortBy=${sortBy}&mapsType=${mapsType}&ppType=${ppType}&order=${order}&countries=${countries}&showBots=${showBots}&search=${search}&platform=${platform}&role=${role}&hmd=${hmd}&firstScoreTime=${firstScoreTime}&recentScoreTime=${recentScoreTime}&pp_range=${pp_range}&score_range=${score_range}&ranked_score_range=${ranked_score_range}&acc_pp_range=${acc_pp_range}&tech_pp_range=${tech_pp_range}&pass_pp_range=${pass_pp_range}';
 export const BL_API_PLAYER_HYDRATE_URL =
 	BL_API_URL + 'v2/player/${playerId}/hydrate?includeProfile=true&leaderboardContext=${leaderboardContext}';
 export const BL_API_EVENT_RANKING_URL =
@@ -237,7 +240,11 @@ export default (options = {}) => {
 		rankingGlobal(count, page, {...filters, countries}, priority, options);
 
 	const rankingFollowed = async (count = 50, page = 1, filters = {sortBy: 'pp'}, priority = PRIORITY.FG_LOW, options = {}) =>
-		rankingGlobal(count, page, {...filters, friends: 'true'}, priority, {...options, credentials: 'include'});
+		fetchJson(
+			substituteVarsUrl(BL_API_RANKING_FRIENDS_URL, {page, count, ...filters}, true, true),
+			{...options, credentials: 'include'},
+			priority
+		);
 
 	const rankingEventGlobal = async (page = 1, eventId = 1, filters = {sortBy: 'pp'}, priority = PRIORITY.FG_LOW, options = {}) => {
 		return fetchJson(substituteVarsUrl(BL_API_EVENT_RANKING_URL, {page, eventId, ...filters}, true, true), options, priority);
