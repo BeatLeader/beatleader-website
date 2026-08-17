@@ -13,10 +13,28 @@
 	const playerService = createPlayerService();
 
 	let hydratedPlayer = null;
+	let fullAvatarReady = false;
+
+	function upgradeAvatar(data) {
+		const fullAvatar = data?.playerInfo?.avatar;
+		if (!fullAvatar || fullAvatar === player?.playerInfo?.avatar) {
+			fullAvatarReady = true;
+			return;
+		}
+
+		const image = new Image();
+		image.onload = () => (fullAvatarReady = true);
+		image.onerror = () => (fullAvatarReady = true);
+		image.src = fullAvatar;
+	}
+
 	if (player?.playerId) {
 		playerService
 			.fetchHydratedPlayer(player.alias ?? player.playerId)
-			.then(data => (hydratedPlayer = data))
+			.then(data => {
+				hydratedPlayer = data;
+				upgradeAvatar(data);
+			})
 			.catch(() => {});
 	}
 
@@ -34,6 +52,8 @@
 	$: playerId = playerData && playerData.playerId ? playerData.playerId : null;
 	$: name = playerData && playerData.name ? playerData.name : null;
 	$: ({playerInfo, scoresStats, accBadges, ssBadges} = processPlayerData(playerData));
+	$: avatarPlayerInfo =
+		hydratedPlayer?.name && !fullAvatarReady && player?.playerInfo?.avatar ? {...playerInfo, avatar: player.playerInfo.avatar} : playerInfo;
 	$: updateRoles(playerInfo?.role ?? null);
 
 	$: cover = playerData?.profileSettings?.profileCover;
@@ -48,7 +68,7 @@
 	<div class="player-general-info" class:withCover={cover}>
 		<div class="avatar-and-roles">
 			<div class="avatar-cell">
-				<Avatar {playerInfo} />
+				<Avatar playerInfo={avatarPlayerInfo} />
 
 				{#if playerInfo}
 					<AvatarOverlayIcons {playerData} />
