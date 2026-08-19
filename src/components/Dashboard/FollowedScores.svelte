@@ -3,6 +3,7 @@
 	import ContentBox from '../Common/ContentBox.svelte';
 	import Scores from '../Player/Scores.svelte';
 	import {SPECIAL_PLAYER_ID} from '../../network/queues/beatleader/api-queue';
+	import {configStore} from '../../stores/config';
 
 	export let browserTitle;
 	const serviceParamsManager = createServiceParamsManager(SPECIAL_PLAYER_ID);
@@ -28,6 +29,8 @@
 		serviceParamsManager.update(newServiceParams);
 		serviceParams = serviceParamsManager.getParams();
 	}
+
+	$: showFollowedScoreIcons = $configStore?.scorePreferences?.showFollowedScoreIcons ?? false;
 </script>
 
 <ContentBox>
@@ -46,5 +49,5 @@
 		fixedBrowserTitle={browserTitle}
 		withPlayers={true}
 		unconstrainedPager={true}
-		noIcons={true} />
+		noIcons={!showFollowedScoreIcons} />
 </ContentBox>
