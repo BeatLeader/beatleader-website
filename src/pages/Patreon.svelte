@@ -24,14 +24,6 @@
 	let showBeatSaverLogin = false;
 	let showOtherVersions = false;
 
-	function downloadQmod(version) {
-		fetch(`${BL_API_URL}questreesabersversion?version=${version}`, {credentials: 'include'})
-			.then(r => r.blob())
-			.then(r => {
-				saveAs(r, `ReeSabers_${version}.qmod`);
-			});
-	}
-
 	$: loggedInPlayer = opt($account, 'id');
 	$: error = opt($account, 'error');
 	$: message = opt($account, 'message');
@@ -161,12 +153,11 @@
 						<Button
 							iconFa="fas fa-download"
 							title={!loggedInPlayer || !isSupporter ? 'Log in on the top of the Page and Link Patreon' : 'Download Reesabers for 1.40.8'}
-							label="Quest 1.40.8 (v0.3.19)"
+							label="Quest 1.40.8 (v0.3.20)"
 							disabled={!loggedInPlayer || !isSupporter}
 							type="green"
-							on:click={() => {
-								downloadQmod('1.40.8');
-							}} />
+							url={BL_API_URL + 'questreesabersversion?version=1.40.8'}
+							onlyurl={true} />
 					</div>
 
 					{#if loggedInPlayer && isSupporter}
@@ -187,7 +178,7 @@
 							</span>
 
 							{#if showOtherVersions}
-							    <a href={BL_API_URL + 'questreesabersversion?version=1.40.8_036'}> Version for Quest 1.40.8 (v0.3.16)</a>
+								<a href={BL_API_URL + 'questreesabersversion?version=1.40.8_036'}> Version for Quest 1.40.8 (v0.3.16)</a>
 								<a href={BL_API_URL + 'questreesabersversion?version=1.40.7'}> Version for Quest 1.40.7 (v0.3.15)</a>
 								<a href={BL_API_URL + 'questreesabersversion?version=1.40.6'}> Version for Quest 1.40.6 (v0.3.14)</a>
 								<a href={BL_API_URL + 'questreesabersversion?version=1.40.4'}> Version for Quest 1.40.4 (v0.3.13)</a>
@@ -200,7 +191,7 @@
 				{:else}
 					<div class="benefit-button-top-container">
 						<div class="benefit-button-container">
-							<span>PC (v0.3.19):</span>
+							<span>PC (v0.3.20):</span>
 							<Button
 								iconFa="fas fa-download"
 								title={!loggedInPlayer || !isSupporter
@@ -237,12 +228,11 @@
 							<Button
 								iconFa="fas fa-download"
 								title={!loggedInPlayer || !isSupporter ? 'Log in on the top of the Page and Link Patreon' : 'Download Reesabers for 1.40.8'}
-								label="Quest 1.40.8 (v0.3.19)"
+								label="Quest 1.40.8 (v0.3.20)"
 								disabled={!loggedInPlayer || !isSupporter}
 								type="green"
-								on:click={() => {
-									downloadQmod('1.40.8');
-								}} />
+								url={BL_API_URL + 'questreesabersversion?version=1.40.8'}
+								onlyurl={true} />
 						</div>
 					</div>
 
