@@ -15,31 +15,92 @@
 	document.body.scrollIntoView({behavior: 'smooth'});
 
 	let articleEl = null;
-	var supporters = [];
+	let supporters = [];
+	let teamMembers = [];
 
-	function fetchSupporters(page) {
-		fetch(`
-${BL_API_URL}players?leaderboardContext=general&page=${page}&count=100&role=supporter%2Ctipper%2Csponsor`)
-			.then(p => p.json())
-			.then(d => {
-				d.data.forEach(element => {
-					if (!supporters.find(s => s.id == element.id)) {
-						supporters.push(element);
-					}
-				});
-				supporters = supporters;
-				if (d.data.length == 100) {
-					fetchSupporters(page + 1);
-				}
+	const TEAMS = [
+		{
+			title: 'Ranking Admin Team',
+			groups: [{title: 'The RATs', role: 'rankoperatorteam'}],
+		},
+		{
+			title: 'Ranking Team',
+			groups: [
+				{title: 'Core RT', role: 'rankedteam'},
+				{title: 'Junior RT', role: 'juniorrankedteam'},
+			],
+		},
+		{
+			title: 'Nomination Quality Team',
+			groups: [{title: 'Core NQT', role: 'qualityteam'}],
+		},
+	];
+	const RETIRED_STAFF = {title: 'Retired Staff', role: 'retiredstaff'};
+
+	const MEMBER_NAMES = {
+		'76561199125063205': 'azu',
+		'76561198831724075': 'edgii',
+		'76561199066888403': 'Poochy',
+		'76561199108348236': 'UglyApe',
+		'76561198826449821': 'Darkrealm7',
+		'76561199237802861': 'blackvoid1001',
+		'76561199001767132': 'ViSi',
+		'76561198096273599': 'Rusty',
+		'76561198960449289': 'Aquaflee',
+		'76561198965889412': 'Emy',
+		'76561198014681219': 'BigSlick',
+	};
+	const displayName = player => MEMBER_NAMES[player.id] ?? player.name;
+
+	async function fetchPlayersWithRoles(roles, onUpdate) {
+		const players = [];
+		for (let page = 1; ; page++) {
+			let data = [];
+			try {
+				const response = await fetch(
+					`${BL_API_URL}players?leaderboardContext=general&page=${page}&count=100&role=${encodeURIComponent(roles.join(','))}`
+				);
+				data = (await response.json())?.data ?? [];
+			} catch {
+				break;
+			}
+			data.forEach(player => {
+				if (!players.find(p => p.id == player.id)) players.push(player);
 			});
+			onUpdate([...players]);
+			if (data.length < 100) break;
+		}
 	}
 
-	$: fetchSupporters(1);
+	fetchPlayersWithRoles(['supporter', 'tipper', 'sponsor'], players => (supporters = players));
+	fetchPlayersWithRoles(
+		[...TEAMS.flatMap(team => team.groups.map(group => group.role)), RETIRED_STAFF.role],
+		players => (teamMembers = players)
+	);
+
+	$: teams = TEAMS.map(team => ({
+		...team,
+		groups: team.groups.map(group => ({
+			...group,
+			members: teamMembers.filter(player => (player?.role ?? '').split(',').includes(group.role)),
+		})),
+	}));
+	$: retiredStaff = teamMembers.filter(player => (player?.role ?? '').split(',').includes(RETIRED_STAFF.role));
 </script>
 
 <svelte:head>
 	<title>About - {ssrConfig.name}</title>
 </svelte:head>
+
+{#snippet members(players)}
+	<section class="content center">
+		{#each players as player (player.id)}
+			<div class="member">
+				<img src={player.avatar} alt={displayName(player)} /><a href="/u/{player.id}">{displayName(player)}</a>
+			</div>
+		{/each}
+	</section>
+{/snippet}
 
 <article bind:this={articleEl} transition:fade|global>
 	<ContentBox>
@@ -122,116 +183,17 @@ ${BL_API_URL}players?leaderboardContext=general&page=${page}&count=100&role=supp
 			</div>
 		</section>
 
-		<h1 class="title is-4">Ranking Admin Team</h1>
-
-		<h1 class="title is-5">The RATs</h1>
-		<section class="content center">
-			<div class="member">
-				<img src="https://cdn.assets.beatleader.com/76561198147746455R10.png" alt="CookedChili" /><a href="/u/76561198147746455"
-					>CookedChili</a>
-			</div>
-			<div class="member">
-				<img src="https://avatars.akamai.steamstatic.com/fede1355e88a5ffae6e9bfc20de4ec33a18ef5d1_full.jpg" alt="GalaxyMaster" /><a
-					href="/u/76561198075923914">GalaxyMaster</a>
-			</div>
-			<div class="member">
-				<img src="https://cdn.assets.beatleader.com/76561198051924392R48.png" alt="Light Ai" /><a href="/u/76561198051924392">Light Ai</a>
-			</div>
-			<div class="member">
-				<img src="https://cdn.assets.beatleader.com/5374R44.png" alt="Poochy" /><a href="/u/76561199066888403">Poochy</a>
-			</div>
-		</section>
-
-		<h1 class="title is-4">Ranking Team</h1>
-
-		<h1 class="title is-5">Core RT</h1>
-		<section class="content center">
-			<div class="member">
-				<img src="https://avatars.akamai.steamstatic.com/7c0675ccbcbe39583c9ee0871293959af09495c9_full.jpg" alt="Blackjack" /><a
-					href="/u/76561198130684702">Blackjack</a>
-			</div>
-			<div class="member">
-				<img src="https://cdn.assets.beatleader.com/76561198147746455R10.png" alt="CookedChili" /><a href="/u/76561198147746455"
-					>CookedChili</a>
-			</div>
-			<div class="member">
-				<img src="https://avatars.akamai.steamstatic.com/ccc9d6659a0c7fc6fed6a5c6afc2e837eb3fa674_full.jpg" alt="Cratornugget" /><a
-					href="/u/76561198307061479">Cratornugget</a>
-			</div>
-			<div class="member">
-				<img src="https://cdn.assets.beatleader.com/76561198072855418R4.png" alt="LackWiz" /><a href="/u/76561198072855418">LackWiz</a>
-			</div>
-			<div class="member">
-				<img src="https://cdn.assets.beatleader.com/76561198051924392R48.png" alt="Light Ai" /><a href="/u/76561198051924392">Light Ai</a>
-			</div>
-			<div class="member">
-				<img src="https://cdn.assets.beatleader.com/76561198073989976R47.png" alt="Loloppe" /><a href="/u/76561198073989976">Loloppe</a>
-			</div>
-			<div class="member">
-				<img src="https://cdn.assets.beatleader.com/76561198347652574R10.png" alt="Slayx" /><a href="/u/76561198347652574">Slayx</a>
-			</div>
-		</section>
-		<h1 class="title is-5">Junior RT</h1>
-		<section class="content center">
-			<div class="member">
-				<img src="https://cdn.assets.beatleader.com/76561199125063205R7.png" alt="azu" /><a href="/u/76561199125063205">azu</a>
-			</div>
-			<div class="member">
-				<img src="https://cdn.assets.beatleader.com/76561198143307741R1.png" alt="shrado" /><a href="/u/76561198143307741">shrado</a>
-			</div>
-			<div class="member">
-				<img src="https://cdn.assets.beatleader.com/76561199108348236R2.png" alt="UglyApe" /><a href="/u/76561199108348236">UglyApe</a>
-			</div>
-		</section>
-
-		<h1 class="title is-4">Nomination Quality Team</h1>
-
-		<h1 class="title is-5">Core NQT</h1>
-		<section class="content center">
-			<div class="member">
-				<img src="https://cdn.assets.beatleader.com/76561199125063205R7.png" alt="azu" /><a href="/u/76561199125063205">azu</a>
-			</div>
-			<div class="member">
-				<img src="https://cdn.assets.beatleader.com/76561198147746455R10.png" alt="CookedChili" /><a href="/u/76561198147746455"
-					>CookedChili</a>
-			</div>
-			<div class="member">
-				<img src="https://avatars.akamai.steamstatic.com/ccc9d6659a0c7fc6fed6a5c6afc2e837eb3fa674_full.jpg" alt="Cratornugget" /><a
-					href="/u/76561198307061479">Cratornugget</a>
-			</div>
-			<div class="member">
-				<img src="https://cdn.assets.beatleader.com/76561198831724075R12.png" alt="edgii" /><a href="/u/76561198831724075">edgii</a>
-			</div>
-			<div class="member">
-				<img src="https://avatars.akamai.steamstatic.com/fede1355e88a5ffae6e9bfc20de4ec33a18ef5d1_full.jpg" alt="GalaxyMaster" /><a
-					href="/u/76561198075923914">GalaxyMaster</a>
-			</div>
-			<div class="member">
-				<img src="https://cdn.assets.beatleader.com/76561198072855418R4.png" alt="LackWiz" /><a href="/u/76561198072855418">LackWiz</a>
-			</div>
-			<div class="member">
-				<img src="https://cdn.assets.beatleader.com/76561198051924392R48.png" alt="Light Ai" /><a href="/u/76561198051924392">Light Ai</a>
-			</div>
-			<div class="member">
-				<img src="https://cdn.assets.beatleader.com/76561198073989976R47.png" alt="Loloppe" /><a href="/u/76561198073989976">Loloppe</a>
-			</div>
-			<div class="member">
-				<img src="https://cdn.assets.beatleader.com/5374R44.png" alt="Poochy" /><a href="/u/76561199066888403">Poochy</a>
-			</div>
-			<div class="member">
-				<img src="https://cdn.assets.beatleader.com/76561198096273599R45.png" alt="Rusty" /><a href="/u/76561198096273599">Rusty</a>
-			</div>
-			<div class="member">
-				<img src="https://cdn.assets.beatleader.com/76561199108348236R2.png" alt="UglyApe" /><a href="/u/76561199108348236">UglyApe</a>
-			</div>
-			<div class="member">
-				<img src="https://cdn.assets.beatleader.com/76561199001767132R45.png" alt="ViSi" /><a href="/u/76561199001767132">ViSi</a>
-			</div>
-			<div class="member">
-				<img src="https://avatars.steamstatic.com/cc75f8ac925c60d59c5dbada119e1b662015b688_full.jpg" alt="ZeCube" /><a
-					href="/u/76561198136823393">ZeCube</a>
-			</div>
-		</section>
+		{#each teams as team}
+			{#if team.groups.some(group => group.members.length)}
+				<h1 class="title is-4">{team.title}</h1>
+				{#each team.groups as group}
+					{#if group.members.length}
+						<h1 class="title is-5">{group.title}</h1>
+						{@render members(group.members)}
+					{/if}
+				{/each}
+			{/if}
+		{/each}
 
 		{#if supporters.length}
 			<div class="role-container">
@@ -343,48 +305,10 @@ ${BL_API_URL}players?leaderboardContext=general&page=${page}&count=100&role=supp
 			</p>
 		</section>
 
-		<h1 class="title is-5">Retired Staff</h1>
-
-		<section class="content center">
-			<div class="member">
-				<img src="https://cdn.assets.beatleader.com/76561198960449289.png" alt="Aquaflee" /><a
-					href="https://www.beatleader.com/u/76561198960449289">Aquaflee</a>
-			</div>
-			<div class="member">
-				<img src="https://avatars.akamai.steamstatic.com/82239b5edc08f1d40117502a99129c1bee74de92_full.jpg" alt="BigSlick" /><a
-					href="https://www.beatleader.com/u/76561198014681219">BigSlick</a>
-			</div>
-			<div class="member">
-				<img src="https://cdn.assets.beatleader.com/76561198965889412R36.png" alt="Emy" /><a href="/u/76561198965889412">Emy</a>
-			</div>
-			<div class="member">
-				<img src="https://avatars.akamai.steamstatic.com/9f79be6c488ebc966eabc82bbdca1287499d551a_full.jpg" alt="FentonVR" /><a
-					href="https://www.beatleader.com/u/76561198105616734">FentonVR</a>
-			</div>
-			<div class="member">
-				<img src="https://avatars.akamai.steamstatic.com/c27d8365b40b11235ac6d248c89ab63b612e5372_full.jpg" alt="iPixelGalaxy" /><a
-					href="https://www.beatleader.com/u/76561198967815164">iPixelGalaxy</a>
-			</div>
-			<div class="member">
-				<img src="https://avatars.akamai.steamstatic.com/66b82be1c041733bbb4fdbfd79be8e3c3a02b989_full.jpg" alt="Jojobanana" /><a
-					href="/u/76561198294659898">Jojobanana</a>
-			</div>
-			<div class="member">
-				<img src="https://avatars.akamai.steamstatic.com/1ae4cec7a3ffd6f9952d5495d9c79f7cdc154e12_full.jpg" alt="Kansas" /><a
-					href="https://www.beatleader.com/u/76561198042527254">Kansas</a>
-			</div>
-			<div class="member">
-				<img src="https://cdn.assets.beatleader.com/76561198390456206R34.png" alt="ob1cb" /><a href="/u/76561198390456206">ob1cb</a>
-			</div>
-			<div class="member">
-				<img src="https://cdn.assets.beatleader.com/76561198044544317.png" alt="TG90" /><a
-					href="https://www.beatleader.com/u/76561198044544317">TG90</a>
-			</div>
-			<div class="member">
-				<img src="https://avatars.akamai.steamstatic.com/2b9951e8e6a9bdcaa6799f6b1a0bc2ba1e95387d_full.jpg" alt="Zana" /><a
-					href="/u/76561198272028078">Zana</a>
-			</div>
-		</section>
+		{#if retiredStaff.length}
+			<h1 class="title is-5">{RETIRED_STAFF.title}</h1>
+			{@render members(retiredStaff)}
+		{/if}
 
 		<p class="build">Build: {buildInfo.buildVersion} ({buildInfo.buildDate})</p>
 
