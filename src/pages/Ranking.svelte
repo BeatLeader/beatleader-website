@@ -1,6 +1,8 @@
 <script>
 	import {navigate} from 'svelte-routing';
-	import {fade} from 'svelte/transition';
+	import {onDestroy} from 'svelte';
+	import {fade, slide} from 'svelte/transition';
+	import {cubicOut} from 'svelte/easing';
 	import {
 		createBuildFiltersFromLocation,
 		processStringFilter,
@@ -73,6 +75,7 @@
 		{key: 'countries', default: '', process: processStringFilter},
 		{key: 'platform', default: '', process: processStringFilter},
 		{key: 'hmd', default: '', process: processStringFilter},
+		{key: 'hmdMode', default: '', process: processStringFilter},
 		{key: 'role', default: '', process: processStringFilter},
 		{key: 'pp_range', default: '', process: processStringFilter},
 		{key: 'score_range', default: '', process: processStringFilter},
@@ -204,6 +207,12 @@
 		navigateToCurrentPageAndFilters();
 	}
 
+	const mobileQuery = window.matchMedia('(max-width: 767px)');
+	let isMobile = mobileQuery.matches;
+	const onMobileQueryChange = e => (isMobile = e.matches);
+	mobileQuery.addEventListener('change', onMobileQueryChange);
+	onDestroy(() => mobileQuery.removeEventListener('change', onMobileQueryChange));
+
 	$: document.body.scrollIntoView({behavior: 'smooth'});
 	$: changeParams(page, buildFiltersFromLocation(location), false, false);
 
@@ -254,7 +263,7 @@
 
 <section class="align-content">
 	<article class="page-content" transition:fade|global>
-		<EventBanner />
+		<!-- <EventBanner /> -->
 		<div class="ranking-switcher">
 			<TabSwitcher
 				values={tabOptions}
@@ -262,6 +271,16 @@
 				loadingValue={pending ? currentTab : null}
 				on:change={onTabChanged}
 				class="ranking" />
+			{#if !isMobile}
+				<div class="header-sorters">
+					<RankingSorters
+						filters={currentFilters}
+						on:sort-changed={onSortChanged}
+						on:maps-type-changed={onMapsTypeChanged}
+						on:pp-type-changed={onPpTypeChanged}
+						on:order-changed={onOrderChanged} />
+				</div>
+			{/if}
 		</div>
 
 		<ContentBox cls="ranking-main-box" zIndex={2} bind:box={boxEl}>
@@ -282,16 +301,22 @@
 			boolname={window?.innerWidth < 767 ? 'showFiltersOnRankingMobile' : 'showFiltersOnRanking'}
 			faicon="fas fa-filter"
 			cls="ranking-filters-dropdown">
-			<RankingSorters
-				filters={currentFilters}
-				on:sort-changed={onSortChanged}
-				on:maps-type-changed={onMapsTypeChanged}
-				on:pp-type-changed={onPpTypeChanged}
-				on:order-changed={onOrderChanged} />
-			<section class="filter">
+			{#if isMobile}
+				<section class="filter">
+					<RankingSorters
+						filters={currentFilters}
+						on:sort-changed={onSortChanged}
+						on:maps-type-changed={onMapsTypeChanged}
+						on:pp-type-changed={onPpTypeChanged}
+						on:order-changed={onOrderChanged} />
+				</section>
+			{/if}
+
+			<section class="filter search-filter" class:has-value={currentFilters.search?.length}>
+				<i class="fas fa-search" />
 				<input
 					type="text"
-					placeholder={'Search by a player name'}
+					placeholder={'Search...'}
 					value={currentFilters.search}
 					on:input={debounce(e => {
 						const length = e?.target?.value?.length;
@@ -306,7 +331,8 @@
 			<section class="filter">
 				<Countries
 					countries={currentFilters.countries?.split(',').filter(c => c) ?? []}
-					placeholder="Click to filter by countries"
+					icon="fas fa-globe-americas"
+					placeholder="Countries"
 					on:change={e => {
 						const newValues = e?.detail ?? [];
 						if (currentFilters.countries != newValues.join(',')) {
@@ -320,11 +346,21 @@
 			<section class="filter">
 				<Headsets
 					value={currentFilters.hmd?.split(',').filter(c => c) ?? []}
-					placeholder="Click to filter by headsets"
+					mode={currentFilters.hmdMode ?? ''}
+					icon="fas fa-vr-cardboard"
+					placeholder="Headsets"
 					on:change={e => {
 						const newValues = e?.detail ?? [];
 						if (currentFilters.hmd != newValues.join(',')) {
 							currentFilters.hmd = newValues.join(',');
+							currentPage = 1;
+							navigateToCurrentPageAndFilters();
+						}
+					}}
+					on:mode-change={e => {
+						const newMode = e?.detail === 'main' ? '' : (e?.detail ?? '');
+						if (currentFilters.hmdMode != newMode) {
+							currentFilters.hmdMode = newMode;
 							currentPage = 1;
 							navigateToCurrentPageAndFilters();
 						}
@@ -341,7 +377,7 @@
 				</div>
 
 				{#if isPlatformFilterOpen}
-					<div class="dropdown-content" transition:fade>
+					<div class="dropdown-content" transition:slide={{duration: 500, easing: cubicOut}}>
 						<section class="filter">
 							<Switcher
 								values={platformOptions}
@@ -373,7 +409,7 @@
 				</div>
 
 				{#if isRoleFilterOpen}
-					<div class="dropdown-content" transition:fade>
+					<div class="dropdown-content" transition:slide={{duration: 500, easing: cubicOut}}>
 						<section class="filter">
 							<Switcher
 								values={roleOptions}
@@ -412,7 +448,7 @@
 				</div>
 
 				{#if isRangeFilterOpen}
-					<div class="dropdown-content" transition:fade>
+					<div class="dropdown-content" transition:slide={{duration: 500, easing: cubicOut}}>
 						<section class="filter">
 							<label
 								>Total PP range
@@ -678,7 +714,7 @@
 				</div>
 
 				{#if isDateFilterOpen}
-					<div class="dropdown-content" transition:fade>
+					<div class="dropdown-content" transition:slide={{duration: 500, easing: cubicOut}}>
 						<section class="filter">
 							<label>Started playing after</label>
 							<DatePicker
@@ -778,6 +814,20 @@
 	.ranking-switcher {
 		margin-left: 0.8em;
 		margin-top: 0.5em;
+		margin-right: 0.8em;
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-end;
+		gap: 0.5em;
+	}
+
+	.header-sorters {
+		min-width: 0;
+		margin-bottom: 0.5em;
+	}
+
+	.header-sorters :global(.sorting-options) {
+		justify-content: flex-end;
 	}
 
 	:global(.ranking-tab-button) {
@@ -847,10 +897,11 @@
 	.dropdown-filter {
 		border: 1px solid var(--faded);
 		border-radius: 4px;
-		overflow: hidden;
+		background-color: var(--foreground);
 	}
 
-	.dropdown-filter.has-value {
+	.dropdown-filter.has-value,
+	.search-filter.has-value {
 		border-color: rgba(255, 100, 150, 0.5);
 	}
 
@@ -859,7 +910,8 @@
 		justify-content: space-between;
 		align-items: center;
 		padding: 0.75rem 1rem;
-		background-color: var(--foreground);
+		background-color: var(--dimmed);
+		border-radius: 3px;
 		cursor: pointer;
 		user-select: none;
 	}
@@ -877,10 +929,36 @@
 	.dropdown-content {
 		padding: 1rem;
 		background-color: var(--foreground);
+		border-radius: 0 0 3px 3px;
+		box-shadow: none;
 	}
 
-	.dropdown-filter + .dropdown-filter {
-		margin-top: 1rem;
+	.dropdown-content > .filter:last-child {
+		margin-bottom: 0;
+	}
+
+	.search-filter {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.75rem 1rem;
+		border: 1px solid var(--faded);
+		border-radius: 4px;
+		background-color: var(--dimmed);
+	}
+
+	.search-filter:hover,
+	.search-filter:focus-within {
+		background-color: var(--background);
+	}
+
+	aside .search-filter input {
+		flex: 1;
+		width: auto;
+		padding: 0;
+		line-height: 1.5;
+		background-color: transparent;
+		border-bottom: none;
 	}
 
 	:global(.country-card-container) {
@@ -912,7 +990,7 @@
 
 		:global(.ranking-filters-dropdown) {
 			position: absolute !important;
-			top: 17.6em;
+			top: 4.2em;
 			right: 0.5em;
 			z-index: 3 !important;
 		}

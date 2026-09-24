@@ -958,8 +958,8 @@
 			{/if}
 			<Button
 				cls="order-toggle"
-				iconFa="fas {serviceParams?.order === 'asc' ? 'fa-arrow-up' : 'fa-arrow-down'}"
-				label={serviceParams?.order === 'asc' ? 'Ascending' : 'Descending'}
+				type="text"
+				iconFa="fas {serviceParams?.order === 'asc' ? 'fa-arrow-up-1-9' : 'fa-arrow-down-9-1'}"
 				title={serviceParams?.order === 'asc' ? 'Ascending' : 'Descending'}
 				on:click={() => dispatch('service-params-change', {order: serviceParams?.order === 'asc' ? 'desc' : 'asc'})} />
 			{#if hasThenSort}
@@ -977,8 +977,8 @@
 				{/each}
 				<Button
 					cls="order-toggle"
-					iconFa="fas {thenOrder === 'asc' ? 'fa-arrow-up' : 'fa-arrow-down'}"
-					label={thenOrder === 'asc' ? 'Ascending' : 'Descending'}
+					type="text"
+					iconFa="fas {thenOrder === 'asc' ? 'fa-arrow-up-1-9' : 'fa-arrow-down-9-1'}"
 					title={thenOrder === 'asc' ? 'Ascending' : 'Descending'}
 					on:click={() => dispatch('service-params-change', {thenOrder: thenOrder === 'asc' ? 'desc' : 'asc'})} />
 				<button class="remove-then-sort" on:click={removeThenSort} title="Remove secondary sort" aria-label="Remove secondary sort">

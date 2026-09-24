@@ -1,0 +1,50 @@
+export const SCORES_SORT_BY_VALUES = [
+	{value: 'pp', name: 'PP', title: 'Sort by PP', icon: 'fa-cubes'},
+	{
+		value: 'accPP',
+		name: 'Acc PP',
+		title: 'Sort by acc PP',
+		icon: 'fa-arrows-to-dot',
+	},
+	{
+		value: 'passPP',
+		name: 'Pass PP',
+		title: 'Sort by pass PP',
+		icon: 'fa-person-walking-dashed-line-arrow-right',
+	},
+	{
+		value: 'techPP',
+		name: 'Tech PP',
+		title: 'Sort by tech PP',
+		icon: 'fa-arrows-split-up-and-left',
+	},
+	{value: 'date', name: 'Date', title: 'Sort by date', icon: 'fa fa-clock'},
+	{value: 'acc', name: 'Acc', title: 'Sort by accuracy', icon: 'fa fa-crosshairs'},
+	{value: 'rank', name: 'Rank', title: 'Sort by rank', icon: 'fa fa-list-ol'},
+	{value: 'stars', name: 'Stars', title: 'Sort by song stars', icon: 'fa fa-star'},
+	{
+		value: 'sotwNominations',
+		name: 'Nominations',
+		title: 'Sort by Score Of The Week nominations count',
+		icon: 'fa fa-award',
+	},
+	{value: 'pauses', name: 'Pauses', title: 'Sort by pauses', icon: 'fa fa-pause'},
+	{
+		value: 'maxStreak',
+		name: 'Streak',
+		title: 'Sort by 115 streak',
+		icon: 'icon115s',
+	},
+	{
+		value: 'replaysWatched',
+		name: 'Watched',
+		title: 'Sort by replay watched',
+		icon: 'fa fa-eye',
+	},
+	{
+		value: 'mistakes',
+		name: 'Mistakes',
+		title: 'Sort by mistakes',
+		icon: 'icon-mistakes',
+	},
+];

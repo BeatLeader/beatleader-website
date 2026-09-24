@@ -5,12 +5,16 @@
 	import PlaylistPickerMultiItem from './PlaylistPickerMultiItem.svelte';
 	import PlaylistPickerItem from './PlaylistPickerItem.svelte';
 	import {BL_API_URL} from '../../network/queues/beatleader/api-queue';
+	import PickerBlock from '../Common/PickerBlock.svelte';
 	import createPlaylistStore from '../../stores/playlists';
 
 	export let playlistIds = [];
+	export let placeholder = 'Playlists';
+	export let icon = null;
 
 	const dispatch = createEventDispatcher();
 	const playlists = createPlaylistStore();
+	let listOpen = false;
 
 	let items = [];
 	let selectedIds = [];
@@ -113,7 +117,7 @@
 	}
 </script>
 
-<section>
+<PickerBlock {icon} hasValue={!!playlistIds?.filter(id => id?.length)?.length} open={listOpen}>
 	<div class="select-wrapper">
 		<div class="tabs-dropdown">
 			<button class:activetab={activeTab === 'featured'} on:click={e => handleTabClick('featured', e)}> Featured </button>
@@ -126,23 +130,16 @@
 			{itemFilter}
 			Item={PlaylistPickerItem}
 			MultiSelection={PlaylistPickerMultiItem}
-			placeholder="Search playlists"
+			{placeholder}
 			isSearchable={true}
 			isMulti={true}
+			bind:listOpen
 			on:select={onSelect}
 			on:clear />
 	</div>
-</section>
+</PickerBlock>
 
 <style>
-	section {
-		display: flex;
-		flex-wrap: wrap;
-		align-items: center;
-		gap: 0.25rem;
-		flex: 1;
-	}
-
 	.select-wrapper {
 		position: relative;
 		width: 100%;
@@ -186,16 +183,7 @@
 		background: #555;
 	}
 
-	:global(.listContainer) {
-		background-color: #242424 !important;
-		z-index: 8 !important;
-	}
-
 	:global(.selectContainer) {
 		width: 100%;
-	}
-
-	:global(.listItem) {
-		cursor: pointer;
 	}
 </style>

@@ -42,8 +42,8 @@
 		{/if}
 		<Button
 			cls="order-toggle"
-			iconFa="fas {currentOrderValue === 'asc' ? 'fa-arrow-up' : 'fa-arrow-down'}"
-			label={currentOrderValue === 'asc' ? 'Ascending' : 'Descending'}
+			type="text"
+			iconFa="fas {currentOrderValue === 'asc' ? 'fa-arrow-up-1-9' : 'fa-arrow-down-9-1'}"
 			title={currentOrderValue === 'asc' ? 'Ascending' : 'Descending'}
 			on:click={() => {
 				currentOrderValue = currentOrderValue === 'asc' ? 'desc' : 'asc';
@@ -56,12 +56,12 @@
 	.search-and-orders {
 		display: flex;
 		flex-direction: column;
-		margin-bottom: 1em;
 		gap: 0.5em;
 	}
 
 	.sorting-options {
 		display: flex;
+		flex-wrap: wrap;
 		justify-content: left;
 		align-items: center;
 		gap: 0.3em;

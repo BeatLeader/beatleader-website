@@ -386,12 +386,14 @@
 				{#if isMain && legacy}
 					<ContentBox cls="legacy-warning">
 						<span
-							>Beat Saber versions below 1.40.8 are now considered Legacy. Please update your game to get bugfixes, mod updates, support and future features.
+							>Beat Saber versions below 1.40.8 are now considered Legacy. Please update your game to get bugfixes, mod updates, support and
+							future features.
 						</span>
 						<br />
 						<span
-							>You can use <a href="https://github.com/Zagrios/bs-manager/releases">BSManager</a> to install separate game version. For users coming from 1.29.1 and earlier,
-							migrate your controller offsets with the <a href="https://github.com/qe201020335/BeatSaberOffsetMigrator">OffsetMigrator mod</a>
+							>You can use <a href="https://github.com/Zagrios/bs-manager/releases">BSManager</a> to install separate game version. For
+							users coming from 1.29.1 and earlier, migrate your controller offsets with the
+							<a href="https://github.com/qe201020335/BeatSaberOffsetMigrator">OffsetMigrator mod</a>
 						</span>
 					</ContentBox>
 				{/if}

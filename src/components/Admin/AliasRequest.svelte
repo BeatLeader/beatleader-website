@@ -68,6 +68,10 @@
 				$search = true;
 			}} />
 	</div>
+	<div class="aiwerdict">
+		{request.aiVerdict}
+		{request.aiReason}
+	</div>
 	<div>
 		<Button
 			type="green"

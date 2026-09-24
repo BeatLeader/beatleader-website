@@ -1,7 +1,8 @@
 <script>
 	import {tick, onMount} from 'svelte';
 	import {navigate} from 'svelte-routing';
-	import {fade, fly} from 'svelte/transition';
+	import {fade, fly, slide} from 'svelte/transition';
+	import {cubicOut} from 'svelte/easing';
 	import createAccountStore from '../stores/beatleader/account';
 	import createPlaylistStore from '../stores/playlists';
 	import ssrConfig from '../ssr-config';
@@ -54,6 +55,7 @@
 	import {fetchJson} from '../network/fetch';
 	import AsideBox from '../components/Common/AsideBox.svelte';
 	import {SORT_BY_VALUES} from '../components/Maps/List/constants';
+	import SortControls from '../components/Common/SortControls.svelte';
 
 	export let page = 1;
 	export let type = 'ranked';
@@ -368,8 +370,6 @@
 	function changePageAndFilters(newPage, newFilters, replace, setUrl = true) {
 		currentFilters = newFilters;
 
-		sortValue = currentFilters.sortBy;
-		thenSortValue = currentFilters.thenSort;
 		dateRangeValue = currentFilters.date_range;
 
 		sortValues = sortValues1.map(v => {
@@ -578,15 +578,14 @@
 
 	let sortValues1 = SORT_BY_VALUES;
 	let sortValues = sortValues1;
-	let sortValue = sortValues[0].value;
 
 	function onSortChange(event) {
-		if (!event?.detail?.value || event.detail.value == currentFilters.sortBy) return null;
+		if (!event?.detail || event.detail == currentFilters.sortBy) return null;
 
-		currentFilters.sortBy = event.detail.value;
+		currentFilters.sortBy = event.detail;
 
 		$configStore = produce($configStore, draft => {
-			draft.mapsListOptions.lastSortBy = event.detail.value;
+			draft.mapsListOptions.lastSortBy = event.detail;
 		});
 
 		resetCache();
@@ -594,29 +593,34 @@
 		navigateToCurrentPageAndFilters();
 	}
 
-	function onOrderChange() {
-		currentFilters.order = currentFilters.order === 'asc' ? 'desc' : 'asc';
+	function onOrderChange(event) {
+		currentFilters.order = event.detail;
 
 		resetCache();
 
 		navigateToCurrentPageAndFilters();
 	}
-
-	let thenSortValue = 'timestamp';
-	let showOtherSorting = false;
 
 	function onThenSortChange(event) {
-		if (!event?.detail?.value || event.detail.value == currentFilters.thenSort) return null;
+		if (!event?.detail || event.detail == currentFilters.thenSort) return null;
 
-		currentFilters.thenSort = event.detail.value;
+		currentFilters.thenSort = event.detail;
 
 		resetCache();
 
 		navigateToCurrentPageAndFilters();
 	}
 
-	function onThenOrderChange() {
-		currentFilters.thenOrder = currentFilters.thenOrder === 'asc' ? 'desc' : 'asc';
+	function onThenOrderChange(event) {
+		currentFilters.thenOrder = event.detail;
+
+		resetCache();
+
+		navigateToCurrentPageAndFilters();
+	}
+
+	function onNoSearchSortChange(event) {
+		currentFilters.noSearchSort = !!event.detail;
 
 		resetCache();
 
@@ -1047,72 +1051,22 @@
 		on:touchcancel={() => (lastY = null)}
 		bind:this={asideContainer}>
 		<AsideBox title="Filters" boolname={window?.innerWidth < 767 ? 'mapsFiltersOpenMobile' : 'mapsFiltersOpen'} faicon="fas fa-filter">
-			<div class="search-and-orders">
-				{#if currentFilters.search?.length}
-					<div class="sorting-options">
-						<Select
-							value={currentFilters.noSearchSort ? 'ignore' : 'relevance'}
-							fontSize="0.8"
-							options={[
-								{value: 'relevance', name: 'Relevance', title: 'Sort by search relevance first', icon: 'fa-magnifying-glass'},
-								{value: 'ignore', name: 'Ignore Relevance', title: 'Skip relevance sorting, return all matches', icon: 'fa-list'},
-							]}
-							on:change={event => {
-								if (!event?.detail?.value) return;
-								currentFilters.noSearchSort = event.detail.value === 'ignore';
-								resetCache();
-								navigateToCurrentPageAndFilters();
-							}} />
-						{#if !currentFilters.noSearchSort}
-							<Select value="desc" fontSize="0.8" options={[{value: 'desc', name: 'Descending', icon: 'fa-arrow-down'}]} />
-						{/if}
-					</div>
-					{#if !currentFilters.noSearchSort}
-						<span
-							title="Maps, tied after sorting by the main criteria will be then sorted in groups by additional criteria"
-							class="then-sort-label">
-							<div class="line-thing"></div>
-							<span>then sort</span>
-							<div class="line-thing"></div></span>
-					{/if}
-				{/if}
-				<div class="sorting-options">
-					<Select bind:value={sortValue} on:change={onSortChange} fontSize="0.8" options={sortValues} />
-					<Button
-						cls="order-toggle"
-						iconFa="fas {currentFilters.order === 'asc' ? 'fa-arrow-up' : 'fa-arrow-down'}"
-						label={currentFilters.order === 'asc' ? 'Ascending' : 'Descending'}
-						title={currentFilters.order === 'asc' ? 'Ascending' : 'Descending'}
-						on:click={onOrderChange} />
-					<div class="score-options-section">
-						<span
-							class="beat-savior-reveal clickable"
-							class:opened={showOtherSorting}
-							on:click={() => (showOtherSorting = !showOtherSorting)}
-							title="Show details">
-							<i class="fas fa-chevron-down" />
-						</span>
-					</div>
-				</div>
-				{#if showOtherSorting}
-					<span
-						title="Maps, tied after sorting by the main criteria will be then sorted in groups by additional criteria"
-						class="then-sort-label">
-						<div class="line-thing"></div>
-						<span>then sort</span>
-						<div class="line-thing"></div></span>
-					<div class="sorting-options">
-						<Select bind:value={thenSortValue} on:change={onThenSortChange} fontSize="0.8" options={sortValues} />
-						<Button
-							cls="order-toggle"
-							iconFa="fas {currentFilters.thenOrder === 'asc' ? 'fa-arrow-up' : 'fa-arrow-down'}"
-							label={currentFilters.thenOrder === 'asc' ? 'Ascending' : 'Descending'}
-							title={currentFilters.thenOrder === 'asc' ? 'Ascending' : 'Descending'}
-							on:click={onThenOrderChange} />
-					</div>
-				{/if}
-			</div>
-			<section class="filter search-filter">
+			<section class="filter">
+				<SortControls
+					filters={currentFilters}
+					{sortValues}
+					sortKey="sortBy"
+					defaultThenSort="timestamp"
+					thenSortTitle="Maps, tied after sorting by the main criteria will be then sorted in groups by additional criteria"
+					on:sort-changed={onSortChange}
+					on:order-changed={onOrderChange}
+					on:then-sort-changed={onThenSortChange}
+					on:then-order-changed={onThenOrderChange}
+					on:no-search-sort-changed={onNoSearchSortChange} />
+			</section>
+
+			<section class="filter search-filter" class:has-value={currentFilters.search?.length}>
+				<i class="fas fa-search" />
 				<input
 					on:input={debounce(onSearchChanged, FILTERS_DEBOUNCE_MS)}
 					type="text"
@@ -1125,12 +1079,14 @@
 				<Mappers
 					currentMapperId={$account.player && $account.player.playerInfo.mapperId}
 					mapperIds={currentFilters.mappers?.split(',').map(id => parseInt(id)) ?? []}
+					icon="fas fa-hammer"
 					on:change={e => onMappersChange(e)} />
 			</section>
 
 			<section class="filter">
 				<PlaylistPicker
 					playlistIds={(currentFilters.playlistIds?.length && currentFilters.playlistIds?.split(',')) ?? []}
+					icon="fas fa-list-ul"
 					on:change={e => onPlaylistIdsChange(e)} />
 			</section>
 
@@ -1176,7 +1132,7 @@
 				</div>
 
 				{#if isStarsFilterOpen}
-					<div class="dropdown-content" transition:fade>
+					<div class="dropdown-content" transition:slide={{duration: 500, easing: cubicOut}}>
 						<section class="filter" class:disabled={starFiltersDisabled}>
 							<label>
 								Stars
@@ -1326,7 +1282,7 @@
 				</div>
 
 				{#if isDateFilterOpen}
-					<div class="dropdown-content" transition:fade>
+					<div class="dropdown-content" transition:slide={{duration: 500, easing: cubicOut}}>
 						<div class="date-range-container">
 							<label>Date of</label>
 							<Select bind:value={dateRangeValue} on:change={onDateRangeChanged} fontSize="0.8" options={dateRangeOptions} />
@@ -1373,7 +1329,7 @@
 						const remainingSecs = secs % 60;
 						return `${mins}:${remainingSecs.toString().padStart(2, '0')}`;
 					}}
-					<div class="dropdown-content" transition:fade>
+					<div class="dropdown-content" transition:slide={{duration: 500, easing: cubicOut}}>
 						<section class="filter">
 							<label>
 								Duration
@@ -1426,7 +1382,7 @@
 				</div>
 
 				{#if isCategoryFilterOpen}
-					<div class="dropdown-content category-filter" transition:fade>
+					<div class="dropdown-content category-filter" transition:slide={{duration: 500, easing: cubicOut}}>
 						<Select
 							bind:value={currentFilters.allTypes}
 							on:change={() => onCategoryModeChanged()}
@@ -1456,7 +1412,7 @@
 				</div>
 
 				{#if isRequirementsFilterOpen}
-					<div class="dropdown-content category-filter" transition:fade>
+					<div class="dropdown-content category-filter" transition:slide={{duration: 500, easing: cubicOut}}>
 						<Select
 							bind:value={currentFilters.allRequirements}
 							on:change={() => onCategoryModeChanged()}
@@ -1512,7 +1468,7 @@
 				</div>
 
 				{#if isPlaylistOpen}
-					<div class="dropdown-content" transition:fade>
+					<div class="dropdown-content" transition:slide={{duration: 500, easing: cubicOut}}>
 						{#if makingPlaylist}
 							<Spinner />
 						{:else}
@@ -1656,58 +1612,45 @@
 		margin-bottom: 1.5em;
 	}
 
-	.sorting-options {
-		display: flex;
-		gap: 0.5em;
-		position: relative;
-	}
 
-	.search-and-orders {
-		display: flex;
-		flex-direction: column;
-		margin-bottom: 1em;
-		gap: 0.5em;
-	}
 
 	.search-filter {
-		margin-bottom: 1em;
-	}
-
-	.then-sort-label {
-		width: 100%;
 		display: flex;
-		justify-content: center;
 		align-items: center;
-		color: grey;
-		font-size: 12px;
+		gap: 0.5rem;
+		padding: 0.75rem 1rem;
+		border: 1px solid var(--faded);
+		border-radius: 4px;
+		background-color: var(--dimmed);
 	}
 
-	.line-thing {
+	.search-filter.has-value {
+		border-color: rgba(255, 100, 150, 0.5);
+	}
+
+	.search-filter:hover,
+	.search-filter:focus-within {
+		background-color: var(--background);
+	}
+
+	aside .search-filter input {
 		flex: 1;
-		height: 1px;
-		background-color: gray;
+		width: auto;
+		padding: 0;
+		line-height: 1.5;
+		background-color: transparent;
+		border-bottom: none;
 	}
 
-	.score-options-section {
-		display: grid;
-		justify-items: center;
-		height: 1.65em;
+	aside .search-filter input::placeholder {
+		color: revert !important;
 	}
 
-	.beat-savior-reveal {
-		align-self: end;
-		cursor: pointer;
-		transition: transform 500ms;
-		transform-origin: 0.42em 0.8em;
-	}
 
-	.beat-savior-reveal.opened {
-		transform: rotateZ(180deg);
-	}
 
-	.clickable {
-		cursor: pointer;
-	}
+
+
+
 
 	.category-filter {
 		display: flex;
@@ -1959,7 +1902,7 @@
 	.dropdown-filter {
 		border: 1px solid var(--faded);
 		border-radius: 4px;
-		overflow: hidden;
+		background-color: var(--foreground);
 	}
 
 	.dropdown-filter.has-value {
@@ -1971,7 +1914,8 @@
 		justify-content: space-between;
 		align-items: center;
 		padding: 0.75rem 1rem;
-		background-color: var(--foreground);
+		background-color: var(--dimmed);
+		border-radius: 3px;
 		cursor: pointer;
 		user-select: none;
 	}
@@ -1989,11 +1933,14 @@
 	.dropdown-content {
 		padding: 1rem;
 		background-color: var(--foreground);
+		border-radius: 0 0 3px 3px;
+		box-shadow: none;
 	}
 
-	.dropdown-filter + .dropdown-filter {
-		margin-top: 1rem;
+	.dropdown-content > .filter:last-child {
+		margin-bottom: 0;
 	}
+
 
 	.mobile-switcher {
 		display: none;

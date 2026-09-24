@@ -75,7 +75,7 @@
 			</div>
 		</ContentBox>
 		<span class="event-promotion-title">Latest event - Beat The Heat 2026: 32 fresh summer themed maps!</span>
-		<EventBanner wideScreen={true} />
+		<!-- <EventBanner wideScreen={true} /> -->
 		<div class="two-boxes">
 			<ContentBox cls="landing-box">
 				<span class="box-headline">We aggregate the data from other cool projects to help you play better.</span>

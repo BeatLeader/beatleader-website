@@ -7,6 +7,7 @@
 	export let value;
 	export let items;
 	export let placeholder = 'Click to select country';
+	export let placeholderAlwaysShow = true;
 
 	const dispatch = createEventDispatcher();
 
@@ -30,7 +31,7 @@
 	{placeholder}
 	isSearchable={true}
 	isMulti={true}
-	placeholderAlwaysShow={true}
+	{placeholderAlwaysShow}
 	bind:listOpen={opened}
 	on:select
 	on:clear />

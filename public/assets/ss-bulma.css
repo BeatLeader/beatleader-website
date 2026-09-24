@@ -781,7 +781,7 @@ a {
 	cursor: pointer;
 	text-decoration: none;
 	-webkit-user-drag: none; /* Safari/Chrome */
-  	user-drag: none;
+	user-drag: none;
 }
 
 a strong {
@@ -12326,12 +12326,8 @@ body::-webkit-scrollbar-track {
 }
 
 .order-toggle.button {
-	font-size: 0.8em !important;
-    padding: 0.1em 0.4em !important;
-    margin-bottom: 0 !important;
-    background-color: var(--dimmed) !important;
-    border-radius: 0.25rem !important;
-    color: white !important;
+	margin-bottom: -0.5em !important;
+	color: white !important;
 }
 
 .player-score .inc,

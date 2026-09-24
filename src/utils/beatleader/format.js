@@ -67,6 +67,12 @@ export const HMDs = {
 		color: 'invert(81%) sepia(27%) saturate(6288%) hue-rotate(344deg) brightness(103%) contrast(103%)',
 		priority: 2,
 	},
+	75: {
+		name: 'Steam Frame',
+		icon: 'frame.svg',
+		color: '',
+		priority: 2,
+	},
 	513: {
 		name: 'Quest 3S',
 		icon: 'meta.svg',
@@ -1491,9 +1497,9 @@ export function getSongSortingValue(song, diff, sortingKey, status) {
 	if (sortingKey == 'timestamp' && status == DifficultyStatus.qualified) {
 		const qualifiedDiff = song.difficulties.find(d => d.status == DifficultyStatus.qualified);
 		if (Date.now() / 1000 - qualifiedDiff.qualifiedTime < WEEKSECONDS) {
-			return "Ready " + formatDateRelative(dateFromUnix(qualifiedDiff.qualifiedTime + WEEKSECONDS));
+			return 'Ready ' + formatDateRelative(dateFromUnix(qualifiedDiff.qualifiedTime + WEEKSECONDS));
 		}
-		return "Ready!";
+		return 'Ready!';
 	}
 
 	if (sortingKey == 'stars' || sortingKey == 'accRating' || sortingKey == 'passRating' || sortingKey == 'techRating') {

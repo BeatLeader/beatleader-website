@@ -1,14 +1,18 @@
 <script>
 	import CountryPicker from '../Common/CountryPicker.svelte';
+	import PickerBlock from '../Common/PickerBlock.svelte';
 	import {createEventDispatcher} from 'svelte';
 	import {all_countries} from '../../utils/beatleader/format';
 
 	export let countries = [];
 	export let placeholder;
+	export let icon = null;
 
 	const dispatch = createEventDispatcher();
 
 	const regionNames = new Intl.DisplayNames(['en'], {type: 'region'});
+
+	let listOpen = false;
 
 	function getCountryName(code) {
 		try {
@@ -25,32 +29,20 @@
 		dispatch('change', e?.detail?.map(i => i.value)?.filter(v => v?.length) ?? []);
 	}
 
+	function onOpen(e) {
+		listOpen = !!e?.detail;
+		dispatch('open', e?.detail);
+	}
+
 	$: value = items.filter(i => (countries ?? []).includes(i.value));
 </script>
 
-<section
-	style=" --clearSelectTop: 8px; --multiItemBG: var(--selected); --multiClearBG: var(--selected); --listBackground:
-var(--background); --inputColor: var(--textColor); --multiSelectPadding: 2px 35px 2px 4px">
-	<CountryPicker {value} {items} {placeholder} on:select={onSelect} on:open />
-</section>
-
-<style>
-	section {
-		display: flex;
-		flex-wrap: wrap;
-		align-items: center;
-		gap: 0.25rem;
-	}
-
-	section :global(.badge-bg) {
-		background: rgba(255, 255, 255, 0.123);
-		border-bottom: 2px solid transparent;
-		border-radius: 0.1rem;
-		padding: 0.5rem;
-		filter: saturate(0.5) brightness(1.4);
-		transform: scale(0.8);
-		font-weight: 400 !important;
-		color: white !important;
-		margin: 0 0;
-	}
-</style>
+<PickerBlock {icon} hasValue={!!countries?.length} open={listOpen}>
+	<CountryPicker
+		value={value.length ? value : null}
+		{items}
+		{placeholder}
+		placeholderAlwaysShow={false}
+		on:select={onSelect}
+		on:open={onOpen} />
+</PickerBlock>
