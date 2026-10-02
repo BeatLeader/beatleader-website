@@ -294,6 +294,7 @@
 		display: flex;
 		grid-gap: 0.4em;
 		align-items: center;
+		flex-shrink: 0;
 	}
 
 	.player-score.highlight {
@@ -314,6 +315,11 @@
 		display: flex;
 		grid-gap: 0.4em;
 		flex: 1;
+		min-width: 0;
+	}
+
+	.player-score .player > :global(*) {
+		flex-shrink: 0;
 	}
 
 	.player-score .timeset {
@@ -386,6 +392,9 @@
 	.player-score .player :global(.player-name) {
 		overflow-x: hidden;
 		text-overflow: ellipsis;
+		white-space: nowrap;
+		min-width: 0;
+		flex-shrink: 1;
 	}
 
 	.with-badge {
