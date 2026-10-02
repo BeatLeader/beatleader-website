@@ -1,19 +1,21 @@
 <script>
 	import AchievementDetails from '../Common/Achievements/AchievementDetails.svelte';
 	import DialogContent from '../Common/DialogContent.svelte';
+	import ToolTip from '../Common/ToolTip.svelte';
 	import {Confetti} from 'svelte-confetti';
 	const lottieImport = () => import('@lottiefiles/svelte-lottie-player').then(m => m.LottiePlayer);
 
 	export let achievement;
 	export let confirm;
 	export let cancel;
+	export let badge;
 
 	let animationPlayer = null;
 
 	$: animationPlayer && animationPlayer.play();
 </script>
 
-<div class="dialog-container">
+<div class="dialog-container beat-the-heat-2026">
 	<DialogContent title="Beat The Heat achievement" okButton="Done" okButtonType="green" on:confirm={confirm} on:cancel={cancel}>
 		<div slot="content">
 			<div class="top-container">
@@ -25,10 +27,22 @@
 					</div>
 				</div>
 
+				{#if badge}
+					<span class="badge-title" style="z-index: 1;"
+						>You received the "Beat The Heat 2026" achievement for passing all the maps in the event.<br /> Also you received a badge "{badge.title}".
+						Congratulations!<br /></span>
+					<a class="badge-link" href={badge.link}>
+						<ToolTip content={badge.title}>
+							<img class="badge-image clickable" src={badge.src} alt={badge.title} />
+						</ToolTip>
+					</a>
+				{:else}
+					<span class="badge-title" style="z-index: 1;"
+						>You received the "Beat The Heat 2026" achievement for passing all the maps in the event. Congratulations!<br /></span>
+				{/if}
 				<span style="z-index: 1;"
-					>You received the "Beat The Heat" achievement for passing all the maps in the event. Congratulations!<br /></span>
-				<span style="z-index: 1;"
-					>We hope you had fun and feel refreshed. Have a great August, and let's repeat in the next seasonal project!🏖️</span>
+					>We hope you had fun and feel invigorated. Huge thanks to all the mappers for their awesome work. Let's meet again on Halloween!🎃
+				</span>
 
 				<img src="/assets/replayed2024/summary.webp" class="illustration1" />
 				{#await lottieImport()}
@@ -42,7 +56,7 @@
 							controls={false}
 							loop={true}
 							bind:this={animationPlayer}
-							src="/assets/bthScuba.json" />
+							src="/assets/bthPuddle.json" />
 					</div>
 				{/await}
 			</div>
@@ -66,7 +80,7 @@
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		gap: 2em;
+		gap: 1em;
 		overflow: hidden;
 	}
 
@@ -91,8 +105,8 @@
 	.illustration1 {
 		display: block;
 		position: absolute;
-		width: 20em;
-		height: 20em;
+		width: 12em;
+		height: 12em;
 		top: 3%;
 		right: 2%;
 		z-index: 0;
@@ -102,8 +116,8 @@
 		position: absolute;
 		width: 20em;
 		height: 20em;
-		bottom: 3%;
-		left: 2%;
+		bottom: -15%;
+		left: -4em;
 		z-index: 0;
 	}
 
@@ -113,15 +127,13 @@
 		background-image: radial-gradient(circle at 50%, rgb(119 167 230 / 23%), transparent 50%) !important;
 	}
 
+	:global(.dialog-content:has(.beat-the-heat-2026)) {
+		overflow: hidden;
+	}
+
 	@media screen and (max-width: 767px) {
 		.top-container {
 			width: unset;
-		}
-
-		.illustration2 {
-			width: 12em;
-			height: 12em;
-			bottom: 7px;
 		}
 
 		.illustration1 {

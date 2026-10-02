@@ -98,6 +98,7 @@ export const DEFAULT_CONFIG = {
 		gamifiedVivifyShown: false,
 		askOnLogOut: true,
 		beastiesFinalistsPopupShown: false,
+		beatTheHeat2026Shown: false,
 	},
 	scorePreferences: {
 		badgeRows: 2,

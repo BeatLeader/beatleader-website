@@ -32,6 +32,7 @@
 	import LoveLiveCongratulation from '../components/Player/LoveLiveCongratulation.svelte';
 	import GamifiedVivifyCongratulation from '../components/Player/GamifiedVivifyCongratulation.svelte';
 	import {takePlayerSeed, seedToProfileData} from '../stores/player-profile-seed';
+	import BeatTheHeatCongratulation from '../components/Player/BeatTheHeatCongratulation.svelte';
 
 	const RANKED_STORE_SORTING_KEY = 'PlayerRankedSorting';
 	const RANKED_STORE_ORDER_KEY = 'PlayerRankedOrder';
@@ -261,6 +262,35 @@
 		});
 	}
 
+	let shown = false;
+
+	function showBeatTheHeatCongratulation(isMain, achievements, ssBadges, beatTheHeatShown) {
+		if (!isMain) return;
+		if (beatTheHeatShown) return;
+		const achievement = achievements.find(a => a.achievementDescriptionId == 9);
+		const badge = ssBadges?.find(b => b.title.toLowerCase().includes('beat the heat 2026'));
+		if (!achievement) return;
+		if (shown) return;
+		shown = true;
+
+		open(BeatTheHeatCongratulation, {
+			achievement,
+			badge,
+			confirm: () => {
+				close();
+				$configStore = produce($configStore, draft => {
+					draft.preferences.beatTheHeat2026Shown = true;
+				});
+			},
+			cancel: () => {
+				close();
+				$configStore = produce($configStore, draft => {
+					draft.preferences.beatTheHeat2026Shown = true;
+				});
+			},
+		});
+	}
+
 	function showGamifiedVivifyCongratulation(isMain, ssBadges, gamifiedVivifyShown) {
 		if (!isMain) return;
 		if (gamifiedVivifyShown) return;
@@ -335,6 +365,7 @@
 	$: editing = new URLSearchParams(location?.search).get('edit') ?? null;
 	$: playerPage && toggleRandomImageOnHover(playerPage, playerInfo?.clans?.filter(cl => cl.tag == 'SABA').length);
 	$: showGamifiedVivifyCongratulation(isMain, ssBadges, $configStore.preferences.gamifiedVivifyShown);
+	$: showBeatTheHeatCongratulation(isMain, achievements, ssBadges, $configStore.preferences.beatTheHeat2026Shown);
 </script>
 
 <svelte:head>
