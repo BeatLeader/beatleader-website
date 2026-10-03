@@ -87,10 +87,10 @@ export const BL_API_FIND_PLAYER_URL =
 	'players?search=${query}&leaderboardContext=${leaderboardContext}&page=${page}&count=${count}&sortBy=${sortBy}&order=${order}';
 export const BL_API_RANKING_URL =
 	BL_API_URL +
-	'v2/players?leaderboardContext=${leaderboardContext}&page=${page}&count=${count}&sortBy=${sortBy}&mapsType=${mapsType}&ppType=${ppType}&order=${order}&countries=${countries}&showBots=${showBots}&search=${search}&platform=${platform}&role=${role}&hmd=${hmd}&hmdMode=${hmdMode}&firstScoreTime=${firstScoreTime}&recentScoreTime=${recentScoreTime}&pp_range=${pp_range}&score_range=${score_range}&ranked_score_range=${ranked_score_range}&acc_pp_range=${acc_pp_range}&tech_pp_range=${tech_pp_range}&pass_pp_range=${pass_pp_range}';
+	'v2/players?leaderboardContext=${leaderboardContext}&page=${page}&count=${count}&sortBy=${sortBy}&mapsType=${mapsType}&ppType=${ppType}&order=${order}&countries=${countries}&bots=${bots}&search=${search}&platform=${platform}&role=${role}&hmd=${hmd}&hmdMode=${hmdMode}&firstScoreTime=${firstScoreTime}&recentScoreTime=${recentScoreTime}&pp_range=${pp_range}&score_range=${score_range}&ranked_score_range=${ranked_score_range}&acc_pp_range=${acc_pp_range}&tech_pp_range=${tech_pp_range}&pass_pp_range=${pass_pp_range}';
 export const BL_API_RANKING_FRIENDS_URL =
 	BL_API_URL +
-	'v2/players/friends?leaderboardContext=${leaderboardContext}&page=${page}&count=${count}&sortBy=${sortBy}&mapsType=${mapsType}&ppType=${ppType}&order=${order}&countries=${countries}&showBots=${showBots}&search=${search}&platform=${platform}&role=${role}&hmd=${hmd}&hmdMode=${hmdMode}&firstScoreTime=${firstScoreTime}&recentScoreTime=${recentScoreTime}&pp_range=${pp_range}&score_range=${score_range}&ranked_score_range=${ranked_score_range}&acc_pp_range=${acc_pp_range}&tech_pp_range=${tech_pp_range}&pass_pp_range=${pass_pp_range}';
+	'v2/players/friends?leaderboardContext=${leaderboardContext}&page=${page}&count=${count}&sortBy=${sortBy}&mapsType=${mapsType}&ppType=${ppType}&order=${order}&countries=${countries}&bots=${bots}&search=${search}&platform=${platform}&role=${role}&hmd=${hmd}&hmdMode=${hmdMode}&firstScoreTime=${firstScoreTime}&recentScoreTime=${recentScoreTime}&pp_range=${pp_range}&score_range=${score_range}&ranked_score_range=${ranked_score_range}&acc_pp_range=${acc_pp_range}&tech_pp_range=${tech_pp_range}&pass_pp_range=${pass_pp_range}';
 export const BL_API_PLAYER_HYDRATE_URL =
 	BL_API_URL + 'v2/player/${playerId}/hydrate?includeProfile=true&leaderboardContext=${leaderboardContext}';
 export const BL_API_EVENT_RANKING_URL =
@@ -100,7 +100,7 @@ export const BL_API_CLAN_RANKING_URL = BL_API_URL + 'leaderboard/clanRankings/${
 export const BL_API_CLAN_RANKING_SCORES_URL = BL_API_URL + 'leaderboard/clanRankings/${leaderboardId}/${clanRankingId}?page=${page}';
 export const BL_API_LEADERBOARD_URL =
 	BL_API_URL +
-	'leaderboard/${leaderboardId}?leaderboardContext=${leaderboardContext}&page=${page}&countries=${countries}&clanTag=${clanTag}&friends=${friends}&voters=${voters}&prediction=${prediction}&sortBy=${sortBy}&order=${order}&search=${search}&modifiers=${modifiers}&hmds=${hmds}&count=${count}';
+	'leaderboard/${leaderboardId}?leaderboardContext=${leaderboardContext}&page=${page}&countries=${countries}&clanTag=${clanTag}&friends=${friends}&voters=${voters}&prediction=${prediction}&botsOnly=${botsOnly}&sortBy=${sortBy}&order=${order}&search=${search}&modifiers=${modifiers}&hmds=${hmds}&count=${count}';
 export const BL_API_LEADERBOARDS_URL =
 	BL_API_URL +
 	'leaderboards?leaderboardContext=${leaderboardContext}&page=${page}&type=${type}&search=${search}&stars_from=${stars_from}&stars_to=${stars_to}&accrating_from=${accrating_from}&accrating_to=${accrating_to}&passrating_from=${passrating_from}&passrating_to=${passrating_to}&techrating_from=${techrating_from}&techrating_to=${techrating_to}&date_from=${date_from}&date_to=${date_to}&date_range=${date_range}&sortBy=${sortBy}&order=${order}&mytype=${mytype}&count=${count}&mapType=${mapType}&mode=${mode}&difficulty=${difficulty}&allTypes=${allTypes}&songStatus=${songStatus}&mapRequirements=${mapRequirements}&allRequirements=${allRequirements}&mappers=${mappers}&playlistIds=${playlistIds}';

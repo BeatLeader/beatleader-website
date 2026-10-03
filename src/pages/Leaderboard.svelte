@@ -543,7 +543,16 @@
 							},
 						]
 					: []
-			);
+			)
+			.concat([
+				{
+					type: 'bots',
+					label: 'Bots',
+					iconFa: 'fas fa-robot',
+					url: `/leaderboard/bots/${currentLeaderboardId}/1`,
+					filters: {countries: '', clanTag: '', hmds: ''},
+				},
+			]);
 
 		const newCurrentTypeOption = findCurrentTypeOption(currentType, currentFilters);
 		if (newCurrentTypeOption) currentTypeOption = newCurrentTypeOption;

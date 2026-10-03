@@ -34,6 +34,7 @@
 	import CountryCard from '../components/Ranking/CountryCard.svelte';
 	import EventBanner from '../components/Event/EventBanner.svelte';
 	import RankingSorters from '../components/Ranking/RankingSorters.svelte';
+	import RadioGroup from '../components/Common/RadioGroup.svelte';
 
 	export let page = 1;
 	export let location;
@@ -58,6 +59,11 @@
 		{id: 'tipper', label: 'Tipper'},
 		{id: 'mapper', label: 'Mapper'},
 	];
+	const botsOptions = [
+		{value: 'hide', label: 'Hide bots'},
+		{value: 'only', label: 'Bots only'},
+		{value: 'include', label: 'Include bots'},
+	];
 
 	const tabOptions = [
 		{value: 'ranking', label: 'Ranking', iconFa: 'fas fa-hashtag', url: '/ranking/1', cls: 'ranking-tab-button'},
@@ -77,6 +83,7 @@
 		{key: 'hmd', default: '', process: processStringFilter},
 		{key: 'hmdMode', default: '', process: processStringFilter},
 		{key: 'role', default: '', process: processStringFilter},
+		{key: 'bots', default: '', process: processStringFilter},
 		{key: 'pp_range', default: '', process: processStringFilter},
 		{key: 'score_range', default: '', process: processStringFilter},
 		{key: 'ranked_score_range', default: '', process: processStringFilter},
@@ -240,6 +247,7 @@
 	);
 	let isPlatformFilterOpen = !!currentFilters.platform;
 	let isRoleFilterOpen = !!currentFilters.role;
+	let isBotsFilterOpen = !!currentFilters.bots;
 	let isDateFilterOpen = !!currentFilters.firstScoreTime || !!currentFilters.recentScoreTime;
 
 	function labelFormatter(max, step) {
@@ -387,7 +395,9 @@
 									var currentValue = currentFilters.platform?.split(',') ?? [];
 
 									currentFilters.platform = (
-										currentValue.includes(e.detail.id) ? currentValue.filter(p => p !== e.detail.id) : [...currentValue, e.detail.id]
+										currentValue.includes(e.detail.id)
+											? currentValue.filter(p => p !== e.detail.id)
+											: [...currentValue, e.detail.id]
 									)
 										.filter(r => r.length)
 										.join(',');
@@ -419,12 +429,43 @@
 									var currentValue = currentFilters.role?.split(',') ?? [];
 
 									currentFilters.role = (
-										currentValue.includes(e.detail.id) ? currentValue.filter(p => p !== e.detail.id) : [...currentValue, e.detail.id]
+										currentValue.includes(e.detail.id)
+											? currentValue.filter(p => p !== e.detail.id)
+											: [...currentValue, e.detail.id]
 									)
 										.filter(r => r.length)
 										.join(',');
 									currentPage = 1;
 									navigateToCurrentPageAndFilters();
+								}} />
+						</section>
+					</div>
+				{/if}
+			</section>
+
+			<section class="filter dropdown-filter" class:has-value={currentFilters.bots?.length}>
+				<div class="dropdown-header" on:click={() => (isBotsFilterOpen = !isBotsFilterOpen)}>
+					<div class="header-content">
+						<i class="fas fa-robot" />
+						<span>Bots</span>
+					</div>
+					<i class="fas fa-chevron-{isBotsFilterOpen ? 'up' : 'down'}" />
+				</div>
+
+				{#if isBotsFilterOpen}
+					<div class="dropdown-content" transition:slide={{duration: 500, easing: cubicOut}}>
+						<section class="filter">
+							<RadioGroup
+								options={botsOptions}
+								value={currentFilters.bots?.length ? currentFilters.bots : 'hide'}
+								label="Bots visibility"
+								on:change={e => {
+									const newValue = e?.detail === 'hide' ? '' : (e?.detail ?? '');
+									if (currentFilters.bots != newValue) {
+										currentFilters.bots = newValue;
+										currentPage = 1;
+										navigateToCurrentPageAndFilters();
+									}
 								}} />
 						</section>
 					</div>
@@ -554,7 +595,9 @@
 								max={ranges_limits.rankedPlayCount + 1}
 								step={1}
 								values={(() => {
-									const values = (currentFilters.ranked_score_range || ',').split(',').map(v => (v ? parseFloat(v) : null));
+									const values = (currentFilters.ranked_score_range || ',')
+										.split(',')
+										.map(v => (v ? parseFloat(v) : null));
 									return [
 										Number.isFinite(values[0]) ? values[0] : Number.NEGATIVE_INFINITY,
 										Number.isFinite(values[1]) ? values[1] : Number.POSITIVE_INFINITY,

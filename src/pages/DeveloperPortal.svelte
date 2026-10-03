@@ -11,6 +11,7 @@
 	import Switcher from '../components/Common/Switcher.svelte';
 	import Button from '../components/Common/Button.svelte';
 	import OauthApp from '../components/Developer/OauthApp.svelte';
+	import BotAccount, {waitForBotsRefresh} from '../components/Developer/BotAccount.svelte';
 	import {fetchJson} from '../network/fetch';
 	import {BL_API_URL, CURRENT_URL} from '../network/queues/beatleader/api-queue';
 	import beatSaverSvg from '../resources/beatsaver.svg';
@@ -53,6 +54,29 @@
 		apps = apps.filter(app => app.clientId !== event.detail.clientId);
 	}
 
+	let botCreateMode = false;
+	let isBotsLoading = false;
+	let bots = null;
+
+	function fetchBots() {
+		isBotsLoading = true;
+		fetchJson(BL_API_URL + 'developer/bots', {credentials: 'include'}).then(remoteBots => {
+			bots = remoteBots.body;
+			isBotsLoading = false;
+		});
+	}
+
+	async function onBotAdded() {
+		botCreateMode = false;
+		isBotsLoading = true;
+		await waitForBotsRefresh();
+		fetchBots();
+	}
+
+	function onBotChanged() {
+		fetchBots();
+	}
+
 	let cinematicsCanvas;
 
 	function drawCinematics(cinematicsCanvas, coverUrl) {
@@ -73,6 +97,7 @@
 	$: document.body.scrollIntoView({behavior: 'smooth'});
 
 	$: $account.id && fetchApps();
+	$: $account.id && fetchBots();
 	$: discordSocial = $account?.player?.playerInfo?.socials?.find(s => s?.service === 'Discord');
 </script>
 
@@ -187,6 +212,82 @@
 			{/if}
 		</ContentBox>
 		<ContentBox>
+			<h1 class="title is-5">
+				Bot accounts
+
+				{#if isBotsLoading}
+					<Spinner />
+				{/if}
+			</h1>
+
+			<p class="bots-description">
+				A bot account is useful if you are working on algorithm for passing maps. They compete on the separate bots leaderboard and
+				ranking. Only the best bot score is shown on the main leaderboards for players who enabled "Show bots". <br /> <br />
+				<b>
+					Please do not create bots for deterministic 100% or near 100% accuracy, these bots will be deleted, and your account
+					won't be able to host bots. Bot movements in the replay MUST be realistic.</b>
+			</p>
+
+			{#if bots}
+				{#if botCreateMode}
+					<ContentBox>
+						<BotAccount
+							enableCreateMode={true}
+							on:added={onBotAdded}
+							on:cancel={() => {
+								botCreateMode = false;
+							}} />
+					</ContentBox>
+				{:else if $account?.player && bots.length < 3}
+					{#if discordSocial}
+						<Button
+							iconFa="fas fa-robot"
+							label="New bot account"
+							type="primary"
+							on:click={() => {
+								botCreateMode = true;
+							}} />
+					{:else}
+						<div class="benefit-button-container">
+							<Button
+								iconFa="fas fa-edit"
+								title="Please link discord"
+								label="Please link discord"
+								noMargin={true}
+								url="/signin/socials"
+								onlyurl={true}
+								type="default" />
+						</div>
+					{/if}
+				{/if}
+
+				{#if bots?.length}
+					<div class="apps grid-transition-helper">
+						{#each bots as bot, idx (bot.playerId)}
+							<div class={`app-line row-${idx}`} in:fly|global={{delay: idx * 10, x: 100}}>
+								<div class="main">
+									<BotAccount {bot} on:changed={onBotChanged} />
+								</div>
+							</div>
+						{/each}
+					</div>
+				{:else if !isBotsLoading}
+					<p>No bot accounts yet.</p>
+				{/if}
+			{:else if !$account.id}
+				<div class="benefit-button-container">
+					<Button
+						iconFa="fas fa-edit"
+						title="Log in to start"
+						label="Log in to start"
+						noMargin={true}
+						url="/signin"
+						onlyurl={true}
+						type="default" />
+				</div>
+			{/if}
+		</ContentBox>
+		<ContentBox>
 			<span
 				class="title is-5 chevron-clickable"
 				class:opened={showBeatSaverLogin}
@@ -201,7 +302,8 @@
 			{#if showBeatSaverLogin}
 				<div transition:fade|global>
 					<p style="padding: 1em 0">
-						This login option is only for mappers that <b>do not own the game</b>, but need to login to the website to manage their maps.
+						This login option is only for mappers that <b>do not own the game</b>, but need to login to the website to manage
+						their maps.
 						<br /> If you are a player, please use the game login. <b style="color:#ff6666">THIS IS NOT FOR PLAYERS</b> and is
 						<b style="color:#ff6666">unusable</b> in game. <br />
 						<b style="color:#ff6666">Reesabers are not available for this login method.</b>
@@ -243,6 +345,11 @@
 
 	.apps :global(> *:last-child) {
 		border-bottom: none !important;
+	}
+
+	.bots-description {
+		margin-bottom: 1em;
+		color: var(--faded);
 	}
 
 	.app-line {

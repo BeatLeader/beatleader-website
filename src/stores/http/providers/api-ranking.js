@@ -1,9 +1,7 @@
 import createRankingService from '../../../services/beatleader/ranking';
-import createAccountStore from '../../beatleader/account';
 import queue from '../../../network/queues/queues';
 
 let rankingService = null;
-let accountStore = null;
 
 export default () => {
 	if (!rankingService) rankingService = createRankingService();
@@ -19,10 +17,6 @@ export default () => {
 	} = {}) => {
 		page = parseInt(page, 10);
 		if (isNaN(page)) page = 1;
-
-		if (!accountStore) accountStore = createAccountStore();
-		const showBots = accountStore.get()?.player?.profileSettings?.showBots ?? false;
-		filters = {...filters, showBots};
 
 		let data = null;
 		switch (type) {

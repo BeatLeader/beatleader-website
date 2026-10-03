@@ -100,7 +100,7 @@
 						{playerId}
 						{richBioID}
 						vertical={!horizontalRichBio && (!emptyClan || !emptyMaps)}
-						patron={isAnySupporter(playerInfo.role)}
+						patron={isAnySupporter(playerInfo.role) || playerInfo.bot}
 						isFounder={true}
 						on:height-changed
 						on:edit={e => onRichTextEdit(e)}

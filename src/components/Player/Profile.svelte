@@ -23,6 +23,7 @@
 	import Spinner from '../Common/Spinner.svelte';
 	import {GLOBAL_LEADERBOARD_TYPE} from '../../utils/format';
 	import {BL_API_URL, BL_RENDERER_API_URL} from '../../network/queues/beatleader/api-queue';
+	import {fetchJson} from '../../network/fetch';
 	import SummaryBox from './Summary/SummaryBox.svelte';
 	import {navigate} from 'svelte-routing';
 	import Followers from './Bio/Followers.svelte';
@@ -100,7 +101,8 @@
 		let {profileAppearance, country, avatar, message, name, ...data} = $editModel?.data ?? {};
 
 		profileAppearance = profileAppearance?.length ? profileAppearance?.join(',') : '';
-		country = country?.length && (country !== playerData?.playerInfo?.country?.country?.toLowerCase() ?? '') ? country.toUpperCase() : null;
+		country =
+			country?.length && (country !== playerData?.playerInfo?.country?.country?.toLowerCase() ?? '') ? country.toUpperCase() : null;
 
 		data = {...data, profileAppearance};
 		if (country) data.country = country;
@@ -110,7 +112,7 @@
 
 		try {
 			$editModel.isSaving = true;
-			if (isAdmin) {
+			if (isAdmin || isBotOwner) {
 				data.id = playerData?.playerId;
 			}
 			await account.update(data, avatar);
@@ -215,8 +217,23 @@
 	$: name = playerData && playerData.name ? playerData.name : null;
 	$: ({playerInfo, scoresStats, accBadges, ssBadges} = processPlayerData(playerData));
 	$: updateRoles(playerInfo?.role ?? null);
+
+	let isBotOwner = false;
+	async function checkBotOwnership(playerId, accountId, isBot) {
+		isBotOwner = false;
+		if (!playerId || !accountId || !isBot) return;
+
+		const bots = await fetchJson(BL_API_URL + 'developer/bots', {credentials: 'include'})
+			.then(r => r?.body)
+			.catch(() => null);
+		if (playerId !== playerData?.playerId) return;
+
+		isBotOwner = !!bots?.some?.(b => b.playerId === playerId);
+	}
+
 	$: isMain = playerId && $account?.id === playerId;
 	$: isAdmin = $account?.player?.role?.includes('admin');
+	$: checkBotOwnership(playerId, $account?.id, playerInfo?.bot);
 	$: profileAppearance = playerData?.profileSettings?.profileAppearance;
 	$: cover = !$editModel?.avatarOverlayEdit && ($editModel ? $editModel?.data?.profileCover : playerData?.profileSettings?.profileCover);
 	$: rolesShown = anyRolesShown(profileAppearance);
@@ -284,7 +301,12 @@
 			{#if $editModel}
 				<div class="cover-edit-buttons">
 					{#if $editModel.data.profileCoverData}
-						<Button type="danger" cls="remove-cover-button" iconFa="fa fa-xmark" label="Remove cover" on:click={() => resetCover()} />
+						<Button
+							type="danger"
+							cls="remove-cover-button"
+							iconFa="fa fa-xmark"
+							label="Remove cover"
+							on:click={() => resetCover()} />
 					{/if}
 					<Button
 						type="primary"
@@ -292,7 +314,12 @@
 						iconFa="far fa-image"
 						label={$editModel.data.profileCoverData ? 'Change cover' : 'Set cover'}
 						on:click={() => fileinput.click()}>
-						<input style="display:none" type="file" accept=".jpg, .jpeg, .png, .gif" on:change={changeCover} bind:this={fileinput} />
+						<input
+							style="display:none"
+							type="file"
+							accept=".jpg, .jpeg, .png, .gif"
+							on:change={changeCover}
+							bind:this={fileinput} />
 					</Button>
 				</div>
 			{/if}
@@ -370,6 +397,7 @@
 				{playerInfo}
 				{playerId}
 				{roles}
+				{isBotOwner}
 				profileAppearance={playerData?.profileSettings?.profileAppearance ?? null}
 				bind:editModel={$editModel}
 				bind:zIndex

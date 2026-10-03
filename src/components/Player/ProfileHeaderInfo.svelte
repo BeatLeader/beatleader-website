@@ -26,6 +26,7 @@
 	export let profileAppearance;
 	export let zIndex = 0;
 	export let mayEdit = true;
+	export let isBotOwner = false;
 
 	const dispatch = createEventDispatcher();
 
@@ -75,7 +76,7 @@
 	$: loggedInPlayer = $account?.id;
 	$: isMain = playerId && $account?.id === playerId;
 	$: isAdmin = $account?.player?.role?.includes('admin');
-	$: canRedact = mayEdit && ((isMain && loggedInPlayer === playerId) || isAdmin);
+	$: canRedact = mayEdit && ((isMain && loggedInPlayer === playerId) || isAdmin || isBotOwner);
 	$: clanOrder = playerInfo?.clans?.map(c => c.tag).join(',');
 
 	let alias = null;
@@ -224,7 +225,9 @@
 				<div class="sponsor-message">
 					<span
 						>This message will be shown in-game for your scores.<br />
-						You can use <a class="inlineLink" href="https://docs.unity3d.com/Packages/com.unity.textmeshpro@4.0/manual/RichText.html">Unity tags</a> here.</span>
+						You can use
+						<a class="inlineLink" href="https://docs.unity3d.com/Packages/com.unity.textmeshpro@4.0/manual/RichText.html"
+							>Unity tags</a> here.</span>
 					<input type="text" bind:value={editModel.data.message} placeholder="Promotion message" class="sponsor-input" />
 				</div>
 			{/if}
@@ -271,7 +274,12 @@
 						type="danger"
 						on:click={async () => await account.unbanPlayer(playerId)} />
 				{:else}
-					<Button cls="banButton" title="Ban player" label="Ban player" type="danger" on:click={async () => (showBanForm = !showBanForm)} />
+					<Button
+						cls="banButton"
+						title="Ban player"
+						label="Ban player"
+						type="danger"
+						on:click={async () => (showBanForm = !showBanForm)} />
 				{/if}
 			{/if}
 		</div>
@@ -285,7 +293,7 @@
 				>Your contribution in the Clan Wars will only apply to your main(first) clan. You can change order only once a week.</span>
 		{/if}
 
-		{#if editModel}
+		{#if editModel && !isBotOwner}
 			{#if aliasRequest}
 				<div class="alias-status">
 					<span
@@ -342,7 +350,12 @@
 
 	{#if canRedact && !editModel?.data}
 		<div class="edit-button">
-			<Button type="text" title="Edit profile" cls="editNameButton" iconFa="fas fa-edit" on:click={() => dispatch('edit-model-enable')} />
+			<Button
+				type="text"
+				title="Edit profile"
+				cls="editNameButton"
+				iconFa="fas fa-edit"
+				on:click={() => dispatch('edit-model-enable')} />
 		</div>
 	{/if}
 </div>

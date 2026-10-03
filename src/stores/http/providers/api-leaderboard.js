@@ -30,6 +30,8 @@ export default () => {
 				return await leaderboardService.fetchLeaderboardPage(leaderboardId, page, {friends: true, ...filters}, priority, signal, force);
 			case 'voters':
 				return await leaderboardService.fetchLeaderboardPage(leaderboardId, page, {voters: true, ...filters}, priority, signal, force);
+			case 'bots':
+				return await leaderboardService.fetchLeaderboardPage(leaderboardId, page, {botsOnly: true, ...filters}, priority, signal, force);
 			case 'prediction':
 				return await leaderboardService.fetchLeaderboardPage(leaderboardId, page, {prediction: true, ...filters}, priority, signal, force);
 			case 'accsaber':
