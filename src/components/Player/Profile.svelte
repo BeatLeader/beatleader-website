@@ -22,6 +22,7 @@
 
 	import Spinner from '../Common/Spinner.svelte';
 	import {GLOBAL_LEADERBOARD_TYPE} from '../../utils/format';
+	import {SCREENSHOT_MODE} from '../../utils/screenshot';
 	import {BL_API_URL, BL_RENDERER_API_URL} from '../../network/queues/beatleader/api-queue';
 	import {fetchJson} from '../../network/fetch';
 	import SummaryBox from './Summary/SummaryBox.svelte';
@@ -326,16 +327,18 @@
 		</div>
 	{/if}
 	<AvatarOverlay withCover={cover} data={$editModel?.data ?? playerData?.profileSettings} />
-	<div class="share-buttons-container" style="margin: 0; padding: 0;">
-		<Button type="text" title="Share profile link" iconFa="fas fa-share-from-square" cls="shareButton" on:click={copyUrl} />
-	</div>
-	<div class="share-buttons-container" style="margin: 0; padding: 0;">
-		{#if screenshoting}
-			<div class="screenshotSpinner"><Spinner /></div>
-		{:else}
-			<Button type="text" title="Screenshot profile" iconFa="fas fa-camera" cls="screenshotButton" on:click={takeScreenshot} />
-		{/if}
-	</div>
+	{#if !SCREENSHOT_MODE}
+		<div class="share-buttons-container" style="margin: 0; padding: 0;">
+			<Button type="text" title="Share profile link" iconFa="fas fa-share-from-square" cls="shareButton" on:click={copyUrl} />
+		</div>
+		<div class="share-buttons-container" style="margin: 0; padding: 0;">
+			{#if screenshoting}
+				<div class="screenshotSpinner"><Spinner /></div>
+			{:else}
+				<Button type="text" title="Screenshot profile" iconFa="fas fa-camera" cls="screenshotButton" on:click={takeScreenshot} />
+			{/if}
+		</div>
+	{/if}
 
 	<div class="player-general-info" class:withCover={cover} class:edit-enabled={!!$editModel}>
 		<div class="avatar-and-roles">

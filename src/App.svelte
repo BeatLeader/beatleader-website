@@ -8,7 +8,7 @@
 	import createContainerStore from './stores/container';
 	import {isTouchDevice} from './utils/is-touch';
 	import Nav from './components/Nav/Nav.svelte';
-	import {importFonts, setGlobalCSSValue} from './utils/color';
+	import {applyThemePreferences} from './utils/color';
 	import ContentBox from './components/Common/ContentBox.svelte';
 	import PlaylistCart from './components/Playlists/PlaylistCart.svelte';
 	import Search from './components/Search/Search.svelte';
@@ -138,20 +138,7 @@
 
 	$: if (mainEl) containerStore.observe(mainEl);
 
-	if ($configStore.preferences.theme != 'default' && $configStore.preferences.theme != 'ree-dark') {
-		setGlobalCSSValue('background-image', 'url(' + $configStore.preferences.bgimage + ')');
-		setGlobalCSSValue('customizable-color-1', $configStore.preferences.bgColor);
-		setGlobalCSSValue('customizable-color-2', $configStore.preferences.headerColor);
-
-		setGlobalCSSValue('font-names', $configStore.preferences.fontNames);
-
-		setGlobalCSSValue('bg-color', $configStore.preferences.buttonColor);
-		setGlobalCSSValue('color', $configStore.preferences.labelColor);
-		setGlobalCSSValue('ppColour', $configStore.preferences.ppColor);
-		setGlobalCSSValue('selected', $configStore.preferences.selectedColor);
-
-		importFonts($configStore.preferences.fontNames);
-	}
+	applyThemePreferences($configStore.preferences);
 </script>
 
 <div bind:this={mobileTooltip} class="mobile-tooltip" />

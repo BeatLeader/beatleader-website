@@ -1,5 +1,7 @@
 import {mount} from 'svelte';
 import App from './App.svelte';
+import ScreenshotApp from './ScreenshotApp.svelte';
+import {SCREENSHOT_MODE} from './utils/screenshot';
 import log from './utils/logger';
 import initDb from './db/db';
 import initializeRepositories from './db/repositories-init';
@@ -47,7 +49,7 @@ let app = null;
 
 		log.info('Site initialized', 'Main');
 
-		app = mount(App, {
+		app = mount(SCREENSHOT_MODE ? ScreenshotApp : App, {
 			target: document.body,
 			props: {},
 		});

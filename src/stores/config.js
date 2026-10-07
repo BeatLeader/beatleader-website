@@ -4,6 +4,7 @@ import keyValueRepository from '../db/repository/key-value';
 import {deepClone, opt, optSet} from '../utils/js';
 import {BL_API_URL} from '../network/queues/beatleader/api-queue';
 import {STAR_COLOR_OPTIONS} from '../components/Maps/List/constants';
+import {SCREENSHOT_MODE} from '../utils/screenshot';
 
 const STORE_CONFIG_KEY = 'config';
 
@@ -405,7 +406,7 @@ export default async () => {
 			.map(([key, description]) => (opt(dbConfig, key) === undefined ? description : null))
 			.filter(d => d);
 
-	const savedConfig = await keyValueRepository().get(STORE_CONFIG_KEY);
+	const savedConfig = SCREENSHOT_MODE ? null : await keyValueRepository().get(STORE_CONFIG_KEY);
 	const newSettings = determineNewSettingsAvailable(savedConfig);
 
 	// upgrade secondary pp metric if needed

@@ -2,9 +2,11 @@
 	import * as d3 from 'd3';
 	import {navigate} from 'svelte-routing';
 	import {isTouchDevice} from '../../utils/is-touch';
+	import {SCREENSHOT_MODE} from '../../utils/screenshot';
 
 	export let leaderboardId;
 	export let clanTag;
+	export let save = false;
 
 	let clansData;
 	let canvas, context, currentZoom, width, height;
@@ -215,13 +217,37 @@
 				label.x = clans[i].x - lwidth / 2;
 				label.y = clans[i].y + lheight / 4;
 			}
-			renderCanvas();
+			if (!save) {
+				renderCanvas();
+			}
 		}); // Re-render canvas on each tick
+	}
+
+	if (save) {
+		setTimeout(() => {
+			const circlesMap = {};
+			circles.forEach(circle => {
+				circlesMap[circle.id] = {x: circle.x, y: circle.y};
+			});
+
+			const clansMap = {};
+			clans.forEach(clan => {
+				clansMap[clan.id] = {x: clan.x, y: clan.y};
+			});
+
+			const json = JSON.stringify({circles: circlesMap, clans: clansMap});
+			const link = document.createElement('a');
+			document.body.appendChild(link); // for Firefox
+			link.setAttribute('href', URL.createObjectURL(new Blob([json], {type: 'application/json'})));
+			link.setAttribute('download', 'clansmap.json');
+			link.click();
+		}, 20000);
 	}
 
 	function renderCanvas() {
 		context.save();
-		context.clearRect(0, 0, width, height); // Clear the canvas
+		context.fillStyle = 'black';
+		context.fillRect(0, 0, width, height);
 
 		context.translate(currentZoom.x, currentZoom.y); // Apply translation
 		context.scale(currentZoom.k, currentZoom.k); // Apply scale
@@ -503,14 +529,14 @@
 	let animating = false;
 	let animationStartTime;
 
-	function animateZoomMap(targetMapId, duration = 800) {
+	function animateZoomMap(targetMapId, duration = SCREENSHOT_MODE ? 2000 : 800) {
 		const targetMap = circles.find(d => d.id == targetMapId);
 		if (!targetMap) return;
 
 		const initialTransform = d3.zoomIdentity.translate(346.64996337890625, 303.4814766674457).scale(defaultScale);
 		d3.select(canvas).call(zoom.transform, initialTransform);
 
-		const targetZoomLevel = 2; // Desired zoom level
+		const targetZoomLevel = SCREENSHOT_MODE ? 0.7 : 2; // Desired zoom level
 		const targetTransform = d3.zoomIdentity
 			.translate(width / 2, height / 2)
 			.scale(targetZoomLevel)

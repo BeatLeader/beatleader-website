@@ -4,7 +4,7 @@
 	import {GLOBAL_LEADERBOARD_TYPE} from '../../../utils/format';
 	import createAccountStore from '../../../stores/beatleader/account';
 	import Value from '../../Common/Value.svelte';
-	import {createEventDispatcher} from 'svelte';
+	import {createEventDispatcher, onDestroy} from 'svelte';
 	import {getNotificationsContext} from 'svelte-notifications';
 	import {tweened} from 'svelte/motion';
 	import {cubicOut} from 'svelte/easing';
@@ -16,6 +16,7 @@
 	export let width = '10em';
 	export let height = '10em';
 	export let showRatings = true;
+	export let animate = false;
 
 	const dispatch = createEventDispatcher();
 	const {addNotification} = getNotificationsContext();
@@ -36,6 +37,7 @@
 	let previousTimestamp;
 	let maxNewScores = 0;
 	let hoveredTimestamp = null;
+	let animationTimeout;
 
 	function updatePPFromInfo(playerInfo) {
 		if (!playerInfo) return;
@@ -89,10 +91,11 @@
 			.then(d => d.json())
 			.then(h => {
 				history = h.sort((a, b) => a.timestamp - b.timestamp);
-				selectedTimestamp = history[history.length - 1].timestamp;
+				selectedTimestamp = history[animate ? 0 : history.length - 1].timestamp;
 				maxNewScores = Math.max(...history.map(d => Math.max(d.newScores, d.improvements)));
 				setTimeout(() => {
 					dispatch('height-changed');
+					if (animate) animateTimestamps();
 				}, 200);
 			});
 	}
@@ -101,6 +104,15 @@
 		previousTimestamp = selectedTimestamp;
 		selectedTimestamp = timestamp;
 	}
+
+	function animateTimestamps(index = 0) {
+		if (index >= history.length) return;
+
+		selectTimestamp(history[index].timestamp);
+		animationTimeout = setTimeout(() => animateTimestamps(index + 1), 400);
+	}
+
+	onDestroy(() => clearTimeout(animationTimeout));
 
 	function handleTimelineChange(event) {
 		const newIndex = parseInt(event.target.value);
@@ -120,9 +132,9 @@
 	async function makeGif() {
 		try {
 			screenshoting = true;
-			const blob = await fetch(`${BL_RENDERER_API_URL}animatedloop/700x340/2/1.2/skill-triangle-history/general/triangle/${playerId}`).then(
-				response => response.blob()
-			);
+			const blob = await fetch(
+				`${BL_RENDERER_API_URL}animatedloop/700x340/2/1.2/skill-triangle-history/${GLOBAL_LEADERBOARD_TYPE}/triangle/${playerId}`
+			).then(response => response.blob());
 			try {
 				window.focus();
 				await navigator.clipboard.write([new ClipboardItem({'image/gif': blob})]);
@@ -164,7 +176,7 @@
 		}, 200);
 </script>
 
-{#if playerInfo}
+{#if playerInfo || animate}
 	<div class="triangle-and-slider">
 		{#if history?.length > 1}
 			<div class="timeline-container" style="height: {history.length * 1.2}em;">
@@ -309,7 +321,7 @@ Improvements: {data.improvements}"
 			</svg>
 		</a>
 	</div>
-	{#if history?.length > 1 && playerId == $account?.player?.playerId}
+	{#if !animate && history?.length > 1 && playerId == $account?.player?.playerId}
 		<div class="gif-container">
 			{#if screenshoting}
 				<div>

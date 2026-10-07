@@ -5,6 +5,7 @@
 	import {onMount} from 'svelte';
 	import {dateFromUnix} from '../../utils/date';
 	import {BL_API_URL} from '../../network/queues/beatleader/api-queue';
+	import {SCREENSHOT_MODE} from '../../utils/screenshot';
 
 	export let startTimeset;
 	export let finishTimeset;
@@ -12,7 +13,8 @@
 	let clansData;
 	let canvas, context, currentZoom, width, height;
 
-	const defaultScale = 0.25;
+	const defaultScale = SCREENSHOT_MODE ? 0.15 : 0.25;
+	const initialTranslate = SCREENSHOT_MODE ? [226.64996337890625, 203.4814766674457] : [346.64996337890625, 303.4814766674457];
 	var zoom;
 	let currentScale = defaultScale;
 	const hoverRadius = 38;
@@ -23,10 +25,11 @@
 	var links = [];
 
 	var clanMap = {};
+	var finishClanMap = {};
 	var clans = [];
 
 	let transitionProgress = 0;
-	const transitionDuration = 10000;
+	const transitionDuration = SCREENSHOT_MODE ? 400000 : 10000;
 	let transitionStartTime;
 	let transitionCache;
 	let finishClansData;
@@ -45,6 +48,18 @@
 			.then(data => {
 				// Store the finish timeset data for later use in the transition
 				finishClansData = data;
+
+				finishClanMap = {};
+				for (let i = 0; i < finishClansData.clans.length; i++) {
+					var clan = finishClansData.clans[i];
+					clan.topCount = 0;
+					finishClanMap[clan.id] = clan;
+				}
+
+				for (let i = 0; i < finishClansData.points.length; i++) {
+					finishClanMap[finishClansData.points[i].clans[0].id].topCount++;
+				}
+
 				fetch(`https://cdn.assets.beatleader.com/clansmap-globalcache-${finishTimeset}.json`)
 					.then(r => r.json())
 					.then(update => {
@@ -65,15 +80,19 @@
 		fetch(`https://cdn.assets.beatleader.com/clansmap-globalcache-${startTimeset}.json`)
 			.then(r => r.json())
 			.then(cache => {
-				processData(cache);
+				setTimeout(
+					() => {
+						processData(cache);
 
-				// Initialize canvas elements and interactions
-				initializeCanvas();
-				if (finishTimeset) {
-					getFinishData(finishTimeset);
-				} else {
-					renderCanvas();
-				}
+						initializeCanvas();
+						if (finishTimeset) {
+							getFinishData(finishTimeset);
+						} else {
+							renderCanvas();
+						}
+					},
+					SCREENSHOT_MODE ? 900 : 0
+				);
 			});
 	}
 
@@ -251,6 +270,15 @@
 				label.x = interpolate(label.x, (transitionCache.clans[label.id]?.x ?? 0) - lwidth / 2, transitionProgress);
 				label.y = interpolate(label.y, (transitionCache.clans[label.id]?.y ?? 0) + lheight / 4, transitionProgress);
 				// label.fontSize = interpolate(label.fontSize, Math.sqrt(clan.topCount) * 10, transitionProgress);
+
+				if (SCREENSHOT_MODE && !label.addedDifference) {
+					const startClan = clanMap[label.id];
+					const finishClan = finishClanMap[label.id];
+					if (startClan && finishClan) {
+						label.topCountChange = finishClan.topCount - startClan.topCount;
+						label.addedDifference = true;
+					}
+				}
 			}
 		});
 
@@ -380,6 +408,16 @@
 		context.fillStyle = hovered ? 'white' : 'rgba(255, 255, 255, 0.6)'; // Example style
 		context.font = label.fontSize + 'px Arial'; // Example font, adjust as needed
 		context.fillText(label.label, label.x, label.y);
+
+		if (label.topCountChange) {
+			context.fillStyle = label.topCountChange > 0 ? 'green' : 'red';
+			context.font = label.fontSize + 10 + 'px Arial';
+			context.fillText(
+				`${label.topCountChange > 0 ? '+' : ''}${label.topCountChange}`,
+				label.x + label.label.length * (label.fontSize * 0.75),
+				label.y
+			);
+		}
 		// Additional drawing details for clans
 	}
 
@@ -432,7 +470,7 @@
 			});
 
 		d3.select(canvas).call(zoom);
-		const initialTransform = d3.zoomIdentity.translate(346.64996337890625, 303.4814766674457).scale(defaultScale);
+		const initialTransform = d3.zoomIdentity.translate(...initialTranslate).scale(defaultScale);
 		d3.select(canvas).call(zoom.transform, initialTransform);
 	}
 

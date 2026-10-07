@@ -20,6 +20,7 @@
 
 	export let replayedType = 'player';
 	export let playerId = null;
+	export let summaryOnly = false;
 
 	const account = createAccountStore();
 	let beatSaverService = createBeatSaverService();
@@ -435,102 +436,111 @@
 
 	$: loggedInPlayer = $account?.id;
 	$: fetchReplayed($account?.id);
+	$: summaryCard = summaryOnly ? cards?.find(card => card.component === ReplayedSummaryCard2024) : null;
 </script>
 
 <svelte:head>
 	<title>BeatLeader rePlayed 2024</title>
 </svelte:head>
 
-<section class="align-content">
-	<article class="page-content align-content" transition:fade|global>
-		<ContentBox cls="main-content-replayed">
-			<div class="items">
-				{#if cards}
-					<FeaturedCarousel {cards} showFillerCards={false} height={'1000%'} cardWidthRatio={1} showButtons />
-					<SoundMotionController />
-				{:else if replayedNotAvailable}
-					{#if !loggedInPlayer}
-						<div class="login-form">
-							<div class="title">Please log in to view your<b>rePlayed 2024</b></div>
-							<form action={BL_API_URL + 'signin'} method="post">
-								<input type="hidden" name="Provider" value="Steam" />
-								<input type="hidden" name="ReturnUrl" value={CURRENT_URL + '/replayed'} />
-
-								<Button icon={steamSvg} label="Log In with Steam" type="green" />
-							</form>
-							<br />
-							<span>Quest Log In</span>
-							<div class="input-container">
-								<div class="cat">Login</div>
-								<input bind:value={login} placeholder="Login" />
-							</div>
-							<div class="input-container">
-								<div class="cat">Password</div>
-								<input type="password" bind:value={password} placeholder="Password" />
-							</div>
-
-							<Button iconFa="fas fa-right-to-bracket" label="Log In" on:click={() => account.logIn(login, password)} />
-
-							<div class="sorting-options">
-								<span
-									class="beat-savior-reveal clickable"
-									class:opened={showBeatSaverLogin}
-									on:click={() => (showBeatSaverLogin = !showBeatSaverLogin)}
-									on:keydown={() => (showBeatSaverLogin = !showBeatSaverLogin)}
-									title="Show login with BeatSaver">
-									{#if showBeatSaverLogin}
-										I play the game too
-									{:else}
-										Don't play the game but still map?
-									{/if}
-
-									<i class="fas fa-chevron-down" />
-								</span>
-							</div>
-
-							{#if showBeatSaverLogin}
+{#if summaryOnly}
+	{#if summaryCard}
+		<div class="summary-still">
+			<ReplayedSummaryCard2024 {...summaryCard.props} still={true} />
+		</div>
+	{/if}
+{:else}
+	<section class="align-content">
+		<article class="page-content align-content" transition:fade|global>
+			<ContentBox cls="main-content-replayed">
+				<div class="items">
+					{#if cards}
+						<FeaturedCarousel {cards} showFillerCards={false} height={'1000%'} cardWidthRatio={1} showButtons />
+						<SoundMotionController />
+					{:else if replayedNotAvailable}
+						{#if !loggedInPlayer}
+							<div class="login-form">
+								<div class="title">Please log in to view your<b>rePlayed 2024</b></div>
 								<form action={BL_API_URL + 'signin'} method="post">
-									<input type="hidden" name="Provider" value="BeatSaver" />
-									<input type="hidden" name="ReturnUrl" value={CURRENT_URL + '/replayed/mapper'} />
+									<input type="hidden" name="Provider" value="Steam" />
+									<input type="hidden" name="ReturnUrl" value={CURRENT_URL + '/replayed'} />
 
-									<Button icon={beatSaverSvg} label="Log In with BeatSaver" type="submit" />
+									<Button icon={steamSvg} label="Log In with Steam" type="green" />
 								</form>
-							{/if}
-						</div>
-					{:else if replayedType === 'player'}
-						<div class="centering-container">
-							<h3>
-								Looks like you didn't play much this year.<br /><br />Why not play something from the ranked batch,<br />and we'll see you
-								next year!
-							</h3>
-						</div>
-					{:else if replayedType === 'mapper'}
-						<div class="centering-container">
-							{#if $account?.player?.playerInfo?.mapperId}
+								<br />
+								<span>Quest Log In</span>
+								<div class="input-container">
+									<div class="cat">Login</div>
+									<input bind:value={login} placeholder="Login" />
+								</div>
+								<div class="input-container">
+									<div class="cat">Password</div>
+									<input type="password" bind:value={password} placeholder="Password" />
+								</div>
+
+								<Button iconFa="fas fa-right-to-bracket" label="Log In" on:click={() => account.logIn(login, password)} />
+
+								<div class="sorting-options">
+									<span
+										class="beat-savior-reveal clickable"
+										class:opened={showBeatSaverLogin}
+										on:click={() => (showBeatSaverLogin = !showBeatSaverLogin)}
+										on:keydown={() => (showBeatSaverLogin = !showBeatSaverLogin)}
+										title="Show login with BeatSaver">
+										{#if showBeatSaverLogin}
+											I play the game too
+										{:else}
+											Don't play the game but still map?
+										{/if}
+
+										<i class="fas fa-chevron-down" />
+									</span>
+								</div>
+
+								{#if showBeatSaverLogin}
+									<form action={BL_API_URL + 'signin'} method="post">
+										<input type="hidden" name="Provider" value="BeatSaver" />
+										<input type="hidden" name="ReturnUrl" value={CURRENT_URL + '/replayed/mapper'} />
+
+										<Button icon={beatSaverSvg} label="Log In with BeatSaver" type="submit" />
+									</form>
+								{/if}
+							</div>
+						{:else if replayedType === 'player'}
+							<div class="centering-container">
 								<h3>
-									Looks like your mapping year was quiet.<br /><br />But it's always a good time to<br />map something for rePlayed 2024!
+									Looks like you didn't play much this year.<br /><br />Why not play something from the ranked batch,<br />and we'll see you
+									next year!
 								</h3>
-							{:else}
-								<h3>Please link your BeatSaver account to view<br /><b>your Mapper rePlayed 2024</b></h3>
+							</div>
+						{:else if replayedType === 'mapper'}
+							<div class="centering-container">
+								{#if $account?.player?.playerInfo?.mapperId}
+									<h3>
+										Looks like your mapping year was quiet.<br /><br />But it's always a good time to<br />map something for rePlayed 2024!
+									</h3>
+								{:else}
+									<h3>Please link your BeatSaver account to view<br /><b>your Mapper rePlayed 2024</b></h3>
 
-								<form action={BL_API_URL + 'signin'} method="post">
-									<input type="hidden" name="Provider" value="BeatSaver" />
-									<input type="hidden" name="ReturnUrl" value={CURRENT_URL + '/replayed/mapper'} />
+									<form action={BL_API_URL + 'signin'} method="post">
+										<input type="hidden" name="Provider" value="BeatSaver" />
+										<input type="hidden" name="ReturnUrl" value={CURRENT_URL + '/replayed/mapper'} />
 
-									<Button icon={beatSaverSvg} label="Link BeatSaver" type="submit" />
-								</form>
-							{/if}
+										<Button icon={beatSaverSvg} label="Link BeatSaver" type="submit" />
+									</form>
+								{/if}
+							</div>
+						{/if}
+					{:else}
+						<div class="centering-container">
+							<Spinner />
 						</div>
 					{/if}
-				{:else}
-					<div class="centering-container">
-						<Spinner />
-					</div>
-				{/if}
-			</div>
-		</ContentBox>
-	</article>
-</section>
+				</div>
+			</ContentBox>
+		</article>
+	</section>
+{/if}
 
 <MetaTags
 	title="BeatLeader rePlayed 2024"
@@ -552,6 +562,13 @@
 	}} />
 
 <style>
+	.summary-still {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr);
+		width: 464px;
+		height: 800px;
+	}
+
 	.align-content {
 		display: flex;
 		justify-content: center !important;

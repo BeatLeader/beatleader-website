@@ -3,6 +3,7 @@ import {BL_API_URL} from '../../network/queues/beatleader/api-queue';
 import userApiClient from '../../network/clients/beatleader/account/api';
 import queue from '../../network/queues/queues';
 import {configStore} from '../config';
+import {SCREENSHOT_MODE} from '../../utils/screenshot';
 
 let store = null;
 let storeSubCount = 0;
@@ -13,7 +14,7 @@ export default (refreshOnCreate = true) => {
 
 	const checkResponse = async response => response.text();
 
-	let account = {loading: true};
+	let account = SCREENSHOT_MODE ? {} : {loading: true};
 
 	const {subscribe: subscribeState, set} = writable(account);
 
@@ -32,7 +33,7 @@ export default (refreshOnCreate = true) => {
 		set(account);
 	};
 
-	if (refreshOnCreate) refresh();
+	if (refreshOnCreate && !SCREENSHOT_MODE) refresh();
 
 	const subscribe = fn => {
 		const stateUnsubscribe = subscribeState(fn);
@@ -165,7 +166,7 @@ export default (refreshOnCreate = true) => {
 						credentials: 'include',
 						method: data.profileCoverData ? 'PATCH' : 'DELETE',
 						body: data.profileCoverData,
-				  })
+					})
 				: Promise.resolve(42)
 		).then(_ =>
 			fetch(url.toString(), {

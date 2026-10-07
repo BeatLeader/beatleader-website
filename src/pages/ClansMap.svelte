@@ -5,12 +5,13 @@
 
 	export let leaderboardId;
 	export let clanTag;
+	export let save = false;
 
 	let title = 'Clans War Global Map';
 	let metaDescription = 'Global map of ranked songs conquest by clans!';
 </script>
 
-<GlobalClansMap {leaderboardId} {clanTag} />
+<GlobalClansMap {leaderboardId} {clanTag} {save} />
 
 <MetaTags
 	{title}

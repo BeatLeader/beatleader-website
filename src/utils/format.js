@@ -1,4 +1,5 @@
 import {getCurrentLocale} from '../stores/config';
+import {SCREENSHOT_HOST} from './screenshot';
 
 var lcount = 2;
 if (window.location.host.includes('localhost')) {
@@ -12,6 +13,9 @@ if (window.location.host.includes('preview')) {
 }
 if (parseInt(location.host.split('.')[location.host.split('.').length - 1])) {
 	lcount = 4;
+}
+if (SCREENSHOT_HOST) {
+	lcount += 1;
 }
 export var GLOBAL_LEADERBOARD_TYPE = location.host.split('.').length > lcount ? location.host.split('.')[0] : 'general';
 

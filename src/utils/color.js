@@ -76,6 +76,23 @@ export function removeGlobalCSSValue(name) {
 	r.style.removeProperty('--' + name);
 }
 
+export function applyThemePreferences(preferences) {
+	if (preferences.theme == 'default' || preferences.theme == 'ree-dark') return;
+
+	setGlobalCSSValue('background-image', 'url(' + preferences.bgimage + ')');
+	setGlobalCSSValue('customizable-color-1', preferences.bgColor);
+	setGlobalCSSValue('customizable-color-2', preferences.headerColor);
+
+	setGlobalCSSValue('font-names', preferences.fontNames);
+
+	setGlobalCSSValue('bg-color', preferences.buttonColor);
+	setGlobalCSSValue('color', preferences.labelColor);
+	setGlobalCSSValue('ppColour', preferences.ppColor);
+	setGlobalCSSValue('selected', preferences.selectedColor);
+
+	importFonts(preferences.fontNames);
+}
+
 export function importFonts(fontNames) {
 	// This is so we can avoid loading invalid google font API URLs for these generic font families:
 	const cssFamilies = {

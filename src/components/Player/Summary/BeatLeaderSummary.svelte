@@ -1,6 +1,7 @@
 <script>
 	import {createEventDispatcher} from 'svelte';
 	import ScoresStats from '../ScoresStats.svelte';
+	import {SCREENSHOT_MODE} from '../../../utils/screenshot';
 
 	export let playerId = null;
 	export let scoresStats = null;
@@ -73,7 +74,7 @@
 			</div>
 		{/if}
 	</div>
-	{#if hiddenScoresStats?.length || hiddenAccStats?.length}
+	{#if !SCREENSHOT_MODE && (hiddenScoresStats?.length || hiddenAccStats?.length)}
 		<div style="margin: -0.1em 0.2em 0 0.3em; padding: 0;">
 			<span
 				class="reveal clickable"

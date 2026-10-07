@@ -1,5 +1,5 @@
 <script>
-	import {fade, fly, scale} from 'svelte/transition';
+	import {fade, fly as animatedFly, scale} from 'svelte/transition';
 	import Button from '../Common/Button.svelte';
 	import {navigate} from 'svelte-routing/src/history';
 	import Reveal from '../Common/Reveal.svelte';
@@ -24,8 +24,11 @@
 	export let frontCardId;
 	export let cardId;
 	export let playerId;
+	export let still = false;
 
-	let revealed = false;
+	const fly = (node, params) => animatedFly(node, still ? {duration: 0} : params);
+
+	let revealed = still;
 	let dominantColor = 'rgb(92, 120, 133)';
 	let activeMounted = false;
 	let activeReady = false;
@@ -231,7 +234,7 @@
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <!-- svelte-ignore a11y-click-events-have-key-events -->
-<div class="grid-item" class:active transition:fly|global={{y: '25%', duration: 900, easing: cubicOut, opacity: 0}}>
+<div class="grid-item" class:active class:still transition:fly|global={{y: '25%', duration: 900, easing: cubicOut, opacity: 0}}>
 	<div class="card" on:click={handleCardClick} on:mouseenter class:active class:revealed style="--dominantColor: {dominantColor};">
 		<div class="cinematics">
 			<div class="cinematics-canvas" class:active={active && revealed && false}>
@@ -411,18 +414,20 @@
 					<img class="bottom-icon" src="/assets/favicon.svg" />
 					<span>beatleader.com/replayed</span>
 				</div>
-				<div class="bottom-container-right" transition:fly={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 400}}>
-					<div class="share-button" on:click={takeScreenshot}>
-						<div>
-							{#if screenshoting}
-								<Spinner />
-							{:else}
-								<i class="fa-solid fa-share-from-square" />
-							{/if}
-							share
+				{#if !still}
+					<div class="bottom-container-right" transition:fly={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 400}}>
+						<div class="share-button" on:click={takeScreenshot}>
+							<div>
+								{#if screenshoting}
+									<Spinner />
+								{:else}
+									<i class="fa-solid fa-share-from-square" />
+								{/if}
+								share
+							</div>
 						</div>
 					</div>
-				</div>
+				{/if}
 			</div>
 		{/if}
 	</div>
@@ -609,6 +614,10 @@
 		display: flex;
 		flex-direction: column;
 		min-height: 17%;
+	}
+
+	.still .header {
+		min-height: 8%;
 	}
 
 	.grid-item {

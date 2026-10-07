@@ -16,6 +16,7 @@
 	export let underswingsData = null;
 	export let notes;
 	export let njs = null;
+	export let graphOnly = false;
 
 	let graphPageIndex = $configStore?.scoreDetailsPreferences?.defaultAccChartIndex ?? 1;
 
@@ -41,7 +42,7 @@
 
 {#if beatSavior}
 	<section class="beat-savior">
-		{#if showAll || $configStore?.scoreDetailsPreferences?.showScoreMetrics || $configStore?.scoreDetailsPreferences?.showHandsAcc || (showGrid && $configStore?.scoreDetailsPreferences?.showSliceDetails)}
+		{#if !graphOnly && (showAll || $configStore?.scoreDetailsPreferences?.showScoreMetrics || $configStore?.scoreDetailsPreferences?.showHandsAcc || (showGrid && $configStore?.scoreDetailsPreferences?.showSliceDetails))}
 			<DetailsBox cls="details-and-hands">
 				{#if $configStore?.scoreDetailsPreferences?.showScoreMetrics}
 					<OtherStats {beatSavior} {njs} />
