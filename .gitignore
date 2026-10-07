@@ -3,6 +3,7 @@
 node_modules
 public/build
 public/index.html
+public/version.json
 public/assets/ss-bulma.*.css
 build-info.js
 forreload

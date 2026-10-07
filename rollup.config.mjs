@@ -62,6 +62,8 @@ function processHtml() {
 			const html = readFileSync('public/index.template.html', 'utf8');
 			const processed = html.replace(/BUILD_TIMESTAMP/g, buildTimestamp);
 			writeFileSync('public/index.html', processed);
+			// Polled by open tabs to detect a new deploy (see src/utils/version-check.js)
+			writeFileSync('public/version.json', JSON.stringify({buildTimestamp}));
 		},
 	};
 }

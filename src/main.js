@@ -2,6 +2,7 @@ import {mount} from 'svelte';
 import App from './App.svelte';
 import ScreenshotApp from './ScreenshotApp.svelte';
 import {SCREENSHOT_MODE} from './utils/screenshot';
+import {initVersionCheck} from './utils/version-check';
 import log from './utils/logger';
 import initDb from './db/db';
 import initializeRepositories from './db/repositories-init';
@@ -29,6 +30,8 @@ let app = null;
 		// log.logOnly(['AccSaberService']);
 
 		log.info('Starting up...', 'Main');
+
+		if (!SCREENSHOT_MODE) initVersionCheck();
 
 		await initDb();
 		await initializeRepositories();

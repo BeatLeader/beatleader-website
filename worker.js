@@ -11,7 +11,10 @@ export default {
 		const url = new URL(request.url);
 
 		if (url.pathname.startsWith('/cors/')) {
-			const segments = url.pathname.slice('/cors/'.length).split('/').filter(s => s.length > 0);
+			const segments = url.pathname
+				.slice('/cors/'.length)
+				.split('/')
+				.filter(s => s.length > 0);
 			const upstream = UPSTREAMS[segments[0]];
 			if (!upstream) {
 				return new Response('Not found', {status: 404});
@@ -33,6 +36,12 @@ export default {
 			return out;
 		}
 
-		return env.ASSETS.fetch(request);
+		const response = await env.ASSETS.fetch(request);
+
+		if (url.pathname.startsWith('/build/') && response.headers.get('content-type')?.includes('text/html')) {
+			return new Response('Not found', {status: 404, headers: {'Cache-Control': 'no-store'}});
+		}
+
+		return response;
 	},
 };

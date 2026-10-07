@@ -21,9 +21,10 @@
 	import {produce} from 'immer';
 	import TournamentTopBanner from './components/Common/TournamentTopBanner.svelte';
 	import {initReturnMorph} from './utils/view-transition';
+	import {withChunkRecovery} from './utils/version-check';
 
-	// Dynamic imports for pages
-	const pageImports = {
+	// Dynamic imports for pages (reload into the new version if a chunk is gone after a deploy)
+	const pageImports = withChunkRecovery({
 		RankingPage: () => import('./pages/Ranking.svelte'),
 		EventPage: () => import('./pages/Event.svelte'),
 		LoveLivePage: () => import('./pages/LoveLive.svelte'),
@@ -73,7 +74,7 @@
 		BadgesPage: () => import('./pages/Badges.svelte'),
 		BeastiesNominations: () => import('./pages/BeastiesNominations.svelte'),
 		GamifiedVivifyPack: () => import('./pages/GamifiedVivifyPack.svelte'),
-	};
+	});
 
 	export let url = '';
 
