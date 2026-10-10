@@ -81,7 +81,6 @@ export const DEFAULT_CONFIG = {
 		followersBecomingPublic: true,
 		beastiesNominationsBanner: true,
 		beastiesNominationsBanner2025: true,
-		beastiesNominationsBanner2026: true,
 
 		playlistOption: 'selected',
 

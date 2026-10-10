@@ -9,7 +9,7 @@
 	import {produce} from 'immer';
 	import beastsabericonthick from '../../resources/beastsabericonthick.svg';
 	import {BL_API_URL} from '../../network/queues/beatleader/api-queue';
-	import BeastiesNomination from './BeastiesNomination.svelte';
+	// import BeastiesNomination from './BeastiesNomination.svelte';
 	import {getContext} from 'svelte';
 
 	// async function updateVerifiedMapperId(mapperId, hash) {
@@ -51,28 +51,21 @@
 	let qualificationUpdate = false;
 	let rankUpdate = false;
 
-	// OST/DLC maps released this season
-	const eligibleOstMaps = ['AstralBlossom', 'KILLSHOT', 'PhantomFangs', 'GoneForGood'];
-
 	let ellegibleForNomination = false;
-	let rankedOnlyNomination = false;
 	let currentNominations = null;
 
 	function fetchNomination(leaderboard) {
-		const isOst = leaderboard.difficultyBl.status == DifficultyStatus.ost;
-		if (isOst && !eligibleOstMaps.includes(leaderboard.song.id)) {
+		if (leaderboard.difficultyBl.status == DifficultyStatus.ost && leaderboard.song.id != 'Danger') {
 			ellegibleForNomination = false;
 			return;
 		}
 
-		// Maps before 4c9f1 (313841) are from previous seasons, but can still be nominated as ranked if ranked after December 1, 2025
-		rankedOnlyNomination = !isOst && parseInt(Number('0x' + leaderboard.song.id.replaceAll('x', '')), 10) < 313841;
-		if (rankedOnlyNomination) {
+		if (parseInt(Number('0x' + leaderboard.song.id.replaceAll('x', '')), 10) < 270435) {
 			if (
 				!(
 					leaderboard.difficultyBl.status == DifficultyStatus.ranked &&
 					leaderboard.difficultyBl.rankedTime &&
-					leaderboard.difficultyBl.rankedTime >= 1764547200
+					leaderboard.difficultyBl.rankedTime > 1733011200
 				)
 			) {
 				ellegibleForNomination = false;
@@ -80,8 +73,12 @@
 			}
 		}
 
-		// Nominations close December 16, 2026 00:00 UTC
-		if (Math.floor(Date.now() / 1000) >= 1797379200) {
+		// if (parseInt(Number('0x' + leaderboard.song.id.replaceAll('x', '')), 10) >= 270435) {
+		// 	ellegibleForNomination = false;
+		// 	return;
+		// }
+
+		if (Math.floor(Date.now() / 1000) >= 1765756799) {
 			ellegibleForNomination = false;
 			return;
 		}
@@ -95,37 +92,36 @@
 			});
 	}
 
-	function toggleFirstUsage() {
-		$configStore = produce($configStore, draft => {
-			draft.preferences.beastiesNominationsBanner2026 = false;
-		});
-	}
+	// function toggleFirstUsage() {
+	// 	$configStore = produce($configStore, draft => {
+	// 		draft.preferences.beastiesNominationsBanner2025 = false;
+	// 	});
+	// }
 
-	function openBestiesNomination() {
-		toggleFirstUsage();
-		open(BeastiesNomination, {
-			leaderboard,
-			diffs,
-			currentNominations,
-			rankedOnly: rankedOnlyNomination,
-			confirm: () => {
-				close();
-			},
-			cancel: () => {
-				close();
-			},
-			wasNominated: () => {
-				fetchNomination(leaderboard);
-			},
-		});
-	}
+	// function openBestiesNomination() {
+	// 	toggleFirstUsage();
+	// 	open(BeastiesNomination, {
+	// 		leaderboard,
+	// 		diffs,
+	// 		currentNominations,
+	// 		confirm: () => {
+	// 			close();
+	// 		},
+	// 		cancel: () => {
+	// 			close();
+	// 		},
+	// 		wasNominated: () => {
+	// 			fetchNomination(leaderboard);
+	// 		},
+	// 	});
+	// }
 
 	$: isRanked = leaderboard?.stats?.status === DifficultyStatus.ranked;
 	$: isQualified = leaderboard?.stats?.status === DifficultyStatus.qualified;
 	$: isNominated = leaderboard?.stats?.status === DifficultyStatus.nominated;
 
 	$: reweight = leaderboard?.reweight;
-	$: leaderboard && $account.player && fetchNomination(leaderboard);
+	// $: leaderboard && $account.player && fetchNomination(leaderboard);
 
 	$: isAdmin = $account.player && $account.player.playerInfo.role && $account.player.playerInfo.role.includes('admin');
 	$: isRT = isAdmin || ($account.player && $account.player.playerInfo.role && $account.player.playerInfo.role.includes('rankedteam'));
@@ -233,8 +229,8 @@
 				}} />
 		{/if}
 
-		{#if ellegibleForNomination}
-			{#if $configStore.preferences.beastiesNominationsBanner2026}
+		<!-- {#if ellegibleForNomination}
+			{#if $configStore.preferences.beastiesNominationsBanner2025}
 				<div class="beastsaber-banner">
 					<Button
 						cls="beastsButton highlighted"
@@ -259,7 +255,7 @@
 						openBestiesNomination();
 					}} />
 			{/if}
-		{/if}
+		{/if} -->
 	{:else}
 		<Spinner />
 	{/if}

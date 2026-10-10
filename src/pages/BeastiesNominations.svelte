@@ -137,7 +137,7 @@
             <div class="nominations-footer-background">
                  <img src="/assets/beasties-background.webp" alt="Beasties awards background" />
             </div>
-            <p><strong>The Beasties awards are a celebration of the best of the best of Beat Saber mapping across multiple categories. Maps that were released between December 1, 2025 and November 30, 2026 are eligible for this year's nominations.</strong></p>
+            <p><strong>The Beasties awards are a celebration of the best of the best of Beat Saber mapping across multiple categories. Maps that were released between December 1, 2024 and November 30, 2025 are eligible for this year's nominations.</strong></p>
             <div class="nominations-footer-links">
                 <a href="https://bsaber.com/the-beastsaber-mapping-awards">Learn more about the Beasties awards</a>
             </div>
@@ -146,7 +146,7 @@
             <img class="nominations-footer-instructions" src="/assets/beasties-awards-instructions.jpg" alt="Beasties awards instructions" />
             <br />
             <p><strong>What will happen next?</strong></p>
-            <p>Nominations will be open until December 15, 2026. After that, the nominations will be closed and the finalist maps will be selected by a panel of judges and announced some time later for public voting.</p>
+            <p>Nominations will be open until December 15, 2025. After that, the nominations will be closed and the finalist maps will be selected by a panel of judges and announced some time later for public voting.</p>
         </div>
 	</article>
 </section>
