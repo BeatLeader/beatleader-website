@@ -1673,15 +1673,17 @@ export function starsToColor(diff, config) {
 }
 
 export let bestiesCategoriesNames = {
-	'Gen-OST': 'Best OST Map',
+	'Gen-OST': 'Best OST/DLC Map',
 	'Gen-NonStandard': 'Non-Standard Mode',
 	'Gen-FullSpread': 'Full spread',
 	'Mods-Lightshow': 'Best Lightshow Map',
+	'Mods-VivifyLightshow': 'Best Vivify Lightshow',
 	'Mods-GameplayModchart': 'Best Modchart',
 
 	'Ranked-RankedMap': 'Best Ranked Map',
 	'Style-Balanced': 'Balanced Style Map',
 	'Style-Tech': 'Tech Style Map',
+	'Style-Extreme': 'Extreme Style Map',
 	'Style-Speed': 'Speed Style Map',
 	'Style-Dance': 'Dance Style Map',
 	'Style-Fitness': 'Fitness Style Map',
@@ -1690,7 +1692,7 @@ export let bestiesCategoriesNames = {
 	'Style-Poodle': 'Poodle Style Map',
 	'Style-Wildcard': 'Wildcard Map',
 
-	'OTY-ModdedMap': 'Chroma+Noodle Mas Of The Year',
+	'OTY-ModdedMap': 'Modded Map Of The Year',
 	'OTY-Map': 'Map Of The Year',
 };
 

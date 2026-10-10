@@ -11,6 +11,7 @@
 	export let leaderboard;
 	export let diffs;
 	export let currentNominations;
+	export let rankedOnly = false;
 	export let confirm;
 	export let cancel;
 	export let wasNominated;
@@ -21,24 +22,40 @@
 	function filterCategories(leaderboard) {
 		applicapleCategories = [];
 
-		if (leaderboard.stats.status == DifficultyStatus.ost) {
+		const requirements = leaderboard.stats.requirements;
+		const isOst = leaderboard.stats.status == DifficultyStatus.ost;
+
+		if (isOst) {
 			applicapleCategories.push({
 				id: 'Gen-OST',
 			});
-		} else {
-			if (leaderboard.stats.status == DifficultyStatus.ranked) {
+		}
+
+		if (leaderboard.stats.status == DifficultyStatus.ranked) {
+			applicapleCategories.push({
+				id: 'Ranked-RankedMap',
+			});
+		}
+
+		if (!rankedOnly && !isOst) {
+			if (requirements & requirementsMap.vivify) {
 				applicapleCategories.push({
-					id: 'Ranked-RankedMap',
+					id: 'Mods-VivifyLightshow',
 				});
 			}
 
-			if (leaderboard.stats.requirements & requirementsMap.noodles) {
+			if (requirements & requirementsMap.noodles || requirements & requirementsMap.vivify) {
 				applicapleCategories.push({
 					id: 'Mods-GameplayModchart',
 				});
 			}
 
-			if (leaderboard.stats.requirements & requirementsMap.noodles || leaderboard.stats.requirements & requirementsMap.chroma) {
+			if (
+				requirements & requirementsMap.noodles ||
+				requirements & requirementsMap.chroma ||
+				requirements & requirementsMap.vivify ||
+				requirements & requirementsMap.mappingExtensions
+			) {
 				applicapleCategories.push({
 					id: 'OTY-ModdedMap',
 				});
@@ -60,6 +77,7 @@
 				'Mods-Lightshow',
 				'Style-Balanced',
 				'Style-Tech',
+				'Style-Extreme',
 				'Style-Speed',
 				'Style-Dance',
 				'Style-Fitness',
@@ -79,7 +97,7 @@
 			element.name = bestiesCategoriesNames[element.id];
 		});
 
-		applicapleCategories = applicapleCategories.filter(c => !currentNominations.find(cn => cn.category == c.id));
+		applicapleCategories = applicapleCategories.filter(c => !currentNominations?.find(cn => cn.category == c.id));
 		selectedCategory = applicapleCategories[0];
 	}
 
@@ -95,11 +113,16 @@
 			method: 'POST',
 			credentials: 'include',
 		})
-			.then(r => r.json())
-			.then(response => {
+			.then(r =>
+				r
+					.json()
+					.catch(() => null)
+					.then(response => ({ok: r.ok, response}))
+			)
+			.then(({ok, response}) => {
 				nominating = false;
-				if (response?.message != 'Map submitted.') {
-					error = response?.message;
+				if (!ok) {
+					error = response?.message ?? 'Failed to nominate map';
 				} else {
 					nominated = true;
 					wasNominated();
@@ -146,9 +169,15 @@
 			{:else}
 				<div class="description-and-select">
 					<span style="margin-bottom: 1.5em;"
-						>The <a href="https://bsaber.com/the-beastsaber-mapping-awards">BeastSaber Mapping Awards</a>, also called "The Beasties," are
-						annual awards that seek to celebrate the best of the best of Beat Saber mapping across multiple categories. Maps that were
-						released between December 1, 2024 and November 30, 2025 are eligible for this year's nominations.</span>
+						>The <a href="https://bsaber.com/the-beastsaber-mapping-awards">BeastSaber Mapping Awards</a>, also called "The
+						Beasties," are annual awards that seek to celebrate the best of the best of Beat Saber mapping across multiple
+						categories. Maps that were released between December 1, 2025 and November 30, 2026 are eligible for this year's
+						nominations.</span>
+					{#if rankedOnly}
+						<span style="margin-bottom: 1em; color: gray;"
+							>This map was released before the nomination period, but can be nominated as ranked because it was ranked after
+							December 1, 2025.</span>
+					{/if}
 
 					{#if nominating}
 						<Spinner />
@@ -157,7 +186,9 @@
 							<span>Already nominated in:</span>
 							<div class="existing-nominations">
 								{#each currentNominations as currentNomination}
-									{bestiesCategoriesNames[currentNomination.category]} - {formatDate(dateFromUnix(currentNomination.timepost))}
+									{bestiesCategoriesNames[currentNomination.category]} - {formatDate(
+										dateFromUnix(currentNomination.timepost)
+									)}
 								{/each}
 							</div>
 						{/if}
