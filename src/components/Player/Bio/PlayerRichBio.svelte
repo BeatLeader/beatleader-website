@@ -83,7 +83,7 @@
 </script>
 
 {#if richBioID || edititing || editModel}
-	<div class="bio-container">
+	<div class="bio-container" bind:this={container}>
 		{#if richBioID || edititing}
 			{#if !edititing || !editModel}
 				<iframe bind:this={viewport} class="message-body" allow="fullscreen;" src={iframeUrl} />
