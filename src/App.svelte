@@ -72,6 +72,7 @@
 		ScorePage: () => import('./pages/Score.svelte'),
 		NominatedScores: () => import('./pages/NominatedScores.svelte'),
 		BadgesPage: () => import('./pages/Badges.svelte'),
+		GlobalStatsPage: () => import('./pages/GlobalStats.svelte'),
 		BeastiesNominations: () => import('./pages/BeastiesNominations.svelte'),
 		GamifiedVivifyPack: () => import('./pages/GamifiedVivifyPack.svelte'),
 	});
@@ -518,6 +519,11 @@
 							<svelte:component this={module.default} {location} />
 						{/await}
 					</Route>
+					<Route path="/stats/*tab" let:params let:location>
+						{#await pageImports.GlobalStatsPage() then module}
+							<svelte:component this={module.default} tab={params.tab} {location} />
+						{/await}
+					</Route>
 					<Route path="/clan/:clanId/*page" let:params let:location>
 						{#await pageImports.ClanPage() then module}
 							<svelte:component this={module.default} clanId={params.clanId} page={params.page} {location} />
@@ -655,6 +661,8 @@
 			<a href="/help" on:click|preventDefault={() => navigate('/help')}>Help</a>
 			|
 			<a href="/socket" on:click|preventDefault={() => navigate('/socket')}>Scores feed</a>
+			|
+			<a href="/stats" on:click|preventDefault={() => navigate('/stats')}>Stats</a>
 			|
 			<a href="https://twitter.com/beatleader_">Twitter</a>
 			|
