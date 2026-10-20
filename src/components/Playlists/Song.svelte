@@ -1,259 +1,498 @@
 <script>
 	import createLeaderboardsService from '../../services/beatleader/leaderboardsMap';
 	import {navigate} from 'svelte-routing';
-	import Button from '../Common/Button.svelte';
-	import Difficulty from '../Song/Difficulty.svelte';
-	import {slide} from 'svelte/transition';
-	import Spinner from '../Common/Spinner.svelte';
-	import SongScoreCompact from '../Leaderboards/SongScoreCompact.svelte';
-	import {processScore} from '../../network/clients/beatleader/scores/utils/processScore';
-	import {getDiffNameColor} from '../../utils/beatleader/format';
 	import {createEventDispatcher} from 'svelte';
+	import Button from '../Common/Button.svelte';
+	import Spinner from '../Common/Spinner.svelte';
+	import PlaylistVoteCell from './PlaylistVoteCell.svelte';
+	import {configStore} from '../../stores/config';
+	import {badgesDef, modeDescriptions, starsToBackgroundColor, starsToColor} from '../../utils/beatleader/format';
 
 	export let song;
 	export let store;
-	export let canModify;
-	export let idx;
-	export let localPlaylistId;
+	export let canModify = false;
+	export let playlistKey;
+	export let position = null;
+	export let first = false;
+	export let last = false;
+	export let compact = false;
 
-	let leaderboardsService = createLeaderboardsService();
+	const leaderboardsService = createLeaderboardsService();
 	const dispatch = createEventDispatcher();
 
-	let songInfo;
-	let leaderboards;
-	let showDiffIcons;
-	let leaderboardUrl;
-	let coverUrl;
+	const SHORT_NAMES = {Easy: 'E', Normal: 'N', Hard: 'H', Expert: 'Ex', ExpertPlus: 'E+'};
 
-	function decapitalizeFirstLetter(string) {
-		return string.charAt(0).toLowerCase() + string.slice(1);
+	let songInfo = null;
+	let modes = [];
+	let leaderboardUrl = null;
+	let notFound = false;
+	let editing = false;
+	let editingText = '';
+
+	const decapitalizeFirstLetter = string => string.charAt(0).toLowerCase() + string.slice(1);
+
+	const isSelected = (difficulties, difficulty) =>
+		!!difficulties?.some(el => el.name == decapitalizeFirstLetter(difficulty.difficultyName) && el.characteristic == difficulty.modeName);
+
+	function groupByMode(leaderboards) {
+		const groups = [];
+		for (const leaderboard of leaderboards) {
+			const {modeName} = leaderboard.difficulty;
+			let group = groups.find(g => g.modeName === modeName);
+			if (!group) {
+				group = {modeName, icon: modeDescriptions[modeName]?.icon, leaderboards: []};
+				groups.push(group);
+			}
+			group.leaderboards.push(leaderboard);
+		}
+		return groups;
 	}
 
-	async function updateSongKey(mapHash, refresh) {
-		songInfo = null;
+	async function updateSongInfo(mapHash, refresh) {
+		if (!mapHash) {
+			notFound = true;
+			return;
+		}
+		if (!refresh) songInfo = null;
 
 		const mapResponse = await leaderboardsService.byHashWithScore(mapHash, refresh);
-		const songInfoValue = mapResponse.info;
-		if (songInfoValue && songInfoValue.song.id && songInfoValue.song.hash.toLowerCase() == hash.toLowerCase()) {
-			songInfo = songInfoValue.song;
-			leaderboards = songInfoValue.leaderboards.filter(
-				l =>
-					l.difficulty.mode <= 7 ||
-					(difficulties?.length &&
-						difficulties.find(
-							el => l.difficulty.modeName == el.characteristic && decapitalizeFirstLetter(l.difficulty.difficultyName) == el.name
-						))
-			);
-			coverUrl = songInfo.coverImage;
+		const info = mapResponse?.info;
+		if (!info?.song?.id || info.song.hash.toLowerCase() != mapHash.toLowerCase()) {
+			notFound = !songInfo;
+			return;
+		}
 
-			let selectedLeaderboard = leaderboards[0];
-			if (difficulties?.length) {
-				selectedLeaderboard = leaderboards.find(
-					el =>
-						el.difficulty.modeName == difficulties[0].characteristic &&
-						decapitalizeFirstLetter(el.difficulty.difficultyName) == difficulties[0].name
-				);
-			}
+		songInfo = info.song;
+		const leaderboards = info.leaderboards.filter(l => l.difficulty.mode <= 7 || isSelected(difficulties, l.difficulty));
+		modes = groupByMode(leaderboards);
 
-			showDiffIcons = leaderboards.some(el => el.difficulty.modeName != 'Standard');
-			if (selectedLeaderboard) {
-				leaderboardUrl = `/leaderboard/global/${selectedLeaderboard.id}/1`;
-			}
+		const selected = difficulties?.length ? leaderboards.find(l => isSelected(difficulties.slice(0, 1), l.difficulty)) : leaderboards[0];
+		leaderboardUrl = selected ? `/leaderboard/global/${selected.id}/1` : null;
 
-			if (!refresh && mapResponse.cached) {
-				updateSongKey(mapHash, true);
-			}
+		if (!refresh && mapResponse.cached) {
+			updateSongInfo(mapHash, true);
 		}
 	}
 
-	function toggleDifficulty(diff) {
-		const index = difficulties
-			? difficulties.findIndex(el => decapitalizeFirstLetter(diff.difficultyName) == el.name && diff.modeName == el.characteristic)
-			: -1;
-		const diffInfo = {
-			diff: diff.difficultyName,
-			type: diff.modeName,
-		};
-		if (index == -1) {
-			store.addDiff(hash, diffInfo, localPlaylistId);
-		} else {
-			store.removeDiff(hash, diffInfo, localPlaylistId);
-		}
+	function toggleDifficulty(difficulty) {
+		if (!canModify) return;
 
-		difficulties = difficulties;
+		const diffInfo = {diff: difficulty.difficultyName, type: difficulty.modeName};
+		const action = isSelected(difficulties, difficulty) ? store.removeDiff : store.addDiff;
+		action(hash, diffInfo, playlistKey).catch(e => dispatch('error', e));
 	}
+
+	function openLeaderboard() {
+		if (leaderboardUrl) navigate(leaderboardUrl);
+	}
+
+	function remove() {
+		const action = song.itemId ? store.removeItem(playlistKey, song.itemId) : store.remove(hash, playlistKey);
+		action.catch(e => dispatch('error', e));
+	}
+
+	function setEditing(value) {
+		editing = value;
+		dispatch('editing', value);
+	}
+
+	function startEditing() {
+		editingText = song.description ?? '';
+		setEditing(true);
+	}
+
+	function saveDescription() {
+		const text = editingText.trim();
+		if (text !== (song.description ?? '')) {
+			store.updateSongDescription(playlistKey, song, text).catch(e => dispatch('error', e));
+		}
+		setEditing(false);
+	}
+
+	function onNoteKeydown(e) {
+		if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) saveDescription();
+		if (e.key === 'Escape') setEditing(false);
+	}
+
+	function orbTitle(difficulty, selected) {
+		const diffName = difficulty.difficultyName === 'ExpertPlus' ? 'Expert+' : difficulty.difficultyName;
+		const name = difficulty.modeName !== 'Standard' ? `${diffName} (${difficulty.modeName})` : diffName;
+		if (!canModify) return selected ? `${name}: in the playlist` : name;
+		return selected ? `${name}: in the playlist, click to remove` : `${name}: click to add`;
+	}
+
+	const scoreColor = score => badgesDef.find(b => (!b.max || score.accuracy * 100 <= b.max) && (!b.min || score.accuracy * 100 > b.min))?.color;
 
 	$: hash = song.hash;
 	$: difficulties = song.difficulties;
-	$: updateSongKey(hash);
+	$: updateSongInfo(hash);
 </script>
 
-<div class="container row-${idx}">
+<div class="song-row" class:compact class:editable={canModify}>
+	{#if position != null}
+		<span class="position">#{position}</span>
+	{/if}
+	<PlaylistVoteCell itemId={song.itemId} />
+
+	{#if canModify}
+		<div class="row-actions">
+			<button class="move" title="Move up" disabled={first} on:click={() => dispatch('move-up')}><i class="fas fa-chevron-up" /></button>
+			<div class="buttons-container">
+				<span>
+					<Button iconFa="fas fa-trash-alt" title="Remove from the playlist" type="danger" noMargin={true} on:click={remove} />
+				</span>
+			</div>
+			<button class="move" title="Move down" disabled={last} on:click={() => dispatch('move-down')}><i class="fas fa-chevron-down" /></button>
+		</div>
+	{/if}
+
 	{#if songInfo}
-		<div class="cover-container">
-			<img loading="lazy" class="cover" src={coverUrl} alt="" />
-			{#if canModify}
-				<div class="button-container mobile-only">
-					<Button
-						cls="delistSong"
-						iconFa="fas fa-arrow-up"
-						title="Move up in the list"
-						noMargin={true}
-						on:click={() => dispatch('move-up')} />
-					<Button
-						cls="delistSong"
-						iconFa="fas fa-arrow-down"
-						title="Move down in the list"
-						noMargin={true}
-						on:click={() => dispatch('move-down')} />
-					<Button
-						cls="delistSong"
-						iconFa="fas fa-list-ul"
-						title="Remove from the {$store[localPlaylistId]?.playlistTitle}"
-						noMargin={true}
-						type="danger"
-						on:click={store.remove(hash, localPlaylistId)} />
-				</div>
-			{/if}
-		</div>
-		<div class="song-container">
-			<div class="row-container">
-				<div class="name-container">
-					<a href={leaderboardUrl} class="name" on:click|preventDefault={() => navigate(leaderboardUrl)}>{songInfo.name}</a>
-					<div class="author">{songInfo.mapper}</div>
-				</div>
-				{#if canModify}
-					<div class="button-container desktop-only">
-						<Button
-							cls="delistSong"
-							iconFa="fas fa-arrow-up"
-							title="Move up in the list"
-							noMargin={true}
-							on:click={() => dispatch('move-up')} />
-						<Button
-							cls="delistSong"
-							iconFa="fas fa-arrow-down"
-							title="Move down in the list"
-							noMargin={true}
-							on:click={() => dispatch('move-down')} />
-						<Button
-							cls="delistSong"
-							iconFa="fas fa-list-ul"
-							title="Remove from the {$store[localPlaylistId]?.playlistTitle}"
-							noMargin={true}
-							type="danger"
-							on:click={store.remove(hash, localPlaylistId)} />
-					</div>
-				{/if}
-			</div>
-			<div class="difficulties">
-				{#each leaderboards as leaderboard, songId}
-					<div
-						class={leaderboard.myScore ? 'difficulty-with-score' : 'difficulty-with-no-score'}
-						style="--diff-color: {getDiffNameColor(leaderboard.difficulty.difficultyName)}">
-						<Difficulty
-							diff={{
-								type: leaderboard.difficulty.modeName,
-								diff: leaderboard.difficulty.difficultyName,
-								stars: leaderboard.difficulty.stars,
-							}}
-							pointer={true}
-							useShortName={true}
-							reverseColors={true}
-							stars={leaderboard.difficulty.stars}
-							starsSuffix="★"
-							{showDiffIcons}
-							enabled={difficulties
-								? difficulties.some(
-										el =>
-											el.name == decapitalizeFirstLetter(leaderboard.difficulty.difficultyName) &&
-											el.characteristic == leaderboard.difficulty.modeName
-									)
-								: false}
-							on:click={() => toggleDifficulty(leaderboard.difficulty)} />
-						{#if leaderboard.myScore}
-							<SongScoreCompact
-								playerId={leaderboard.myScore.player.id}
-								songScore={processScore({leaderboard: leaderboard, ...leaderboard.myScore})}
-								service={'scores'}
-								shortdate={true} />
-						{/if}
-					</div>
-				{/each}
-			</div>
-		</div>
+		<a href={leaderboardUrl} class="cover-link" on:click|preventDefault={openLeaderboard}>
+			<img loading="lazy" class="cover" src={songInfo.coverImage} alt="" />
+		</a>
 	{:else}
-		<div class="cover">
-			<Spinner />
+		<div class="cover placeholder">
+			{#if notFound}<i class="fas fa-question" />{:else}<Spinner />{/if}
+		</div>
+	{/if}
+
+	<div class="info">
+		{#if songInfo}
+			<a href={leaderboardUrl} class="name" on:click|preventDefault={openLeaderboard}>
+				{songInfo.name}
+				{#if songInfo.subName}<span class="subname">{songInfo.subName}</span>{/if}
+			</a>
+			<span class="author">{songInfo.author} <span class="mapper">· {songInfo.mapper}</span></span>
+		{:else if notFound}
+			<span class="name">{song.songName ?? 'Unknown map'}</span>
+			<span class="author">{song.levelAuthorName ?? ''} · not on BeatLeader</span>
+		{:else}
+			<span class="name">{song.songName ?? ''}</span>
+		{/if}
+		{#if editing}
+			<div class="note-edit">
+				<!-- svelte-ignore a11y_autofocus -->
+				<textarea
+					rows="2"
+					maxlength="500"
+					placeholder="Note for this map, e.g. what to practice on it (optional)"
+					bind:value={editingText}
+					on:keydown={onNoteKeydown}
+					autofocus />
+				<Button iconFa="fas fa-check" title="Save (Ctrl+Enter)" type="primary" noMargin={true} on:click={saveDescription} />
+				<Button iconFa="fas fa-xmark" title="Cancel (Esc)" noMargin={true} on:click={() => setEditing(false)} />
+			</div>
+		{:else if song.description}
+			<span class="note">{song.description}</span>
+		{/if}
+	</div>
+
+	{#if canModify}
+		<div class="note-action buttons-container">
+			<span>
+				<Button iconFa="fas fa-pen" title={song.description ? 'Edit the note' : 'Add a note'} noMargin={true} on:click={startEditing} />
+			</span>
+		</div>
+	{/if}
+
+	{#if songInfo}
+		<div class="modes">
+			{#each modes as mode (mode.modeName)}
+				<div class="mode-pill" title={mode.modeName}>
+					{#if mode.icon}<i class="mode-icon {mode.icon}" />{/if}
+					{#each mode.leaderboards as leaderboard (leaderboard.id)}
+						{@const selected = isSelected(difficulties, leaderboard.difficulty)}
+						<button
+							class="diff-orb"
+							class:selected
+							disabled={!canModify}
+							title={orbTitle(leaderboard.difficulty, selected)}
+							style="background-color: {starsToBackgroundColor(leaderboard.difficulty, $configStore)}; color: {starsToColor(leaderboard.difficulty, $configStore)}"
+							on:click={() => toggleDifficulty(leaderboard.difficulty)}>
+							{#if leaderboard.myScore?.accuracy}
+								<span
+									class="my-score"
+									title="Your score: {(leaderboard.myScore.accuracy * 100).toFixed(2)}%"
+									style="background-color: {scoreColor(leaderboard.myScore)}; border-color: {leaderboard.myScore.fullCombo ? 'yellow' : 'white'}" />
+							{/if}
+							{#if leaderboard.difficulty.stars}
+								{leaderboard.difficulty.stars.toFixed(1)}<span class="star">★</span>
+							{:else}
+								{SHORT_NAMES[leaderboard.difficulty.difficultyName] ?? leaderboard.difficulty.difficultyName}
+							{/if}
+						</button>
+					{/each}
+				</div>
+			{/each}
 		</div>
 	{/if}
 </div>
 
 <style>
-	.container {
+	.song-row {
 		display: flex;
-		margin: 1.5em;
-		border-radius: 1em;
-		padding: 0.8em;
-		background-color: rgba(87, 87, 87, 0.582);
+		align-items: center;
+		gap: 0.7em;
+		padding: 0.4em 0.3em;
+		border-radius: 6px;
+		transition: background-color 0.15s;
 	}
 
-	.difficulties {
-		display: flex;
-		gap: 0.3em;
-		flex-wrap: wrap;
+	.song-row:hover {
+		background-color: color-mix(in srgb, var(--textColor, white) 4%, transparent);
 	}
 
-	.song-container {
+	.position {
+		flex: none;
+		min-width: 2.4em;
+		font-weight: 600;
+		font-variant-numeric: tabular-nums;
+	}
+
+	.cover-link {
+		flex: none;
 		display: flex;
-		padding-left: 1em;
-		flex-direction: column;
-		flex: 1;
 	}
 
 	.cover {
-		width: 6em;
-		height: 6em;
-		border-radius: 0.5em;
+		flex: none;
+		width: 3.2em;
+		height: 3.2em;
+		border-radius: 6px;
+		object-fit: cover;
 	}
 
-	.row-container {
+	.compact .cover {
+		width: 2.6em;
+		height: 2.6em;
+	}
+
+	.placeholder {
 		display: flex;
-		justify-content: space-between;
-		flex: 1;
+		align-items: center;
+		justify-content: center;
+		background-color: var(--dimmed);
+		opacity: 0.7;
 	}
 
-	.difficulty-with-score {
+	.info {
+		flex: 1;
 		display: flex;
 		flex-direction: column;
-		border: solid var(--diff-color);
+		min-width: 0;
 	}
 
-	.difficulty-with-no-score {
-		display: contents;
+	.name {
+		color: color-mix(in srgb, var(--textColor, white) 80%, transparent) !important;
+		font-weight: 600;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
 	}
 
-	.mobile-only {
-		display: none;
+	a.name:hover {
+		text-decoration: underline;
 	}
 
-	:global(.delistSong) {
-		border-radius: 0.5em !important;
+	.subname {
+		color: color-mix(in srgb, var(--textColor, white) 58%, transparent);
+		font-size: 0.8em;
+		font-weight: normal;
+		margin-left: 0.3em;
 	}
 
-	:global(.difficulties .diff) {
-		padding-right: 0.2em;
-		padding-left: 0.3em;
+	.author {
+		color: color-mix(in srgb, var(--textColor, white) 64%, transparent);
+		font-size: 0.85em;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.mapper {
+		color: color-mix(in srgb, var(--textColor, white) 50%, transparent);
+	}
+
+	.note {
+		font-size: 0.85em;
+		font-style: italic;
+		color: color-mix(in srgb, var(--textColor, white) 69%, transparent);
+		white-space: pre-wrap;
+		word-break: break-word;
+	}
+
+	.note-edit {
+		display: flex;
+		gap: 0.3em;
+		align-items: flex-start;
+		margin-top: 0.2em;
+	}
+
+	.note-edit textarea {
+		flex: 1;
+		padding: 0.3em 0.5em;
+		border-radius: 0.3em;
+		border: 1px solid var(--faded);
+		background-color: var(--dimmed);
+		color: inherit;
+		font-family: inherit;
+		resize: vertical;
+	}
+
+	.note-action {
+		display: flex;
+		flex: none;
+		opacity: 0;
+		transition: opacity 0.15s;
+	}
+
+	.song-row:hover .note-action,
+	.note-action:focus-within {
+		opacity: 1;
+	}
+
+	.modes {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: flex-end;
+		gap: 0.3em;
+		max-width: 50%;
+	}
+
+	.mode-pill {
+		display: flex;
+		align-items: center;
+		gap: 0.3em;
+		padding: 0.2em 0.25em 0.2em 0.35em;
+		border-radius: 12px;
+		background-color: #00000069;
+	}
+
+	.mode-icon {
+		display: block;
+		width: 1.1em;
+		height: 1.1em;
+		margin-right: 0.1em;
+	}
+
+	.diff-orb {
+		display: flex;
+		align-items: center;
+		gap: 0.05em;
+		min-height: 1.6em;
+		padding: 0.15em 0.4em 0.18em;
+		border: none;
+		border-radius: 0.8em;
+		font-size: 0.7em;
+		font-weight: 600;
+		font-family: inherit;
+		line-height: 1;
+		opacity: 0.35;
+		filter: saturate(0.4);
+		transition:
+			opacity 0.15s,
+			filter 0.15s,
+			box-shadow 0.15s;
+	}
+
+	.diff-orb.selected {
+		opacity: 1;
+		filter: none;
+		box-shadow: 0 0 0 1.5px color-mix(in srgb, var(--textColor, white) 69%, transparent);
+	}
+
+	.diff-orb:disabled {
+		cursor: default;
+	}
+
+	.editable .diff-orb:not(:disabled) {
+		cursor: pointer;
+	}
+
+	.editable .diff-orb:not(:disabled):hover {
+		opacity: 0.85;
+		filter: none;
+	}
+
+	.editable .diff-orb.selected:not(:disabled):hover {
+		opacity: 0.75;
+	}
+
+	.star {
+		font-size: 0.9em;
+	}
+
+	.my-score {
+		width: 0.9em;
+		height: 0.9em;
+		margin-right: 0.15em;
+		border-radius: 50%;
+		border: 2px solid white;
+	}
+
+	.row-actions {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 2px;
+		flex: none;
+		opacity: 0.35;
+		transition: opacity 0.15s;
+	}
+
+	.song-row:hover .row-actions,
+	.row-actions:focus-within {
+		opacity: 1;
+	}
+
+	.move {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 22px;
+		height: 12px;
+		padding: 0;
+		border: none;
+		font-size: 11px;
+		color: color-mix(in srgb, var(--textColor, white) 63%, transparent);
+		background: transparent;
+		cursor: pointer;
+		transition: color 0.15s;
+	}
+
+	.move:hover {
+		color: var(--textColor, white);
+	}
+
+	.move:disabled {
+		visibility: hidden;
+	}
+
+	@media (hover: none) {
+		.row-actions,
+		.note-action {
+			opacity: 1;
+		}
 	}
 
 	@media (max-width: 768px) {
-		.mobile-only {
-			display: flex;
-			gap: 0.2em;
+		.song-row {
+			flex-wrap: wrap;
 		}
 
-		.desktop-only {
-			display: none;
+		.position {
+			min-width: 2em;
+		}
+
+		.modes {
+			max-width: none;
+			justify-content: flex-start;
+			flex-basis: 100%;
+			padding-left: 2.7em;
+		}
+
+		.editable .modes {
+			padding-left: calc(2.7em + 22px + 0.7em);
 		}
 	}
 </style>

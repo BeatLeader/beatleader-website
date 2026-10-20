@@ -10,7 +10,7 @@
 	import Nav from './components/Nav/Nav.svelte';
 	import {applyThemePreferences} from './utils/color';
 	import ContentBox from './components/Common/ContentBox.svelte';
-	import PlaylistCart from './components/Playlists/PlaylistCart.svelte';
+	import ActivePlaylistBar from './components/Playlists/ActivePlaylistBar.svelte';
 	import Search from './components/Search/Search.svelte';
 	import NotificationComponent from './components/Common/NotificationComponent.svelte';
 	import GlobalClansMapHistory from './components/Clans/GlobalClansMapHistory.svelte';
@@ -282,6 +282,7 @@
 {/if} -->
 <Router {url}>
 	<Nav class={$configStore?.preferences?.theme} {openModal} {closeModal} />
+	<ActivePlaylistBar {openModal} {closeModal} />
 	<Notifications zIndex={10000} item={NotificationComponent}>
 		<SimpleModal
 			closeButton={false}
@@ -636,7 +637,6 @@
 	</Notifications>
 </Router>
 
-<PlaylistCart />
 <Svrollbar />
 
 {#if $search}

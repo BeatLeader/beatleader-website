@@ -8,7 +8,7 @@
 	import createPlayerService from '../../../services/beatleader/player';
 	import Spinner from '../../Common/Spinner.svelte';
 
-	import createPlaylistStore from '../../../stores/playlists';
+	import createPlaylistStore, {canEditPlaylist, findPlaylist, isReplayPlaylist} from '../../../stores/playlists';
 	import {configStore} from '../../../stores/config';
 	import deepEqual from 'deep-equal';
 	import Button from '../../Common/Button.svelte';
@@ -363,8 +363,9 @@
 	$: height = $configStore.preferences.graphHeight;
 	$: chartHash = calcPlayerScoresHash(playerScores);
 	$: debounceChartHash(chartHash);
-	$: selectedPlaylistIndex = $configStore?.selectedPlaylist;
-	$: selectedPlaylist = $playlists[selectedPlaylistIndex];
+	$: selectedPlaylistKey = $configStore?.selectedPlaylistId;
+	$: foundPlaylist = findPlaylist($playlists, selectedPlaylistKey);
+	$: selectedPlaylist = canEditPlaylist(foundPlaylist) && !isReplayPlaylist(foundPlaylist) ? foundPlaylist : null;
 	$: if (debouncedChartHash) setupChart(debouncedChartHash, canvas, selectedPlaylist);
 </script>
 

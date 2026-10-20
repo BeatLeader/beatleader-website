@@ -1,21 +1,21 @@
 <script>
 	import {getContext} from 'svelte';
 	import createBeatSaverService from '../../services/beatmaps';
-	import createPlaylistStore from '../../stores/playlists';
+	import createPlaylistStore, {activePlaylistOf} from '../../stores/playlists';
 	import createAccountStore from '../../stores/beatleader/account';
 	import {configStore} from '../../stores/config';
 	import customProtocolCheck from '../../utils/custom-protocol-check';
 	import beatSaverSvg from '../../resources/beatsaver.svg';
 	import Button from '../Common/Button.svelte';
 	import Preview from '../Common/Preview.svelte';
-	import {capitalize, opt, decapitalizeFirstLetter} from '../../utils/js';
+	import {capitalize, decapitalizeFirstLetter} from '../../utils/js';
 	import {BL_ANALYZER_URL, BL_API_URL, BL_REPLAYS_URL} from '../../network/queues/beatleader/api-queue';
 	import PinIcon from '../Player/PinIcon.svelte';
 	import ScoreActionButtonsLayout from './ScoreActionButtonsLayout.svelte';
 	import {getNotificationsContext} from 'svelte-notifications';
 	import {isPatron} from '../Player/Overlay/overlay';
 	import Spinner from '../Common/Spinner.svelte';
-	import PlaylistPicker from '../Playlists/PlaylistPicker.svelte';
+	import PlaylistButton from '../Playlists/PlaylistButton.svelte';
 
 	export let layoutType = 'flat';
 	export let song;
@@ -33,7 +33,7 @@
 	export let battleRoyaleDraft = false;
 	export let batleRoyale = false;
 
-	const {open, close} = getContext('simple-modal');
+	const {open} = getContext('simple-modal');
 	const showPreview = (e, previewLink) => {
 		if (e.ctrlKey || e.metaKey || window.event.ctrlKey ) {
 			openInBackground(previewLink);
@@ -198,16 +198,11 @@
 	$: diffName = diffInfo && diffInfo.diff ? capitalize(diffInfo.diff) : '';
 	$: charName = diffInfo && diffInfo.type ? diffInfo.type : '';
 
-	$: selectedPlaylistIndex = opt($configStore, 'selectedPlaylist');
-	$: selectedPlaylist = $playlists[selectedPlaylistIndex];
-	$: playlistSongs = selectedPlaylist?.songs?.filter(el => el.hash == hash);
-	$: playlistSong = playlistSongs?.length ? playlistSongs[0] : null;
-	$: playlistEntries = playlistSong?.difficulties?.map(el => capitalize(el.name) + el.characteristic);
 	$: playlistKey = diffInfo ? diffName + charName : null;
 
 	$: oneclickToPlaylist = $configStore?.preferences?.oneclick == 'playlist';
-	$: ocPlaylistIndex = oneclickToPlaylist ? $playlists.findIndex(p => p.oneclick) : null;
-	$: ocPlaylist = ocPlaylistIndex != null ? $playlists[ocPlaylistIndex] : null;
+	$: ocPlaylist = oneclickToPlaylist ? $playlists.find(p => p.oneclick) : null;
+	$: ocPlaylistKey = ocPlaylist?.key;
 	$: ocplaylistSongs = ocPlaylist?.songs?.filter(el => el.hash == hash);
 	$: ocplaylistSong = ocplaylistSongs?.length ? ocplaylistSongs[0] : null;
 	$: ocdifficulties = ocplaylistSong?.difficulties?.map(el => capitalize(el.name) + el.characteristic);
@@ -218,18 +213,9 @@
 	$: analyzerUrl = analyzerLink(replayLink, score?.id);
 	$: previewUrl = previewLink(songKey, diffName, charName, $configStore.preferences.mapPreviewer);
 
-	function handlePlaylistClick() {
-		open(PlaylistPicker, {
-			song,
-			diffInfo,
-			onchange: () => {
-				close();
-			},
-			oncancel: () => {
-				close();
-			},
-		});
-	}
+	$: playlistReplay = score?.id && replayUrl && $account?.id ? {replayType: attempt ? 'attempt' : 'score', id: score.id} : null;
+	$: hasActivePlaylist = !!activePlaylistOf($playlists, $configStore);
+	$: showPlaylistButton = (songKey?.length || playlistReplay) && (shownIcons.includes('playlist') || (playlistReplay && hasActivePlaylist));
 </script>
 
 <ScoreActionButtonsLayout type={layoutType}>
@@ -250,53 +236,8 @@
 		{#if !noPin && shownIcons.includes('pin')}
 			<PinIcon scoreId={score?.id} {attempt} on:score-pinned />
 		{/if}
-		{#if songKey && songKey.length && shownIcons.includes('playlist')}
-			{#if $configStore?.preferences?.playlistOption == 'selected'}
-				{#if selectedPlaylist != null}
-					{#if playlistSong}
-						{#if !diffInfo || (playlistEntries && playlistEntries.length == 1 && playlistEntries[0] == playlistKey)}
-							<Button
-								iconFa="fas fa-list-ul"
-								title="Remove from the {selectedPlaylist.playlistTitle}"
-								animated={true}
-								noMargin={true}
-								type="danger"
-								on:click={() => playlists.remove(hash)} />
-						{:else if playlistEntries && playlistEntries.includes(playlistKey)}
-							<Button
-								iconFa="fas fa-list-ul"
-								title="Remove this diff from the {selectedPlaylist.playlistTitle}"
-								animated={true}
-								noMargin={true}
-								type="lessdanger"
-								on:click={() => playlists.removeDiff(hash, diffInfo)} />
-						{:else}
-							<Button
-								iconFa="fas fa-list-ul"
-								title="Add this diff to the {selectedPlaylist.playlistTitle}"
-								animated={true}
-								noMargin={true}
-								on:click={() => playlists.addDiff(hash, diffInfo)} />
-						{/if}
-					{:else}
-						<Button
-							iconFa="fas fa-list-ul"
-							title="Add to the {selectedPlaylist.playlistTitle}"
-							animated={true}
-							noMargin={true}
-							on:click={() => playlists.add(getSongInfo())} />
-					{/if}
-				{:else}
-					<Button
-						iconFa="fas fa-list-ul"
-						title="Create new playlist with this song"
-						animated={true}
-						noMargin={true}
-						on:click={() => playlists.create(getSongInfo())} />
-				{/if}
-			{:else}
-				<Button iconFa="fas fa-list-ul" title="Manage playlists" animated={true} noMargin={true} on:click={() => handlePlaylistClick()} />
-			{/if}
+		{#if showPlaylistButton}
+			<PlaylistButton song={songKey?.length ? song : null} {diffInfo} replay={playlistReplay} />
 		{/if}
 	</span>
 
@@ -354,14 +295,14 @@
 								animated={true}
 								noMargin={true}
 								type="danger"
-								on:click={() => playlists.remove(hash, ocPlaylistIndex)} />
+								on:click={() => playlists.remove(hash, ocPlaylistKey)} />
 						{:else if ocdifficulties.length == 1 || !ocdifficulties.includes(playlistKey)}
 							<Button
 								iconFa="fas fa-hand-pointer"
 								title="Add this diff to the One-Click playlist"
 								animated={true}
 								noMargin={true}
-								on:click={() => playlists.addDiff(hash, diffInfo, ocPlaylistIndex)} />
+								on:click={() => playlists.addDiff(hash, diffInfo, ocPlaylistKey)} />
 						{:else}
 							<Button
 								iconFa="fas fa-hand-pointer"
@@ -369,7 +310,7 @@
 								animated={true}
 								noMargin={true}
 								type="lessdanger"
-								on:click={() => playlists.removeDiff(hash, diffInfo, ocPlaylistIndex)} />
+								on:click={() => playlists.removeDiff(hash, diffInfo, ocPlaylistKey)} />
 						{/if}
 					{:else}
 						<Button
@@ -378,7 +319,7 @@
 							type="purple"
 							animated={true}
 							noMargin={true}
-							on:click={() => playlists.add(getSongInfo(), ocPlaylistIndex)} />
+							on:click={() => playlists.add(getSongInfo(), ocPlaylistKey)} />
 					{/if}
 				{:else if thinking}
 					<Spinner />

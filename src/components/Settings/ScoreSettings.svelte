@@ -210,7 +210,7 @@
 	];
 
 	const playlistOptions = [
-		{name: 'Selected playlist', value: DEFAULT_PLAYLIST_OPTION},
+		{name: 'Add to the active playlist', value: DEFAULT_PLAYLIST_OPTION},
 		{name: 'Playlist picker popup', value: 'picker'},
 	];
 
@@ -352,7 +352,7 @@
 
 	const scoreButtonsLabels = {
 		pin: 'Score Pin',
-		playlist: 'Playlist Management',
+		playlist: 'Playlists (maps and replays)',
 		bsr: 'bsr!',
 		bs: 'BeatSaver',
 		oneclick: 'One-Click',

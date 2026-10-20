@@ -15,6 +15,9 @@
 	import {describePlatform, getControllerForEnum, getHeadsetForHMD} from '../../utils/beatleader/format';
 	import {BL_ANALYZER_URL, BL_REPLAYS_URL} from '../../network/queues/beatleader/api-queue';
 	import {isPatron} from '../Player/Overlay/overlay';
+	import PlaylistButton from '../Playlists/PlaylistButton.svelte';
+	import createAccountStore from '../../stores/beatleader/account';
+	import createPlaylistStore, {activePlaylistOf} from '../../stores/playlists';
 
 	export let leaderboardId = null;
 	export let score = null;
@@ -36,6 +39,8 @@
 	const dispatch = createEventDispatcher();
 
 	const {open} = getContext('simple-modal');
+	const account = createAccountStore();
+	const playlists = createPlaylistStore();
 	const showPreview = (e, previewLink) => {
 		if (e.ctrlKey || e.metaKey || window.event.ctrlKey ) {
 			openInBackground(previewLink);
@@ -244,6 +249,9 @@
 								icon="<div class='replay-icon-alt'></div>"
 								title="Replay"
 								noMargin={true} />
+						{/if}
+						{#if $account?.id && score?.score?.id && ($configStore?.visibleScoreIcons?.playlist || activePlaylistOf($playlists, $configStore))}
+							<PlaylistButton replay={{replayType: 'score', id: score.score.id}} animated={false} variant="alt" />
 						{/if}
 
 						<span class="beat-savior-reveal clickable" class:opened on:click={() => (opened = !opened)} title="Show details">

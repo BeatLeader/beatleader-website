@@ -18,6 +18,7 @@
 	import ContentBox from '../components/Common/ContentBox.svelte';
 	import CardsCarousel from '../components/Player/CardsCarousel.svelte';
 	import PinnedScores from '../components/Player/PinnedScores.svelte';
+	import {getPinnedPlaylists} from '../components/Playlists/pins';
 	import PlayerMeta from '../components/Player/PlayerMeta.svelte';
 	import Achievements from '../components/Player/Achievements.svelte';
 	import RandomRain from '../components/Common/RandomRain.svelte';
@@ -360,6 +361,12 @@
 
 	$: playerId && fetchAchievements(playerId);
 	$: pinnedScoresStore.fetchScores(playerData?.playerId);
+
+	let pinnedPlaylists = [];
+	async function fetchPinnedPlaylists(id) {
+		if (id) pinnedPlaylists = (await getPinnedPlaylists(id).catch(() => null)) ?? [];
+	}
+	$: fetchPinnedPlaylists(playerData?.playerId);
 	$: statsHistoryStore.fetchStats(playerData, $configStore.preferences.daysOfHistory);
 	
 	$: editing = new URLSearchParams(location?.search).get('edit') ?? null;
@@ -409,7 +416,14 @@
 					<CardsCarousel {playerId} {playerInfo} {scoresStats} {playerData} />
 				{/if}
 				{#if $configStore.profileParts.pinnedScores}
-					<PinnedScores {pinnedScoresStore} {playerId} fixedBrowserTitle={browserTitle} scoresStats={playerData?.scoreStats} />
+					<PinnedScores
+						{pinnedScoresStore}
+						{playerId}
+						fixedBrowserTitle={browserTitle}
+						scoresStats={playerData?.scoreStats}
+						{pinnedPlaylists}
+						pinnedPlaylistsEditable={isMain}
+						onPinnedPlaylistsChange={pins => (pinnedPlaylists = pins)} />
 				{/if}
 			{/if}
 

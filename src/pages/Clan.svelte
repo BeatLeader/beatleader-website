@@ -255,11 +255,12 @@
 	let makingPlaylist = false;
 	let ppLimit = 100;
 	let duplicateDiffs = false;
+	let followSearch = false;
 	function generatePlaylist() {
 		makingPlaylist = true;
 		playlists.generateClanPlaylist(ppLimit, clan.id, currentFilters.sortBy, currentFilters.playedStatus, duplicateDiffs, () => {
 			navigate('/playlists');
-		});
+		}, followSearch);
 	}
 
 	$: document.body.scrollIntoView({behavior: 'smooth'});
@@ -377,6 +378,14 @@
 							<input type="checkbox" id="duplicateDiffs" label="Duplicate map per diff" bind:checked={duplicateDiffs} />
 							<label for="duplicateDiffs" title="Will include every diff as a separate map entry">Duplicate map per diff</label>
 						</div>
+						{#if playlists.isLoggedIn()}
+							<div class="duplicateDiffsContainer">
+								<input type="checkbox" id="followSearch" bind:checked={followSearch} />
+								<label for="followSearch" title="When the playlist syncs, in game or on the website, this search runs again (at most hourly) and its maps follow the results">
+									Keep updated with this search
+								</label>
+							</div>
+						{/if}
 						<Button
 							cls="playlist-button"
 							iconFa="fas fa-wand-magic-sparkles"

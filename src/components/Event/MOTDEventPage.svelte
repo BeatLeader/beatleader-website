@@ -274,7 +274,7 @@
 						{/if}
 					{:else if currentMode.value == 'playlist'}
 						<div class="playlist">
-							<Playlist sharedPlaylistId={currentEvent.playlistId} store={playlists} expanded={true} idx={0} playlistExport={playlist} />
+							<Playlist sharedPlaylistId={currentEvent.playlistId} store={playlists} {playlist} />
 						</div>
 					{:else if currentMode.value == 'faq'}
 						<div class="faq">

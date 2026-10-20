@@ -3,7 +3,8 @@
 	import {navigate} from 'svelte-routing';
 	import eventBus from '../../utils/broadcast-channel-pubsub';
 	import createAccountStore from '../../stores/beatleader/account';
-	import createPlaylistStore from '../../stores/playlists';
+	import createPlaylistStore, {canEditPlaylist} from '../../stores/playlists';
+	import PlaylistEditDialog from '../Playlists/PlaylistEditDialog.svelte';
 	import followed from '../../stores/beatleader/followed';
 	import {configStore} from '../../stores/config';
 	import {opt} from '../../utils/js';
@@ -191,24 +192,26 @@
 				props: {
 					label: 'Add new...',
 					callback: async () => {
-						playlists.create();
+						openModal(PlaylistEditDialog, {mode: 'create', makeActive: true, close: () => closeModal()});
 					},
 				},
 			});
 
-			($playlists ?? []).map((playlist, idx) => {
-				if (!playlist.oneclick) {
+			($playlists ?? []).map(playlist => {
+				if (!playlist.oneclick && canEditPlaylist(playlist)) {
+					const active = playlist.key === selectedPlaylist;
 					signupOptions.push({
 						component: PlaylistMenuItem,
 						props: {
 							playlist,
+							active,
 						},
-						class: idx === selectedPlaylist ? 'selected' : '',
+						class: active ? 'selected' : '',
 						onClick: () => {
 							if ($configStore?.preferences?.playlistOption == 'selected') {
-								playlists.select(idx === selectedPlaylist ? null : playlist);
+								playlists.select(active ? null : playlist);
 							} else {
-								navigate(`/playlists/${idx}`);
+								navigate(`/playlist/${playlist.key}`);
 							}
 						},
 					});
@@ -245,7 +248,7 @@
 	$: starredFollowedIds = player?.profileSettings?.starredFriends ?? [];
 	$: starredFollowed =
 		$followed?.filter(f => starredFollowedIds.includes(f?.playerId))?.sort((a, b) => a?.name?.localeCompare(b?.name)) ?? [];
-	$: selectedPlaylist = $configStore?.selectedPlaylist;
+	$: selectedPlaylist = $configStore?.selectedPlaylistId;
 	$: calculateSignUpOptions($account, $playlists, selectedPlaylist);
 	$: newSettingsAvailable = $configStore ? configStore.getNewSettingsAvailable() : undefined;
 	$: notificationBadgeTitle = (settingsNotificationBadge ? [settingsNotificationBadge + '\n'] : [])

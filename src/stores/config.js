@@ -88,6 +88,9 @@ export const DEFAULT_CONFIG = {
 		mapsFiltersOpen: false,
 		mapsFiltersOpenMobile: false,
 
+		playlistsFiltersShown: true,
+		playlistsFiltersShownMobile: false,
+
 		showFeaturedScoreOnScores: true,
 		showFiltersOnScores: true,
 		showFiltersOnScoresMobile: false,
@@ -230,7 +233,7 @@ export const DEFAULT_CONFIG = {
 	},
 	visibleScoreIcons: {
 		pin: true,
-		playlist: false,
+		playlist: true,
 		bsr: true,
 		bs: true,
 		oneclick: true,
@@ -259,6 +262,7 @@ export const DEFAULT_CONFIG = {
 	},
 	playlist: {
 		itemsPerPage: 5,
+		cardsPerPage: 10,
 	},
 	mapsOptions: {
 		starDiffColors: false,
@@ -294,6 +298,7 @@ export const DEFAULT_CONFIG = {
 	},
 	locale: DEFAULT_LOCALE,
 	selectedPlaylist: {},
+	selectedPlaylistId: null,
 };
 
 const newSettingsAvailableDefinition = {

@@ -486,12 +486,21 @@
 	let makingPlaylist = false;
 	let mapCount = 100;
 	let duplicateDiffs = false;
-	let playlistTitle = 'Search result';
+	let followSearch = false;
+	let playlistTitle = '';
+	let generatedTitle = '';
+	const updateGeneratedTitle = debounce(filters => {
+		playlists
+			.generatedTitle(filters)
+			.then(title => (generatedTitle = title ?? ''))
+			.catch(() => {});
+	}, 400);
+	$: if (isPlaylistOpen) updateGeneratedTitle({...currentFilters});
 	function generatePlaylist() {
 		makingPlaylist = true;
 		playlists.generatePlaylist(mapCount, {...currentFilters, duplicateDiffs, playlistTitle}, () => {
 			navigate('/playlists');
-		});
+		}, followSearch);
 	}
 
 	$: document.body.scrollIntoView({behavior: 'smooth'});
@@ -999,9 +1008,17 @@
 								<input type="checkbox" id="duplicateDiffs" label="Duplicate map per diff" bind:checked={duplicateDiffs} />
 								<label for="duplicateDiffs" title="Will include every diff as a separate map entry">Duplicate map per diff</label>
 							</div>
+							{#if playlists.isLoggedIn()}
+								<div class="duplicateDiffsContainer">
+									<input type="checkbox" id="followSearch" bind:checked={followSearch} />
+									<label for="followSearch" title="When the playlist syncs, in game or on the website, this search runs again (at most hourly) and its maps follow the results">
+										Keep updated with this search
+									</label>
+								</div>
+							{/if}
 							<div class="playlistTitleContainer">
 								<label for="playlistTitle" title="Name of the playlist" style="margin: 0;">Title</label>
-								<input type="text" id="playlistTitle" label="Title" bind:value={playlistTitle} />
+								<input type="text" id="playlistTitle" label="Title" placeholder={generatedTitle || 'Named after the search'} bind:value={playlistTitle} />
 							</div>
 							<Button
 								cls="playlist-button"
@@ -1172,7 +1189,8 @@
 		margin-bottom: 1em;
 	}
 
-	#duplicateDiffs {
+	#duplicateDiffs,
+	#followSearch {
 		width: auto;
 	}
 

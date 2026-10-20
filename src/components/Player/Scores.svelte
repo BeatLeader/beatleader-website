@@ -116,11 +116,12 @@
 	let makingPlaylist = false;
 	let mapCount = 100;
 	let duplicateDiffs = false;
+	let followSearch = false;
 	function generatePlaylist() {
 		makingPlaylist = true;
 		playlists.generatePlayerPlaylist(mapCount, playerId, {...currentServiceParams, duplicateDiffs}, () => {
 			navigate('/playlists');
-		});
+		}, followSearch);
 	}
 
 	$: changeParams(playerId, initialService, initialServiceParams, initialState, initialStateType);
@@ -241,6 +242,14 @@
 						<input type="checkbox" id="duplicateDiffs" label="Duplicate map per diff" bind:checked={duplicateDiffs} />
 						<label for="duplicateDiffs" title="Will include every diff as a separate map entry">Duplicate map per diff</label>
 					</div>
+					{#if playlists.isLoggedIn()}
+						<div class="duplicateDiffsContainer">
+							<input type="checkbox" id="followSearch" bind:checked={followSearch} />
+							<label for="followSearch" title="When the playlist syncs, in game or on the website, this search runs again (at most hourly) and its maps follow the results">
+								Keep updated with this search
+							</label>
+						</div>
+					{/if}
 					<Button cls="playlist-button" iconFa="fas fa-wand-magic-sparkles" label="Generate playlist" on:click={() => generatePlaylist()} />
 				{/if}
 			{/if}
@@ -337,7 +346,8 @@
 		margin-top: -0.4em;
 	}
 
-	#duplicateDiffs {
+	#duplicateDiffs,
+	#followSearch {
 		width: auto;
 	}
 	@media screen and (max-width: 768px) {

@@ -9,7 +9,7 @@
 	import createPlayerService from '../../../services/beatleader/player';
 	import Spinner from '../../Common/Spinner.svelte';
 
-	import createPlaylistStore from '../../../stores/playlists';
+	import createPlaylistStore, {canEditPlaylist, findPlaylist, isReplayPlaylist} from '../../../stores/playlists';
 	import createAccountStore from '../../../stores/beatleader/account';
 	import {configStore} from '../../../stores/config';
 	import {produce} from 'immer';
@@ -482,9 +482,10 @@
 	$: fetchPlayerScores(playerId, showUnrankedMapsOnGraph);
 
 	$: height = $configStore.preferences.graphHeight;
-	$: selectedPlaylistIndex = $configStore?.selectedPlaylist;
+	$: selectedPlaylistKey = $configStore?.selectedPlaylistId;
 
-	$: selectedPlaylist = $playlists[selectedPlaylistIndex];
+	$: foundPlaylist = findPlaylist($playlists, selectedPlaylistKey);
+	$: selectedPlaylist = canEditPlaylist(foundPlaylist) && !isReplayPlaylist(foundPlaylist) ? foundPlaylist : null;
 	$: setupChart(canvas, playerScores, selectedPlaylist, currentXKey.id);
 </script>
 

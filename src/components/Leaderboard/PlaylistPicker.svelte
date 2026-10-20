@@ -6,7 +6,7 @@
 	import PlaylistPickerItem from './PlaylistPickerItem.svelte';
 	import {BL_API_URL} from '../../network/queues/beatleader/api-queue';
 	import PickerBlock from '../Common/PickerBlock.svelte';
-	import createPlaylistStore from '../../stores/playlists';
+	import createPlaylistStore, {isReplayPlaylist, playlistCover} from '../../stores/playlists';
 
 	export let playlistIds = [];
 	export let placeholder = 'Playlists';
@@ -36,14 +36,11 @@
 
 	async function fetchLocalPlaylists(store) {
 		return store
+			.filter(playlist => !isReplayPlaylist(playlist))
 			.map(playlist => ({
 				value: playlist.customData?.id,
 				label: playlist.playlistTitle,
-				cover: playlist.image
-					? playlist.image.startsWith('data')
-						? playlist.image
-						: 'data:image/png;base64,' + playlist.image
-					: '/assets/song-default.png',
+				cover: playlistCover(playlist),
 				owner: 'Local',
 				ownerCover: null,
 				isLocal: true,
