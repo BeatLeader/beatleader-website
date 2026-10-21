@@ -133,7 +133,7 @@
 <style>
 	.items-grid {
 		display: grid;
-		grid-template-columns: 1fr;
+		grid-template-columns: minmax(0, 1fr);
 		border-radius: 8px;
 		min-height: 1em;
 	}

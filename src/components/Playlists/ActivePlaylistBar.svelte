@@ -11,6 +11,7 @@
 		playlistCover,
 		playlistItemCount,
 		playlistItemsLabel,
+		playlistPageUrl,
 	} from '../../stores/playlists';
 	import {configStore} from '../../stores/config';
 
@@ -74,7 +75,7 @@
 
 	$: active = activePlaylistOf($playlists, $configStore);
 	$: replays = isReplayPlaylist(active);
-	$: url = active && `/playlist/${active.key}`;
+	$: url = active && playlistPageUrl(active);
 	$: count = playlistItemCount(active);
 	$: animateCount(active, count);
 	$: editable = ($playlists ?? []).filter(p => canEditPlaylist(p) && !p.oneclick);

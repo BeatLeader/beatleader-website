@@ -3,7 +3,7 @@
 	import {navigate} from 'svelte-routing';
 	import eventBus from '../../utils/broadcast-channel-pubsub';
 	import createAccountStore from '../../stores/beatleader/account';
-	import createPlaylistStore, {canEditPlaylist} from '../../stores/playlists';
+	import createPlaylistStore, {canEditPlaylist, playlistPageUrl} from '../../stores/playlists';
 	import PlaylistEditDialog from '../Playlists/PlaylistEditDialog.svelte';
 	import followed from '../../stores/beatleader/followed';
 	import {configStore} from '../../stores/config';
@@ -211,7 +211,7 @@
 							if ($configStore?.preferences?.playlistOption == 'selected') {
 								playlists.select(active ? null : playlist);
 							} else {
-								navigate(`/playlist/${playlist.key}`);
+								navigate(playlistPageUrl(playlist));
 							}
 						},
 					});

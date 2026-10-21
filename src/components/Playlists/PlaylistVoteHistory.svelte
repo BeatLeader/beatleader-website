@@ -4,8 +4,8 @@
 	import Spinner from '../Common/Spinner.svelte';
 	import FormattedDate from '../Common/FormattedDate.svelte';
 	import PlaylistVoteResults from './PlaylistVoteResults.svelte';
-	import {isReplayPlaylist} from '../../stores/playlists';
-	import {RESULTS_LABELS, timeLeft, votePercent} from './votes';
+	import {isReplayPlaylist, saveFromUrl} from '../../stores/playlists';
+	import {RESULTS_LABELS, timeLeft, voteCsv, votePercent} from './votes';
 
 	export let playlist;
 	export let store;
@@ -51,6 +51,17 @@
 		}
 	}
 
+	async function exportCsv(vote) {
+		try {
+			const full = details[vote.id] ?? (await store.getVote(playlist, vote.id));
+			const csv = voteCsv(full, replays, window.location.origin);
+			const name = `${playlist.playlistTitle} - ${full.question || 'vote'} - ${new Date().toISOString().slice(0, 10)}`.replace(/[\\/:*?"<>|\s]+/g, ' ');
+			saveFromUrl(URL.createObjectURL(new Blob(['\uFEFF' + csv], {type: 'text/csv;charset=utf-8'})), `${name.trim()}.csv`);
+		} catch (e) {
+			addNotification({text: e?.message || 'Failed to export the vote', position: 'top-right', type: 'error', removeAfter: 4000});
+		}
+	}
+
 	const label = (option, replays) => (replays ? `${option.playerName ?? 'Unknown player'} on ${option.songName ?? 'a deleted map'}` : (option.songName ?? 'Unknown map'));
 
 	$: signature = `${playlist?.id}-${playlist?.vote?.id ?? ''}-${playlist?.voteCount ?? 0}`;
@@ -85,6 +96,11 @@
 						<button class="link" on:click={() => dispatch('show-running')}>Vote</button>
 					{:else}
 						<button class="link" on:click={() => toggle(vote)}>{open[vote.id] ? 'Hide results' : 'Results'}</button>
+					{/if}
+					{#if isOwner}
+						<button class="link" title="Download the results as a spreadsheet" on:click={() => exportCsv(vote)}>Export CSV</button>
+					{/if}
+					{#if !vote.active}
 						{#if isOwner}
 							{#if confirmingDelete === vote.id}
 								<span class="delete-confirm">

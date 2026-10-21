@@ -25,6 +25,7 @@
 	let isPublic = false;
 	let coverFile = null;
 	let coverPreview = mode === 'edit' ? playlistCover(playlist) : null;
+	let coverRemoved = false;
 	let saving = false;
 	let fileInput;
 
@@ -45,9 +46,16 @@
 			return;
 		}
 		coverFile = file;
+		coverRemoved = false;
 		const reader = new FileReader();
 		reader.onload = e => (coverPreview = e.target.result);
 		reader.readAsDataURL(file);
+	}
+
+	function removeCover() {
+		coverFile = null;
+		coverPreview = null;
+		coverRemoved = mode === 'edit' && !!playlist?.image;
 	}
 
 	async function submit() {
@@ -80,6 +88,8 @@
 				}
 				if (coverFile) {
 					await playlists.updateIcon(playlist.key, coverFile);
+				} else if (coverRemoved) {
+					await playlists.removeIcon(playlist.key);
 				}
 				close();
 				onDone(playlist);
@@ -93,6 +103,7 @@
 	$: loggedIn = !!$account?.id;
 	$: if (!loggedIn && type === 'replays' && mode === 'create') type = 'maps';
 	$: canSubmit = !saving && title.trim().length > 0;
+	$: hasCustomCover = !!coverFile || (mode === 'edit' && !!playlist?.image && !coverRemoved);
 </script>
 
 <div class="dialog-container">
@@ -129,10 +140,15 @@
 			{/if}
 
 			<div class="main-fields">
-				<button type="button" class="cover" title="Choose a cover image" on:click={() => fileInput.click()}>
-					<img src={coverPreview ?? '/assets/defaultplaylisticon.png'} alt="Cover" />
-					<span class="cover-overlay"><i class="fas fa-image" /> {coverFile || mode === 'edit' ? 'Change' : 'Add cover'}</span>
-				</button>
+				<div class="cover-column">
+					<button type="button" class="cover" title="Choose a cover image" on:click={() => fileInput.click()}>
+						<img src={coverPreview ?? '/assets/defaultplaylisticon.png'} alt="Cover" />
+						<span class="cover-overlay"><i class="fas fa-image" /> {hasCustomCover ? 'Change' : 'Add cover'}</span>
+					</button>
+					{#if hasCustomCover}
+						<button type="button" class="remove-cover" title="Use the default cover" on:click={removeCover}>Remove cover</button>
+					{/if}
+				</div>
 				<input class="hidden" type="file" accept=".jpg, .jpeg, .png, .gif" bind:this={fileInput} on:change={pickCover} />
 
 				<div class="text-fields">
@@ -256,6 +272,28 @@
 	.main-fields {
 		display: flex;
 		gap: 1em;
+	}
+
+	.cover-column {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.3em;
+		flex: none;
+	}
+
+	.remove-cover {
+		padding: 0;
+		border: none;
+		background: none;
+		color: color-mix(in srgb, var(--textColor, white) 65%, transparent);
+		font-family: inherit;
+		font-size: 0.8em;
+		cursor: pointer;
+	}
+
+	.remove-cover:hover {
+		color: #ff6b6b;
 	}
 
 	.cover {

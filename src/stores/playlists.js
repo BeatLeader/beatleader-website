@@ -16,10 +16,16 @@ const POLL_INTERVAL = 20000;
 
 export let playlistStore = null;
 
-export const findPlaylist = (playlists, key) => (key == null ? null : (playlists?.find(p => p.key === String(key)) ?? null));
 export const isReplayPlaylist = playlist => playlist?.type === 'replays';
 export const isPlaylistGuid = id => /^[0-9a-f]{32}$/i.test(String(id ?? ''));
-export const playlistAccessId = playlist => playlist?.accessGuid ?? playlist?.id;
+export const findPlaylist = (playlists, key) => {
+	if (key == null) return null;
+	const guid = isPlaylistGuid(key) ? String(key).toLowerCase() : null;
+	return playlists?.find(p => p.key === String(key) || (guid && p.linkGuid === guid)) ?? null;
+};
+const linkGuidOf = playlist => playlist?.accessGuid ?? (!playlist?.isPublic && playlist?.linkGuid ? playlist.linkGuid : null);
+export const playlistAccessId = playlist => linkGuidOf(playlist) ?? playlist?.id;
+export const playlistPageUrl = playlist => `/playlist/${linkGuidOf(playlist) ?? playlist?.key}`;
 export const canEditDetails = playlist => !!playlist && (playlist.oneclick || ['owner', 'editor', 'local'].includes(playlist.role));
 export const voteRunning = (playlist, now = Date.now()) =>
 	!!playlist?.vote && !playlist.vote.endedAt && (!playlist.vote.endsAt || playlist.vote.endsAt * 1000 > now);
@@ -64,7 +70,7 @@ export function playlistCover(playlist) {
 	return prefix + base64;
 }
 
-function saveFromUrl(url, fileName) {
+export function saveFromUrl(url, fileName) {
 	const link = document.createElement('a');
 
 	document.body.appendChild(link); // for Firefox
@@ -743,6 +749,15 @@ export default () => {
 		});
 	};
 
+	const removeIcon = async key => {
+		const playlist = await resolve(key);
+		if (!playlist) return;
+
+		playlist.image = null;
+		await publish(false);
+		return mutate(playlist, () => api('DELETE', `v2/playlist/${playlist.id}/cover`));
+	};
+
 	const addReplay = async (key, {replayType, id, description}) => {
 		const playlist = await resolve(key);
 		if (!playlist || !isReplayPlaylist(playlist) || findReplay(playlist, replayType, id)) return;
@@ -993,6 +1008,7 @@ export default () => {
 		deleteList,
 		download,
 		updateIcon,
+		removeIcon,
 		updateDetails,
 		setPublic,
 		addReplay,

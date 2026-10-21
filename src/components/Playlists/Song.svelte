@@ -55,7 +55,7 @@
 		}
 		if (!refresh) songInfo = null;
 
-		const mapResponse = await leaderboardsService.byHashWithScore(mapHash, refresh);
+		const mapResponse = await leaderboardsService.byHashWithScore(mapHash, refresh).catch(() => null);
 		const info = mapResponse?.info;
 		if (!info?.song?.id || info.song.hash.toLowerCase() != mapHash.toLowerCase()) {
 			notFound = !songInfo;
@@ -361,6 +361,7 @@
 
 	.mode-pill {
 		display: flex;
+		flex-wrap: wrap;
 		align-items: center;
 		gap: 0.3em;
 		padding: 0.2em 0.25em 0.2em 0.35em;

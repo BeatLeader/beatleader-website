@@ -23,7 +23,16 @@
 	import PlaylistVoteHistory from './PlaylistVoteHistory.svelte';
 	import {VOTE_CONTEXT, timeLeft} from './votes';
 	import {configStore} from '../../stores/config';
-	import {canEditDetails, isReplayPlaylist, playlistAccessId, playlistCover, playlistItemCount, playlistItemsLabel, searchPageUrl, voteRunning} from '../../stores/playlists';
+	import {
+		canEditDetails,
+		isReplayPlaylist,
+		playlistAccessId,
+		playlistCover,
+		playlistItemCount,
+		playlistItemsLabel,
+		searchPageUrl,
+		voteRunning,
+	} from '../../stores/playlists';
 
 	export let playlist;
 	export let playlistKey = null;
@@ -233,30 +242,56 @@
 										<Badge
 											onlyLabel={true}
 											color="white"
-											bgColor={visibility === 'Public' ? '#2e7d32' : visibility === 'Unlisted' ? '#1f6fb2' : 'var(--dimmed)'}
+											bgColor={visibility === 'Public'
+												? '#2e7d32'
+												: visibility === 'Unlisted'
+													? '#1f6fb2'
+													: 'var(--dimmed)'}
 											title={visibility === 'Unlisted' ? 'Anyone with the link can open it' : null}
 											fluid={true}>
 											<span slot="label"><i class={VISIBILITY_ICONS[visibility]} /> {visibility}</span>
 										</Badge>
 									{/if}
 									{#if playlist.role === 'editor'}
-										<Badge onlyLabel={true} color="white" bgColor="#1f6fb2" fluid={true} title="The owner shared this playlist with you, you can edit it">
+										<Badge
+											onlyLabel={true}
+											color="white"
+											bgColor="#1f6fb2"
+											fluid={true}
+											title="The owner shared this playlist with you, you can edit it">
 											<span slot="label"><i class="fas fa-user-pen" /> You can edit</span>
 										</Badge>
 									{:else if playlist.role === 'viewer' && playlistKey != null}
-										<Badge onlyLabel={true} color="white" bgColor="#1f6fb2" fluid={true} title="The owner shared this playlist with you">
+										<Badge
+											onlyLabel={true}
+											color="white"
+											bgColor="#1f6fb2"
+											fluid={true}
+											title="The owner shared this playlist with you">
 											<span slot="label"><i class="fas fa-user-group" /> Shared with you</span>
 										</Badge>
 									{/if}
 									{#if voting}
-										<Badge onlyLabel={true} color="white" bgColor="#7a4fd6" fluid={true} title="A vote runs on this playlist">
+										<Badge
+											onlyLabel={true}
+											color="white"
+											bgColor="#7a4fd6"
+											fluid={true}
+											title="A vote runs on this playlist">
 											<span slot="label">
-												<i class="fas fa-square-poll-vertical" /> Vote{playlist.vote.endsAt ? ` · ${timeLeft(playlist.vote.endsAt, nowTick)} left` : ''}
+												<i class="fas fa-square-poll-vertical" /> Vote{playlist.vote.endsAt
+													? ` · ${timeLeft(playlist.vote.endsAt, nowTick)} left`
+													: ''}
 											</span>
 										</Badge>
 									{/if}
 									{#if isActive}
-										<Badge onlyLabel={true} color="#222" bgColor="#ffd24d" fluid={true} title="Playlist buttons on maps and scores add here">
+										<Badge
+											onlyLabel={true}
+											color="#222"
+											bgColor="#ffd24d"
+											fluid={true}
+											title="Playlist buttons on maps and scores add here">
 											<span slot="label"><ActivePlaylistIcon /> Active</span>
 										</Badge>
 									{/if}
@@ -275,13 +310,17 @@
 											class="follow-pill"
 											title="Its maps are the results of a search, run again when the playlist syncs in game or opens here, at most hourly">
 											<i class="fas fa-satellite-dish" /> Follows a search
-											{#if playlist.sourceRefreshedAt}<span class="follow-time">· ran <FormattedDate date={playlist.sourceRefreshedAt} /></span>{/if}
+											{#if playlist.sourceRefreshedAt}<span class="follow-time"
+													>· ran <FormattedDate date={playlist.sourceRefreshedAt} /></span
+												>{/if}
 										</span>
 										{#if searchUrl}
-											<a class="follow-action" href={searchUrl} on:click|preventDefault={() => navigate(searchUrl)}>Open search</a>
+											<a class="follow-action" href={searchUrl} on:click|preventDefault={() => navigate(searchUrl)}
+												>Open search</a>
 										{/if}
 										{#if canEditInfo}
-											<button class="follow-action" disabled={refreshing} on:click={refreshNow}>{refreshing ? 'Running...' : 'Refresh now'}</button>
+											<button class="follow-action" disabled={refreshing} on:click={refreshNow}
+												>{refreshing ? 'Running...' : 'Refresh now'}</button>
 										{/if}
 										{#if isOwner}
 											<button
@@ -311,7 +350,9 @@
 									{#if canModify && !playlist.oneclick}
 										<Button
 											icon={activePlaylistIcon('1.5em')}
-											title={isActive ? 'Active: playlist buttons add here. Click to stop' : 'Make active: playlist buttons on maps and scores add here'}
+											title={isActive
+												? 'Active: playlist buttons add here. Click to stop'
+												: 'Make active: playlist buttons on maps and scores add here'}
 											bgColor={isActive ? '#ffd24d' : null}
 											color={isActive ? '#222' : null}
 											animated={!isActive}
@@ -338,10 +379,20 @@
 										noMargin={true}
 										on:click={() => store.download(playlist)} />
 									{#if canEditInfo && !playlist.oneclick}
-										<Button iconFa="fas fa-pen" title="Edit title, description and cover" animated={true} noMargin={true} on:click={openEdit} />
+										<Button
+											iconFa="fas fa-pen"
+											title="Edit title, description and cover"
+											animated={true}
+											noMargin={true}
+											on:click={openEdit} />
 									{/if}
 									{#if canShare}
-										<Button iconFa="fas fa-share-nodes" title="Make public or share with players" animated={true} noMargin={true} on:click={openShare} />
+										<Button
+											iconFa="fas fa-share-nodes"
+											title="Make public or share with players"
+											animated={true}
+											noMargin={true}
+											on:click={openShare} />
 									{/if}
 									{#if canStartVote}
 										<Button
@@ -354,7 +405,9 @@
 									{#if canPin}
 										<Button
 											iconFa="fas fa-thumbtack"
-											title={playlist.pinned ? 'Pinned to your profile: edit the comment or unpin' : 'Pin to your profile'}
+											title={playlist.pinned
+												? 'Pinned to your profile: edit the comment or unpin'
+												: 'Pin to your profile'}
 											bgColor={playlist.pinned ? 'var(--beatleader-primary)' : null}
 											color={playlist.pinned ? 'white' : null}
 											animated={!playlist.pinned}
@@ -382,14 +435,16 @@
 			<a class="vote-link" href="https://forms.gle/dDSfZgwJBU6AGvpy7" target="_blank" rel="noreferrer">Vote for your favorite map!</a>
 		{/if}
 
-		<div class="items-tab-container">
-			<button class="items-tab" class:inactive={tab !== 'items'} on:click={() => (tab = 'items')}>{playlistItemsLabel(playlist)}</button>
+		<div class="items-tab-container" class:votes-active={tab === 'votes'}>
+			<button class="items-tab" class:inactive={tab !== 'items'} on:click={() => (tab = 'items')}
+				>{playlistItemsLabel(playlist)}</button>
 			{#if showVotesTab}
 				<button class="items-tab votes-tab" class:inactive={tab !== 'votes'} on:click={() => (tab = 'votes')}>
 					<i class="fas fa-square-poll-vertical" /> Votes
 					{#if playlist.voteCount}<span class="tab-count">{playlist.voteCount}</span>{/if}
 				</button>
 			{/if}
+			<span class="items-tab-spacer" />
 		</div>
 		<div class="leaderboard items-box" class:votes-box={tab === 'votes'}>
 			{#if tab === 'votes'}
@@ -410,7 +465,10 @@
 				{#if canModify}
 					<nav class="items-nav">
 						{#if canTidy}
-							<button class="tools-button" title="Sort the whole playlist, update maps, remove deleted or played ones" on:click={openTools}>
+							<button
+								class="tools-button"
+								title="Sort the whole playlist, update maps, remove deleted or played ones"
+								on:click={openTools}>
 								<i class="fas fa-wand-magic-sparkles" /> Sort & clean up
 							</button>
 						{/if}
@@ -696,8 +754,17 @@
 	}
 
 	.items-tab-container {
+		--tab-line: var(--pl-accent);
 		margin: 0 10px;
 		display: flex;
+	}
+
+	.items-tab-container.votes-active {
+		--tab-line: #7a4fd6;
+	}
+
+	.items-tab-spacer {
+		flex: 1;
 	}
 
 	.items-tab {

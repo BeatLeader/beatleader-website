@@ -13,7 +13,7 @@
 	import PlaylistInstallButton from './PlaylistInstallButton.svelte';
 	import PlaylistEditDialog from './PlaylistEditDialog.svelte';
 	import PlaylistDeleteConfirm from './PlaylistDeleteConfirm.svelte';
-	import {canEditDetails, canEditPlaylist, isReplayPlaylist, playlistCover, playlistItemsLabel, voteRunning} from '../../stores/playlists';
+	import {canEditDetails, canEditPlaylist, isReplayPlaylist, playlistCover, playlistItemsLabel, playlistPageUrl, voteRunning} from '../../stores/playlists';
 	import {timeLeft} from './votes';
 	import {onlyItems} from './dnd';
 	import {activePlaylistIcon} from './icons';
@@ -110,7 +110,7 @@
 
 	resetDropZone();
 
-	$: url = `/playlist/${playlist.key}`;
+	$: url = playlistPageUrl(playlist);
 	$: replays = isReplayPlaylist(playlist);
 	$: editable = canEditPlaylist(playlist);
 	$: canActivate = editable && !playlist.oneclick;

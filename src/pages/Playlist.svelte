@@ -1,6 +1,12 @@
 <script>
 	import {onMount} from 'svelte';
-	import createPlaylistStore, {findPlaylist, isPlaylistGuid, isReplayPlaylist, playlistItemCount} from '../stores/playlists';
+	import createPlaylistStore, {
+		findPlaylist,
+		isPlaylistGuid,
+		isReplayPlaylist,
+		playlistItemCount,
+		playlistPageUrl,
+	} from '../stores/playlists';
 	import Playlist from '../components/Playlists/Playlist.svelte';
 	import {fade} from 'svelte/transition';
 	import createAccountStore from '../stores/beatleader/account';
@@ -44,6 +50,8 @@
 
 	$: own = findPlaylist($playlists, fetched?.key ?? id);
 	$: playlist = own ?? fetched;
+	$: pageUrl = own?.role === 'owner' ? playlistPageUrl(own) : null;
+	$: if (pageUrl && pageUrl.toLowerCase() !== `/playlist/${id}`.toLowerCase()) navigate(pageUrl, {replace: true});
 	$: replays = isReplayPlaylist(playlist);
 	$: totalItems = playlistItemCount(playlist);
 	// The image endpoint doesn't take guids
@@ -65,7 +73,8 @@
 
 <section class="align-content">
 	<article class="page-content" transition:fade|global>
-		<a class="back" href="/playlists" on:click|preventDefault={() => navigate('/playlists')}><i class="fas fa-arrow-left" /> All playlists</a>
+		<a class="back" href="/playlists" on:click|preventDefault={() => navigate('/playlists')}
+			><i class="fas fa-arrow-left" /> All playlists</a>
 		{#if playlist}
 			<Playlist sharedPlaylistId={id} currentPlayerId={$account.id} {playlist} playlistKey={own?.key ?? null} store={playlists} />
 		{:else if error}
