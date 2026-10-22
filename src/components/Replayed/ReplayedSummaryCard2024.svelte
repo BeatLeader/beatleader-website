@@ -266,7 +266,7 @@
 						<div class="top-block">
 							<div class="header" style="align-self: flex-end;">
 								<h1 class="title2" in:fly|global={{y: '2em', duration: 700, easing: cubicOut, opacity: 0, delay: 600}}>
-									Your 2024 in Beat Saber
+									Your 2025 in Beat Saber
 								</h1>
 								<p class="title2" in:fly|global={{y: '2em', duration: 700, easing: cubicOut, opacity: 0, delay: 1200}}>Summarized</p>
 							</div>
@@ -434,11 +434,11 @@
 </div>
 
 <MetaTags
-	title="BeatLeader rePlayed 2024"
-	description="View your BeatLeader mapper rePlayed 2024"
+	title="BeatLeader rePlayed 2025"
+	description="View your BeatLeader mapper rePlayed 2025"
 	openGraph={{
-		title: 'BeatLeader rePlayed 2024',
-		description: 'View your BeatLeader mapper rePlayed 2024',
+		title: 'BeatLeader rePlayed 2025',
+		description: 'View your BeatLeader mapper rePlayed 2025',
 		images: CURRENT_URL + '/assets/logo-small.png',
 		siteName: ssrConfig.name,
 	}}
@@ -446,10 +446,10 @@
 		handle: '@handle',
 		site: '@beatleader_',
 		cardType: 'summary',
-		title: 'BeatLeader rePlayed 2024',
-		description: 'View your BeatLeader mapper rePlayed 2024',
+		title: 'BeatLeader rePlayed 2025',
+		description: 'View your BeatLeader mapper rePlayed 2025',
 		image: CURRENT_URL + '/assets/logo-small.png',
-		imageAlt: 'BeatLeader rePlayed 2024',
+		imageAlt: 'BeatLeader rePlayed 2025',
 	}} />
 
 <style>
