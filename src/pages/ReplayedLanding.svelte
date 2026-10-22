@@ -28,7 +28,7 @@
 	let showBeatSaverLogin = false;
 
 	function fetchReplayed() {
-		fetchJson(BL_API_URL + 'replayed', {
+		fetchJson(BL_API_URL + 'replayed2025', {
 			credentials: 'include',
 		})
 			.then(async response => {
@@ -55,7 +55,7 @@
 </script>
 
 <svelte:head>
-	<title>BeatLeader rePlayed 2024</title>
+	<title>BeatLeader rePlayed 2025</title>
 </svelte:head>
 
 <section class="align-content">
@@ -64,7 +64,7 @@
 			<div class="items">
 				{#if loggedInPlayer && playerReplayedAvailable != null && mapperReplayedAvailable != null}
 					<div class="centering-container" transition:fade|global>
-						<h2>BeatLeader rePlayed 2024</h2>
+						<h2>BeatLeader rePlayed 2025</h2>
 						{#if playerReplayedAvailable || mapperReplayedAvailable}
 							<div style="display: flex; gap: 1em; font-size: 1.5vh;">
 								<Button label="Player rePlayed" url="/replayed/player" type="primary" on:click={() => navigate('/replayed/player')} />
@@ -73,7 +73,7 @@
 						{:else}
 							<div class="centering-container">
 								<h3>
-									You don't have a rePlayed 2024 yet<br /><br />Play a song and come back next year<br />Or link your BeatSaver account if
+									You don't have a rePlayed 2025 yet<br /><br />Play a song and come back next year<br />Or link your BeatSaver account if
 									you're a mapper
 								</h3>
 							</div>
@@ -81,7 +81,7 @@
 					</div>
 				{:else if playerReplayedAvailable != null && mapperReplayedAvailable != null}
 					<div class="login-form" transition:fade|global>
-						<div class="title">Please log in to view your<b>rePlayed 2024</b></div>
+						<div class="title">Please log in to view your<b>rePlayed 2025</b></div>
 						<form action={BL_API_URL + 'signin'} method="post">
 							<input type="hidden" name="Provider" value="Steam" />
 							<input type="hidden" name="ReturnUrl" value={CURRENT_URL + '/replayed'} />
@@ -138,11 +138,11 @@
 </section>
 
 <MetaTags
-	title="BeatLeader rePlayed 2024"
-	description="View your BeatLeader rePlayed 2024"
+	title="BeatLeader rePlayed 2025"
+	description="View your BeatLeader rePlayed 2025"
 	openGraph={{
-		title: 'BeatLeader rePlayed 2024',
-		description: 'View your BeatLeader rePlayed 2024',
+		title: 'BeatLeader rePlayed 2025',
+		description: 'View your BeatLeader rePlayed 2025',
 		images: [{url: CURRENT_URL + '/assets/logo-small.png'}],
 		siteName: ssrConfig.name,
 	}}
@@ -150,10 +150,10 @@
 		handle: '@handle',
 		site: '@beatleader_',
 		cardType: 'summary',
-		title: 'BeatLeader rePlayed 2024',
-		description: 'View your BeatLeader rePlayed 2024',
+		title: 'BeatLeader rePlayed 2025',
+		description: 'View your BeatLeader rePlayed 2025',
 		image: CURRENT_URL + '/assets/logo-small.png',
-		imageAlt: 'BeatLeader rePlayed 2024',
+		imageAlt: 'BeatLeader rePlayed 2025',
 	}} />
 
 <style>

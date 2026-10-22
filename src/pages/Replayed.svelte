@@ -36,7 +36,7 @@
 
 	function fetchReplayed(currentPlayerID) {
 		replayedNotAvailable = false;
-		fetchJson(BL_API_URL + 'replayed' + (playerId ? `?playerId=${playerId}` : ''), {
+		fetchJson(BL_API_URL + 'replayed2025' + (playerId ? `?playerId=${playerId}` : ''), {
 			credentials: 'include',
 		})
 			.then(async response => {
@@ -227,7 +227,7 @@
 		_cards.push({
 			component: ReplayedSummaryCard2024,
 			props: {
-				title: 'Your 2024 in Beat Saber',
+				title: 'Your 2025 in Beat Saber',
 				subText: 'A year summarized',
 				summaryType: 'player',
 				cardId: '6',
@@ -396,7 +396,7 @@
 		_cards.push({
 			component: ReplayedSummaryCard2024,
 			props: {
-				title: 'Your 2024 in Mapping',
+				title: 'Your 2025 in Mapping',
 				subText: 'A year summarized',
 				summaryType: 'mapper',
 				frontCardId: '1',
@@ -440,7 +440,7 @@
 </script>
 
 <svelte:head>
-	<title>BeatLeader rePlayed 2024</title>
+	<title>BeatLeader rePlayed 2025</title>
 </svelte:head>
 
 {#if summaryOnly}
@@ -460,7 +460,7 @@
 					{:else if replayedNotAvailable}
 						{#if !loggedInPlayer}
 							<div class="login-form">
-								<div class="title">Please log in to view your<b>rePlayed 2024</b></div>
+								<div class="title">Please log in to view your<b>rePlayed 2025</b></div>
 								<form action={BL_API_URL + 'signin'} method="post">
 									<input type="hidden" name="Provider" value="Steam" />
 									<input type="hidden" name="ReturnUrl" value={CURRENT_URL + '/replayed'} />
@@ -517,10 +517,10 @@
 							<div class="centering-container">
 								{#if $account?.player?.playerInfo?.mapperId}
 									<h3>
-										Looks like your mapping year was quiet.<br /><br />But it's always a good time to<br />map something for rePlayed 2024!
+										Looks like your mapping year was quiet.<br /><br />But it's always a good time to<br />map something for rePlayed 2025!
 									</h3>
 								{:else}
-									<h3>Please link your BeatSaver account to view<br /><b>your Mapper rePlayed 2024</b></h3>
+									<h3>Please link your BeatSaver account to view<br /><b>your Mapper rePlayed 2025</b></h3>
 
 									<form action={BL_API_URL + 'signin'} method="post">
 										<input type="hidden" name="Provider" value="BeatSaver" />
@@ -543,11 +543,11 @@
 {/if}
 
 <MetaTags
-	title="BeatLeader rePlayed 2024"
-	description="View your BeatLeader rePlayed 2024"
+	title="BeatLeader rePlayed 2025"
+	description="View your BeatLeader rePlayed 2025"
 	openGraph={{
-		title: 'BeatLeader rePlayed 2024',
-		description: 'View your BeatLeader rePlayed 2024',
+		title: 'BeatLeader rePlayed 2025',
+		description: 'View your BeatLeader rePlayed 2025',
 		images: CURRENT_URL + '/assets/logo-small.png',
 		siteName: ssrConfig.name,
 	}}
@@ -555,10 +555,10 @@
 		handle: '@handle',
 		site: '@beatleader_',
 		cardType: 'summary',
-		title: 'BeatLeader rePlayed 2024',
-		description: 'View your BeatLeader rePlayed 2024',
+		title: 'BeatLeader rePlayed 2025',
+		description: 'View your BeatLeader rePlayed 2025',
 		image: CURRENT_URL + '/assets/logo-small.png',
-		imageAlt: 'BeatLeader rePlayed 2024',
+		imageAlt: 'BeatLeader rePlayed 2025',
 	}} />
 
 <style>
