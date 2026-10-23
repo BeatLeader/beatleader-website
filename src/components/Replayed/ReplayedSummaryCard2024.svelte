@@ -434,7 +434,7 @@
 </div>
 
 <MetaTags
-	title="BeatLeader rePlayed 2025"
+	title="BeatLeader rePlayed 2025!"
 	description="View your BeatLeader mapper rePlayed 2025"
 	openGraph={{
 		title: 'BeatLeader rePlayed 2025',
