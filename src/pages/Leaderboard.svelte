@@ -1279,6 +1279,9 @@
 						techRating={leaderboard?.stats?.techRating}
 						{modifiers}
 						modifiersRating={leaderboard?.difficultyBl?.modifiersRating}
+						predictedAcc={leaderboard?.difficultyBl?.predictedAcc}
+						sliderPercentage={leaderboard?.difficultyBl?.sliderPercentage}
+						notes={leaderboard?.difficultyBl?.notes}
 						mode={leaderboard?.difficultyBl?.modeName.toLowerCase()}
 						on:modified-stars={e => {
 							modifiedPass = e?.detail?.passRating ?? 0;

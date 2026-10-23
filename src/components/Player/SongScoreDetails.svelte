@@ -4,7 +4,7 @@
 	import {configStore} from '../../stores/config';
 	import scoreStatisticEnhancer from '../../stores/http/enhancers/scores/scoreStatistic';
 	import createStarGeneratorStore from '../../stores/beatleader/star-generator';
-	import {computeModifiedRating, getPPFromAcc} from '../../utils/beatleader/pp';
+	import {getModifiedRatings, getPPFromAcc} from '../../utils/beatleader/pp';
 	import BeatSaviorDetails from '../BeatSavior/Details.svelte';
 	import LeaderboardPage from '../../pages/Leaderboard.svelte';
 	import LeaderboardStats from '../Leaderboard/LeaderboardStats.svelte';
@@ -31,11 +31,6 @@
 			songScore?.score?.acc &&
 			(!songScore?.score?.mods?.length || songScore?.leaderboard?.difficultyBl?.modifiersRating)
 		) {
-			const passRating = songScore?.leaderboard?.difficultyBl?.passRating;
-			const accRating = songScore?.leaderboard?.difficultyBl?.accRating;
-			const techRating = songScore?.leaderboard?.difficultyBl?.techRating;
-
-			const modifiersRating = songScore?.leaderboard?.difficultyBl?.modifiersRating;
 			const actualModifiers = songScore?.score?.mods?.map(m => ({name: m, value: 0}));
 			const mode = songScore?.leaderboard?.difficultyBl?.modeName?.toLowerCase();
 
@@ -44,14 +39,12 @@
 			const noUnderswingsAcc = e.detail.underswingsData.noUnderswingsAcc / 100;
 			const noUnderswingsFcAcc = e.detail.underswingsData.noUnderswingsFcAcc / 100;
 
-			const modifiedPassRating = computeModifiedRating(passRating, 'PassRating', modifiersRating, actualModifiers);
-			const modifiedAccRating = computeModifiedRating(accRating, 'AccRating', modifiersRating, actualModifiers);
-			const modifiedTechRating = computeModifiedRating(techRating, 'TechRating', modifiersRating, actualModifiers);
+			const ratings = getModifiedRatings(songScore?.leaderboard?.difficultyBl, actualModifiers);
 
-			const pp = getPPFromAcc(acc, modifiedPassRating, modifiedAccRating, modifiedTechRating, mode)[0];
-			const fcPp = getPPFromAcc(fcAcc, modifiedPassRating, modifiedAccRating, modifiedTechRating, mode)[0];
-			const noUnderswingsPp = getPPFromAcc(noUnderswingsAcc, modifiedPassRating, modifiedAccRating, modifiedTechRating, mode)[0];
-			const noUnderswingsFcPp = getPPFromAcc(noUnderswingsFcAcc, modifiedPassRating, modifiedAccRating, modifiedTechRating, mode)[0];
+			const pp = getPPFromAcc(acc, ratings, mode)[0];
+			const fcPp = getPPFromAcc(fcAcc, ratings, mode)[0];
+			const noUnderswingsPp = getPPFromAcc(noUnderswingsAcc, ratings, mode)[0];
+			const noUnderswingsFcPp = getPPFromAcc(noUnderswingsFcAcc, ratings, mode)[0];
 
 			ppUnderswings = {pp, fcPp, noUnderswingsPp, noUnderswingsFcPp};
 		}

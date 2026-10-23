@@ -1,4 +1,5 @@
 import {GLOBAL_LEADERBOARD_TYPE, formatNumber} from '../../utils/format';
+import {buildAccCurve, scorePp, toStars} from './rebalanced-pp';
 
 export const WEIGHT_COEFFICIENT = 0.965;
 
@@ -47,41 +48,6 @@ const pointList = [
 	[0.0, 0.0],
 ];
 
-const pointList2 = [
-	[1.0, 7.424],
-	[0.999, 6.241],
-	[0.9975, 5.158],
-	[0.995, 4.01],
-	[0.9925, 3.241],
-	[0.99, 2.7],
-	[0.9875, 2.303],
-	[0.985, 2.007],
-	[0.9825, 1.786],
-	[0.98, 1.618],
-	[0.9775, 1.49],
-	[0.975, 1.392],
-	[0.9725, 1.315],
-	[0.97, 1.256],
-	[0.965, 1.167],
-	[0.96, 1.094],
-	[0.955, 1.039],
-	[0.95, 1.0],
-	[0.94, 0.931],
-	[0.93, 0.867],
-	[0.92, 0.813],
-	[0.91, 0.768],
-	[0.9, 0.729],
-	[0.875, 0.65],
-	[0.85, 0.581],
-	[0.825, 0.522],
-	[0.8, 0.473],
-	[0.75, 0.404],
-	[0.7, 0.345],
-	[0.65, 0.296],
-	[0.6, 0.256],
-	[0.0, 0.0],
-];
-
 const Curve = acc => {
 	var i = 0;
 	for (; i < pointList.length; i++) {
@@ -98,46 +64,57 @@ const Curve = acc => {
 	return pointList[i - 1][1] + middle_dis * (pointList[i][1] - pointList[i - 1][1]);
 };
 
-const Curve2 = acc => {
-	var i = 0;
-	for (; i < pointList2.length; i++) {
-		if (pointList2[i][0] <= acc) {
-			break;
+// Ratings a score's pp uses (rebalanced formula, ./rebalanced-pp): a speed modifier's own ratings and curve when the map
+// has them, every other modifier as a multiplier on the ratings. difficulty: the API difficulty (passRating, accRating,
+// techRating, predictedAcc, sliderPercentage, notes, modifiersRating); mods: [{name, value}].
+// Returns the multiplied ratings, their curve and the stars of the ratings before the multiplier.
+export const getModifiedRatings = (difficulty, mods) => {
+	const modifiersRating = difficulty?.modifiersRating ?? null;
+	let passRating = difficulty?.passRating ?? 0;
+	let accRating = difficulty?.accRating ?? 0;
+	let techRating = difficulty?.techRating ?? 0;
+	let curveInputs = [difficulty?.predictedAcc, difficulty?.sliderPercentage, difficulty?.notes];
+	let multiplierMods = Array.isArray(mods) ? mods : [];
+
+	if (modifiersRating) {
+		for (const mod of multiplierMods) {
+			const name = mod?.name?.toLowerCase();
+			if (name && modifiersRating[name + 'AccRating'] !== undefined) {
+				passRating = modifiersRating[name + 'PassRating'] ?? 0;
+				accRating = modifiersRating[name + 'AccRating'] ?? 0;
+				techRating = modifiersRating[name + 'TechRating'] ?? 0;
+				// SS, FS, SF have their own curve; BFS, BSF use the map's
+				if (['ss', 'fs', 'sf'].includes(name)) {
+					curveInputs = [modifiersRating[name + 'PredictedAcc'], modifiersRating[name + 'SliderPercentage'], difficulty?.notes];
+				}
+				break;
+			}
 		}
+		// With speed modifier ratings, speed modifiers don't count in the multiplier
+		multiplierMods = multiplierMods.filter(mod => !['ss', 'fs', 'sf'].includes(mod?.name?.toLowerCase()));
 	}
 
-	if (i == 0) {
-		i = 1;
-	}
+	const multiplier = 1 + multiplierMods.reduce((sum, mod) => sum + (mod?.value ?? 0), 0);
+	const curve = buildAccCurve(...curveInputs);
 
-	var middle_dis = (acc - pointList2[i - 1][0]) / (pointList2[i][0] - pointList2[i - 1][0]);
-	return pointList2[i - 1][1] + middle_dis * (pointList2[i][1] - pointList2[i - 1][1]);
+	return {
+		passRating: passRating * multiplier,
+		accRating: accRating * multiplier,
+		techRating: techRating * multiplier,
+		curve,
+		stars: toStars(accRating, passRating, techRating, curve),
+		multiplier,
+	};
 };
 
-function Inflate(peepee) {
-	return (650 * Math.pow(peepee, 1.3)) / Math.pow(650, 1.3);
-}
-
-export const buildCurve = (accuracy, passRating, accRating, techRating, golf) => {
-	var passPP = 15.2 * Math.exp(Math.pow(passRating, 1 / 2.62)) - 30;
-	if (!isFinite(passPP) || isNaN(passPP) || passPP < 0) {
-		passPP = 0;
-	}
-	var accPP = golf ? accuracy * accRating * 42 : Curve2(accuracy) * accRating * 34;
-	var techPP = Math.exp(1.9 * accuracy) * 1.08 * techRating;
-	const totalPp = Inflate(passPP + accPP + techPP);
-	const inflation = totalPp / (passPP + accPP + techPP);
-
-	return [totalPp, passPP * inflation, accPP * inflation, techPP * inflation];
-};
-
-export const getPPFromAcc = (acc, passRating, accRating, techRating, mode) => {
+// [pp, pass pp, acc pp, tech pp] of a score at acc. ratings: from getModifiedRatings.
+export const getPPFromAcc = (acc, ratings, mode) => {
 	if (GLOBAL_LEADERBOARD_TYPE == 'golf') {
-		return buildCurve(1 - acc, passRating, accRating, techRating, true);
+		return scorePp(1 - acc, ratings, true);
 	} else if (mode == 'rhythmgamestandard') {
-		return acc * passRating * 55;
+		return [acc * (ratings?.passRating ?? 0) * 55, 0, 0, 0];
 	} else {
-		return buildCurve(acc, passRating, accRating, techRating);
+		return scorePp(acc, ratings);
 	}
 };
 
@@ -178,7 +155,8 @@ export const computeModifiedRating = (rating, ratingName, modifiersRating, mods)
 	return rating * (1 + positiveModifiersSum + negativeModifiersSum);
 };
 
-export const computeStarRating = (passRating, accRating, techRating) =>
-	Number.isFinite(passRating) && Number.isFinite(accRating) && Number.isFinite(techRating)
-		? buildCurve(0.96, passRating, accRating, techRating)[0] / 52
+// Stars of modified ratings (getModifiedRatings) with their curve
+export const computeStarRating = ratings =>
+	Number.isFinite(ratings?.passRating) && Number.isFinite(ratings?.accRating) && Number.isFinite(ratings?.techRating)
+		? toStars(ratings.accRating, ratings.passRating, ratings.techRating, ratings.curve)
 		: null;

@@ -3,7 +3,7 @@
 	import {navigate} from 'svelte-routing';
 	import Difficulty from '../Song/Difficulty.svelte';
 	import MapTriangleSmall from '../Leaderboard/MapTriangleSmall.svelte';
-	import {computeModifiedRating, computeStarRating} from '../../utils/beatleader/pp';
+	import {getModifiedRatings, computeStarRating} from '../../utils/beatleader/pp';
 
 	export let leaderboard = null;
 	export let mods = null;
@@ -23,12 +23,13 @@
 	$: accRating = leaderboard?.difficultyBl?.accRating ?? null;
 	$: techRating = leaderboard?.difficultyBl?.techRating ?? null;
 	$: actualModifiers = mods?.map(m => ({name: m, value: modifiers && m != 'NF' ? modifiers[m.toLowerCase()] : 0})) ?? null;
-	$: modifiedPassRating = computeModifiedRating(passRating, 'PassRating', modifiersRating, actualModifiers);
-	$: modifiedAccRating = computeModifiedRating(accRating, 'AccRating', modifiersRating, actualModifiers);
-	$: modifiedTechRating = computeModifiedRating(techRating, 'TechRating', modifiersRating, actualModifiers);
+	$: modifiedRatings = getModifiedRatings(leaderboard?.difficultyBl, actualModifiers);
+	$: modifiedPassRating = modifiedRatings.passRating;
+	$: modifiedAccRating = modifiedRatings.accRating;
+	$: modifiedTechRating = modifiedRatings.techRating;
 	$: modifiedStars =
 		mods?.length && (passRating !== modifiedPassRating || accRating !== modifiedAccRating || techRating !== modifiedTechRating)
-			? computeStarRating(modifiedPassRating, modifiedAccRating, modifiedTechRating)
+			? computeStarRating(modifiedRatings)
 			: null;
 </script>
 
