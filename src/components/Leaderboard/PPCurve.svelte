@@ -13,7 +13,6 @@
 	export let accRating = 5;
 	export let techRating = 5;
 	export let modifiersRating = null;
-	// What the map's pp curve is built from (the API difficulty's predictedAcc, sliderPercentage, notes)
 	export let predictedAcc = null;
 	export let sliderPercentage = null;
 	export let notes = null;
@@ -133,7 +132,6 @@
 		return mode !== 'rhythmgamestandard';
 	}
 
-	// Ratings are the modified ones (modifiedRatings); the curve and stars that go with them come from modifiedRatings
 	function getCurveParts(acc, passRating, accRating, techRating, mode) {
 		const curve = getPPFromAcc(acc, {...modifiedRatings, passRating, accRating, techRating}, mode);
 		return Array.isArray(curve) ? curve : [curve, null, null, null];

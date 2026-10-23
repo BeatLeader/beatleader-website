@@ -1,7 +1,4 @@
-// The rebalanced pp formula: a port of portaBLe/RatingAPI (branch loloppe-rebalancer @ ce61152) Pp/PpFormula.cs,
-// Pp/PpCalculator.cs and Controllers/Curve.cs, the same code as the server's Utils/RebalancedPp. Keep them in sync.
-// Each map's acc curve is built here from its predicted acc, slider share and note count (difficulty.predictedAcc,
-// sliderPercentage, notes; the speed modifiers' own in modifiersRating).
+// The curve and pp formula should be consistent between RatingAPI, website and server. Check portaBLe for detailed comments.
 
 const formula = {
 	passScale: 12.3,
@@ -33,7 +30,6 @@ const formula = {
 	techTopSlope: 0.33,
 };
 
-// Stars are what a score at this accuracy is worth
 export const STAR_ACCURACY = 0.96;
 
 const passPp = passRating => {
@@ -76,7 +72,6 @@ const techPp = (accuracy, techRating) => {
 	return Math.exp(formula.techAccExponent * accuracy) * formula.techWeight * Math.pow(tech, formula.techRatingPower);
 };
 
-// Stars from pp at 96% (before PpMultiplier), without the low star bonus
 const starsFromPpNoBonus = ppAt96 => {
 	const basis = ppAt96 / formula.starDivisor;
 	return basis > 0 ? formula.starScale * Math.pow(basis, formula.starExponent) : basis;
@@ -87,7 +82,6 @@ export const lowStarMultiplier = stars => {
 	return 1 + formula.lowStarBonus * Math.pow(formula.lowStarBonusEnd - Math.max(stars, 0), formula.lowStarBonusPower);
 };
 
-// Stars from pp at 96% before the low star bonus: the stars s with s = Stars(ppAt96 * lowStarMultiplier(s))
 const starsFromPp = ppAt96 => {
 	const stars = starsFromPpNoBonus(ppAt96);
 	if (!(ppAt96 > 0) || formula.lowStarBonus <= 0 || stars >= formula.lowStarBonusEnd) return stars;
@@ -104,7 +98,6 @@ const starsFromPp = ppAt96 => {
 
 const scale = pp => formula.ppMultiplier * pp;
 
-// The base acc curve (RatingAPI Curve.BaseTable), from 100% down
 const baseTable = [
 	[1.0, 7.424],
 	[0.999, 6.241],
@@ -151,7 +144,6 @@ const baseValue = acc => {
 	return baseTable[i - 1][1] + middleDis * (baseTable[i][1] - baseTable[i - 1][1]);
 };
 
-// The base table with monotone cubic interpolation (Fritsch-Carlson): per-map curves only
 const smooth = (() => {
 	const points = [...baseTable].sort((a, b) => a[0] - b[0]);
 	const n = points.length;
@@ -190,7 +182,6 @@ const smoothBaseValue = acc => {
 	);
 };
 
-// RatingAPI Curve.ModifiableCurve
 const modifiableCurve = ({Y0 = 0.256, K = 4.86, W = 0.6, K2 = 2.88, P2 = 2.46, C = 1.0, A = 1.0} = {}) => {
 	const getM = () => {
 		const term1 = (1.0 - Y0) / 0.35;
@@ -236,7 +227,6 @@ const modifiableCurve = ({Y0 = 0.256, K = 4.86, W = 0.6, K2 = 2.88, P2 = 2.46, C
 	};
 };
 
-// RatingAPI CurveSettings
 const curveSettings = {
 	enabled: true,
 	table: [
@@ -308,7 +298,6 @@ const round6 = x => Math.round(x * 1e6) / 1e6;
 
 const curveCache = new Map();
 
-// A map's acc curve ([acc, value] points from 100% down), as RatingAPI's pointlist for these inputs
 export const buildAccCurve = (predictedAcc, sliderPercentage, noteCount) => {
 	predictedAcc = predictedAcc ?? 0;
 	sliderPercentage = sliderPercentage ?? 0;
@@ -349,7 +338,6 @@ export const buildAccCurve = (predictedAcc, sliderPercentage, noteCount) => {
 	return result;
 };
 
-// Value of a map's acc curve at acc (points from 100% down; null or fewer than 2 points: the base curve)
 export const curveValue = (acc, curve) => {
 	if (!curve || curve.length < 2) return baseValue(acc);
 
@@ -367,8 +355,6 @@ export const curveValue = (acc, curve) => {
 	return curve[i - 1][1] + middleDis * (curve[i][1] - curve[i - 1][1]);
 };
 
-// Pass, acc and tech pp at accuracy before PpMultiplier. stars: of the ratings in use without modifier multipliers (for the
-// acc curve power; undefined: AccCurvePower). golf: the Golf context's linear acc pp.
 export const getPpParts = (accuracy, accRating, passRating, techRating, curve, stars, golf = false) => {
 	const power = stars === undefined || stars === null ? formula.accCurvePower : curvePowerAt(stars);
 	let acc;
@@ -382,14 +368,11 @@ export const getPpParts = (accuracy, accRating, passRating, techRating, curve, s
 	return [passPp(passRating), acc, techPp(accuracy, techRating)];
 };
 
-// Stars of ratings with their curve: what a 96% score without modifiers is worth
 export const toStars = (accRating, passRating, techRating, curve) => {
 	const [pass, acc, tech] = getPpParts(STAR_ACCURACY, accRating, passRating, techRating, curve);
 	return starsFromPp(pass + acc + tech);
 };
 
-// pp of a score: [pp, pass pp, acc pp, tech pp]. ratings: from getModifiedRatings (modifier multiplier applied, their
-// curve, and the stars of the ratings before the multiplier)
 export const scorePp = (accuracy, ratings, golf = false) => {
 	if (!(accuracy > 0) || accuracy > 1) return [0, 0, 0, 0];
 

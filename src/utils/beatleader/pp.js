@@ -64,10 +64,6 @@ const Curve = acc => {
 	return pointList[i - 1][1] + middle_dis * (pointList[i][1] - pointList[i - 1][1]);
 };
 
-// Ratings a score's pp uses (rebalanced formula, ./rebalanced-pp): a speed modifier's own ratings and curve when the map
-// has them, every other modifier as a multiplier on the ratings. difficulty: the API difficulty (passRating, accRating,
-// techRating, predictedAcc, sliderPercentage, notes, modifiersRating); mods: [{name, value}].
-// Returns the multiplied ratings, their curve and the stars of the ratings before the multiplier.
 export const getModifiedRatings = (difficulty, mods) => {
 	const modifiersRating = difficulty?.modifiersRating ?? null;
 	let passRating = difficulty?.passRating ?? 0;
@@ -83,14 +79,12 @@ export const getModifiedRatings = (difficulty, mods) => {
 				passRating = modifiersRating[name + 'PassRating'] ?? 0;
 				accRating = modifiersRating[name + 'AccRating'] ?? 0;
 				techRating = modifiersRating[name + 'TechRating'] ?? 0;
-				// SS, FS, SF have their own curve; BFS, BSF use the map's
 				if (['ss', 'fs', 'sf'].includes(name)) {
 					curveInputs = [modifiersRating[name + 'PredictedAcc'], modifiersRating[name + 'SliderPercentage'], difficulty?.notes];
 				}
 				break;
 			}
 		}
-		// With speed modifier ratings, speed modifiers don't count in the multiplier
 		multiplierMods = multiplierMods.filter(mod => !['ss', 'fs', 'sf'].includes(mod?.name?.toLowerCase()));
 	}
 
@@ -107,7 +101,6 @@ export const getModifiedRatings = (difficulty, mods) => {
 	};
 };
 
-// [pp, pass pp, acc pp, tech pp] of a score at acc. ratings: from getModifiedRatings.
 export const getPPFromAcc = (acc, ratings, mode) => {
 	if (GLOBAL_LEADERBOARD_TYPE == 'golf') {
 		return scorePp(1 - acc, ratings, true);
@@ -155,7 +148,6 @@ export const computeModifiedRating = (rating, ratingName, modifiersRating, mods)
 	return rating * (1 + positiveModifiersSum + negativeModifiersSum);
 };
 
-// Stars of modified ratings (getModifiedRatings) with their curve
 export const computeStarRating = ratings =>
 	Number.isFinite(ratings?.passRating) && Number.isFinite(ratings?.accRating) && Number.isFinite(ratings?.techRating)
 		? toStars(ratings.accRating, ratings.passRating, ratings.techRating, ratings.curve)

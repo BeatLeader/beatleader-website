@@ -22,7 +22,6 @@
 	const {addNotification} = getNotificationsContext();
 	const account = createAccountStore();
 
-	// About the top players' acc, pass and tech pp with the rebalanced formula (portaBLe, 2026-10)
 	const DEFAULT_MAX_TECH_PP = 2800;
 	const DEFAULT_MAX_ACC_PP = 19000;
 	const DEFAULT_MAX_PASS_PP = 2700;
