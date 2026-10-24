@@ -16,6 +16,7 @@
 	export let predictedAcc = null;
 	export let sliderPercentage = null;
 	export let notes = null;
+	export let noteSpan = null;
 	export let height = '200px';
 	export let logarithmic = false;
 	export let modifiers = {};
@@ -730,7 +731,7 @@
 		[]
 	);
 	$: modifiedRatings = getModifiedRatings(
-		{passRating, accRating, techRating, predictedAcc, sliderPercentage, notes, modifiersRating},
+		{passRating, accRating, techRating, predictedAcc, sliderPercentage, notes, noteSpan, modifiersRating},
 		selectedModifiers
 	);
 	$: modifiedPassRating = modifiedRatings.passRating;

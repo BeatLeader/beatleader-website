@@ -1282,6 +1282,7 @@
 						predictedAcc={leaderboard?.difficultyBl?.predictedAcc}
 						sliderPercentage={leaderboard?.difficultyBl?.sliderPercentage}
 						notes={leaderboard?.difficultyBl?.notes}
+						noteSpan={leaderboard?.difficultyBl?.noteSpan}
 						mode={leaderboard?.difficultyBl?.modeName.toLowerCase()}
 						on:modified-stars={e => {
 							modifiedPass = e?.detail?.passRating ?? 0;

@@ -64,12 +64,14 @@ const Curve = acc => {
 	return pointList[i - 1][1] + middle_dis * (pointList[i][1] - pointList[i - 1][1]);
 };
 
+const SPEED_TIMESCALES = {ss: 0.85, fs: 1.2, sf: 1.5};
+
 export const getModifiedRatings = (difficulty, mods) => {
 	const modifiersRating = difficulty?.modifiersRating ?? null;
 	let passRating = difficulty?.passRating ?? 0;
 	let accRating = difficulty?.accRating ?? 0;
 	let techRating = difficulty?.techRating ?? 0;
-	let curveInputs = [difficulty?.predictedAcc, difficulty?.sliderPercentage, difficulty?.notes];
+	let curveInputs = [difficulty?.predictedAcc, difficulty?.sliderPercentage, difficulty?.notes, difficulty?.noteSpan];
 	let multiplierMods = Array.isArray(mods) ? mods : [];
 
 	if (modifiersRating) {
@@ -80,7 +82,12 @@ export const getModifiedRatings = (difficulty, mods) => {
 				accRating = modifiersRating[name + 'AccRating'] ?? 0;
 				techRating = modifiersRating[name + 'TechRating'] ?? 0;
 				if (['ss', 'fs', 'sf'].includes(name)) {
-					curveInputs = [modifiersRating[name + 'PredictedAcc'], modifiersRating[name + 'SliderPercentage'], difficulty?.notes];
+					curveInputs = [
+						modifiersRating[name + 'PredictedAcc'],
+						modifiersRating[name + 'SliderPercentage'],
+						difficulty?.notes,
+						(difficulty?.noteSpan ?? 0) / SPEED_TIMESCALES[name],
+					];
 				}
 				break;
 			}

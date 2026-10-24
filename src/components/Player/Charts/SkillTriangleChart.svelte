@@ -24,7 +24,7 @@
 
 	const DEFAULT_MAX_TECH_PP = 2800;
 	const DEFAULT_MAX_ACC_PP = 19000;
-	const DEFAULT_MAX_PASS_PP = 2700;
+	const DEFAULT_MAX_PASS_PP = 3100;
 
 	const gypL = 57.74;
 
