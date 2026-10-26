@@ -9,20 +9,20 @@ const formula = {
 	accRatingPower: 1.2163,
 	accCurvePower: 0.9,
 	lowStarCurvePower: 1.0,
-	lowStarCurveStart: 7,
-	lowStarCurveEnd: 10,
+	lowStarCurveStart: 6.7242,
+	lowStarCurveEnd: 9.606,
 	veryLowStarCurvePower: 1.08,
-	veryLowStarCurveStart: 3,
-	veryLowStarCurveEnd: 5,
+	veryLowStarCurveStart: 2.8818,
+	veryLowStarCurveEnd: 4.803,
 	techWeight: 0.1612,
 	techRatingPower: 1.2477,
 	techAccExponent: 3.5,
 	starDivisor: 83.6925,
-	starScale: 1.2131,
+	starScale: 1.1653,
 	starExponent: 1.17507,
 	ppMultiplier: 1.023,
-	lowStarBonus: 0.006,
-	lowStarBonusEnd: 9,
+	lowStarBonus: 0.0063371,
+	lowStarBonusEnd: 8.6454,
 	lowStarBonusPower: 1.36,
 	passTopKnee: 13,
 	passTopSlope: 0.5,
@@ -245,56 +245,29 @@ const curveSettings = {
 	sliderTiltRange: 0.015,
 	lowNoteStart: 115,
 	lowNoteRefNotes: 20,
-	lowNoteRefMultiplier: 0.8,
-	lowNoteMinMultiplier: 0.5,
-	lowNoteUniformShare: 0,
-	lowNoteGainCut: 0.4,
-	lowNoteGainFullBelow: 70,
-	lowNoteSpanStart: 18,
-	lowNoteSpanRef: 75,
-	lowNoteSpanWeight: 1,
-	lowNoteSpanMinFactor: 0,
-	lowNoteSpanMaxFactor: 1.5,
-	lowNoteSpanBonus: 0.2,
-	lowNoteSpanBonusMax: 0.1,
+	lowNoteRefMultiplier: 0.95,
+	lowNoteMinMultiplier: 0.95,
+	shortStart: 75,
+	shortRefSpan: 12,
+	shortRefMultiplier: 0.9,
+	shortMinMultiplier: 0.9,
 };
 
-const lowNoteSpanFactor = span => {
+const lowNoteFactor = notes => {
 	const s = curveSettings;
-	if (s.lowNoteSpanWeight <= 0 || span <= 0 || s.lowNoteSpanRef <= s.lowNoteSpanStart) return 1;
-	const raw = 1 - (s.lowNoteSpanWeight * Math.log(span / s.lowNoteSpanStart)) / Math.log(s.lowNoteSpanRef / s.lowNoteSpanStart);
-	return Math.min(Math.max(raw, s.lowNoteSpanMinFactor), s.lowNoteSpanMaxFactor);
-};
-
-const lowNoteMultiplier = (notes, span = 0) => {
-	const s = curveSettings;
-	if (s.lowNoteStart <= 0 || notes <= 0 || notes >= s.lowNoteStart) return 1;
+	if (s.lowNoteStart <= 0 || notes <= 0 || notes >= s.lowNoteStart || s.lowNoteRefNotes >= s.lowNoteStart) return 1;
 	const nerf = ((1 - s.lowNoteRefMultiplier) * Math.log(s.lowNoteStart / notes)) / Math.log(s.lowNoteStart / s.lowNoteRefNotes);
-	return 1 - (1 - Math.max(1 - nerf, s.lowNoteMinMultiplier)) * lowNoteSpanFactor(span);
+	return Math.min(Math.max(1 - nerf, s.lowNoteMinMultiplier), 1);
 };
 
-const lowNoteShare = notes => {
+const shortFactor = span => {
 	const s = curveSettings;
-	if (s.lowNoteStart <= 0 || notes <= 0 || notes >= s.lowNoteStart) return 0;
-	return notes <= s.lowNoteGainFullBelow ? 1 : Math.log(s.lowNoteStart / notes) / Math.log(s.lowNoteStart / s.lowNoteGainFullBelow);
+	if (s.shortStart <= 0 || span <= 0 || span >= s.shortStart || s.shortRefSpan >= s.shortStart) return 1;
+	const nerf = ((1 - s.shortRefMultiplier) * Math.log(s.shortStart / span)) / Math.log(s.shortStart / s.shortRefSpan);
+	return Math.min(Math.max(1 - nerf, s.shortMinMultiplier), 1);
 };
 
-const lowNoteGainCutAt = (notes, span) => {
-	if (curveSettings.lowNoteGainCut <= 0) return 0;
-	return curveSettings.lowNoteGainCut * lowNoteShare(notes) * lowNoteSpanFactor(span);
-};
-
-const lowNoteBonusAt = (notes, span) => {
-	const s = curveSettings;
-	if (s.lowNoteSpanBonus <= 0 || span <= 0 || s.lowNoteSpanRef <= s.lowNoteSpanStart) return 0;
-	const raw = 1 - (s.lowNoteSpanWeight * Math.log(span / s.lowNoteSpanStart)) / Math.log(s.lowNoteSpanRef / s.lowNoteSpanStart);
-	return raw >= 0 ? 0 : Math.min(s.lowNoteSpanBonus * -raw, s.lowNoteSpanBonusMax) * lowNoteShare(notes);
-};
-
-const lowNoteValue = (value, x, atPredicted, predictedAcc, nerf, cut, bonus) => {
-	if (cut != 0 && x > predictedAcc && predictedAcc > 0.6) value = atPredicted + (value - atPredicted) * Math.max(1 - cut, 0);
-	return value * Math.max(1 - nerf, 0) * (1 + bonus);
-};
+const lowNoteMultiplier = (notes, span = 0) => lowNoteFactor(notes) * shortFactor(span);
 
 const isDefaultRow = r => r.A >= 0.9995 && r.K == 4.86 && r.W == 0.6 && r.K2 == 2.88 && r.P2 == 2.46;
 
@@ -350,14 +323,10 @@ export const buildAccCurve = (predictedAcc, sliderPercentage, noteCount, noteSpa
 
 	const curves = perMapCurves(predictedAcc);
 	const tilt = sliderTiltAt(sliderPercentage, predictedAcc);
-	const nerf = curveSettings.lowNoteUniformShare * (1 - lowNoteMultiplier(noteCount, noteSpan));
-	const cut = predictedAcc > 0.6 && predictedAcc < 1 ? lowNoteGainCutAt(noteCount, noteSpan) : 0;
-	const bonus = lowNoteBonusAt(noteCount, noteSpan);
-	const gainCut = cut != 0 || bonus != 0;
+	const nerf = lowNoteMultiplier(noteCount, noteSpan);
 	let result;
-	if (!curves && tilt == 0 && !gainCut) {
-		const baseNerf = lowNoteMultiplier(noteCount, noteSpan);
-		result = baseTable.map(([x, y]) => [x, y * baseNerf]);
+	if (!curves && tilt == 0) {
+		result = baseTable.map(([x, y]) => [x, y * nerf]);
 	} else {
 		const a = curves?.modified.A ?? 1.0;
 		const xs = new Set();
@@ -365,7 +334,6 @@ export const buildAccCurve = (predictedAcc, sliderPercentage, noteCount, noteSpa
 		for (let i = 0; i < 71; i++) xs.add(round6(0.6 + i * 0.005));
 		for (let i = 0; i < 101; i++) xs.add(round6(0.95 + i * 0.0005));
 		xs.add(round6(a));
-		if (gainCut) xs.add(round6(predictedAcc));
 		const raw = x => {
 			let value = curves ? perMapValue(curves, x) : baseValue(x);
 			if (tilt != 0) {
@@ -374,11 +342,10 @@ export const buildAccCurve = (predictedAcc, sliderPercentage, noteCount, noteSpa
 			}
 			return value;
 		};
-		const atPredicted = gainCut ? raw(predictedAcc) : 0;
 		result = [...xs]
 			.filter(x => x >= 0 && x <= 1)
 			.sort((x, y) => y - x)
-			.map(x => [x, lowNoteValue(raw(x), x, atPredicted, predictedAcc, nerf, cut, bonus)]);
+			.map(x => [x, raw(x) * nerf]);
 	}
 
 	if (curveCache.size > 5000) curveCache.clear();
