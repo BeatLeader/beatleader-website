@@ -8,6 +8,7 @@
 	import Switcher from '../components/Common/Switcher.svelte';
 	import AliasRequests from '../components/Admin/AliasRequests.svelte';
 	import FailedScores from '../components/Admin/FailedScores.svelte';
+	import ReeSabersFiles from '../components/Admin/ReeSabersFiles.svelte';
 
 	export let location;
 	export let initialType;
@@ -25,6 +26,7 @@
 		{id: 'failedScores', label: 'Failed scores', title: 'Sort by PP', iconFa: 'fa fa-file-excel'},
 		{id: 'aliasRequests', label: 'Alias requests', title: 'Sort by accuracy clans with 3 players or more', iconFa: 'fa fa-user'},
 		{id: 'countryRequests', label: 'Country requests', title: 'Sort by maps captured', iconFa: 'fa fa-flag'},
+		{id: 'reeSabers', label: 'ReeSabers files', title: 'Manage ReeSabers release and beta builds', iconFa: 'fas fa-file-zipper'},
 	];
 	let sortValues = sortValues1;
 	let sortValue = sortValues[0];
@@ -45,6 +47,8 @@
 				<FailedScores />
 			{:else if type == 'aliasRequests'}
 				<AliasRequests />
+			{:else if type == 'reeSabers'}
+				<ReeSabersFiles />
 			{/if}
 		</ContentBox>
 	</article>
