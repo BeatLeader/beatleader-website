@@ -30,6 +30,7 @@
 		playlistCover,
 		playlistItemCount,
 		playlistItemsLabel,
+		playlistPageUrl,
 		searchPageUrl,
 		voteRunning,
 	} from '../../stores/playlists';
@@ -65,8 +66,8 @@
 		return () => clearInterval(timer);
 	});
 
-	function notify(text, type = 'success') {
-		addNotification({text, position: 'top-right', type, removeAfter: type === 'error' ? 4000 : 2000});
+	function notify(text, type = 'success', removeAfter = type === 'error' ? 4000 : 2000) {
+		addNotification({text, position: 'top-right', type, removeAfter});
 	}
 
 	function notifyError(e) {
@@ -153,6 +154,23 @@
 		open(PlaylistShareDialog, {playlist, store, close: () => close()});
 	}
 
+	let copying = false;
+	async function copyPlaylist() {
+		copying = true;
+		try {
+			const created = await store.copy(playlist);
+			const skipped = created.skipped
+				? ` ${created.skipped} ${created.skipped === 1 ? "replay you can't watch was" : "replays you can't watch were"} left out.`
+				: '';
+			notify(`Copied to your playlists and made active.${skipped}`, 'success', 4000);
+			navigate(playlistPageUrl(created));
+		} catch (e) {
+			notify(e?.message || 'Failed to copy the playlist', 'error');
+		} finally {
+			copying = false;
+		}
+	}
+
 	function openDelete() {
 		open(PlaylistDeleteConfirm, {
 			playlistName: playlist.playlistTitle,
@@ -187,6 +205,7 @@
 	$: isOwner = playlist?.role === 'owner' || playlist?.role === 'local';
 	$: isActive = playlistKey != null && $configStore?.selectedPlaylistId === playlistKey;
 	$: canShare = playlist?.role === 'owner' && playlist?.id;
+	$: canCopy = !!currentPlayerId && isServerPlaylist;
 	$: canPin = !!currentPlayerId && !!playlist?.id && (playlist.isPublic || playlist.pinned);
 	$: canStartVote = playlist?.role === 'owner' && isServerPlaylist && !playlist.source && !voting && playlistItemCount(playlist) > 0;
 	$: showVotesTab = !!playlist?.id && (voting || playlist.voteCount > 0);
@@ -378,6 +397,16 @@
 										animated={true}
 										noMargin={true}
 										on:click={() => store.download(playlist)} />
+									{#if canCopy}
+										<Button
+											iconFa="fas fa-copy"
+											title="Copy to your playlists to change it. The copy becomes your active playlist"
+											loading={copying}
+											disabled={copying}
+											animated={true}
+											noMargin={true}
+											on:click={copyPlaylist} />
+									{/if}
 									{#if canEditInfo && !playlist.oneclick}
 										<Button
 											iconFa="fas fa-pen"

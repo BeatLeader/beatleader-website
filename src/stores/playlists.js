@@ -376,7 +376,11 @@ export default () => {
 		const changed = revisions
 			.filter(r => {
 				const playlist = findPlaylist(playlists, r.id);
-				return playlist?.revision !== r.revision || playlist.role !== r.role;
+				return (
+					playlist?.revision !== r.revision ||
+					playlist.role !== r.role ||
+					('linkGuid' in r && (playlist.linkGuid ?? null) !== r.linkGuid)
+				);
 			})
 			.map(r => r.id);
 
@@ -583,6 +587,18 @@ export default () => {
 			await select(playlist);
 		}
 		return playlist;
+	};
+
+	const copy = async playlist => {
+		const info = await api('POST', playlist.accessGuid ? `v2/playlist/guid/${playlist.accessGuid}/copy` : `v2/playlist/${playlist.id}/copy`);
+		const created = fromServer(info);
+		created.skipped = info.skipped;
+		replaceInList(created);
+		sortNewestFirst();
+		broadcast({list: true});
+		await publish();
+		await select(created);
+		return created;
 	};
 
 	const createPlaylist = ({type = 'maps', title, description, image, isPublic = false, songs = [], replays = []}) => {
@@ -860,7 +876,7 @@ export default () => {
 		if (!playlist?.id) return null;
 		const result = await api(enabled ? 'POST' : 'DELETE', `v2/playlist/${playlist.id}/sharelink`);
 		playlist.linkGuid = result?.linkGuid ?? null;
-		await publish(false);
+		await publish();
 		return playlist.linkGuid;
 	};
 
@@ -997,6 +1013,7 @@ export default () => {
 		refresh,
 		isLoggedIn: () => mode === 'server',
 		create,
+		copy,
 		createPlaylist,
 		select,
 		add,
