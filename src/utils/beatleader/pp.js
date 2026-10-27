@@ -64,6 +64,77 @@ const Curve = acc => {
 	return pointList[i - 1][1] + middle_dis * (pointList[i][1] - pointList[i - 1][1]);
 };
 
+// Legacy pp formula. Difficulties keep it until they get the rebalanced ratings, the server sends noteSpan only for those.
+const pointList2 = [
+	[1.0, 7.424],
+	[0.999, 6.241],
+	[0.9975, 5.158],
+	[0.995, 4.01],
+	[0.9925, 3.241],
+	[0.99, 2.7],
+	[0.9875, 2.303],
+	[0.985, 2.007],
+	[0.9825, 1.786],
+	[0.98, 1.618],
+	[0.9775, 1.49],
+	[0.975, 1.392],
+	[0.9725, 1.315],
+	[0.97, 1.256],
+	[0.965, 1.167],
+	[0.96, 1.094],
+	[0.955, 1.039],
+	[0.95, 1.0],
+	[0.94, 0.931],
+	[0.93, 0.867],
+	[0.92, 0.813],
+	[0.91, 0.768],
+	[0.9, 0.729],
+	[0.875, 0.65],
+	[0.85, 0.581],
+	[0.825, 0.522],
+	[0.8, 0.473],
+	[0.75, 0.404],
+	[0.7, 0.345],
+	[0.65, 0.296],
+	[0.6, 0.256],
+	[0.0, 0.0],
+];
+
+const Curve2 = acc => {
+	var i = 0;
+	for (; i < pointList2.length; i++) {
+		if (pointList2[i][0] <= acc) {
+			break;
+		}
+	}
+
+	if (i == 0) {
+		i = 1;
+	}
+
+	var middle_dis = (acc - pointList2[i - 1][0]) / (pointList2[i][0] - pointList2[i - 1][0]);
+	return pointList2[i - 1][1] + middle_dis * (pointList2[i][1] - pointList2[i - 1][1]);
+};
+
+function Inflate(peepee) {
+	return (650 * Math.pow(peepee, 1.3)) / Math.pow(650, 1.3);
+}
+
+export const buildCurve = (accuracy, passRating, accRating, techRating, golf) => {
+	var passPP = 15.2 * Math.exp(Math.pow(passRating, 1 / 2.62)) - 30;
+	if (!isFinite(passPP) || isNaN(passPP) || passPP < 0) {
+		passPP = 0;
+	}
+	var accPP = golf ? accuracy * accRating * 42 : Curve2(accuracy) * accRating * 34;
+	var techPP = Math.exp(1.9 * accuracy) * 1.08 * techRating;
+	const totalPp = Inflate(passPP + accPP + techPP);
+	const inflation = totalPp / (passPP + accPP + techPP);
+
+	return [totalPp, passPP * inflation, accPP * inflation, techPP * inflation];
+};
+
+export const isRebalanced = difficulty => difficulty?.noteSpan !== null && difficulty?.noteSpan !== undefined;
+
 const SPEED_TIMESCALES = {ss: 0.85, fs: 1.2, sf: 1.5};
 
 export const getModifiedRatings = (difficulty, mods) => {
@@ -96,6 +167,17 @@ export const getModifiedRatings = (difficulty, mods) => {
 	}
 
 	const multiplier = 1 + multiplierMods.reduce((sum, mod) => sum + (mod?.value ?? 0), 0);
+
+	if (!isRebalanced(difficulty)) {
+		return {
+			passRating: passRating * multiplier,
+			accRating: accRating * multiplier,
+			techRating: techRating * multiplier,
+			legacy: true,
+			multiplier,
+		};
+	}
+
 	const curve = buildAccCurve(...curveInputs);
 
 	return {
@@ -110,11 +192,13 @@ export const getModifiedRatings = (difficulty, mods) => {
 
 export const getPPFromAcc = (acc, ratings, mode) => {
 	if (GLOBAL_LEADERBOARD_TYPE == 'golf') {
-		return scorePp(1 - acc, ratings, true);
+		return ratings?.legacy
+			? buildCurve(1 - acc, ratings.passRating, ratings.accRating, ratings.techRating, true)
+			: scorePp(1 - acc, ratings, true);
 	} else if (mode == 'rhythmgamestandard') {
 		return [acc * (ratings?.passRating ?? 0) * 55, 0, 0, 0];
 	} else {
-		return scorePp(acc, ratings);
+		return ratings?.legacy ? buildCurve(acc, ratings.passRating, ratings.accRating, ratings.techRating) : scorePp(acc, ratings);
 	}
 };
 
@@ -157,5 +241,7 @@ export const computeModifiedRating = (rating, ratingName, modifiersRating, mods)
 
 export const computeStarRating = ratings =>
 	Number.isFinite(ratings?.passRating) && Number.isFinite(ratings?.accRating) && Number.isFinite(ratings?.techRating)
-		? toStars(ratings.accRating, ratings.passRating, ratings.techRating, ratings.curve)
+		? ratings.legacy
+			? buildCurve(0.96, ratings.passRating, ratings.accRating, ratings.techRating)[0] / 52
+			: toStars(ratings.accRating, ratings.passRating, ratings.techRating, ratings.curve)
 		: null;
