@@ -11,3 +11,4 @@ forreload
 .yarnrc.yml
 # Local Netlify folder
 .netlify
+.vs/

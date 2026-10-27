@@ -1,5 +1,5 @@
 import {formatNumber} from '../format';
-import {computeModifiedRating, getFCPPTitle, getPPFromAcc} from './pp';
+import {getModifiedRatings, getFCPPTitle, getPPFromAcc} from './pp';
 import Badge from '../../components/Common/Badge.svelte';
 import Value from '../../components/Common/Value.svelte';
 import Pp from '../../components/Common/PerformanceBadge/Pp.svelte';
@@ -684,13 +684,8 @@ function getNominatedPPHoverTitle(score, beatSavior, modifiers) {
 			}
 		}
 
-		const diff = score?.leaderboard?.difficulty;
-		const modifiersRating = score?.leaderboard?.difficulty?.modifiersRating;
-
-		const modifiedPassRating = computeModifiedRating(diff?.passRating, 'PassRating', modifiersRating, modArr);
-		const modifiedAccRating = computeModifiedRating(diff?.accRating, 'AccRating', modifiersRating, modArr);
-		const modifiedTechRating = computeModifiedRating(diff?.techRating, 'TechRating', modifiersRating, modArr);
-		const pp = getPPFromAcc(fcAccuracy, modifiedPassRating, modifiedAccRating, modifiedTechRating)[0];
+		const ratings = getModifiedRatings(score?.leaderboard?.difficulty, modArr);
+		const pp = getPPFromAcc(fcAccuracy, ratings)[0];
 		const roundedPP = Math.round(pp * 100) / 100;
 		const fcPpTitle = getFCPPTitle(roundedPP, 'pp');
 		title += `\n${fcPpTitle}`;

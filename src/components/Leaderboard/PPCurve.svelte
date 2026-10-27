@@ -5,7 +5,7 @@
 	import regionsPlugin from './utils/regions-plugin';
 	import {formatNumber, GLOBAL_LEADERBOARD_TYPE} from '../../utils/format';
 	import {ModifiersList, userDescriptionForModifier} from '../../utils/beatleader/format';
-	import {getPPFromAcc, computeModifiedRating, computeStarRating} from '../../utils/beatleader/pp';
+	import {getPPFromAcc, getModifiedRatings, computeStarRating} from '../../utils/beatleader/pp';
 	import {configStore} from '../../stores/config';
 	import ConfigBoundsRange from '../Common/ConfigBoundsRange.svelte';
 
@@ -13,6 +13,10 @@
 	export let accRating = 5;
 	export let techRating = 5;
 	export let modifiersRating = null;
+	export let predictedAcc = null;
+	export let sliderPercentage = null;
+	export let notes = null;
+	export let noteSpan = null;
 	export let height = '200px';
 	export let logarithmic = false;
 	export let modifiers = {};
@@ -130,7 +134,7 @@
 	}
 
 	function getCurveParts(acc, passRating, accRating, techRating, mode) {
-		const curve = getPPFromAcc(acc, passRating, accRating, techRating, mode);
+		const curve = getPPFromAcc(acc, {...modifiedRatings, passRating, accRating, techRating}, mode);
 		return Array.isArray(curve) ? curve : [curve, null, null, null];
 	}
 
@@ -726,12 +730,16 @@
 		(all, mod) => (mutuallyExclusive[mod?.name] ? all.concat(mutuallyExclusive[mod.name]) : all),
 		[]
 	);
-	$: modifiedPassRating = computeModifiedRating(passRating, 'PassRating', modifiersRating, selectedModifiers);
-	$: modifiedAccRating = computeModifiedRating(accRating, 'AccRating', modifiersRating, selectedModifiers);
-	$: modifiedTechRating = computeModifiedRating(techRating, 'TechRating', modifiersRating, selectedModifiers);
+	$: modifiedRatings = getModifiedRatings(
+		{passRating, accRating, techRating, predictedAcc, sliderPercentage, notes, noteSpan, modifiersRating},
+		selectedModifiers
+	);
+	$: modifiedPassRating = modifiedRatings.passRating;
+	$: modifiedAccRating = modifiedRatings.accRating;
+	$: modifiedTechRating = modifiedRatings.techRating;
 	$: modifiedStars =
 		selectedModifiers?.length && (passRating !== modifiedPassRating || accRating !== modifiedAccRating || techRating !== modifiedTechRating)
-			? computeStarRating(modifiedPassRating, modifiedAccRating, modifiedTechRating)
+			? computeStarRating(modifiedRatings)
 			: null;
 	$: if (highlightedPoint) {
 		const clampedAcc = clampHighlightedAcc(highlightedPoint.acc, startAcc, endAcc);
