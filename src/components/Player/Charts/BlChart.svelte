@@ -49,6 +49,13 @@
 			link: 'https://beatleader.wiki/en/ranking/update3-7',
 			marker: 'R',
 		},
+		{
+			time: 1793116800,
+			color: '#777777',
+			label: 'PPv4 reweight',
+			link: 'https://beatleader.wiki/en/ranking/update4',
+			marker: 'R',
+		},
 	];
 
 	const calcHistoryHash = statsHistory => stringify(statsHistory);
