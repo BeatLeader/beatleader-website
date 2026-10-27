@@ -22,15 +22,17 @@
 	const {addNotification} = getNotificationsContext();
 	const account = createAccountStore();
 
-	const DEFAULT_MAX_TECH_PP = 2800;
-	const DEFAULT_MAX_ACC_PP = 19000;
-	const DEFAULT_MAX_PASS_PP = 3100;
+	const DEFAULT_MAX_PP = {tech: 2800, acc: 19000, pass: 3100};
+	// History from before the PPv4 reweight keeps the PPv3 scale
+	const PPV4_REWEIGHT_TIME = 1793116800;
+	const PPV3_MAX_PP = {tech: 1300, acc: 15000, pass: 6000};
 
 	const gypL = 57.74;
 
 	const techPpTween = tweened(0, {duration: 400, easing: cubicOut});
 	const accPpTween = tweened(0, {duration: 400, easing: cubicOut});
 	const passPpTween = tweened(0, {duration: 400, easing: cubicOut});
+	const maxPpTween = tweened(DEFAULT_MAX_PP, {duration: 400, easing: cubicOut});
 
 	let history = [];
 	let selectedTimestamp;
@@ -39,11 +41,20 @@
 	let hoveredTimestamp = null;
 	let animationTimeout;
 
+	const isPpv3 = info => info?.timestamp != null && info.timestamp < PPV4_REWEIGHT_TIME;
+
 	function updatePPFromInfo(playerInfo) {
 		if (!playerInfo) return;
 		techPpTween.set(playerInfo.techPp);
 		accPpTween.set(playerInfo.accPp);
 		passPpTween.set(playerInfo.passPp);
+		maxPpTween.set(isPpv3(playerInfo) ? PPV3_MAX_PP : DEFAULT_MAX_PP);
+	}
+
+	function similarTriangleUrl(info) {
+		if (!info) return null;
+		const range = pp => `${Math.round(pp * 0.95)}%2C${Math.round(pp * 1.05)}`;
+		return `/ranking/1?acc_pp_range=${range(info.accPp)}&pass_pp_range=${range(info.passPp)}&tech_pp_range=${range(info.techPp)}`;
 	}
 
 	function handleMouseEnter(timestamp) {
@@ -54,16 +65,19 @@
 		hoveredTimestamp = null;
 	}
 
-	$: updatePPFromInfo(history?.length && selectedTimestamp != 0 ? history.find(h => h.timestamp == selectedTimestamp) : playerInfo);
-	$: techScale = $techPpTween > DEFAULT_MAX_TECH_PP ? $techPpTween / DEFAULT_MAX_TECH_PP : 1;
-	$: accScale = $accPpTween > DEFAULT_MAX_ACC_PP ? $accPpTween / DEFAULT_MAX_ACC_PP : 1;
-	$: passScale = $passPpTween > DEFAULT_MAX_PASS_PP ? $passPpTween / DEFAULT_MAX_PASS_PP : 1;
+	$: selectedInfo = history?.length && selectedTimestamp != 0 ? history.find(h => h.timestamp == selectedTimestamp) : playerInfo;
+	$: updatePPFromInfo(selectedInfo);
+	$: similarFromToday = isPpv3(selectedInfo);
+	$: similarUrl = similarTriangleUrl(similarFromToday ? history[history.length - 1] : selectedInfo);
+	$: techScale = $techPpTween > $maxPpTween.tech ? $techPpTween / $maxPpTween.tech : 1;
+	$: accScale = $accPpTween > $maxPpTween.acc ? $accPpTween / $maxPpTween.acc : 1;
+	$: passScale = $passPpTween > $maxPpTween.pass ? $passPpTween / $maxPpTween.pass : 1;
 
 	$: triangleScale = Math.max(techScale, Math.max(accScale, passScale));
 
-	$: maxTechPp = DEFAULT_MAX_TECH_PP * triangleScale;
-	$: maxAccPp = DEFAULT_MAX_ACC_PP * triangleScale;
-	$: maxPassPp = DEFAULT_MAX_PASS_PP * triangleScale;
+	$: maxTechPp = $maxPpTween.tech * triangleScale;
+	$: maxAccPp = $maxPpTween.acc * triangleScale;
+	$: maxPassPp = $maxPpTween.pass * triangleScale;
 
 	$: totalNormalizedPp = $techPpTween * (maxAccPp / maxTechPp) + $accPpTween + $passPpTween * (maxAccPp / maxPassPp);
 	$: normalizedTechPp = $techPpTween / maxTechPp;
@@ -221,10 +235,8 @@ Improvements: {data.improvements}"
 			</div>
 		{/if}
 		<a
-			href="/ranking/1?acc_pp_range={Math.round($accPpTween * 0.95)}%2C{Math.round($accPpTween * 1.05)}&pass_pp_range={Math.round(
-				$passPpTween * 0.95
-			)}%2C{Math.round($passPpTween * 1.05)}&tech_pp_range={Math.round($techPpTween * 0.95)}%2C{Math.round($techPpTween * 1.05)}"
-			title="Show players with a similar triangle"
+			href={similarUrl}
+			title={similarFromToday ? "Show players with a triangle similar to today's" : 'Show players with a similar triangle'}
 			class="triangle-container">
 			{#if showRatings}
 				{#if $passPpTween}
