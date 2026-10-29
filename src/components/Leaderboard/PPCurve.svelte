@@ -714,7 +714,7 @@
 	onMount(() => {
 		dispatch('modified-stars', {passRating, accRating, techRating, stars: null});
 	});
-	const hiddenModifiers = ModifiersList.filter(m => m.hideInFilter).map(m => m.id.toLowerCase());
+	const hiddenModifiers = ModifiersList.filter(m => m.hideInFilter || m.hideInCurve).map(m => m.id.toLowerCase());
 
 	$: modifiersArr = Object.entries(modifiers ?? {})
 		?.filter(m => m?.[0] !== 'modifierId' && !hiddenModifiers.includes(m[0]))

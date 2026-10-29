@@ -841,7 +841,13 @@ export const ModifiersList = [
 		id: 'OP',
 		name: 'NJS cheesing',
 		icon: 'OutsidePlatformIcon.webp',
-		hideInFilter: true,
+		hideInCurve: true,
+	},
+	{
+		id: 'MS',
+		name: 'Middle skip (IntroSkip mod)',
+		icon: 'MiddleSkipIcon.webp',
+		hideInCurve: true,
 	},
 ];
 
@@ -1334,7 +1340,12 @@ export function describeModifiersAndMultipliers(modifiers, multipliers, title = 
 			const value = multipliers[key.toLowerCase()] ?? 0;
 			total += value;
 			result +=
-				'\n' + userDescriptionForModifier(key.toUpperCase()) + ': ' + (value > 0 ? ' +' : ' ') + Math.round(value * 10000) / 100 + '%';
+				'\n' +
+				userDescriptionForModifier(key.toUpperCase()) +
+				': ' +
+				(value > 0 ? ' +' : ' ') +
+				Math.round(value * 10000) / 100 +
+				'%';
 		});
 		if (modifiers.length > 1) {
 			result += '\nTotal:' + (total > 0 ? ' +' : ' ') + Math.round(total * 10000) / 100 + '%';
@@ -1392,7 +1403,14 @@ export function getHumanDiffInfo(diffInfo) {
 			return {name, type: diffInfo.type, fullName: name + typeSuffix, shortName: 'Ex', difficulty: 7, color: getDiffColor(diffInfo)};
 		case 'ExpertPlus':
 		case 'expertPlus':
-			return {name, type: diffInfo.type, fullName: 'Expert+' + typeSuffix, shortName: 'E+', difficulty: 9, color: getDiffColor(diffInfo)};
+			return {
+				name,
+				type: diffInfo.type,
+				fullName: 'Expert+' + typeSuffix,
+				shortName: 'E+',
+				difficulty: 9,
+				color: getDiffColor(diffInfo),
+			};
 
 		default:
 			return null;
@@ -1618,7 +1636,9 @@ export function starsToBackgroundColor(diff, config) {
 	if (config.mapsOptions.starDiffColors && diff.stars) {
 		const rotation = Math.min(diff.stars, 15) / 15;
 		const hue =
-			rotation <= config.starColorOptions.pivot ? config.starColorOptions.pivot - rotation : 1.0 + config.starColorOptions.pivot - rotation;
+			rotation <= config.starColorOptions.pivot
+				? config.starColorOptions.pivot - rotation
+				: 1.0 + config.starColorOptions.pivot - rotation;
 		const saturation = config.starColorOptions.component2;
 		const value =
 			diff.stars < config.starColorOptions.darkenTreshold

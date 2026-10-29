@@ -716,7 +716,10 @@
 			</section>
 
 			<section class="filter">
-				<Switcher values={typeFilterOptions} value={typeFilterOptions.find(o => o.key === currentFilters.type)} on:change={onTypeChanged} />
+				<Switcher
+					values={typeFilterOptions}
+					value={typeFilterOptions.find(o => o.key === currentFilters.type)}
+					on:change={onTypeChanged} />
 			</section>
 
 			<section class="filter dropdown-filter" class:has-value={!!currentFilters.mapType}>
@@ -911,7 +914,9 @@
 								max={sliderLimits.MAX_STARS}
 								step={sliderLimits.STAR_GRANULARITY}
 								values={[
-									Number.isFinite(currentFilters.accrating_from) ? currentFilters.accrating_from : Number.NEGATIVE_INFINITY,
+									Number.isFinite(currentFilters.accrating_from)
+										? currentFilters.accrating_from
+										: Number.NEGATIVE_INFINITY,
 									Number.isFinite(currentFilters.accrating_to) ? currentFilters.accrating_to : Number.POSITIVE_INFINITY,
 								]}
 								float
@@ -948,7 +953,9 @@
 								max={sliderLimits.MAX_STARS}
 								step={sliderLimits.STAR_GRANULARITY}
 								values={[
-									Number.isFinite(currentFilters.passrating_from) ? currentFilters.passrating_from : Number.NEGATIVE_INFINITY,
+									Number.isFinite(currentFilters.passrating_from)
+										? currentFilters.passrating_from
+										: Number.NEGATIVE_INFINITY,
 									Number.isFinite(currentFilters.passrating_to) ? currentFilters.passrating_to : Number.POSITIVE_INFINITY,
 								]}
 								float
@@ -985,7 +992,9 @@
 								max={sliderLimits.MAX_STARS}
 								step={sliderLimits.STAR_GRANULARITY}
 								values={[
-									Number.isFinite(currentFilters.techrating_from) ? currentFilters.techrating_from : Number.NEGATIVE_INFINITY,
+									Number.isFinite(currentFilters.techrating_from)
+										? currentFilters.techrating_from
+										: Number.NEGATIVE_INFINITY,
 									Number.isFinite(currentFilters.techrating_to) ? currentFilters.techrating_to : Number.POSITIVE_INFINITY,
 								]}
 								float
@@ -1000,7 +1009,7 @@
 				{/if}
 			</section>
 
-			<!-- <section class="filter dropdown-filter" class:has-value={!!currentFilters.mapType}>
+			<section class="filter dropdown-filter" class:has-value={!!currentFilters.mapType}>
 				<div class="dropdown-header" on:click={() => (isModifiersFilterOpen = !isModifiersFilterOpen)}>
 					<div class="header-content">
 						<i class="fas fa-m" />
@@ -1020,7 +1029,7 @@
 							}} />
 					</div>
 				{/if}
-			</section> -->
+			</section>
 
 			<section class="filter dropdown-filter" class:has-value={!!(currentFilters.date_from || currentFilters.date_to)}>
 				<div class="dropdown-header" on:click={() => (isDateFilterOpen = !isDateFilterOpen)}>
@@ -1041,15 +1050,21 @@
 						<div class="time-presets">
 							<Button
 								label="Today"
-								type={Math.abs(dateFromUnix(currentFilters.date_from)?.getTime() - today.getTime()) < 600000 ? 'primary' : 'default'}
+								type={Math.abs(dateFromUnix(currentFilters.date_from)?.getTime() - today.getTime()) < 600000
+									? 'primary'
+									: 'default'}
 								on:click={() => onDateRangeChange({detail: {from: today, to: null}})} />
 							<Button
 								label="Last week"
-								type={Math.abs(dateFromUnix(currentFilters.date_from)?.getTime() - lastWeek.getTime()) < 600000 ? 'primary' : 'default'}
+								type={Math.abs(dateFromUnix(currentFilters.date_from)?.getTime() - lastWeek.getTime()) < 600000
+									? 'primary'
+									: 'default'}
 								on:click={() => onDateRangeChange({detail: {from: lastWeek, to: null}})} />
 							<Button
 								label="Last year"
-								type={Math.abs(dateFromUnix(currentFilters.date_from)?.getTime() - lastYear.getTime()) < 600000 ? 'primary' : 'default'}
+								type={Math.abs(dateFromUnix(currentFilters.date_from)?.getTime() - lastYear.getTime()) < 600000
+									? 'primary'
+									: 'default'}
 								on:click={() => onDateRangeChange({detail: {from: lastYear, to: null}})} />
 						</div>
 					</div>
