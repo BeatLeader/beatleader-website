@@ -6,6 +6,7 @@
 	import {fly, fade} from 'svelte/transition';
 	import {debounce} from '../../utils/debounce';
 	import {deepClone} from '../../utils/js';
+	import {currentTheme as themeOf, isCustomizableTheme, themedContext, withTheme} from '../../utils/theme';
 
 	export let animationSign = 1;
 
@@ -18,7 +19,10 @@
 		{name: 'Unbounded - MicroBlock', value: 'unbounded'},
 		{name: 'ReeDark', value: 'ree-dark'},
 		{name: 'FlyLight', value: 'flylight'},
+		{name: 'Halloween', value: 'halloween'},
 	];
+
+	const context = themedContext();
 
 	let currentTheme = DEFAULT_THEME;
 	let currentBGImage = '';
@@ -34,7 +38,8 @@
 	let currentSelectedColor = 'rgba(50, 115, 220, 1.0)';
 
 	function onConfigUpdated(config) {
-		if (config?.preferences?.theme != currentTheme) currentTheme = config?.preferences?.theme ?? DEFAULT_THEME;
+		const theme = themeOf(config?.preferences);
+		if (theme != currentTheme) currentTheme = theme ?? DEFAULT_THEME;
 		if (config?.preferences?.bgimage != currentBGImage) currentBGImage = config?.preferences?.bgimage ?? '';
 		if (config?.preferences?.fontNames != currentFontNames) currentFontNames = config?.preferences?.fontNames ?? '';
 
@@ -53,8 +58,12 @@
 		await configStore.setForKey('preferences', preferences, false);
 	}
 
+	async function saveTheme(theme) {
+		await configStore.setForKey('preferences', withTheme(deepClone(configStore.get('preferences')), theme), false);
+	}
+
 	function setCssValue(key, value) {
-		if (currentTheme != 'default' && currentTheme != 'ree-dark') {
+		if (isCustomizableTheme(currentTheme)) {
 			setGlobalCSSValue(key, value);
 		} else {
 			removeGlobalCSSValue(key);
@@ -121,15 +130,15 @@
 	$: currentTheme && selectedColorCallback(currentSelectedColor);
 
 	$: fontNamesCallback(currentFontNames);
-	$: settempsetting('theme', currentTheme);
+	$: saveTheme(currentTheme);
 </script>
 
 <div class="options" in:fly|global={{y: animationSign * 200, duration: 400}} out:fade|global={{duration: 100}}>
 	<section class="option" id="theme-selector">
-		<label title="Choose the theme you want">Theme</label>
+		<label title="Choose the theme you want">{context ? 'Theme on this leaderboard' : 'Theme'}</label>
 		<Select bind:value={currentTheme} options={themes} />
 	</section>
-	{#if currentTheme != 'default' && currentTheme != 'ree-dark'}
+	{#if isCustomizableTheme(currentTheme)}
 		<section class="option" id="theme-background">
 			<label title="Input url of the background image you want">Background Image</label>
 			<input type="url" value={currentBGImage} on:input={debounceCurrentBGImage} />

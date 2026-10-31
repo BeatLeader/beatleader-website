@@ -849,6 +849,24 @@ export const ModifiersList = [
 		icon: 'MiddleSkipIcon.webp',
 		hideInCurve: true,
 	},
+	{
+		id: 'DNC',
+		name: 'Dance (scored on the Dance leaderboard only)',
+		icon: 'SuperFastSongIcon.webp',
+		hideInFilter: true,
+	},
+	{
+		id: 'BFS',
+		name: 'Better Faster Song',
+		icon: 'FasterSongIcon.webp',
+		hideInFilter: true,
+	},
+	{
+		id: 'BSF',
+		name: 'Better Super Fast Song',
+		icon: 'SuperFastSongIcon.webp',
+		hideInFilter: true,
+	},
 ];
 
 export function modifiersToSpeed(modifiers) {

@@ -3,6 +3,7 @@
 	import {configStore} from '../../stores/config';
 	import {getPerformanceBadge} from '../../utils/beatleader/performance-badge';
 	import {deepClone, opt} from '../../utils/js';
+	import {GLOBAL_LEADERBOARD_TYPE} from '../../utils/format';
 	import FormattedDate from '../Common/FormattedDate.svelte';
 	import ScoreBadges from '../Common/PerformanceBadge/ScoreBadges.svelte';
 	import {writable} from 'svelte/store';
@@ -25,6 +26,11 @@
 			{metric: 'accRight', withImprovements: true},
 			{metric: 'mistakes', withImprovements: true},
 		],
+	];
+
+	const DANCE_BADGES = [
+		[{metric: 'danceScore'}, {metric: 'danceBounce'}, {metric: 'danceTilt'}],
+		[{metric: 'danceLock'}, {metric: 'danceSway'}, {metric: 'danceSteadiness'}],
 	];
 
 	let badges = null;
@@ -51,6 +57,8 @@
 
 		if (!rows) rows = 2;
 
+		const isDance = GLOBAL_LEADERBOARD_TYPE === 'dnc' && type !== 'clan-ranking-score';
+
 		switch (service) {
 			case 'beatsavior':
 				config = BEAT_SAVIOR_BADGES;
@@ -63,10 +71,10 @@
 				break;
 
 			default:
-				config = deepClone(config);
+				config = deepClone(isDance ? DANCE_BADGES : config);
 		}
 
-		if (additionalStats?.length) {
+		if (additionalStats?.length && !isDance) {
 			for (let I = 0; I < additionalStats.length; I++) {
 				const additionalStat = additionalStats[I];
 				if (

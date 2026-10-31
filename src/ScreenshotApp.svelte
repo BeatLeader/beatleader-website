@@ -5,6 +5,7 @@
 	import {configStore} from './stores/config';
 	import createContainerStore from './stores/container';
 	import {applyThemePreferences} from './utils/color';
+	import {currentTheme} from './utils/theme';
 	import SimpleModal from './components/Common/SimpleModal.svelte';
 	import NotificationComponent from './components/Common/NotificationComponent.svelte';
 
@@ -31,12 +32,14 @@
 	document.documentElement.classList.add('screenshot-mode');
 
 	applyThemePreferences($configStore.preferences);
+
+	$: theme = currentTheme($configStore?.preferences);
 </script>
 
 <Router {url}>
 	<Notifications zIndex={10000} item={NotificationComponent}>
 		<SimpleModal closeButton={false}>
-			<main bind:this={mainEl} class={$configStore?.preferences?.theme}>
+			<main bind:this={mainEl} class={theme}>
 				<Route path="/u/:playerId/*" let:params>
 					{#await pageImports.ProfilePage() then module}
 						<svelte:component this={module.default} playerId={params.playerId} />
@@ -95,7 +98,7 @@
 	</Notifications>
 </Router>
 
-<link rel="stylesheet" href="/build/themes/{$configStore.preferences.theme}.css" />
+<link rel="stylesheet" href="/build/themes/{theme}.css" />
 
 <style>
 	:global(html.screenshot-mode),

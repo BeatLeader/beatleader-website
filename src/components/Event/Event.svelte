@@ -8,13 +8,20 @@
 
 	export let event;
 	export let withLeader = true;
+	export let image = null;
 
 	const dispatch = createEventDispatcher();
+
+	function contextProfileUrl(event, player) {
+		const subdomain = event?.id == 81 ? 'leftleader' : event?.eventType === 2 ? 'dnc' : null;
+
+		return subdomain ? `${BL_API_URL.replace('api', subdomain)}u/${player?.alias ?? player?.playerId}` : null;
+	}
 </script>
 
 {#if event}
 	<section class="event">
-		<img src={event.image} />
+		<img src={image ?? event.image} />
 		<h2 class="event-name">{event.name}</h2>
 
 		{#if event.leader && withLeader}
@@ -25,29 +32,17 @@
 						<PlayerNameWithFlag
 							player={event.leader}
 							playerClickFilter={`eventId=${event.id}`}
-							playerClickFilterFull={event.id == 81
-								? `${BL_API_URL.replace('api', 'leftleader')}u/${event?.leader?.alias ?? event?.leader?.playerId}`
-								: null}
+							playerClickFilterFull={contextProfileUrl(event, event.leader)}
 							on:click={e => {
-								navigate(
-									event.id == 81
-										? `${BL_API_URL.replace('api', 'leftleader')}u/${event?.leader?.alias ?? event?.leader?.playerId}`
-										: `/u/${event?.leader?.id}?eventId=${event.id}`
-								);
+								navigate(contextProfileUrl(event, event.leader) ?? `/u/${event?.leader?.id}?eventId=${event.id}`);
 								e.stopPropagation();
 							}} />
 						<PlayerNameWithFlag
 							player={event.leader2}
 							playerClickFilter={`eventId=${event.id}`}
-							playerClickFilterFull={event.id == 81
-								? `${BL_API_URL.replace('api', 'leftleader')}u/${event?.leader2?.alias ?? event?.leader2?.playerId}`
-								: null}
+							playerClickFilterFull={contextProfileUrl(event, event.leader2)}
 							on:click={e => {
-								navigate(
-									event.id == 81
-										? `${BL_API_URL.replace('api', 'leftleader')}u/${event?.leader2?.alias ?? event?.leader2?.playerId}`
-										: `/u/${event?.leader2?.id}?eventId=${event.id}`
-								);
+								navigate(contextProfileUrl(event, event.leader2) ?? `/u/${event?.leader2?.id}?eventId=${event.id}`);
 								e.stopPropagation();
 							}} />
 					</div>
@@ -58,15 +53,9 @@
 					<PlayerNameWithFlag
 						player={event.leader}
 						playerClickFilter={`eventId=${event.id}`}
-						playerClickFilterFull={event.id == 81
-							? `${BL_API_URL.replace('api', 'leftleader')}u/${event?.leader?.alias ?? event?.leader?.playerId}`
-							: null}
+						playerClickFilterFull={contextProfileUrl(event, event.leader)}
 						on:click={e => {
-							navigate(
-								event.id == 81
-									? `${BL_API_URL.replace('api', 'leftleader')}u/${event?.leader?.alias ?? event?.leader?.playerId}`
-									: `/u/${event?.leader?.id}?eventId=${event.id}`
-							);
+							navigate(contextProfileUrl(event, event.leader) ?? `/u/${event?.leader?.id}?eventId=${event.id}`);
 							e.stopPropagation();
 						}} />
 				</div>

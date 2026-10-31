@@ -1,4 +1,5 @@
 import {configStore} from '../../../stores/config';
+import {GLOBAL_LEADERBOARD_TYPE} from '../../../utils/format';
 
 const RANKED_STORE_SORTING_KEY = 'PlayerRankedSorting';
 const RANKED_STORE_ORDER_KEY = 'PlayerRankedOrder';
@@ -53,7 +54,10 @@ export default () => {
 	let currentService = null;
 	let currentServiceParams = {};
 
-	const getAllServices = () => ['ranked', 'scores', 'attempts', 'beatsavior', 'accsaber'];
+	const getAllServices = () =>
+		GLOBAL_LEADERBOARD_TYPE === 'dnc'
+			? ['scores', 'attempts', 'beatsavior', 'accsaber']
+			: ['ranked', 'scores', 'attempts', 'beatsavior', 'accsaber'];
 
 	const get = () => ({service: currentService, params: currentServiceParams});
 

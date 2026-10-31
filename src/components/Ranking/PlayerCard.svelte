@@ -34,6 +34,7 @@
 	export let maxNumRank = 1;
 	export let opacity = '1.0';
 	export let noImprovements = false;
+	export let valuePropsOverride = null;
 
 	const dispatch = createEventDispatcher();
 
@@ -181,7 +182,7 @@
 	);
 
 	$: value = PlayerValue(player, currentFilters);
-	$: valueProps = RANKING_SORT_BY_PROPS[currentFilters.sortBy];
+	$: valueProps = valuePropsOverride ?? RANKING_SORT_BY_PROPS[currentFilters.sortBy];
 	$: updateRanks(numRank, showingGeneral);
 
 	let referenceElement;

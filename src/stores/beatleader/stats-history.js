@@ -19,7 +19,7 @@ export default () => {
 	const {subscribe: subscribeState, set, update} = writable(votingStatuses);
 
 	const fetchStats = async (playerData, count = 50) => {
-		if (!playerData) return;
+		if (!playerData?.scoreStats) return;
 
 		return resolvePromiseOrWaitForPending(`player/${playerData.playerId}/history/${count}`, () =>
 			fetch(BL_API_URL + `player/${playerData.playerId}/history/compact?count=${count}&leaderboardContext=${GLOBAL_LEADERBOARD_TYPE}`)

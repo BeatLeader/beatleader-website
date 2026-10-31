@@ -42,13 +42,13 @@
 				show = profileAppearance && profileAppearance.includes('booster');
 				roleIcon = BL_ASSETS_CDN + '/boostericon.webp';
 				roleDescription = 'Discord Server Booster';
-				if (profileAppearance.includes('tipper') && allRoles.includes('tipper')) {
+				if (profileAppearance?.includes('tipper') && allRoles.includes('tipper')) {
 					roleIcon = BL_ASSETS_CDN + '/boosterpatreon1.webp';
 					roleDescription = 'Tier 1 Patreon supporter and Discord Server Booster ❤️';
-				} else if (profileAppearance.includes('supporter') && allRoles.includes('supporter')) {
+				} else if (profileAppearance?.includes('supporter') && allRoles.includes('supporter')) {
 					roleIcon = BL_ASSETS_CDN + '/boosterpatreon2.webp';
 					roleDescription = 'Tier 2 Patreon supporter and Discord Server Booster ❤️';
-				} else if (profileAppearance.includes('sponsor') && allRoles.includes('sponsor')) {
+				} else if (profileAppearance?.includes('sponsor') && allRoles.includes('sponsor')) {
 					roleIcon = BL_ASSETS_CDN + '/boosterpatreon3.webp';
 					roleDescription = 'Highest tier Patreon supporter. Crypto godge, Discord Server Booster and awesome person owerall 😎';
 				}

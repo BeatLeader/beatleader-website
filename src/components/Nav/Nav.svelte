@@ -19,6 +19,7 @@
 	import PlaylistHeaderMenuItem from './PlaylistHeaderMenuItem.svelte';
 	import {globalHistory} from 'svelte-routing/src/history';
 	import {GLOBAL_LEADERBOARD_TYPE, setLeaderboardType} from '../../utils/format';
+	import {currentTheme} from '../../utils/theme';
 	import LogOutConfirm from './LogOutConfirm.svelte';
 
 	let className = null;
@@ -116,6 +117,42 @@
 		{
 			name: 'SCPM',
 			id: 'scpm',
+			logoBig: '/assets/logo.webp',
+			logoSmall: '/assets/favicon-96x96.webp',
+		},
+		{
+			name: 'Dance',
+			id: 'dnc',
+			logoBig: '/assets/logo.webp',
+			logoSmall: '/assets/favicon-96x96.webp',
+		},
+		{
+			name: 'SlowerSong',
+			id: 'ss',
+			logoBig: '/assets/logo.webp',
+			logoSmall: '/assets/favicon-96x96.webp',
+		},
+		{
+			name: 'FasterSong',
+			id: 'fs',
+			logoBig: '/assets/logo.webp',
+			logoSmall: '/assets/favicon-96x96.webp',
+		},
+		{
+			name: 'SuperFast',
+			id: 'sf',
+			logoBig: '/assets/logo.webp',
+			logoSmall: '/assets/favicon-96x96.webp',
+		},
+		{
+			name: 'BetterFasterSong',
+			id: 'bfs',
+			logoBig: '/assets/logo.webp',
+			logoSmall: '/assets/favicon-96x96.webp',
+		},
+		{
+			name: 'BetterSuperFast',
+			id: 'bsf',
 			logoBig: '/assets/logo.webp',
 			logoSmall: '/assets/favicon-96x96.webp',
 		},
@@ -249,6 +286,7 @@
 	$: starredFollowed =
 		$followed?.filter(f => starredFollowedIds.includes(f?.playerId))?.sort((a, b) => a?.name?.localeCompare(b?.name)) ?? [];
 	$: selectedPlaylist = $configStore?.selectedPlaylistId;
+	$: halloween = currentTheme($configStore?.preferences) === 'halloween';
 	$: calculateSignUpOptions($account, $playlists, selectedPlaylist);
 	$: newSettingsAvailable = $configStore ? configStore.getNewSettingsAvailable() : undefined;
 	$: notificationBadgeTitle = (settingsNotificationBadge ? [settingsNotificationBadge + '\n'] : [])
@@ -281,7 +319,7 @@
 				}
 			}}>
 			<div class="logo-container desktop-and-up">
-				<img src="/assets/logo.webp" class="logo" alt="" />
+				<img src={halloween ? '/assets/halloween/logo-wide.webp' : '/assets/logo.webp'} class="logo" alt="" />
 				<div class="logo-name">
 					<span class="name">BEATLEADER</span>
 					{#if leaderboardType.id != ''}
@@ -291,7 +329,7 @@
 			</div>
 
 			<div class="logo-container tablet">
-				<img src="/assets/logo-small.webp" class="logo" alt="" />
+				<img src={halloween ? '/assets/halloween/logo-small.webp' : '/assets/logo-small.webp'} class="logo" alt="" />
 				<div class="logo-name">
 					<span class="name">BL</span>
 					{#if leaderboardType.id != ''}
@@ -301,7 +339,7 @@
 			</div>
 
 			<div class="logo-container up-to-tablet">
-				<img src="/assets/logo-small.webp" class="logo" alt="" />
+				<img src={halloween ? '/assets/halloween/logo-small.webp' : '/assets/logo-small.webp'} class="logo" alt="" />
 				{#if leaderboardType.id != 'general'}
 					<span class="leaderboard-type">{leaderboardType.name}</span>
 				{/if}

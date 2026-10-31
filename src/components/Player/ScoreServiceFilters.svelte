@@ -28,16 +28,14 @@
 {#if filters?.length}
 	<section class="score-filters">
 		{#each filters as filter}
-			{#if !filter.props.hidden}
-				{#if filter.asComponent}
-					<svelte:component
-						this={filter.component}
-						{...filter.props}
-						on:change={filter.props.debounce ? debouncedOnFilterChanged : onFilterChanged}
-						on:click />
-				{:else}
-					<GenericFilter {filter} on:change={onFilterChanged} on:click />
-				{/if}
+			{#if filter.asComponent}
+				<svelte:component
+					this={filter.component}
+					{...filter.props}
+					on:change={filter.props.debounce ? debouncedOnFilterChanged : onFilterChanged}
+					on:click />
+			{:else}
+				<GenericFilter {filter} on:change={onFilterChanged} on:click />
 			{/if}
 		{/each}
 	</section>

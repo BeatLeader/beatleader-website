@@ -1,0 +1,169 @@
+@import url('https://fonts.googleapis.com/css2?family=Creepster&display=swap');
+@import 'ree-dark.less';
+
+@night: #17121c;
+@surface: #1d1626;
+@surface-raised: #251c30;
+@surface-hover: #2f2439;
+@bone: #efe6d2;
+@dread: #ff9a1f;
+@gold: #ffc21a;
+
+:root {
+	--background: @night;
+	--foreground: @surface;
+	--textColor: @bone;
+	--color: @bone;
+	--bg-color: #b83f00;
+	--ppColour: @gold;
+	--alternate: @dread;
+	--selected: #ff5500;
+	--dimmed: #3a2e45;
+	--faded: #8f809c;
+	--row-separator: #2c2235 !important;
+}
+
+::selection {
+	background: rgba(255, 85, 0, 0.45);
+}
+
+.main-background {
+	background:
+		radial-gradient(120% 55% at 50% 115%, rgba(255, 85, 0, 0.2), transparent 60%),
+		radial-gradient(70% 45% at 12% -5%, rgba(115, 64, 153, 0.35), transparent 70%),
+		radial-gradient(55% 40% at 92% 8%, rgba(115, 64, 153, 0.22), transparent 70%),
+		@night !important;
+	overflow: hidden;
+}
+
+.main-background::before {
+	content: '';
+	position: absolute;
+	inset: 4rem 0 auto 0;
+	height: 22rem;
+	background:
+		url('/assets/halloween/web.webp') no-repeat left -3rem top -2rem / 20rem auto,
+		url('/assets/halloween/web.webp') no-repeat right -3rem top -2rem / 16rem auto;
+	opacity: 0.18;
+	pointer-events: none;
+}
+
+.main-background::after {
+	content: '';
+	position: absolute;
+	left: -50%;
+	right: -50%;
+	bottom: -10vh;
+	height: 45vh;
+	background:
+		radial-gradient(35% 60% at 20% 70%, rgba(201, 160, 255, 0.1), transparent 70%),
+		radial-gradient(30% 50% at 55% 80%, rgba(201, 160, 255, 0.08), transparent 70%),
+		radial-gradient(40% 60% at 85% 75%, rgba(201, 160, 255, 0.09), transparent 70%);
+	filter: blur(20px);
+	animation: halloween-fog 60s ease-in-out infinite alternate;
+	pointer-events: none;
+}
+
+@keyframes halloween-fog {
+	from {
+		transform: translateX(-8%);
+	}
+	to {
+		transform: translateX(8%);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.main-background::after {
+		animation: none;
+	}
+}
+
+.darkened-background {
+	background: #140f19;
+}
+
+.darkened-background.frosted {
+	background: rgba(20, 15, 25, 0.85) !important;
+}
+
+nav.ssr-page-container {
+	background: #120d17 !important;
+	border-bottom: 2px solid transparent !important;
+	border-image: linear-gradient(90deg, #c42e00 0%, #ff5500 40%, #ff8a00 78%, #ffc21a 100%) 1 !important;
+	box-shadow: 0 6px 24px rgba(255, 85, 0, 0.12) !important;
+}
+
+.content-box {
+	background: @surface !important;
+	box-shadow:
+		0 0 0 1px rgba(255, 138, 0, 0.07),
+		0 8px 24px rgba(0, 0, 0, 0.55) !important;
+}
+
+.content-box.frosted {
+	background: rgba(29, 22, 38, 0.55) !important;
+}
+
+.screenshot-mode .content-box.frosted {
+	background: @surface !important;
+}
+
+.content-box > h1.title,
+.content-box > div > h1.title {
+	font-family: 'Creepster', 'Noto Sans', cursive !important;
+	font-weight: 400 !important;
+	letter-spacing: 0.06em;
+	color: @dread !important;
+	text-shadow: 0 0 24px rgba(255, 138, 0, 0.55);
+}
+
+a {
+	color: @dread;
+}
+
+a:hover {
+	color: @gold;
+}
+
+.beatleader-summary,
+.clan-info {
+	.badge {
+		background-color: @surface-raised !important;
+	}
+}
+
+.pp-container .pp {
+	color: @gold !important;
+}
+
+.content-box:has(.ranking-grid-row) {
+	.players,
+	.ranking-grid {
+		.player-card {
+			background: @surface-raised;
+		}
+
+		.player-card:hover {
+			background: @surface-hover !important;
+			box-shadow: 0 0 12px rgba(255, 122, 26, 0.18) !important;
+		}
+	}
+}
+
+.details .leaderboard,
+.details-box {
+	background: #19131f !important;
+}
+
+.leaderboard .highlight {
+	background: #2c2036 !important;
+}
+
+.map-card.is-hovered {
+	background: @surface-hover !important;
+}
+
+.bottom-container-background {
+	background-color: #1b1522 !important;
+}

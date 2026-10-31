@@ -9,6 +9,7 @@
 	import {isTouchDevice} from './utils/is-touch';
 	import Nav from './components/Nav/Nav.svelte';
 	import {applyThemePreferences} from './utils/color';
+	import {currentTheme} from './utils/theme';
 	import ContentBox from './components/Common/ContentBox.svelte';
 	import ActivePlaylistBar from './components/Playlists/ActivePlaylistBar.svelte';
 	import Search from './components/Search/Search.svelte';
@@ -141,6 +142,8 @@
 	$: if (mainEl) containerStore.observe(mainEl);
 
 	applyThemePreferences($configStore.preferences);
+
+	$: theme = currentTheme($configStore?.preferences);
 </script>
 
 <div bind:this={mobileTooltip} class="mobile-tooltip" />
@@ -281,7 +284,7 @@
 	</div>
 {/if} -->
 <Router {url}>
-	<Nav class={$configStore?.preferences?.theme} {openModal} {closeModal} />
+	<Nav class={theme} {openModal} {closeModal} />
 	<ActivePlaylistBar {openModal} {closeModal} />
 	<Notifications zIndex={10000} item={NotificationComponent}>
 		<SimpleModal
@@ -290,7 +293,7 @@
 			styleContent={{padding: 0, 'margin-bottom': '-0.5em'}}
 			bind:openFunction={openModal}
 			bind:closeFunction={closeModal}>
-			<main bind:this={mainEl} class={$configStore?.preferences?.theme}>
+			<main bind:this={mainEl} class={theme}>
 				<div class="ssr-page-container">
 					<Route path="/">
 						{#if $account?.player}
@@ -643,7 +646,7 @@
 	<Search />
 {/if}
 
-<link rel="stylesheet" href="/build/themes/{$configStore.preferences.theme}.css" />
+<link rel="stylesheet" href="/build/themes/{theme}.css" />
 
 <footer>
 	<ContentBox cls="footer-box">

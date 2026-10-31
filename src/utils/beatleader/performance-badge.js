@@ -616,6 +616,22 @@ export const getPerformanceBadge = (def, score, improvements, beatSavior, modifi
 			}
 			break;
 
+		case 'danceScore':
+		case 'danceBounce':
+		case 'danceTilt':
+		case 'danceLock':
+		case 'danceSway':
+		case 'danceSteadiness':
+			const danceBadge = getDanceBadge(metric, score?.dance);
+			if (!danceBadge) {
+				component = null;
+				break;
+			}
+
+			({title, icon, componentProps, slotComponentProps} = danceBadge);
+			className = 'beatSavior';
+			break;
+
 		case '__not-set':
 			if (isDemo) {
 				title = isDemo ? 'Click to setup' : null;
@@ -653,6 +669,78 @@ export const getPerformanceBadge = (def, score, improvements, beatSavior, modifi
 		icon,
 	};
 };
+
+const DANCE_METRICS = {
+	danceScore: {field: 'value', scale: 100, digits: 2, suffix: '%', icon: 'fa-solid fa-music'},
+	danceBounce: {
+		field: 'beatBounce',
+		digits: 1,
+		suffix: ' cm',
+		icon: 'fa-solid fa-arrows-up-down',
+		title: 'Head bounce in time with the beat',
+	},
+	danceTilt: {field: 'tilt', digits: 1, suffix: '°', icon: 'fa-solid fa-rotate', title: 'Head tilt side to side'},
+	danceLock: {
+		field: 'beatLock',
+		digits: 2,
+		suffix: '×',
+		icon: 'fa-solid fa-drum',
+		title: 'How locked the bounce is to the beat, against nearby rhythms',
+	},
+	danceSway: {
+		field: 'freeSway',
+		digits: 1,
+		suffix: ' cm',
+		icon: 'fa-solid fa-arrows-left-right',
+		title: "Body sway the swings don't explain",
+	},
+	danceSteadiness: {
+		field: 'steadiness',
+		scale: 100,
+		digits: 0,
+		suffix: '%',
+		icon: 'fa-solid fa-wave-square',
+		title: 'Steady flow: average over peak head speed',
+	},
+};
+
+const DANCING_LINE = 0.945;
+
+function getDanceBadge(metric, dance) {
+	const def = DANCE_METRICS[metric];
+	const value = dance?.[def?.field];
+	if (!def || !Number.isFinite(value)) return null;
+
+	let title = def.title;
+	let bgColor = 'var(--dimmed)';
+	if (metric === 'danceScore') {
+		if (!dance.valid) {
+			title = 'Too little play to judge (under 30 seconds)';
+		} else {
+			const lines = [`Dances more than ${formatNumber(value * 100, 1)}% of the reference plays`];
+			if (Number.isFinite(dance.voteShare)) {
+				lines.push(`About ${formatNumber(dance.voteShare * 100, 0)}% of players would call this dancing`);
+			}
+			if (Number.isFinite(dance.countedFraction)) {
+				lines.push(`${formatNumber(dance.countedFraction * 100, 0)}% of the play counted (not paused or dodging walls)`);
+			}
+			title = lines.join('\n');
+		}
+		bgColor = dance.valid && value >= DANCING_LINE ? 'var(--ppColour)' : 'var(--dimmed)';
+	}
+
+	return {
+		title,
+		icon: metric === 'danceScore' ? null : def.icon,
+		componentProps: {onlyLabel: true, color: 'white', bgColor, title},
+		slotComponentProps: {
+			value: value * (def.scale ?? 1),
+			inline: metric !== 'danceScore',
+			digits: def.digits,
+			suffix: def.suffix,
+		},
+	};
+}
 
 function getNominatedPPHoverTitle(score, beatSavior, modifiers) {
 	let title = 'Approximate PP if the map will be ranked';

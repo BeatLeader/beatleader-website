@@ -24,6 +24,7 @@
 	import EventMeta from '../Event/EventMeta.svelte';
 	import PlayerMention from '../Scores/PlayerMention.svelte';
 	import EventRankingTable from '../Ranking/EventRankingTable.svelte';
+	import DanceOrDie from './DanceOrDie.svelte';
 
 	export let currentEvent;
 	export let page = 1;
@@ -151,16 +152,22 @@
 	$: document.body.scrollIntoView({behavior: 'smooth'});
 	$: changeParams(page, eventId, location);
 	$: mainPlayerId = $account?.id;
+	$: dance = currentEvent?.eventType === 2;
+	let danceTab = 'ranking';
 </script>
 
 <svelte:head>
 	<title>Event / {currentPage} - {ssrConfig.name}</title>
 </svelte:head>
 
-<section class="align-content">
+<section class="align-content" class:halloween-event={dance}>
 	<aside>
 		<ContentBox cls={eventId == 23 ? 'festive' : ''}>
-			<Event event={currentEvent} withLeader={false} on:show-playlist={e => navigate('/playlist/' + e?.detail?.playlistId)} />
+			<Event
+				event={currentEvent}
+				withLeader={false}
+				image={dance ? '/assets/halloween/logo-animated.webp' : null}
+				on:show-playlist={e => navigate('/playlist/' + e?.detail?.playlistId)} />
 		</ContentBox>
 	</aside>
 
@@ -712,6 +719,10 @@
 			</ContentBox>
 		{/if}
 
+		{#if dance}
+			<DanceOrDie event={currentEvent} bind:tab={danceTab} />
+		{/if}
+
 		{#if eventId == 85}
 			<ContentBox cls={modalShown ? 'inner-modal' : ''}>
 				<span>
@@ -733,55 +744,58 @@
 				</span>
 			</ContentBox>
 		{/if}
-		<ContentBox cls={modalShown ? 'inner-modal' : ''}>
-			<section class="filter">
-				<input
-					type="text"
-					placeholder={'Search by a player name'}
-					value={currentFilters.search}
-					on:input={debounce(e => {
-						const length = e?.target?.value?.length;
-						if (length > 0 && length < 2) return;
+		<div class:is-hidden={dance && danceTab !== 'ranking'}>
+			<ContentBox cls={modalShown ? 'inner-modal' : ''}>
+				<section class="filter">
+					<input
+						type="text"
+						placeholder={'Search by a player name'}
+						value={currentFilters.search}
+						on:input={debounce(e => {
+							const length = e?.target?.value?.length;
+							if (length > 0 && length < 2) return;
 
-						currentFilters.search = e.target.value ?? '';
-						currentPage = 1;
-						navigateToCurrentPageAndFilters();
-					}, FILTERS_DEBOUNCE_MS)} />
-			</section>
-			<section class="filter">
-				<Countries
-					countries={currentFilters.countries?.split(',').filter(c => c) ?? []}
-					placeholder="Click to filter by countries"
-					on:change={e => {
-						const newValues = e?.detail ?? [];
-						if (currentFilters.countries != newValues.join(',')) {
-							currentFilters.countries = newValues.join(',');
+							currentFilters.search = e.target.value ?? '';
 							currentPage = 1;
 							navigateToCurrentPageAndFilters();
-						}
-					}} />
-			</section>
-		</ContentBox>
+						}, FILTERS_DEBOUNCE_MS)} />
+				</section>
+				<section class="filter">
+					<Countries
+						countries={currentFilters.countries?.split(',').filter(c => c) ?? []}
+						placeholder="Click to filter by countries"
+						on:change={e => {
+							const newValues = e?.detail ?? [];
+							if (currentFilters.countries != newValues.join(',')) {
+								currentFilters.countries = newValues.join(',');
+								currentPage = 1;
+								navigateToCurrentPageAndFilters();
+							}
+						}} />
+				</section>
+			</ContentBox>
 
-		<ContentBox bind:box={boxEl}>
-			<h1 class="title is-5">
-				Ranking
+			<ContentBox bind:box={boxEl}>
+				<h1 class="title is-5">
+					Ranking
 
-				{#if isLoading}
-					<Spinner />
-				{/if}
-			</h1>
+					{#if isLoading}
+						<Spinner />
+					{/if}
+				</h1>
 
-			<EventRankingTable
-				page={currentPage}
-				filters={currentFilters}
-				playerClickFilter={`eventId=${currentEvent?.id ?? ''}`}
-				eventId={currentEventId}
-				on:players-fetched={onPlayersFetched}
-				on:page-changed={onPageChanged}
-				on:loading={e => (isLoading = !!e?.detail)}
-				on:pending={e => (pending = e?.detail)} />
-		</ContentBox>
+				<EventRankingTable
+					page={currentPage}
+					filters={currentFilters}
+					playerClickFilter={`eventId=${currentEvent?.id ?? ''}`}
+					eventId={currentEventId}
+					{dance}
+					on:players-fetched={onPlayersFetched}
+					on:page-changed={onPageChanged}
+					on:loading={e => (isLoading = !!e?.detail)}
+					on:pending={e => (pending = e?.detail)} />
+			</ContentBox>
+		</div>
 		{#if eventId == 54}
 			<span class="star-message">
 				* The BSWC Team is not responsible for any damages to controllers that occur while using "cheatreal". If you use "cheatreal" and
@@ -892,6 +906,34 @@
 
 	:global(.bswc-box) {
 		position: relative !important;
+	}
+
+	:global(body:has(.halloween-event) .main-background) {
+		background: radial-gradient(120% 55% at 50% 115%, rgba(255, 85, 0, 0.2), transparent 60%),
+			radial-gradient(70% 45% at 12% -5%, rgba(115, 64, 153, 0.35), transparent 70%), #17121c !important;
+	}
+
+	.halloween-event :global(.content-box:not(.dod-hero)) {
+		background: #1d1626 !important;
+		box-shadow:
+			0 0 0 1px rgba(255, 138, 0, 0.07),
+			0 8px 24px rgba(0, 0, 0, 0.55) !important;
+	}
+
+	.halloween-event :global(.content-box h1.title) {
+		font-family: 'Creepster', 'Noto Sans', cursive;
+		font-weight: 400;
+		letter-spacing: 0.06em;
+		color: #ff9a1f;
+		text-shadow: 0 0 24px rgba(255, 138, 0, 0.55);
+	}
+
+	.halloween-event :global(.event-name) {
+		font-family: 'Creepster', 'Noto Sans', cursive;
+		font-size: 1.8em !important;
+		letter-spacing: 0.05em;
+		color: #ff9a1f !important;
+		text-shadow: 0 0 24px rgba(255, 138, 0, 0.55);
 	}
 
 	@media screen and (max-width: 1275px) {

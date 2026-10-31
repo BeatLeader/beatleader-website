@@ -93,6 +93,7 @@ export default response => {
 				'sf-accs',
 				'sf-modifiers',
 				'sf-eventId',
+				'sf-hmd',
 			];
 		}
 	}

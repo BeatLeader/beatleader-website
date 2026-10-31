@@ -1,3 +1,5 @@
+import {currentTheme, isCustomizableTheme} from './theme';
+
 function componentToHex(c) {
 	var hex = c.toString(16);
 	return hex.length == 1 ? '0' + hex : hex;
@@ -76,8 +78,13 @@ export function removeGlobalCSSValue(name) {
 	r.style.removeProperty('--' + name);
 }
 
+const CUSTOM_COLOR_VALUES = ['customizable-color-1', 'customizable-color-2', 'bg-color', 'color', 'ppColour', 'selected'];
+
 export function applyThemePreferences(preferences) {
-	if (preferences.theme == 'default' || preferences.theme == 'ree-dark') return;
+	if (!isCustomizableTheme(currentTheme(preferences))) {
+		CUSTOM_COLOR_VALUES.forEach(removeGlobalCSSValue);
+		return;
+	}
 
 	setGlobalCSSValue('background-image', 'url(' + preferences.bgimage + ')');
 	setGlobalCSSValue('customizable-color-1', preferences.bgColor);

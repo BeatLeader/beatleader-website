@@ -271,7 +271,9 @@
 
 <section class="align-content">
 	<article class="page-content" transition:fade|global>
-		<!-- <EventBanner /> -->
+		<div class="ranking-event-banner">
+			<EventBanner />
+		</div>
 		<div class="ranking-switcher">
 			<TabSwitcher
 				values={tabOptions}
@@ -1023,6 +1025,10 @@
 	@media screen and (max-width: 767px) {
 		.ranking-switcher {
 			margin-top: 1em;
+		}
+
+		.ranking-event-banner :global(.event-banner) {
+			margin-top: 3.5em;
 		}
 
 		:global(.ranking-main-box .pagination) {

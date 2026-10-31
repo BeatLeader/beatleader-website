@@ -9,6 +9,7 @@
 	import RangeFilter from './ScoreFilters/RangeFilter.svelte';
 	import ModifiersFilter from '../Leaderboard/ModifiersPicker/ModifiersFilter.svelte';
 	import {HMDs, modeDescriptions, requirementsMap} from '../../utils/beatleader/format';
+	import {GLOBAL_LEADERBOARD_TYPE} from '../../utils/format';
 	import {BL_API_URL, SPECIAL_PLAYER_ID, ALL_SCORES_PLAYER_ID} from '../../network/queues/beatleader/api-queue';
 	import TabSwitcher from '../Common/TabSwitcher.svelte';
 	import {ATTEMPT_END_TYPE, titleForEndType} from '../../utils/attempts';
@@ -431,6 +432,9 @@
 		accSaberCategories = null;
 
 		let newAvailableServiceNames = accSaberAvailable ? ['ranked', 'scores', 'accsaber'] : ['ranked', 'scores'];
+		if (GLOBAL_LEADERBOARD_TYPE === 'dnc') {
+			newAvailableServiceNames = newAvailableServiceNames.filter(s => s !== 'ranked');
+		}
 
 		if (
 			player?.profileSettings?.showStatsPublic ||
@@ -518,7 +522,7 @@
 											.map(v => ({
 												...v,
 												title: $editModel ? 'Click to toggle' : v.title,
-												cls: sortingOrFilteringAppearance?.includes(`ss-${v?.id ?? ''}`) ? 'hidden' : '',
+												cls: sortingOrFilteringAppearance && !sortingOrFilteringAppearance.includes(`ss-${v?.id ?? ''}`) ? 'hidden' : '',
 											})),
 									}
 								: null),
@@ -620,7 +624,6 @@
 											title: 'Filter by map type',
 											open: !!serviceParams?.filters?.songType,
 											defaultValue: serviceParams?.filters?.songType ?? null,
-											hidden: effectiveService === 'ranked',
 											values: [
 												{id: null, name: 'All'},
 												{id: 'ranked', name: 'Ranked'},
@@ -672,7 +675,8 @@
 											selected: serviceParams?.filters?.modifiers,
 										},
 									},
-								]);
+								])
+								.filter(f => f.props.id != 'songType' || effectiveService !== 'ranked');
 
 							if (eventsParticipating?.length) {
 								serviceDef.filters = [...serviceDef.filters].concat([
@@ -719,8 +723,9 @@
 									props: {
 										...f.props,
 										hidden:
-											f?.props?.hidden ||
-											(sortingOrFilteringAppearance?.includes(`sf-${f?.props?.id ?? ''}`) && !serviceParams?.filters?.[f?.props?.id]),
+											!!sortingOrFilteringAppearance &&
+											!sortingOrFilteringAppearance.includes(`sf-${f?.props?.id ?? ''}`) &&
+											!serviceParams?.filters?.[f?.props?.id],
 									},
 								}));
 							}

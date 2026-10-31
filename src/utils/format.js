@@ -17,7 +17,8 @@ if (parseInt(location.host.split('.')[location.host.split('.').length - 1])) {
 if (SCREENSHOT_HOST) {
 	lcount += 1;
 }
-export var GLOBAL_LEADERBOARD_TYPE = location.host.split('.').length > lcount ? location.host.split('.')[0] : 'general';
+export var GLOBAL_LEADERBOARD_TYPE =
+	location.host.split('.').length > lcount ? location.host.split('.')[0] : location.host.includes('localhost') ? 'dnc' : 'general';
 
 export function setLeaderboardType(newType) {
 	GLOBAL_LEADERBOARD_TYPE = newType;

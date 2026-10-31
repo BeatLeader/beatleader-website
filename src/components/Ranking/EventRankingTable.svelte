@@ -33,6 +33,7 @@
 	export let editing = false;
 	export let animationSign = 1;
 	export let playersPerPage = PLAYERS_PER_PAGE;
+	export let dance = false;
 
 	let currentFilters = filters;
 
@@ -155,6 +156,7 @@
 	$: maxCountryRank = $rankingStore?.data ? Math.max(...$rankingStore.data.map(p => p.playerInfo?.country.rank)) : 0;
 
 	$: if (!$isLoading && $rankingStore?.data) currentFilters = deepClone(filters);
+	$: profileSubdomain = eventId == 81 ? 'leftleader' : dance ? 'dnc' : null;
 </script>
 
 {#if $rankingStore?.data?.length}
@@ -174,7 +176,10 @@
 					{player}
 					playerId={mainPlayerId}
 					{playerClickFilter}
-					playerClickFilterFull={eventId == 81 ? `${BL_API_URL.replace('api', 'leftleader')}u/${player?.alias ?? player?.playerId}` : null}
+					playerClickFilterFull={profileSubdomain
+						? `${BL_API_URL.replace('api', profileSubdomain)}u/${player?.alias ?? player?.playerId}`
+						: null}
+					valuePropsOverride={dance ? {prefix: '', suffix: ' pts', zero: '-', digits: 2} : null}
 					{currentFilters}
 					value={sortValue?.value(player)}
 					valueProps={eventId == 32 || eventId == 48

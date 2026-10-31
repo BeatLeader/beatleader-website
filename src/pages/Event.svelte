@@ -23,7 +23,7 @@
 </script>
 
 {#if currentEvent}
-	{#if currentEvent.eventType === 0}
+	{#if currentEvent.eventType === 0 || currentEvent.eventType === 2}
 		<PlaylistEventPage {currentEvent} {page} {location} eventId={currentEvent.id} />
 	{:else if currentEvent.eventType === 1}
 		<MOTDEventPage {currentEvent} {page} {location} eventId={currentEvent.id} />
