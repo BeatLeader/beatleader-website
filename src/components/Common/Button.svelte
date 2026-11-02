@@ -90,6 +90,14 @@
 			border: 'transparent',
 			activeBorder: 'transparent',
 		},
+		boosty: {
+			color: '#fff',
+			activeColor: '#fff',
+			bgColor: '#f15f2c',
+			activeBgColor: '#d94e1f',
+			border: 'transparent',
+			activeBorder: 'transparent',
+		},
 		github: {
 			color: '#010409',
 			activeColor: '#fff',

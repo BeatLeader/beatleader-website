@@ -24,12 +24,56 @@
 	let showBeatSaverLogin = false;
 	let showOtherVersions = false;
 
+	let boostyLink = null;
+	let patreonLink = null;
+	let unlinkingPatreon = false;
+	let patreonError = null;
+
+	async function fetchLink(path) {
+		try {
+			const response = await fetch(BL_API_URL + path, {credentials: 'include'});
+			return response.ok ? await response.json() : null;
+		} catch {
+			return null;
+		}
+	}
+
+	async function fetchBoostyLink() {
+		boostyLink = await fetchLink('user/boosty');
+	}
+
+	async function fetchPatreonLink() {
+		patreonLink = await fetchLink('user/patreon');
+	}
+
+	async function unlinkPatreon() {
+		if (unlinkingPatreon || !confirm('Unlink your Patreon account from this profile?')) return;
+
+		unlinkingPatreon = true;
+		patreonError = null;
+		try {
+			const response = await fetch(BL_API_URL + 'user/patreon/link', {credentials: 'include', method: 'DELETE'});
+			if (response.ok) {
+				patreonLink = null;
+				account.refresh();
+			} else {
+				const text = await response.text();
+				patreonError = text.length && text.length < 300 && !text.startsWith('<') ? text : 'Something went wrong, try again later';
+			}
+		} catch {
+			patreonError = 'Something went wrong, try again later';
+		}
+		unlinkingPatreon = false;
+	}
+
 	$: loggedInPlayer = opt($account, 'id');
 	$: error = opt($account, 'error');
 	$: message = opt($account, 'message');
 	$: isSupporter = isPatron($account?.player?.playerInfo?.role);
 	$: patreoned = opt($account, 'patreoned');
 	$: loading = opt($account, 'loading');
+	$: if (loggedInPlayer && isSupporter) fetchBoostyLink();
+	$: if (loggedInPlayer && (isSupporter || patreoned)) fetchPatreonLink();
 </script>
 
 <svelte:head>
@@ -56,6 +100,26 @@
 		</div>
 		<div class="text-header">
 			<h1>Yay! Thank you for supporting BeatLeader!❤️</h1>
+			{#if patreonLink}
+				<span class="link-status">
+					Linked to Patreon{#if patreonLink.name}&nbsp;as <b>{patreonLink.name}</b>{/if}
+					{#if patreonLink.role}
+						(<span class="link-role">{patreonLink.role}</span>)
+					{:else}
+						· no active subscription ·
+						<a href="/supporting-project/link" on:click|preventDefault={unlinkPatreon}>Unlink</a>
+					{/if}
+				</span>
+			{/if}
+			{#if patreonError}
+				<p class="error">{patreonError}</p>
+			{/if}
+			{#if boostyLink?.tier}
+				<span class="link-status">
+					Linked to Boosty as <b>{boostyLink.name}</b>{#if boostyLink.level}&nbsp;({boostyLink.level}){/if} ·
+					<a href="/supporting-project/boosty">Manage</a>
+				</span>
+			{/if}
 			Claim your benefits:
 		</div>
 	{:else if action == 'linkPatreon'}
@@ -92,9 +156,16 @@
 					</div>
 				{:else if patreoned}
 					<span>
-						Your account is linked to Patreon, but no active subsription was found.<br /><br />
+						Your account is linked to Patreon{#if patreonLink?.name}&nbsp;as <b>{patreonLink.name}</b>{/if}, but no active subscription was
+						found.<br /><br />
 					</span>
 					<Button iconFa="fas fa-arrows-rotate" label="Refresh status" type="submit" on:click={() => account.refreshPatreon()} />
+					{#if !patreonLink?.role}
+						<Button iconFa="fas fa-link-slash" label="Unlink Patreon" loading={unlinkingPatreon} on:click={unlinkPatreon} />
+					{/if}
+					{#if patreonError}
+						<p class="error">{patreonError}</p>
+					{/if}
 				{:else}
 					<form action={BL_API_URL + 'signin'} method="post">
 						<input type="hidden" name="Provider" value="Patreon" />
@@ -399,6 +470,14 @@
 
 	.error {
 		color: red;
+	}
+	.link-status {
+		font-size: 0.9em;
+		opacity: 0.8;
+		margin-bottom: 0.5em;
+	}
+	.link-role {
+		text-transform: capitalize;
 	}
 	.messagep {
 		color: green;

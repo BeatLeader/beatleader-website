@@ -55,6 +55,7 @@
 		CensusPage: () => import('./pages/Census.svelte'),
 		SurveyAchievementPage: () => import('./pages/SurveyAchievement.svelte'),
 		PatreonPage: () => import('./pages/Patreon.svelte'),
+		BoostyPage: () => import('./pages/Boosty.svelte'),
 		DeveloperPortalPage: () => import('./pages/DeveloperPortal.svelte'),
 		MapsPortal: () => import('./pages/MapsPortal.svelte'),
 		MapsPage: () => import('./pages/MapsList.svelte'),
@@ -380,6 +381,11 @@
 					<Route path="/supporting-project/link">
 						{#await pageImports.PatreonPage() then module}
 							<svelte:component this={module.default} action="linkPatreon" />
+						{/await}
+					</Route>
+					<Route path="/supporting-project/boosty">
+						{#await pageImports.BoostyPage() then module}
+							<svelte:component this={module.default} />
 						{/await}
 					</Route>
 					<Route path="/tibytes-presets">
