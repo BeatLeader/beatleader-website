@@ -677,22 +677,22 @@ const DANCE_METRICS = {
 		digits: 1,
 		suffix: ' cm',
 		icon: 'fa-solid fa-arrows-up-down',
-		title: 'Head bounce in time with the beat',
+		title: 'Bounce: how much your head bobs to the beat',
 	},
-	danceTilt: {field: 'tilt', digits: 1, suffix: '°', icon: 'fa-solid fa-rotate', title: 'Head tilt side to side'},
+	danceTilt: {field: 'tilt', digits: 1, suffix: '°', icon: 'fa-solid fa-rotate', title: 'Tilt: how far your head leans side to side'},
 	danceLock: {
 		field: 'beatLock',
 		digits: 2,
-		suffix: '×',
+		suffix: 'x',
 		icon: 'fa-solid fa-drum',
-		title: 'How locked the bounce is to the beat, against nearby rhythms',
+		title: 'Rhythm: how closely your bounce follows the beat',
 	},
 	danceSway: {
 		field: 'freeSway',
 		digits: 1,
 		suffix: ' cm',
 		icon: 'fa-solid fa-arrows-left-right',
-		title: "Body sway the swings don't explain",
+		title: 'Sway: how much your body moves on its own, not just to reach the notes',
 	},
 	danceSteadiness: {
 		field: 'steadiness',
@@ -700,7 +700,7 @@ const DANCE_METRICS = {
 		digits: 0,
 		suffix: '%',
 		icon: 'fa-solid fa-wave-square',
-		title: 'Steady flow: average over peak head speed',
+		title: 'Flow: how evenly you keep moving, rather than in short bursts',
 	},
 };
 
@@ -715,14 +715,14 @@ function getDanceBadge(metric, dance) {
 	let bgColor = 'var(--dimmed)';
 	if (metric === 'danceScore') {
 		if (!dance.valid) {
-			title = 'Too little play to judge (under 30 seconds)';
+			title = 'Too short to judge: under 30 seconds of play';
 		} else {
-			const lines = [`Dances more than ${formatNumber(value * 100, 1)}% of the reference plays`];
+			const lines = [`Dances more than ${formatNumber(value * 100, 1)}% of plays`];
 			if (Number.isFinite(dance.voteShare)) {
-				lines.push(`About ${formatNumber(dance.voteShare * 100, 0)}% of players would call this dancing`);
+				lines.push(`About ${formatNumber(dance.voteShare * 100, 0)}% of people would call this dancing`);
 			}
 			if (Number.isFinite(dance.countedFraction)) {
-				lines.push(`${formatNumber(dance.countedFraction * 100, 0)}% of the play counted (not paused or dodging walls)`);
+				lines.push(`Judged on ${formatNumber(dance.countedFraction * 100, 0)}% of the song, pauses and wall dodges are skipped`);
 			}
 			title = lines.join('\n');
 		}

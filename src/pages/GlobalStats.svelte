@@ -49,6 +49,13 @@
 
 	const TILES = [METRICS[0], {value: 'new', label: 'New players'}, ...METRICS.slice(1)];
 
+	const MAP_KINDS = [
+		{value: 'all', label: 'All', type: 'TopPlayedMap'},
+		{value: 'ranked', label: 'Ranked', type: 'TopPlayedRankedMap'},
+		{value: 'unranked', label: 'Unranked', type: 'TopPlayedUnrankedMap'},
+		{value: 'ost', label: 'OST', type: 'TopPlayedOstMap'},
+	];
+
 	const ACTIVE_LINES = [
 		{key: '30d', label: 'Last 30 days'},
 		{key: '7d', label: 'Last 7 days'},
@@ -64,6 +71,7 @@
 		{key: 'range', default: '1y', process: processStringFilter},
 		{key: 'metric', default: 'players', process: processStringFilter},
 		{key: 'period', default: 'week', process: processStringFilter},
+		{key: 'maps', default: 'all', process: processStringFilter},
 	];
 	const filtersFromLocation = createBuildFiltersFromLocation(URL_PARAMS);
 
@@ -73,6 +81,7 @@
 	$: range = RANGES.find(r => r.value === filters.range) ?? RANGES[1];
 	$: metric = METRICS.find(m => m.value === filters.metric) ?? METRICS[0];
 	$: period = PERIODS.find(p => p.value === filters.period) ?? PERIODS[1];
+	$: mapKind = MAP_KINDS.find(k => k.value === filters.maps) ?? MAP_KINDS[0];
 	$: tabs = TABS.map(t => ({...t, url: statsUrl(t.value, filters), cls: 'ranking-tab-button'}));
 	$: currentTab = tabs.find(t => t.value === tab?.split('/')[0]) ?? tabs[0];
 	$: tiles = latestTiles($recent.data);
@@ -137,9 +146,7 @@
 				<div class="stat-tiles-date">{formatDate(dateFromUnix(tiles.timestamp), 'full', null)}, every uploaded play</div>
 			{/if}
 
-			<Section
-				title="Daily activity"
-				description="Every uploaded play of the day, including fails, restarts and practice, merged with the scores posted that day. Before attempts were saved, the counts only include plays that set a new best.">
+			<Section title="Daily activity" description="Any attempt(fail, restart, quit, non-PB) or best score uploaded per day.">
 				<svelte:fragment slot="controls">
 					<Switcher values={METRICS} value={metric} on:change={e => setFilter('metric', e.detail.value)} />
 				</svelte:fragment>
@@ -171,21 +178,26 @@
 		{:else if currentTab.value === 'versions'}
 			<Section
 				title="Game versions"
-				description="Players of the day, by the game version of their last play. Recorded since score uploads were saved, Aug 3, 2023.">
+				description="Players of the day, by the game version of their last play. Attempts save the version since Aug 3, 2023.">
 				<ShareChart type="GameVersion" range={range.value} rankBy="peak" height={360} />
 			</Section>
 
 			<Section
 				title="Mod versions"
-				description="Players of the day, by the BeatLeader mod version of their last play. Recorded since Aug 3, 2023.">
+				description="Players of the day, by the BeatLeader mod version of their last play. Attempts save the version since Aug 3, 2023.">
 				<ShareChart type="ModVersion" range={range.value} labelFor={modVersionLabel} rankBy="peak" height={360} />
 			</Section>
 		{:else if currentTab.value === 'maps'}
-			<Section title="Most played maps" description="Songs by the players who played any of their difficulties, per day.">
+			<Section
+				title="Most played maps"
+				description="Songs by the players who played any of their difficulties, per day. Maps count as ranked from the day they got ranked.">
 				<svelte:fragment slot="controls">
-					<Switcher values={PERIODS} value={period} on:change={e => setFilter('period', e.detail.value)} />
+					<div class="map-controls">
+						<Switcher values={MAP_KINDS} value={mapKind} on:change={e => setFilter('maps', e.detail.value)} />
+						<Switcher values={PERIODS} value={period} on:change={e => setFilter('period', e.detail.value)} />
+					</div>
 				</svelte:fragment>
-				<RankingBars type="TopPlayedMap" days={period.days} />
+				<RankingBars type={mapKind.type} days={period.days} />
 			</Section>
 
 			<Section
@@ -212,9 +224,7 @@
 				<RecordChart type="TopPpScore" range={range.value} label="pp" valueFormat={v => `${formatNumber(v, 2)}pp`} />
 			</Section>
 
-			<Section
-				title="Highest star ranked map"
-				description="The highest stars among maps ranked by then, with their current star values.">
+			<Section title="Highest star ranked map" description="The highest stars among maps ranked by then, with their current star values.">
 				<RecordChart type="TopStarMap" range={range.value} label="Stars" valueFormat={v => `${formatNumber(v, 2)}★`} />
 			</Section>
 		{:else if currentTab.value === 'mappers'}
@@ -255,6 +265,7 @@
 	.align-content {
 		display: flex;
 		justify-content: center;
+		min-width: 0;
 	}
 
 	.page-content {
@@ -274,6 +285,12 @@
 
 	.range {
 		margin-bottom: 0.4em;
+	}
+
+	.map-controls {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0 1em;
 	}
 
 	.stat-tiles {
@@ -318,6 +335,10 @@
 	@media screen and (max-width: 767px) {
 		.toolbar {
 			margin: 0.5em 0 0;
+		}
+
+		.ranking-switcher :global(.switch-types) {
+			flex-wrap: wrap;
 		}
 
 		.stat-tiles {

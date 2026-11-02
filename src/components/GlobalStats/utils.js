@@ -80,8 +80,8 @@ export const rangeQuery = range => `from=${rangeFrom(range)}&step=${rangeStep(ra
 export const spanGapsFor = range => rangeStep(range) * 3 * DAY * 1000;
 
 export const TRACKING_MARKERS = [
-	{time: 1691020800, label: 'Score uploads saved'},
-	{time: 1694736000, label: 'All attempts saved'},
+	{time: 1675814400, label: 'Clears logged'},
+	{time: 1678233600, label: 'All attempts logged'},
 ];
 
 export const entityName = entity => entity?.map?.name ?? entity?.player?.name ?? entity?.mapper?.name ?? '';
@@ -131,9 +131,9 @@ export const markersPlugin = {
 		ctx.fillStyle = color;
 		ctx.lineWidth = 1;
 		ctx.font = '11px sans-serif';
-		for (const marker of items) {
+		items.forEach((marker, index) => {
 			const x = scales.x.getPixelForValue(marker.time * 1000);
-			if (x < chartArea.left || x > chartArea.right) continue;
+			if (x < chartArea.left || x > chartArea.right) return;
 
 			ctx.setLineDash([4, 4]);
 			ctx.beginPath();
@@ -141,8 +141,8 @@ export const markersPlugin = {
 			ctx.lineTo(x, chartArea.bottom);
 			ctx.stroke();
 			ctx.setLineDash([]);
-			ctx.fillText(marker.label, x + 4, chartArea.top + 12);
-		}
+			ctx.fillText(marker.label, x + 4, chartArea.top + 12 + index * 13);
+		});
 		ctx.restore();
 	},
 };

@@ -1,11 +1,17 @@
-<table class="stat-table">
-	<slot />
-</table>
+<div class="stat-table-scroll">
+	<table class="stat-table">
+		<slot />
+	</table>
+</div>
 
 <style>
+	.stat-table-scroll {
+		margin-top: 1em;
+		overflow-x: auto;
+	}
+
 	.stat-table {
 		width: 100%;
-		margin-top: 1em;
 		border-collapse: collapse;
 		font-size: 0.9em;
 	}

@@ -114,8 +114,8 @@
 			<h2 class="dod-question">How is it scored?</h2>
 			<ul class="dod-rules">
 				<li>
-					Each map gives up to <b class="dod-gold">100 points</b>: how your dancing ranks against hundreds of reference plays, from your
-					bounce and beat lock to sway, tilt and steadiness.
+					Each map gives up to <b class="dod-gold">100 points</b>: how your dancing compares to hundreds of other plays, judged on bounce,
+					rhythm, sway, tilt and flow.
 				</li>
 				<li>Your <b>best 5 maps</b> add up to your total, up to <b class="dod-gold">500</b>. More maps are more chances.</li>
 				<li>

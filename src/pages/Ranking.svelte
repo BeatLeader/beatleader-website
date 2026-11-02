@@ -269,540 +269,545 @@
 	<title>Ranking / {currentPage} - {ssrConfig.name}</title>
 </svelte:head>
 
-<section class="align-content">
-	<article class="page-content" transition:fade|global>
-		<div class="ranking-event-banner">
-			<EventBanner />
-		</div>
-		<div class="ranking-switcher">
-			<TabSwitcher
-				values={tabOptions}
-				value={currentTab}
-				loadingValue={pending ? currentTab : null}
-				on:change={onTabChanged}
-				class="ranking" />
+<div>
+	{#if isMobile}
+		<EventBanner />
+	{/if}
+	<section class="align-content">
+		<article class="page-content" transition:fade|global>
 			{#if !isMobile}
-				<div class="header-sorters">
-					<RankingSorters
-						filters={currentFilters}
-						on:sort-changed={onSortChanged}
-						on:maps-type-changed={onMapsTypeChanged}
-						on:pp-type-changed={onPpTypeChanged}
-						on:order-changed={onOrderChanged} />
-				</div>
+				<EventBanner />
 			{/if}
-		</div>
+			<div class="ranking-switcher">
+				<TabSwitcher
+					values={tabOptions}
+					value={currentTab}
+					loadingValue={pending ? currentTab : null}
+					on:change={onTabChanged}
+					class="ranking" />
+				{#if !isMobile}
+					<div class="header-sorters">
+						<RankingSorters
+							filters={currentFilters}
+							on:sort-changed={onSortChanged}
+							on:maps-type-changed={onMapsTypeChanged}
+							on:pp-type-changed={onPpTypeChanged}
+							on:order-changed={onOrderChanged} />
+					</div>
+				{/if}
+			</div>
 
-		<ContentBox cls="ranking-main-box" zIndex={2} bind:box={boxEl}>
-			<RankingTable
-				page={currentPage}
-				filters={currentFilters}
-				meta={true}
-				animationSign={currentPage >= previousPage ? 1 : -1}
-				on:page-changed={onPageChanged}
-				on:loading={e => (isLoading = !!e?.detail)}
-				on:pending={e => (pending = e?.detail)} />
-		</ContentBox>
-	</article>
+			<ContentBox cls="ranking-main-box" zIndex={2} bind:box={boxEl}>
+				<RankingTable
+					page={currentPage}
+					filters={currentFilters}
+					meta={true}
+					animationSign={currentPage >= previousPage ? 1 : -1}
+					on:page-changed={onPageChanged}
+					on:loading={e => (isLoading = !!e?.detail)}
+					on:pending={e => (pending = e?.detail)} />
+			</ContentBox>
+		</article>
 
-	<aside class="ranking-aside">
-		<AsideBox
-			title="Filters"
-			boolname={window?.innerWidth < 767 ? 'showFiltersOnRankingMobile' : 'showFiltersOnRanking'}
-			faicon="fas fa-filter"
-			cls="ranking-filters-dropdown">
-			{#if isMobile}
-				<section class="filter">
-					<RankingSorters
-						filters={currentFilters}
-						on:sort-changed={onSortChanged}
-						on:maps-type-changed={onMapsTypeChanged}
-						on:pp-type-changed={onPpTypeChanged}
-						on:order-changed={onOrderChanged} />
+		<aside class="ranking-aside">
+			<AsideBox
+				title="Filters"
+				boolname={window?.innerWidth < 767 ? 'showFiltersOnRankingMobile' : 'showFiltersOnRanking'}
+				faicon="fas fa-filter"
+				cls="ranking-filters-dropdown">
+				{#if isMobile}
+					<section class="filter">
+						<RankingSorters
+							filters={currentFilters}
+							on:sort-changed={onSortChanged}
+							on:maps-type-changed={onMapsTypeChanged}
+							on:pp-type-changed={onPpTypeChanged}
+							on:order-changed={onOrderChanged} />
+					</section>
+				{/if}
+
+				<section class="filter search-filter" class:has-value={currentFilters.search?.length}>
+					<i class="fas fa-search" />
+					<input
+						type="text"
+						placeholder={'Search...'}
+						value={currentFilters.search}
+						on:input={debounce(e => {
+							const length = e?.target?.value?.length;
+							if (length > 0 && length < 2) return;
+
+							currentFilters.search = e.target.value ?? '';
+							currentPage = 1;
+							navigateToCurrentPageAndFilters();
+						}, FILTERS_DEBOUNCE_MS)} />
 				</section>
-			{/if}
 
-			<section class="filter search-filter" class:has-value={currentFilters.search?.length}>
-				<i class="fas fa-search" />
-				<input
-					type="text"
-					placeholder={'Search...'}
-					value={currentFilters.search}
-					on:input={debounce(e => {
-						const length = e?.target?.value?.length;
-						if (length > 0 && length < 2) return;
+				<section class="filter">
+					<Countries
+						countries={currentFilters.countries?.split(',').filter(c => c) ?? []}
+						icon="fas fa-globe-americas"
+						placeholder="Countries"
+						on:change={e => {
+							const newValues = e?.detail ?? [];
+							if (currentFilters.countries != newValues.join(',')) {
+								currentFilters.countries = newValues.join(',');
+								currentPage = 1;
+								navigateToCurrentPageAndFilters();
+							}
+						}} />
+				</section>
 
-						currentFilters.search = e.target.value ?? '';
-						currentPage = 1;
-						navigateToCurrentPageAndFilters();
-					}, FILTERS_DEBOUNCE_MS)} />
-			</section>
+				<section class="filter">
+					<Headsets
+						value={currentFilters.hmd?.split(',').filter(c => c) ?? []}
+						mode={currentFilters.hmdMode ?? ''}
+						icon="fas fa-vr-cardboard"
+						placeholder="Headsets"
+						on:change={e => {
+							const newValues = e?.detail ?? [];
+							if (currentFilters.hmd != newValues.join(',')) {
+								currentFilters.hmd = newValues.join(',');
+								currentPage = 1;
+								navigateToCurrentPageAndFilters();
+							}
+						}}
+						on:mode-change={e => {
+							const newMode = e?.detail === 'main' ? '' : (e?.detail ?? '');
+							if (currentFilters.hmdMode != newMode) {
+								currentFilters.hmdMode = newMode;
+								currentPage = 1;
+								navigateToCurrentPageAndFilters();
+							}
+						}} />
+				</section>
 
-			<section class="filter">
-				<Countries
-					countries={currentFilters.countries?.split(',').filter(c => c) ?? []}
-					icon="fas fa-globe-americas"
-					placeholder="Countries"
-					on:change={e => {
-						const newValues = e?.detail ?? [];
-						if (currentFilters.countries != newValues.join(',')) {
-							currentFilters.countries = newValues.join(',');
-							currentPage = 1;
-							navigateToCurrentPageAndFilters();
-						}
-					}} />
-			</section>
-
-			<section class="filter">
-				<Headsets
-					value={currentFilters.hmd?.split(',').filter(c => c) ?? []}
-					mode={currentFilters.hmdMode ?? ''}
-					icon="fas fa-vr-cardboard"
-					placeholder="Headsets"
-					on:change={e => {
-						const newValues = e?.detail ?? [];
-						if (currentFilters.hmd != newValues.join(',')) {
-							currentFilters.hmd = newValues.join(',');
-							currentPage = 1;
-							navigateToCurrentPageAndFilters();
-						}
-					}}
-					on:mode-change={e => {
-						const newMode = e?.detail === 'main' ? '' : (e?.detail ?? '');
-						if (currentFilters.hmdMode != newMode) {
-							currentFilters.hmdMode = newMode;
-							currentPage = 1;
-							navigateToCurrentPageAndFilters();
-						}
-					}} />
-			</section>
-
-			<section class="filter dropdown-filter" class:has-value={currentFilters.platform?.length}>
-				<div class="dropdown-header" on:click={() => (isPlatformFilterOpen = !isPlatformFilterOpen)}>
-					<div class="header-content">
-						<i class="fas fa-computer" />
-						<span>Platform</span>
+				<section class="filter dropdown-filter" class:has-value={currentFilters.platform?.length}>
+					<div class="dropdown-header" on:click={() => (isPlatformFilterOpen = !isPlatformFilterOpen)}>
+						<div class="header-content">
+							<i class="fas fa-computer" />
+							<span>Platform</span>
+						</div>
+						<i class="fas fa-chevron-{isPlatformFilterOpen ? 'up' : 'down'}" />
 					</div>
-					<i class="fas fa-chevron-{isPlatformFilterOpen ? 'up' : 'down'}" />
-				</div>
 
-				{#if isPlatformFilterOpen}
-					<div class="dropdown-content" transition:slide={{duration: 500, easing: cubicOut}}>
-						<section class="filter">
-							<Switcher
-								values={platformOptions}
-								value={platformOptions.filter(v => currentFilters.platform?.split(',').includes(v.id))}
-								multi={true}
-								on:change={e => {
-									var currentValue = currentFilters.platform?.split(',') ?? [];
+					{#if isPlatformFilterOpen}
+						<div class="dropdown-content" transition:slide={{duration: 500, easing: cubicOut}}>
+							<section class="filter">
+								<Switcher
+									values={platformOptions}
+									value={platformOptions.filter(v => currentFilters.platform?.split(',').includes(v.id))}
+									multi={true}
+									on:change={e => {
+										var currentValue = currentFilters.platform?.split(',') ?? [];
 
-									currentFilters.platform = (
-										currentValue.includes(e.detail.id)
-											? currentValue.filter(p => p !== e.detail.id)
-											: [...currentValue, e.detail.id]
-									)
-										.filter(r => r.length)
-										.join(',');
-									currentPage = 1;
-									navigateToCurrentPageAndFilters();
-								}} />
-						</section>
-					</div>
-				{/if}
-			</section>
-
-			<section class="filter dropdown-filter" class:has-value={currentFilters.role?.length}>
-				<div class="dropdown-header" on:click={() => (isRoleFilterOpen = !isRoleFilterOpen)}>
-					<div class="header-content">
-						<i class="fas fa-tags" />
-						<span>Role</span>
-					</div>
-					<i class="fas fa-chevron-{isRoleFilterOpen ? 'up' : 'down'}" />
-				</div>
-
-				{#if isRoleFilterOpen}
-					<div class="dropdown-content" transition:slide={{duration: 500, easing: cubicOut}}>
-						<section class="filter">
-							<Switcher
-								values={roleOptions}
-								value={roleOptions.filter(v => currentFilters.role?.split(',').includes(v.id))}
-								multi={true}
-								on:change={e => {
-									var currentValue = currentFilters.role?.split(',') ?? [];
-
-									currentFilters.role = (
-										currentValue.includes(e.detail.id)
-											? currentValue.filter(p => p !== e.detail.id)
-											: [...currentValue, e.detail.id]
-									)
-										.filter(r => r.length)
-										.join(',');
-									currentPage = 1;
-									navigateToCurrentPageAndFilters();
-								}} />
-						</section>
-					</div>
-				{/if}
-			</section>
-
-			<section class="filter dropdown-filter" class:has-value={currentFilters.bots?.length}>
-				<div class="dropdown-header" on:click={() => (isBotsFilterOpen = !isBotsFilterOpen)}>
-					<div class="header-content">
-						<i class="fas fa-robot" />
-						<span>Bots</span>
-					</div>
-					<i class="fas fa-chevron-{isBotsFilterOpen ? 'up' : 'down'}" />
-				</div>
-
-				{#if isBotsFilterOpen}
-					<div class="dropdown-content" transition:slide={{duration: 500, easing: cubicOut}}>
-						<section class="filter">
-							<RadioGroup
-								options={botsOptions}
-								value={currentFilters.bots?.length ? currentFilters.bots : 'hide'}
-								label="Bots visibility"
-								on:change={e => {
-									const newValue = e?.detail === 'hide' ? '' : (e?.detail ?? '');
-									if (currentFilters.bots != newValue) {
-										currentFilters.bots = newValue;
+										currentFilters.platform = (
+											currentValue.includes(e.detail.id)
+												? currentValue.filter(p => p !== e.detail.id)
+												: [...currentValue, e.detail.id]
+										)
+											.filter(r => r.length)
+											.join(',');
 										currentPage = 1;
 										navigateToCurrentPageAndFilters();
-									}
-								}} />
-						</section>
+									}} />
+							</section>
+						</div>
+					{/if}
+				</section>
+
+				<section class="filter dropdown-filter" class:has-value={currentFilters.role?.length}>
+					<div class="dropdown-header" on:click={() => (isRoleFilterOpen = !isRoleFilterOpen)}>
+						<div class="header-content">
+							<i class="fas fa-tags" />
+							<span>Role</span>
+						</div>
+						<i class="fas fa-chevron-{isRoleFilterOpen ? 'up' : 'down'}" />
 					</div>
-				{/if}
-			</section>
 
-			<section
-				class="filter dropdown-filter"
-				class:has-value={currentFilters.pp_range?.length ||
-					!!currentFilters.score_range?.length ||
-					!!currentFilters.ranked_score_range?.length ||
-					!!currentFilters.acc_pp_range?.length ||
-					!!currentFilters.pass_pp_range?.length ||
-					!!currentFilters.tech_pp_range?.length}>
-				<div class="dropdown-header" on:click={() => (isRangeFilterOpen = !isRangeFilterOpen)}>
-					<div class="header-content">
-						<i class="fas fa-ruler" />
-						<span>Ranges</span>
+					{#if isRoleFilterOpen}
+						<div class="dropdown-content" transition:slide={{duration: 500, easing: cubicOut}}>
+							<section class="filter">
+								<Switcher
+									values={roleOptions}
+									value={roleOptions.filter(v => currentFilters.role?.split(',').includes(v.id))}
+									multi={true}
+									on:change={e => {
+										var currentValue = currentFilters.role?.split(',') ?? [];
+
+										currentFilters.role = (
+											currentValue.includes(e.detail.id)
+												? currentValue.filter(p => p !== e.detail.id)
+												: [...currentValue, e.detail.id]
+										)
+											.filter(r => r.length)
+											.join(',');
+										currentPage = 1;
+										navigateToCurrentPageAndFilters();
+									}} />
+							</section>
+						</div>
+					{/if}
+				</section>
+
+				<section class="filter dropdown-filter" class:has-value={currentFilters.bots?.length}>
+					<div class="dropdown-header" on:click={() => (isBotsFilterOpen = !isBotsFilterOpen)}>
+						<div class="header-content">
+							<i class="fas fa-robot" />
+							<span>Bots</span>
+						</div>
+						<i class="fas fa-chevron-{isBotsFilterOpen ? 'up' : 'down'}" />
 					</div>
-					<i class="fas fa-chevron-{isRangeFilterOpen ? 'up' : 'down'}" />
-				</div>
 
-				{#if isRangeFilterOpen}
-					<div class="dropdown-content" transition:slide={{duration: 500, easing: cubicOut}}>
-						<section class="filter">
-							<label
-								>Total PP range
-								{#if currentFilters.pp_range}
-									<button
-										class="remove-type"
-										title="Remove"
-										on:click={() => {
-											currentFilters.pp_range = '';
+					{#if isBotsFilterOpen}
+						<div class="dropdown-content" transition:slide={{duration: 500, easing: cubicOut}}>
+							<section class="filter">
+								<RadioGroup
+									options={botsOptions}
+									value={currentFilters.bots?.length ? currentFilters.bots : 'hide'}
+									label="Bots visibility"
+									on:change={e => {
+										const newValue = e?.detail === 'hide' ? '' : (e?.detail ?? '');
+										if (currentFilters.bots != newValue) {
+											currentFilters.bots = newValue;
 											currentPage = 1;
 											navigateToCurrentPageAndFilters();
-										}}><i class="fas fa-xmark" /></button>
-								{/if}
-							</label>
+										}
+									}} />
+							</section>
+						</div>
+					{/if}
+				</section>
 
-							<RangeSlider
-								range
-								min={0}
-								max={ranges_limits.pp + 1}
-								step={1}
-								values={(() => {
-									const values = (currentFilters.pp_range || ',').split(',').map(v => (v ? parseFloat(v) : null));
-									return [
-										Number.isFinite(values[0]) ? values[0] : Number.NEGATIVE_INFINITY,
-										Number.isFinite(values[1]) ? values[1] : Number.POSITIVE_INFINITY,
-									];
-								})()}
-								float
-								hoverable
-								pips
-								pipstep={10000}
-								all="label"
-								formatter={labelFormatter(ranges_limits.pp + 1, 10000)}
-								on:change={debounce(e => {
-									if (!Array.isArray(e?.detail?.values) || e.detail.values.length !== 2) return;
-
-									currentFilters.pp_range = e.detail.values.join(',');
-									currentPage = 1;
-									navigateToCurrentPageAndFilters();
-								}, 500)} />
-						</section>
-
-						<section class="filter">
-							<label
-								>All Scores count
-								{#if currentFilters.score_range}
-									<button
-										class="remove-type"
-										title="Remove"
-										on:click={() => {
-											currentFilters.score_range = '';
-											currentPage = 1;
-											navigateToCurrentPageAndFilters();
-										}}><i class="fas fa-xmark" /></button>
-								{/if}
-							</label>
-
-							<RangeSlider
-								range
-								min={0}
-								max={ranges_limits.playCount + 1}
-								step={1}
-								values={(() => {
-									const values = (currentFilters.score_range || ',').split(',').map(v => (v ? parseFloat(v) : null));
-									return [
-										Number.isFinite(values[0]) ? values[0] : Number.NEGATIVE_INFINITY,
-										Number.isFinite(values[1]) ? values[1] : Number.POSITIVE_INFINITY,
-									];
-								})()}
-								float
-								hoverable
-								pips
-								pipstep={10000}
-								all="label"
-								formatter={labelFormatter(ranges_limits.playCount + 1, 10000)}
-								on:change={debounce(e => {
-									if (!Array.isArray(e?.detail?.values) || e.detail.values.length !== 2) return;
-
-									currentFilters.score_range = e.detail.values.join(',');
-									currentPage = 1;
-									navigateToCurrentPageAndFilters();
-								}, 500)} />
-						</section>
-
-						<section class="filter">
-							<label
-								>Ranked Scores count
-								{#if currentFilters.ranked_score_range}
-									<button
-										class="remove-type"
-										title="Remove"
-										on:click={() => {
-											currentFilters.ranked_score_range = '';
-											currentPage = 1;
-											navigateToCurrentPageAndFilters();
-										}}><i class="fas fa-xmark" /></button>
-								{/if}
-							</label>
-
-							<RangeSlider
-								range
-								min={0}
-								max={ranges_limits.rankedPlayCount + 1}
-								step={1}
-								values={(() => {
-									const values = (currentFilters.ranked_score_range || ',')
-										.split(',')
-										.map(v => (v ? parseFloat(v) : null));
-									return [
-										Number.isFinite(values[0]) ? values[0] : Number.NEGATIVE_INFINITY,
-										Number.isFinite(values[1]) ? values[1] : Number.POSITIVE_INFINITY,
-									];
-								})()}
-								float
-								hoverable
-								pips
-								pipstep={1000}
-								all="label"
-								formatter={labelFormatter(ranges_limits.rankedPlayCount + 1, 1000)}
-								on:change={debounce(e => {
-									if (!Array.isArray(e?.detail?.values) || e.detail.values.length !== 2) return;
-
-									currentFilters.ranked_score_range = e.detail.values.join(',');
-									currentPage = 1;
-									navigateToCurrentPageAndFilters();
-								}, 500)} />
-						</section>
-
-						<section class="filter">
-							<label
-								>Acc PP range
-								{#if currentFilters.acc_pp_range}
-									<button
-										class="remove-type"
-										title="Remove"
-										on:click={() => {
-											currentFilters.acc_pp_range = '';
-											currentPage = 1;
-											navigateToCurrentPageAndFilters();
-										}}><i class="fas fa-xmark" /></button>
-								{/if}
-							</label>
-
-							<RangeSlider
-								range
-								min={0}
-								max={ranges_limits.accPp + 1}
-								step={1}
-								values={(() => {
-									const values = (currentFilters.acc_pp_range || ',').split(',').map(v => (v ? parseFloat(v) : null));
-									return [
-										Number.isFinite(values[0]) ? values[0] : Number.NEGATIVE_INFINITY,
-										Number.isFinite(values[1]) ? values[1] : Number.POSITIVE_INFINITY,
-									];
-								})()}
-								float
-								hoverable
-								pips
-								pipstep={5000}
-								all="label"
-								formatter={labelFormatter(ranges_limits.accPp + 1, 5000)}
-								on:change={debounce(e => {
-									if (!Array.isArray(e?.detail?.values) || e.detail.values.length !== 2) return;
-
-									currentFilters.acc_pp_range = e.detail.values.join(',');
-									currentPage = 1;
-									navigateToCurrentPageAndFilters();
-								}, 500)} />
-						</section>
-
-						<section class="filter">
-							<label
-								>Pass PP range
-								{#if currentFilters.pass_pp_range}
-									<button
-										class="remove-type"
-										title="Remove"
-										on:click={() => {
-											currentFilters.pass_pp_range = '';
-											currentPage = 1;
-											navigateToCurrentPageAndFilters();
-										}}><i class="fas fa-xmark" /></button>
-								{/if}
-							</label>
-
-							<RangeSlider
-								range
-								min={0}
-								max={ranges_limits.passPp + 1}
-								step={1}
-								values={(() => {
-									const values = (currentFilters.pass_pp_range || ',').split(',').map(v => (v ? parseFloat(v) : null));
-									return [
-										Number.isFinite(values[0]) ? values[0] : Number.NEGATIVE_INFINITY,
-										Number.isFinite(values[1]) ? values[1] : Number.POSITIVE_INFINITY,
-									];
-								})()}
-								float
-								hoverable
-								pips
-								pipstep={2000}
-								all="label"
-								formatter={labelFormatter(ranges_limits.passPp + 1, 2000)}
-								on:change={debounce(e => {
-									if (!Array.isArray(e?.detail?.values) || e.detail.values.length !== 2) return;
-
-									currentFilters.pass_pp_range = e.detail.values.join(',');
-									currentPage = 1;
-									navigateToCurrentPageAndFilters();
-								}, 500)} />
-						</section>
-
-						<section class="filter">
-							<label
-								>Tech PP range
-								{#if currentFilters.tech_pp_range}
-									<button
-										class="remove-type"
-										title="Remove"
-										on:click={() => {
-											currentFilters.tech_pp_range = '';
-											currentPage = 1;
-											navigateToCurrentPageAndFilters();
-										}}><i class="fas fa-xmark" /></button>
-								{/if}
-							</label>
-
-							<RangeSlider
-								range
-								min={0}
-								max={ranges_limits.techPp + 1}
-								step={1}
-								values={(() => {
-									const values = (currentFilters.tech_pp_range || ',').split(',').map(v => (v ? parseFloat(v) : null));
-									return [
-										Number.isFinite(values[0]) ? values[0] : Number.NEGATIVE_INFINITY,
-										Number.isFinite(values[1]) ? values[1] : Number.POSITIVE_INFINITY,
-									];
-								})()}
-								float
-								hoverable
-								pips
-								pipstep={500}
-								all="label"
-								formatter={labelFormatter(ranges_limits.techPp + 1, 500)}
-								on:change={debounce(e => {
-									if (!Array.isArray(e?.detail?.values) || e.detail.values.length !== 2) return;
-
-									currentFilters.tech_pp_range = e.detail.values.join(',');
-									currentPage = 1;
-									navigateToCurrentPageAndFilters();
-								}, 500)} />
-						</section>
+				<section
+					class="filter dropdown-filter"
+					class:has-value={currentFilters.pp_range?.length ||
+						!!currentFilters.score_range?.length ||
+						!!currentFilters.ranked_score_range?.length ||
+						!!currentFilters.acc_pp_range?.length ||
+						!!currentFilters.pass_pp_range?.length ||
+						!!currentFilters.tech_pp_range?.length}>
+					<div class="dropdown-header" on:click={() => (isRangeFilterOpen = !isRangeFilterOpen)}>
+						<div class="header-content">
+							<i class="fas fa-ruler" />
+							<span>Ranges</span>
+						</div>
+						<i class="fas fa-chevron-{isRangeFilterOpen ? 'up' : 'down'}" />
 					</div>
-				{/if}
-			</section>
 
-			<section class="filter dropdown-filter" class:has-value={!!currentFilters.firstScoreTime || !!currentFilters.recentScoreTime}>
-				<div class="dropdown-header" on:click={() => (isDateFilterOpen = !isDateFilterOpen)}>
-					<div class="header-content">
-						<i class="fas fa-calendar-alt" />
-						<span>Dates</span>
+					{#if isRangeFilterOpen}
+						<div class="dropdown-content" transition:slide={{duration: 500, easing: cubicOut}}>
+							<section class="filter">
+								<label
+									>Total PP range
+									{#if currentFilters.pp_range}
+										<button
+											class="remove-type"
+											title="Remove"
+											on:click={() => {
+												currentFilters.pp_range = '';
+												currentPage = 1;
+												navigateToCurrentPageAndFilters();
+											}}><i class="fas fa-xmark" /></button>
+									{/if}
+								</label>
+
+								<RangeSlider
+									range
+									min={0}
+									max={ranges_limits.pp + 1}
+									step={1}
+									values={(() => {
+										const values = (currentFilters.pp_range || ',').split(',').map(v => (v ? parseFloat(v) : null));
+										return [
+											Number.isFinite(values[0]) ? values[0] : Number.NEGATIVE_INFINITY,
+											Number.isFinite(values[1]) ? values[1] : Number.POSITIVE_INFINITY,
+										];
+									})()}
+									float
+									hoverable
+									pips
+									pipstep={10000}
+									all="label"
+									formatter={labelFormatter(ranges_limits.pp + 1, 10000)}
+									on:change={debounce(e => {
+										if (!Array.isArray(e?.detail?.values) || e.detail.values.length !== 2) return;
+
+										currentFilters.pp_range = e.detail.values.join(',');
+										currentPage = 1;
+										navigateToCurrentPageAndFilters();
+									}, 500)} />
+							</section>
+
+							<section class="filter">
+								<label
+									>All Scores count
+									{#if currentFilters.score_range}
+										<button
+											class="remove-type"
+											title="Remove"
+											on:click={() => {
+												currentFilters.score_range = '';
+												currentPage = 1;
+												navigateToCurrentPageAndFilters();
+											}}><i class="fas fa-xmark" /></button>
+									{/if}
+								</label>
+
+								<RangeSlider
+									range
+									min={0}
+									max={ranges_limits.playCount + 1}
+									step={1}
+									values={(() => {
+										const values = (currentFilters.score_range || ',').split(',').map(v => (v ? parseFloat(v) : null));
+										return [
+											Number.isFinite(values[0]) ? values[0] : Number.NEGATIVE_INFINITY,
+											Number.isFinite(values[1]) ? values[1] : Number.POSITIVE_INFINITY,
+										];
+									})()}
+									float
+									hoverable
+									pips
+									pipstep={10000}
+									all="label"
+									formatter={labelFormatter(ranges_limits.playCount + 1, 10000)}
+									on:change={debounce(e => {
+										if (!Array.isArray(e?.detail?.values) || e.detail.values.length !== 2) return;
+
+										currentFilters.score_range = e.detail.values.join(',');
+										currentPage = 1;
+										navigateToCurrentPageAndFilters();
+									}, 500)} />
+							</section>
+
+							<section class="filter">
+								<label
+									>Ranked Scores count
+									{#if currentFilters.ranked_score_range}
+										<button
+											class="remove-type"
+											title="Remove"
+											on:click={() => {
+												currentFilters.ranked_score_range = '';
+												currentPage = 1;
+												navigateToCurrentPageAndFilters();
+											}}><i class="fas fa-xmark" /></button>
+									{/if}
+								</label>
+
+								<RangeSlider
+									range
+									min={0}
+									max={ranges_limits.rankedPlayCount + 1}
+									step={1}
+									values={(() => {
+										const values = (currentFilters.ranked_score_range || ',')
+											.split(',')
+											.map(v => (v ? parseFloat(v) : null));
+										return [
+											Number.isFinite(values[0]) ? values[0] : Number.NEGATIVE_INFINITY,
+											Number.isFinite(values[1]) ? values[1] : Number.POSITIVE_INFINITY,
+										];
+									})()}
+									float
+									hoverable
+									pips
+									pipstep={1000}
+									all="label"
+									formatter={labelFormatter(ranges_limits.rankedPlayCount + 1, 1000)}
+									on:change={debounce(e => {
+										if (!Array.isArray(e?.detail?.values) || e.detail.values.length !== 2) return;
+
+										currentFilters.ranked_score_range = e.detail.values.join(',');
+										currentPage = 1;
+										navigateToCurrentPageAndFilters();
+									}, 500)} />
+							</section>
+
+							<section class="filter">
+								<label
+									>Acc PP range
+									{#if currentFilters.acc_pp_range}
+										<button
+											class="remove-type"
+											title="Remove"
+											on:click={() => {
+												currentFilters.acc_pp_range = '';
+												currentPage = 1;
+												navigateToCurrentPageAndFilters();
+											}}><i class="fas fa-xmark" /></button>
+									{/if}
+								</label>
+
+								<RangeSlider
+									range
+									min={0}
+									max={ranges_limits.accPp + 1}
+									step={1}
+									values={(() => {
+										const values = (currentFilters.acc_pp_range || ',').split(',').map(v => (v ? parseFloat(v) : null));
+										return [
+											Number.isFinite(values[0]) ? values[0] : Number.NEGATIVE_INFINITY,
+											Number.isFinite(values[1]) ? values[1] : Number.POSITIVE_INFINITY,
+										];
+									})()}
+									float
+									hoverable
+									pips
+									pipstep={5000}
+									all="label"
+									formatter={labelFormatter(ranges_limits.accPp + 1, 5000)}
+									on:change={debounce(e => {
+										if (!Array.isArray(e?.detail?.values) || e.detail.values.length !== 2) return;
+
+										currentFilters.acc_pp_range = e.detail.values.join(',');
+										currentPage = 1;
+										navigateToCurrentPageAndFilters();
+									}, 500)} />
+							</section>
+
+							<section class="filter">
+								<label
+									>Pass PP range
+									{#if currentFilters.pass_pp_range}
+										<button
+											class="remove-type"
+											title="Remove"
+											on:click={() => {
+												currentFilters.pass_pp_range = '';
+												currentPage = 1;
+												navigateToCurrentPageAndFilters();
+											}}><i class="fas fa-xmark" /></button>
+									{/if}
+								</label>
+
+								<RangeSlider
+									range
+									min={0}
+									max={ranges_limits.passPp + 1}
+									step={1}
+									values={(() => {
+										const values = (currentFilters.pass_pp_range || ',').split(',').map(v => (v ? parseFloat(v) : null));
+										return [
+											Number.isFinite(values[0]) ? values[0] : Number.NEGATIVE_INFINITY,
+											Number.isFinite(values[1]) ? values[1] : Number.POSITIVE_INFINITY,
+										];
+									})()}
+									float
+									hoverable
+									pips
+									pipstep={2000}
+									all="label"
+									formatter={labelFormatter(ranges_limits.passPp + 1, 2000)}
+									on:change={debounce(e => {
+										if (!Array.isArray(e?.detail?.values) || e.detail.values.length !== 2) return;
+
+										currentFilters.pass_pp_range = e.detail.values.join(',');
+										currentPage = 1;
+										navigateToCurrentPageAndFilters();
+									}, 500)} />
+							</section>
+
+							<section class="filter">
+								<label
+									>Tech PP range
+									{#if currentFilters.tech_pp_range}
+										<button
+											class="remove-type"
+											title="Remove"
+											on:click={() => {
+												currentFilters.tech_pp_range = '';
+												currentPage = 1;
+												navigateToCurrentPageAndFilters();
+											}}><i class="fas fa-xmark" /></button>
+									{/if}
+								</label>
+
+								<RangeSlider
+									range
+									min={0}
+									max={ranges_limits.techPp + 1}
+									step={1}
+									values={(() => {
+										const values = (currentFilters.tech_pp_range || ',').split(',').map(v => (v ? parseFloat(v) : null));
+										return [
+											Number.isFinite(values[0]) ? values[0] : Number.NEGATIVE_INFINITY,
+											Number.isFinite(values[1]) ? values[1] : Number.POSITIVE_INFINITY,
+										];
+									})()}
+									float
+									hoverable
+									pips
+									pipstep={500}
+									all="label"
+									formatter={labelFormatter(ranges_limits.techPp + 1, 500)}
+									on:change={debounce(e => {
+										if (!Array.isArray(e?.detail?.values) || e.detail.values.length !== 2) return;
+
+										currentFilters.tech_pp_range = e.detail.values.join(',');
+										currentPage = 1;
+										navigateToCurrentPageAndFilters();
+									}, 500)} />
+							</section>
+						</div>
+					{/if}
+				</section>
+
+				<section class="filter dropdown-filter" class:has-value={!!currentFilters.firstScoreTime || !!currentFilters.recentScoreTime}>
+					<div class="dropdown-header" on:click={() => (isDateFilterOpen = !isDateFilterOpen)}>
+						<div class="header-content">
+							<i class="fas fa-calendar-alt" />
+							<span>Dates</span>
+						</div>
+						<i class="fas fa-chevron-{isDateFilterOpen ? 'up' : 'down'}" />
 					</div>
-					<i class="fas fa-chevron-{isDateFilterOpen ? 'up' : 'down'}" />
-				</div>
 
-				{#if isDateFilterOpen}
-					<div class="dropdown-content" transition:slide={{duration: 500, easing: cubicOut}}>
-						<section class="filter">
-							<label>Started playing after</label>
-							<DatePicker
-								type="date"
-								date={dateFromUnix(currentFilters.firstScoreTime)}
-								on:change={e => {
-									currentFilters.firstScoreTime = e.detail ? e.detail.getTime() / 1000 : null;
-									currentPage = 1;
-									navigateToCurrentPageAndFilters();
-								}} />
-						</section>
+					{#if isDateFilterOpen}
+						<div class="dropdown-content" transition:slide={{duration: 500, easing: cubicOut}}>
+							<section class="filter">
+								<label>Started playing after</label>
+								<DatePicker
+									type="date"
+									date={dateFromUnix(currentFilters.firstScoreTime)}
+									on:change={e => {
+										currentFilters.firstScoreTime = e.detail ? e.detail.getTime() / 1000 : null;
+										currentPage = 1;
+										navigateToCurrentPageAndFilters();
+									}} />
+							</section>
 
-						<section class="filter">
-							<label>Most recent score after</label>
-							<DatePicker
-								type="date"
-								date={dateFromUnix(currentFilters.recentScoreTime)}
-								on:change={e => {
-									currentFilters.recentScoreTime = e.detail ? e.detail.getTime() / 1000 : null;
-									currentPage = 1;
-									navigateToCurrentPageAndFilters();
-								}} />
-						</section>
-					</div>
-				{/if}
-			</section>
-		</AsideBox>
-		{#if sotw}
-			<AsideBox title="Score Of The Week" boolname="showFeaturedScoreOnScores" faicon="fas fa-award">
-				<div style="display: flex; width: 100%; height: 100%; justify-content: center;">
-					<iframe
-						width="100%"
-						style="aspect-ratio: 16/9;"
-						src={`https://www.youtube-nocookie.com/embed/${sotw.link.replace('https://youtu.be/', '')}?si=b4lLpGGYeIZ8kRb8`}
-						title="YouTube video player"
-						frameborder="0"
-						allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-						allowfullscreen />
-				</div>
+							<section class="filter">
+								<label>Most recent score after</label>
+								<DatePicker
+									type="date"
+									date={dateFromUnix(currentFilters.recentScoreTime)}
+									on:change={e => {
+										currentFilters.recentScoreTime = e.detail ? e.detail.getTime() / 1000 : null;
+										currentPage = 1;
+										navigateToCurrentPageAndFilters();
+									}} />
+							</section>
+						</div>
+					{/if}
+				</section>
 			</AsideBox>
-		{/if}
-	</aside>
-</section>
+			{#if sotw}
+				<AsideBox title="Score Of The Week" boolname="showFeaturedScoreOnScores" faicon="fas fa-award">
+					<div style="display: flex; width: 100%; height: 100%; justify-content: center;">
+						<iframe
+							width="100%"
+							style="aspect-ratio: 16/9;"
+							src={`https://www.youtube-nocookie.com/embed/${sotw.link.replace('https://youtu.be/', '')}?si=b4lLpGGYeIZ8kRb8`}
+							title="YouTube video player"
+							frameborder="0"
+							allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+							allowfullscreen />
+					</div>
+				</AsideBox>
+			{/if}
+		</aside>
+	</section>
+</div>
 
 <BackToTop />
 
@@ -1027,8 +1032,8 @@
 			margin-top: 1em;
 		}
 
-		.ranking-event-banner :global(.event-banner) {
-			margin-top: 3.5em;
+		.align-content {
+			position: relative;
 		}
 
 		:global(.ranking-main-box .pagination) {
@@ -1039,7 +1044,7 @@
 
 		:global(.ranking-filters-dropdown) {
 			position: absolute !important;
-			top: 4.2em;
+			top: 0.4em;
 			right: 0.5em;
 			z-index: 3 !important;
 		}
