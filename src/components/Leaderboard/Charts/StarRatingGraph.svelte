@@ -174,7 +174,7 @@
 
 		const clock = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
 		const parts = [
-			{ key: 'speed', label: 'Speed', color: 'rgb(54, 162, 235)' },
+			{ key: 'speed', label: 'Pass', color: 'rgb(54, 162, 235)' },
 			{ key: 'acc', label: 'Acc', color: 'rgb(153, 102, 255)' },
 			{ key: 'tech', label: 'Tech', color: 'rgb(255, 99, 132)' },
 		];
