@@ -22,7 +22,10 @@
 	const {addNotification} = getNotificationsContext();
 	const account = createAccountStore();
 
-	const DEFAULT_MAX_PP = {tech: 2800, acc: 19000, pass: 3100};
+	const DEFAULT_MAX_PP = {tech: 1200, acc: 14500, pass: 3000};
+	// History from before the PPv4.1 reweight keeps the PPv4 scale
+	const PPV4_1_REWEIGHT_TIME = 1793836800;
+	const PPV4_MAX_PP = {tech: 2800, acc: 19000, pass: 3100};
 	// History from before the PPv4 reweight keeps the PPv3 scale
 	const PPV4_REWEIGHT_TIME = 1793116800;
 	const PPV3_MAX_PP = {tech: 1300, acc: 15000, pass: 6000};
@@ -42,13 +45,20 @@
 	let animationTimeout;
 
 	const isPpv3 = info => info?.timestamp != null && info.timestamp < PPV4_REWEIGHT_TIME;
+	const isPpv4 = info => info?.timestamp != null && info.timestamp >= PPV4_REWEIGHT_TIME && info.timestamp < PPV4_1_REWEIGHT_TIME;
+
+	function getMaxPp(info) {
+		if (isPpv3(info)) return PPV3_MAX_PP;
+		if (isPpv4(info)) return PPV4_MAX_PP;
+		return DEFAULT_MAX_PP;
+	}
 
 	function updatePPFromInfo(playerInfo) {
 		if (!playerInfo) return;
 		techPpTween.set(playerInfo.techPp);
 		accPpTween.set(playerInfo.accPp);
 		passPpTween.set(playerInfo.passPp);
-		maxPpTween.set(isPpv3(playerInfo) ? PPV3_MAX_PP : DEFAULT_MAX_PP);
+		maxPpTween.set(getMaxPp(playerInfo));
 	}
 
 	function similarTriangleUrl(info) {
@@ -67,7 +77,7 @@
 
 	$: selectedInfo = history?.length && selectedTimestamp != 0 ? history.find(h => h.timestamp == selectedTimestamp) : playerInfo;
 	$: updatePPFromInfo(selectedInfo);
-	$: similarFromToday = isPpv3(selectedInfo);
+	$: similarFromToday = isPpv3(selectedInfo) || isPpv4(selectedInfo);
 	$: similarUrl = similarTriangleUrl(similarFromToday ? history[history.length - 1] : selectedInfo);
 	$: techScale = $techPpTween > $maxPpTween.tech ? $techPpTween / $maxPpTween.tech : 1;
 	$: accScale = $accPpTween > $maxPpTween.acc ? $accPpTween / $maxPpTween.acc : 1;
