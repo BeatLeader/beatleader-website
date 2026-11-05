@@ -3,6 +3,7 @@
 	import PredictedAccGraph from '../PredictedAccGraph.svelte';
 	import LeaderboardStats from './LeaderboardStats.svelte';
 	import {configStore} from '../../../stores/config';
+	import StarRatingGraph from '../Charts/StarRatingGraph.svelte';
 
 	export let leaderboard;
 	export let selectedModifiers;
@@ -27,6 +28,7 @@
 	{#if $configStore?.leaderboardPreferences?.showStatsInHeader}
 		<div class="leaderboard-details-content">
 			<PredictedAccGraph {leaderboard} {selectedModifiers} />
+			<StarRatingGraph />
 		</div>
 	{:else if selectedOption}
 		<div class="chart-switcher">
@@ -37,6 +39,7 @@
 				<LeaderboardStats {leaderboard} />
 			{:else if selectedOption.id === 'accGraph'}
 				<PredictedAccGraph {leaderboard} {selectedModifiers} />
+				<StarRatingGraph {leaderboard} {selectedModifiers} />
 			{/if}
 		</div>
 	{/if}
