@@ -18,7 +18,7 @@ if (SCREENSHOT_HOST) {
 	lcount += 1;
 }
 export var GLOBAL_LEADERBOARD_TYPE =
-	location.host.split('.').length > lcount ? location.host.split('.')[0] : location.host.includes('localhost') ? 'dnc' : 'general';
+	location.host.split('.').length > lcount ? location.host.split('.')[0] : location.host.includes('localhost') ? 'general' : 'general';
 
 export function setLeaderboardType(newType) {
 	GLOBAL_LEADERBOARD_TYPE = newType;
