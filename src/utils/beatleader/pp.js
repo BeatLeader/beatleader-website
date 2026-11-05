@@ -135,7 +135,7 @@ export const buildCurve = (accuracy, passRating, accRating, techRating, golf) =>
 
 export const isRebalanced = difficulty => difficulty?.noteSpan !== null && difficulty?.noteSpan !== undefined;
 
-const SPEED_TIMESCALES = {ss: 0.85, fs: 1.2, sf: 1.5};
+const SPEED_TIMESCALES = {ss: 0.85, fs: 1.2, sf: 1.5, bfs: 1.2, bsf: 1.5};
 
 export const getModifiedRatings = (difficulty, mods) => {
 	const modifiersRating = difficulty?.modifiersRating ?? null;
@@ -152,10 +152,10 @@ export const getModifiedRatings = (difficulty, mods) => {
 				passRating = modifiersRating[name + 'PassRating'] ?? 0;
 				accRating = modifiersRating[name + 'AccRating'] ?? 0;
 				techRating = modifiersRating[name + 'TechRating'] ?? 0;
-				if (['ss', 'fs', 'sf'].includes(name)) {
+				if (SPEED_TIMESCALES[name]) {
 					curveInputs = [
 						modifiersRating[name + 'PredictedAcc'],
-						modifiersRating[name + 'SliderPercentage'],
+						modifiersRating[name + 'SliderPercentage'] ?? difficulty?.sliderPercentage,
 						difficulty?.notes,
 						(difficulty?.noteSpan ?? 0) / SPEED_TIMESCALES[name],
 					];
@@ -179,13 +179,15 @@ export const getModifiedRatings = (difficulty, mods) => {
 	}
 
 	const curve = buildAccCurve(...curveInputs);
+	const predictedAcc = curveInputs[0] ?? 0;
 
 	return {
 		passRating: passRating * multiplier,
 		accRating: accRating * multiplier,
 		techRating: techRating * multiplier,
 		curve,
-		stars: toStars(accRating, passRating, techRating, curve),
+		predictedAcc,
+		stars: toStars(accRating, passRating, techRating, curve, predictedAcc),
 		multiplier,
 	};
 };
@@ -243,5 +245,5 @@ export const computeStarRating = ratings =>
 	Number.isFinite(ratings?.passRating) && Number.isFinite(ratings?.accRating) && Number.isFinite(ratings?.techRating)
 		? ratings.legacy
 			? buildCurve(0.96, ratings.passRating, ratings.accRating, ratings.techRating)[0] / 52
-			: toStars(ratings.accRating, ratings.passRating, ratings.techRating, ratings.curve)
+			: toStars(ratings.accRating, ratings.passRating, ratings.techRating, ratings.curve, ratings.predictedAcc)
 		: null;

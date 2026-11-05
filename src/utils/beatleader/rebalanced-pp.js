@@ -5,29 +5,37 @@ const formula = {
 	passExponent: 2.62,
 	passOffset: 30,
 	passInner: 0.85966,
-	accWeight: 21.584,
-	accRatingPower: 1.2163,
+	accWeight: 34.519,
 	accCurvePower: 0.9,
 	lowStarCurvePower: 1.0,
-	lowStarCurveStart: 6.7242,
-	lowStarCurveEnd: 9.606,
+	lowStarCurveStart: 7.1529,
+	lowStarCurveEnd: 9.6894,
 	veryLowStarCurvePower: 1.08,
-	veryLowStarCurveStart: 2.8818,
-	veryLowStarCurveEnd: 4.803,
-	techWeight: 0.1612,
-	techRatingPower: 1.2477,
-	techAccExponent: 3.5,
-	starDivisor: 83.6925,
-	starScale: 1.1653,
-	starExponent: 1.17507,
-	ppMultiplier: 1.023,
-	lowStarBonus: 0.0063371,
-	lowStarBonusEnd: 8.6454,
-	lowStarBonusPower: 1.36,
+	veryLowStarCurveStart: 3.478,
+	veryLowStarCurveEnd: 5.3718,
+	techWeight: 5.7887,
+	techAccExponent: 0,
+	starDivisor: 52,
+	ppMultiplier: 1.0128,
+	lowStarBonus: 0.007593,
+	lowStarBonusEnd: 8.8584,
+	lowStarBonusPower: 1.98,
+	midStarTopBonus: 0.05,
+	midStarTopStart: 4.2508,
+	midStarTopFull: 6.3762,
+	midStarTopFullEnd: 8.0,
+	midStarTopEnd: 10.5,
+	midStarTopAccBelow: 0.03,
+	midStarTopAccAbove: 0,
 	passTopKnee: 13,
 	passTopSlope: 0.5,
-	techTopKnee: 12,
-	techTopSlope: 0.33,
+	techTopKnee: 6.2754,
+	techTopSlope: 0.7,
+	passAccExponent: 6,
+	passAccMaxMultiplier: 3,
+	passAccMinMultiplier: 0.8,
+	passAccErrorOffset: 1,
+	golfAccWeight: 38,
 };
 
 export const STAR_ACCURACY = 0.96;
@@ -63,19 +71,46 @@ const accCurve = (curveValue, curveAt96, power) => {
 	return curveAt96 * Math.pow(curveValue / curveAt96, power);
 };
 
-const accPp = (curveValue, accRating) => (accRating > 0 ? curveValue * formula.accWeight * Math.pow(accRating, formula.accRatingPower) : 0);
+const accPp = (curveValue, accRating) => (accRating > 0 ? curveValue * formula.accWeight * accRating : 0);
+
+const ease = t => {
+	const clamped = Math.min(Math.max(t, 0), 1);
+	return clamped * clamped * (3 - 2 * clamped);
+};
+
+const midStarTopBump = stars => {
+	if (!(stars > formula.midStarTopStart && stars < formula.midStarTopEnd)) return 0;
+	if (stars < formula.midStarTopFull) return ease((stars - formula.midStarTopStart) / (formula.midStarTopFull - formula.midStarTopStart));
+	if (stars > formula.midStarTopFullEnd) return ease((formula.midStarTopEnd - stars) / (formula.midStarTopEnd - formula.midStarTopFullEnd));
+	return 1;
+};
+
+const midStarTopMultiplier = (stars, accuracy, predictedAcc) => {
+	if (formula.midStarTopBonus == 0 || !(predictedAcc > 0)) return 1;
+	const from = predictedAcc - formula.midStarTopAccBelow;
+	if (!(accuracy > from)) return 1;
+	const bump = midStarTopBump(stars);
+	if (bump == 0) return 1;
+	const ramp = ease((accuracy - from) / (formula.midStarTopAccBelow + formula.midStarTopAccAbove));
+	return 1 + formula.midStarTopBonus * bump * ramp;
+};
+
+const passAccMultiplier = (accuracy, predictedAcc) => {
+	if (formula.passAccExponent == 0 || !(predictedAcc > 0)) return 1;
+	const gap = accuracy - (predictedAcc - formula.passAccErrorOffset * (1 - predictedAcc));
+	const m = Math.exp(formula.passAccExponent * gap);
+	const min = formula.passAccMinMultiplier > 0 ? formula.passAccMinMultiplier : 1 / formula.passAccMaxMultiplier;
+	return Math.min(Math.max(m, min), formula.passAccMaxMultiplier);
+};
 
 const techPp = (accuracy, techRating) => {
 	if (!(techRating > 0)) return 0;
 	let tech = techRating;
 	if (tech > formula.techTopKnee) tech = formula.techTopKnee + (tech - formula.techTopKnee) * formula.techTopSlope;
-	return Math.exp(formula.techAccExponent * accuracy) * formula.techWeight * Math.pow(tech, formula.techRatingPower);
+	return Math.exp(formula.techAccExponent * accuracy) * formula.techWeight * tech;
 };
 
-const starsFromPpNoBonus = ppAt96 => {
-	const basis = ppAt96 / formula.starDivisor;
-	return basis > 0 ? formula.starScale * Math.pow(basis, formula.starExponent) : basis;
-};
+const starsFromPpNoBonus = ppAt96 => ppAt96 / formula.starDivisor;
 
 export const lowStarMultiplier = stars => {
 	if (formula.lowStarBonus <= 0 || Number.isNaN(stars) || stars >= formula.lowStarBonusEnd) return 1;
@@ -99,7 +134,7 @@ const starsFromPp = ppAt96 => {
 const scale = pp => formula.ppMultiplier * pp;
 
 const baseTable = [
-	[1.0, 7.424],
+	[1.0, 7.2],
 	[0.999, 6.241],
 	[0.9975, 5.158],
 	[0.995, 4.01],
@@ -117,19 +152,19 @@ const baseTable = [
 	[0.96, 1.094],
 	[0.955, 1.039],
 	[0.95, 1.0],
-	[0.94, 0.931],
-	[0.93, 0.867],
-	[0.92, 0.813],
-	[0.91, 0.781],
-	[0.9, 0.753],
-	[0.875, 0.699],
-	[0.85, 0.649],
-	[0.825, 0.605],
-	[0.8, 0.568],
-	[0.75, 0.485],
-	[0.7, 0.414],
-	[0.65, 0.355],
-	[0.6, 0.307],
+	[0.94, 0.926],
+	[0.93, 0.861],
+	[0.92, 0.804],
+	[0.91, 0.76],
+	[0.9, 0.727],
+	[0.875, 0.675],
+	[0.85, 0.627],
+	[0.825, 0.584],
+	[0.8, 0.549],
+	[0.75, 0.469],
+	[0.7, 0.4],
+	[0.65, 0.343],
+	[0.6, 0.297],
 	[0.0, 0.0],
 ];
 
@@ -234,19 +269,19 @@ const curveSettings = {
 		{predictedAcc: 0.96, A: 0.99, C: -3.0, K: 4.3, W: 0.66, K2: 4.8, P2: 1.85},
 		{predictedAcc: 0.965, A: 0.988, C: -2.4, K: 4.5, W: 0.64, K2: 4.5, P2: 1.95},
 		{predictedAcc: 0.97, A: 0.986, C: -2.2, K: 4.7, W: 0.62, K2: 4.2, P2: 2.05},
-		{predictedAcc: 0.975, A: 0.985, C: -1.8, K: 4.86, W: 0.6, K2: 3.8, P2: 2.15},
-		{predictedAcc: 0.98, A: 0.985, C: -1.4, K: 4.86, W: 0.6, K2: 3.35, P2: 2.3},
-		{predictedAcc: 0.985, A: 0.985, C: -1.2, K: 4.86, W: 0.6, K2: 2.88, P2: 2.46},
-		{predictedAcc: 0.99, A: 0.9915, C: -1.2, K: 4.86, W: 0.6, K2: 2.88, P2: 2.46},
-		{predictedAcc: 0.995, A: 0.9915, C: -1.2, K: 4.86, W: 0.6, K2: 2.88, P2: 2.46},
+		{predictedAcc: 0.975, A: 0.983, C: 0, K: 4.86, W: 0.6, K2: 3.8, P2: 2.15},
+		{predictedAcc: 0.98, A: 0.983, C: 0, K: 4.86, W: 0.6, K2: 3.35, P2: 2.3},
+		{predictedAcc: 0.985, A: 0.985, C: -0.6, K: 4.86, W: 0.6, K2: 2.88, P2: 2.46},
+		{predictedAcc: 0.99, A: 0.99, C: 0, K: 4.86, W: 0.6, K2: 2.88, P2: 2.46},
+		{predictedAcc: 0.995, A: 0.99, C: 0, K: 4.86, W: 0.6, K2: 2.88, P2: 2.46},
 	],
 	maxC: 1,
 	sliderTilt: 0.2,
 	sliderTiltRange: 0.015,
 	lowNoteStart: 115,
 	lowNoteRefNotes: 20,
-	lowNoteRefMultiplier: 0.95,
-	lowNoteMinMultiplier: 0.95,
+	lowNoteRefMultiplier: 0.8031,
+	lowNoteMinMultiplier: 0.8031,
 	shortStart: 75,
 	shortRefSpan: 12,
 	shortRefMultiplier: 0.9,
@@ -295,10 +330,23 @@ const perMapCurves = predictedAcc => {
 	return {modified: modifiableCurve({...row, A}), standard: modifiableCurve()};
 };
 
+const tableFactor = (standard, x) => {
+	const reference = standard.getValue(x);
+	return reference > 0 ? smoothBaseValue(x) / reference : 0;
+};
+
+const topTableFactor = (standard, a, x) => {
+	const h = 1e-5;
+	const atA = tableFactor(standard, a);
+	const slope = (atA - tableFactor(standard, a - h)) / h;
+	return atA + slope * (x - a);
+};
+
 const perMapValue = (curves, x) => {
 	const base = smoothBaseValue(x);
-	const reference = curves.standard.getValue(x);
-	const value = reference > 0 ? (base * curves.modified.getValue(x)) / reference : base;
+	const a = curves.modified.A;
+	const factor = a < 0.9995 && x > a ? topTableFactor(curves.standard, a, x) : tableFactor(curves.standard, x);
+	const value = factor > 0 ? curves.modified.getValue(x) * factor : base;
 	return Math.min(base, value);
 };
 
@@ -370,28 +418,38 @@ export const curveValue = (acc, curve) => {
 	return curve[i - 1][1] + middleDis * (curve[i][1] - curve[i - 1][1]);
 };
 
-export const getPpParts = (accuracy, accRating, passRating, techRating, curve, stars, golf = false) => {
+export const getPpParts = (accuracy, accRating, passRating, techRating, curve, stars, predictedAcc = 0, golf = false) => {
 	const power = stars === undefined || stars === null ? formula.accCurvePower : curvePowerAt(stars);
 	let acc;
 	if (golf) {
-		acc = accuracy * accRating * 42;
+		acc = accuracy * accRating * formula.golfAccWeight;
 	} else {
 		let value = curveValue(accuracy, curve);
 		if (power != 1) value = accCurve(value, curveValue(STAR_ACCURACY, curve), power);
 		acc = accPp(value, accRating);
 	}
-	return [passPp(passRating), acc, techPp(accuracy, techRating)];
+	return [passPp(passRating) * passAccMultiplier(accuracy, predictedAcc), acc, techPp(accuracy, techRating)];
 };
 
-export const toStars = (accRating, passRating, techRating, curve) => {
-	const [pass, acc, tech] = getPpParts(STAR_ACCURACY, accRating, passRating, techRating, curve);
+export const toStars = (accRating, passRating, techRating, curve, predictedAcc = 0) => {
+	const [pass, acc, tech] = getPpParts(STAR_ACCURACY, accRating, passRating, techRating, curve, undefined, predictedAcc);
 	return starsFromPp(pass + acc + tech);
 };
 
 export const scorePp = (accuracy, ratings, golf = false) => {
 	if (!(accuracy > 0) || accuracy > 1) return [0, 0, 0, 0];
 
-	const [pass, acc, tech] = getPpParts(accuracy, ratings.accRating, ratings.passRating, ratings.techRating, ratings.curve, ratings.stars, golf);
+	const [pass, baseAcc, tech] = getPpParts(
+		accuracy,
+		ratings.accRating,
+		ratings.passRating,
+		ratings.techRating,
+		ratings.curve,
+		ratings.stars,
+		ratings.predictedAcc,
+		golf
+	);
+	const acc = baseAcc * midStarTopMultiplier(ratings.stars, accuracy, ratings.predictedAcc);
 	const sum = pass + acc + tech;
 	let total = scale(sum) * lowStarMultiplier(ratings.stars);
 	if (!Number.isFinite(total)) total = 0;
