@@ -12,10 +12,11 @@
 
 	const dispatch = createEventDispatcher();
 
-	function contextProfileUrl(event, player) {
-		const subdomain = event?.id == 81 ? 'leftleader' : event?.eventType === 2 ? 'dnc' : null;
+	function contextProfileUrl(event, player, second = false) {
+		const subdomain =
+			event?.id == 81 ? 'leftleader' : event?.eventType === 2 ? 'dnc' : event?.eventType === 3 ? (second ? 'bsf' : 'bfs') : null;
 
-		return subdomain ? `${BL_API_URL.replace('api', subdomain)}u/${player?.alias ?? player?.playerId}` : null;
+		return subdomain ? `${BL_API_URL.replace('api', subdomain)}u/${player?.alias ?? player?.id}` : null;
 	}
 </script>
 
@@ -40,9 +41,9 @@
 						<PlayerNameWithFlag
 							player={event.leader2}
 							playerClickFilter={`eventId=${event.id}`}
-							playerClickFilterFull={contextProfileUrl(event, event.leader2)}
+							playerClickFilterFull={contextProfileUrl(event, event.leader2, true)}
 							on:click={e => {
-								navigate(contextProfileUrl(event, event.leader2) ?? `/u/${event?.leader2?.id}?eventId=${event.id}`);
+								navigate(contextProfileUrl(event, event.leader2, true) ?? `/u/${event?.leader2?.id}?eventId=${event.id}`);
 								e.stopPropagation();
 							}} />
 					</div>

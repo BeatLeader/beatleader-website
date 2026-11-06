@@ -34,6 +34,7 @@
 	export let animationSign = 1;
 	export let playersPerPage = PLAYERS_PER_PAGE;
 	export let dance = false;
+	export let subdomain = null;
 
 	let currentFilters = filters;
 
@@ -156,7 +157,7 @@
 	$: maxCountryRank = $rankingStore?.data ? Math.max(...$rankingStore.data.map(p => p.playerInfo?.country.rank)) : 0;
 
 	$: if (!$isLoading && $rankingStore?.data) currentFilters = deepClone(filters);
-	$: profileSubdomain = eventId == 81 ? 'leftleader' : dance ? 'dnc' : null;
+	$: profileSubdomain = eventId == 81 ? 'leftleader' : dance ? 'dnc' : subdomain;
 </script>
 
 {#if $rankingStore?.data?.length}

@@ -25,6 +25,9 @@
 	import PlayerMention from '../Scores/PlayerMention.svelte';
 	import EventRankingTable from '../Ranking/EventRankingTable.svelte';
 	import DanceOrDie from './DanceOrDie.svelte';
+	import SpeedEvent from './SpeedEvent.svelte';
+	import TabSwitcher from '../Common/TabSwitcher.svelte';
+	import {BL_API_URL} from '../../network/queues/beatleader/api-queue';
 
 	export let currentEvent;
 	export let page = 1;
@@ -154,6 +157,44 @@
 	$: mainPlayerId = $account?.id;
 	$: dance = currentEvent?.eventType === 2;
 	let danceTab = 'ranking';
+
+	const CATEGORIES = {
+		3: {subdomain: 'bfs', label: 'Better Faster Song'},
+		4: {subdomain: 'bsf', label: 'Better Super Fast'},
+	};
+	let categories = [];
+	let rankingEventId = null;
+
+	function loadCategories(event) {
+		categories = [];
+		rankingEventId = event?.id;
+		if (!CATEGORIES[event?.eventType]) return;
+
+		fetch(`${BL_API_URL}event/${event.id}/categories`)
+			.then(response => response.json())
+			.then(result => {
+				categories = result.map(c => {
+					const {subdomain, label} = CATEGORIES[c.eventType];
+					return {
+						value: c.id,
+						label,
+						subdomain,
+						icon: `<img class="category-icon" src="/assets/speed-event/${subdomain}.webp" alt="" />`,
+						cls: 'category-button',
+					};
+				});
+			});
+	}
+
+	function onCategoryChanged(event) {
+		rankingEventId = event.detail.value;
+		currentPage = 1;
+		navigateToCurrentPageAndFilters();
+	}
+
+	$: speed = !!CATEGORIES[currentEvent?.eventType];
+	$: loadCategories(currentEvent);
+	$: category = categories.find(c => c.value === rankingEventId);
 </script>
 
 <svelte:head>
@@ -723,6 +764,10 @@
 			<DanceOrDie event={currentEvent} bind:tab={danceTab} />
 		{/if}
 
+		{#if speed}
+			<SpeedEvent event={currentEvent} />
+		{/if}
+
 		{#if eventId == 85}
 			<ContentBox cls={modalShown ? 'inner-modal' : ''}>
 				<span>
@@ -784,16 +829,25 @@
 					{/if}
 				</h1>
 
-				<EventRankingTable
-					page={currentPage}
-					filters={currentFilters}
-					playerClickFilter={`eventId=${currentEvent?.id ?? ''}`}
-					eventId={currentEventId}
-					{dance}
-					on:players-fetched={onPlayersFetched}
-					on:page-changed={onPageChanged}
-					on:loading={e => (isLoading = !!e?.detail)}
-					on:pending={e => (pending = e?.detail)} />
+				{#if categories.length > 1}
+					<div class="categories">
+						<TabSwitcher values={categories} value={category} on:change={onCategoryChanged} />
+					</div>
+				{/if}
+
+				{#key rankingEventId}
+					<EventRankingTable
+						page={currentPage}
+						filters={currentFilters}
+						playerClickFilter={`eventId=${rankingEventId ?? ''}`}
+						eventId={rankingEventId ?? currentEventId}
+						{dance}
+						subdomain={category?.subdomain}
+						on:players-fetched={onPlayersFetched}
+						on:page-changed={onPageChanged}
+						on:loading={e => (isLoading = !!e?.detail)}
+						on:pending={e => (pending = e?.detail)} />
+				{/key}
 			</ContentBox>
 		</div>
 		{#if eventId == 54}
@@ -834,6 +888,36 @@
 
 	aside :global(.switch-types) {
 		justify-content: flex-start;
+	}
+
+	.categories {
+		padding: 0.5em 0 1.25em;
+	}
+
+	.categories :global(.switch-types) {
+		justify-content: center;
+		flex-wrap: wrap;
+		gap: 0.5em;
+		font-size: 0.9rem;
+	}
+
+	.categories :global(.category-button) {
+		padding: 1.1em 1.4em !important;
+	}
+
+	.categories :global(.category-icon) {
+		width: 1.6em;
+		height: 1.6em;
+	}
+
+	@media screen and (max-width: 767px) {
+		.categories :global(.switch-types) {
+			font-size: 0.8rem;
+		}
+
+		.categories :global(.category-button) {
+			padding: 1em 0.8em !important;
+		}
 	}
 
 	.confetti {

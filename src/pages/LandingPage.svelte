@@ -6,7 +6,7 @@
 	import {MetaTags} from 'svelte-meta-tags';
 	import {CURRENT_URL} from '../network/queues/beatleader/api-queue';
 	import BlueSkyTimeline from '../components/Dashboard/BlueSkyTimeline.svelte';
-	import EventBanner, {eventBannerShown} from '../components/Event/EventBanner.svelte';
+	import EventBanner, {EVENT_NAME, eventBannerShown} from '../components/Event/EventBanner.svelte';
 
 	$: metaDescription =
 		ssrConfig.name +
@@ -75,7 +75,7 @@
 			</div>
 		</ContentBox>
 		{#if eventBannerShown()}
-			<span class="event-promotion-title">Happening now - Dance or Die!: the Halloween dance event</span>
+			<span class="event-promotion-title">Happening now - {EVENT_NAME}</span>
 		{:else}
 			<span class="event-promotion-title">Latest event - Beat The Heat 2026: 32 fresh summer themed maps!</span>
 		{/if}
