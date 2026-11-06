@@ -1,12 +1,26 @@
+<script>
+	const LAYERS = [
+		{name: 'bg', offset: -2},
+		{name: 'character', offset: 0},
+		{name: 'stars-1', offset: 1, twinkle: '0s'},
+		{name: 'cubes', offset: 3},
+		{name: 'stars-2', offset: 4, twinkle: '-2s'},
+	];
+
+	const layerStyle = layer =>
+		`background-image: url(/assets/speed-event/banner-${layer.name}.webp);` + (layer.twinkle ? ` animation-delay: ${layer.twinkle};` : '');
+</script>
+
 <div class="speed-art">
 	{#await import('atropos/svelte').then(m => m.default)}
-		<div class="cover" />
+		{#each LAYERS as layer}
+			<div class="cover" class:twinkle={layer.twinkle} style={layerStyle(layer)} />
+		{/each}
 	{:then Atropos}
 		<svelte:component this={Atropos} rotateXMax={1} rotateYMax={1} highlight="false" shadow="false" rotateTouch="scroll-y">
-			<div class="cover" data-atropos-offset="-1" />
-			<div class="sparkles" data-atropos-offset="2">
-				<span /><span /><span /><span /><span />
-			</div>
+			{#each LAYERS as layer}
+				<div class="cover" class:twinkle={layer.twinkle} style={layerStyle(layer)} data-atropos-offset={layer.offset} />
+			{/each}
 		</svelte:component>
 	{/await}
 	<div class="shade" />
@@ -14,8 +28,7 @@
 
 <style>
 	.speed-art {
-		--u: calc(var(--speed-art-height, 12em) / 12);
-		--art-width: calc(var(--u) * 47.3);
+		--art-width: calc(var(--speed-art-height, 12em) * 4.427);
 		position: absolute;
 		inset: 0;
 		overflow: hidden;
@@ -36,72 +49,29 @@
 	.cover {
 		position: absolute;
 		inset: -6%;
-		background: url(/assets/speed-event/cover.webp) right 30% / auto 140% no-repeat;
+		background-position: right 30%;
+		background-size: auto 140%;
+		background-repeat: no-repeat;
 		-webkit-mask-image: linear-gradient(90deg, transparent calc(100% - var(--art-width)), #000 calc(100% - var(--art-width) * 0.87));
 		mask-image: linear-gradient(90deg, transparent calc(100% - var(--art-width)), #000 calc(100% - var(--art-width) * 0.87));
 	}
 
-	.sparkles {
-		position: absolute;
-		inset: 0;
-		filter: drop-shadow(0 0 3px #9fd0ff);
-	}
-
-	.sparkles span {
-		position: absolute;
-		width: calc(var(--u) * 1);
-		height: calc(var(--u) * 1);
-		background: #fff;
-		clip-path: polygon(50% 0, 58% 42%, 100% 50%, 58% 58%, 50% 100%, 42% 58%, 0 50%, 42% 42%);
-		animation: twinkle 2.8s ease-in-out infinite;
-	}
-
-	.sparkles span:nth-child(1) {
-		right: calc(var(--u) * 31);
-		top: 22%;
-	}
-
-	.sparkles span:nth-child(2) {
-		right: calc(var(--u) * 17);
-		top: 30%;
-		scale: 0.7;
-		animation-delay: -0.9s;
-	}
-
-	.sparkles span:nth-child(3) {
-		right: calc(var(--u) * 3);
-		top: 48%;
-		animation-delay: -1.7s;
-	}
-
-	.sparkles span:nth-child(4) {
-		right: calc(var(--u) * 24);
-		top: 66%;
-		scale: 0.6;
-		animation-delay: -2.3s;
-	}
-
-	.sparkles span:nth-child(5) {
-		right: calc(var(--u) * 11);
-		top: 12%;
-		scale: 0.8;
-		animation-delay: -0.4s;
+	.twinkle {
+		animation: twinkle 4s ease-in-out infinite;
 	}
 
 	@keyframes twinkle {
 		0%,
 		100% {
-			transform: scale(0.3) rotate(0deg);
-			opacity: 0.2;
+			opacity: 1;
 		}
 		50% {
-			transform: scale(1) rotate(45deg);
-			opacity: 1;
+			opacity: 0.35;
 		}
 	}
 
 	@media (prefers-reduced-motion: reduce) {
-		.sparkles span {
+		.twinkle {
 			animation: none;
 		}
 	}
