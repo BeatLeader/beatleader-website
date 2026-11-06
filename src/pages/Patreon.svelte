@@ -223,8 +223,16 @@
 					<div class="benefit-button-container">
 						<Button
 							iconFa="fas fa-download"
+							title={!loggedInPlayer || !isSupporter ? 'Log in on the top of the Page and Link Patreon' : 'Download Reesabers for 1.45.3'}
+							label="Quest 1.45.3"
+							disabled={!loggedInPlayer || !isSupporter}
+							type="green"
+							url={BL_API_URL + 'questreesabersversion?version=1.45.3'}
+							onlyurl={true} />
+						<Button
+							iconFa="fas fa-download"
 							title={!loggedInPlayer || !isSupporter ? 'Log in on the top of the Page and Link Patreon' : 'Download Reesabers for 1.40.8'}
-							label="Quest 1.40.8 (v0.3.20)"
+							label="Quest 1.40.8"
 							disabled={!loggedInPlayer || !isSupporter}
 							type="green"
 							url={BL_API_URL + 'questreesabersversion?version=1.40.8'}
@@ -262,13 +270,23 @@
 				{:else}
 					<div class="benefit-button-top-container">
 						<div class="benefit-button-container">
-							<span>PC (v0.3.20):</span>
+							<span>PC (v0.4):</span>
 							<Button
 								iconFa="fas fa-download"
 								title={!loggedInPlayer || !isSupporter
 									? 'Log in on the top of the Page and Link Patreon'
-									: 'Download Reesabers for game version 1.42'}
-								label="Download for PC 1.42"
+									: 'Download Reesabers for game version 1.45.3'}
+								label="PC 1.45.3"
+								url={BL_API_URL + 'reesabersversion?version=1.45.3'}
+								onlyurl={true}
+								disabled={!loggedInPlayer || !isSupporter}
+								type="green" />
+							<Button
+								iconFa="fas fa-download"
+								title={!loggedInPlayer || !isSupporter
+									? 'Log in on the top of the Page and Link Patreon'
+									: 'Download Reesabers for game version 1.42-44.1'}
+								label="PC 1.42-1.44.1"
 								url={BL_API_URL + 'reesabersversion?version=1.42.0'}
 								onlyurl={true}
 								disabled={!loggedInPlayer || !isSupporter}
@@ -278,8 +296,8 @@
 								title={!loggedInPlayer || !isSupporter
 									? 'Log in on the top of the Page and Link Patreon'
 									: 'Download Reesabers for game version 1.38-1.40'}
-								label="Download for PC 1.38-1.40.8"
-								url={BL_API_URL + 'reesabersversion?version=1.40.0'}
+								label="PC 1.38-1.40.8"
+								url={BL_API_URL + 'reesabersversion?version=1.40.8'}
 								onlyurl={true}
 								disabled={!loggedInPlayer || !isSupporter}
 								type="green" />
@@ -288,18 +306,26 @@
 								title={!loggedInPlayer || !isSupporter
 									? 'Log in on the top of the Page and Link Patreon'
 									: 'Download Reesabers for game versions from 1.27 to 1.29.1'}
-								label="Download for PC 1.27-1.29.1"
+								label="PC 1.27-1.29.1"
 								url={BL_API_URL + 'reesabersversion?version=1.29.1'}
 								onlyurl={true}
 								disabled={!loggedInPlayer || !isSupporter}
 								type="green" />
 						</div>
 						<div class="benefit-button-container">
-							<span>QUEST:</span>
+							<span>QUEST (0.4):</span>
+							<Button
+								iconFa="fas fa-download"
+								title={!loggedInPlayer || !isSupporter ? 'Log in on the top of the Page and Link Patreon' : 'Download Reesabers for 1.45.3'}
+								label="Quest 1.45.3"
+								disabled={!loggedInPlayer || !isSupporter}
+								type="green"
+								url={BL_API_URL + 'questreesabersversion?version=1.45.3'}
+								onlyurl={true} />
 							<Button
 								iconFa="fas fa-download"
 								title={!loggedInPlayer || !isSupporter ? 'Log in on the top of the Page and Link Patreon' : 'Download Reesabers for 1.40.8'}
-								label="Quest 1.40.8 (v0.3.20)"
+								label="Quest 1.40.8"
 								disabled={!loggedInPlayer || !isSupporter}
 								type="green"
 								url={BL_API_URL + 'questreesabersversion?version=1.40.8'}
