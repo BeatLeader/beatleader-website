@@ -30,7 +30,7 @@
 				<span class="event-title">Better Speed!</span>
 				<span class="event-text">Compete on custom speed modifiers with improved NJS</span>
 				<div>
-					<Button label="JOIN THE EVENT" cls="speed-banner-btn" iconFa="fas fa-bolt" color="white" bgColor="#d4144a" />
+					<Button label="JOIN THE EVENT" cls="speed-banner-btn" iconFa="fas fa-bolt" color="white" bgColor="#d4144a" on:click={() => navigate(`/event/${EVENT_ID}`)} />
 				</div>
 			</div>
 		</div>
