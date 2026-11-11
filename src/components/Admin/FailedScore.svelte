@@ -1,69 +1,87 @@
 <script>
+	import {createEventDispatcher} from 'svelte';
 	import {fade, fly, slide} from 'svelte/transition';
-	import {opt} from '../../utils/js';
 	import {navigate} from 'svelte-routing';
+	import {formatNumber} from '../../utils/format';
 	import SongInfo from '../Player/SongInfo.svelte';
 	import FormattedDate from '../Common/FormattedDate.svelte';
 	import SongScoreDetails from '../Player/SongScoreDetails.svelte';
 	import Icons from '../Song/Icons.svelte';
 	import PlayerPerformance from '../Player/PlayerPerformance.svelte';
 	import PlayerNameWithFlag from '../Common/PlayerNameWithFlag.svelte';
+	import Avatar from '../Common/Avatar.svelte';
 	import Button from '../Common/Button.svelte';
 	import ScoreRank from '../Player/ScoreRank.svelte';
+	import {failedScoreType} from './failed-score-types';
+	import {accountKind, joinedInfo} from './admin-player';
 
-	export let playerId = null;
 	export let songScore = null;
-	export let fixedBrowserTitle = null;
 	export let idx = 0;
-	export let service = null;
 	export let store = null;
-	export let isAdmin = false;
+	export let playerFailedCount = 0;
+
+	const dispatch = createEventDispatcher();
 
 	let showDetails = false;
+	let showFullError = false;
 
-	function navigateToPlayer(playerId) {
-		if (!playerId) return;
+	function errorSummary(error) {
+		const lines = (error ?? '')
+			.split('\n')
+			.map(l => l.trim())
+			.filter(l => l.length);
+		const summary = lines.find(l => !l.startsWith('at ')) ?? lines[0] ?? '';
 
-		navigate(`/u/${playerId}`);
+		return {summary: summary.length > 240 ? summary.slice(0, 240) + '...' : summary, hasMore: lines.length > 1 || summary.length > 240};
 	}
 
-	$: leaderboard = opt(songScore, 'leaderboard', null);
-	$: score = opt(songScore, 'score', null);
-	$: prevScore = opt(songScore, 'prevScore', null);
-	$: beatSavior = opt(songScore, 'beatSavior', null);
-	$: song = opt(leaderboard, 'song');
-	$: hash = opt(song, 'hash');
-	$: twitchUrl = opt(songScore, 'twitchVideo.url', null);
-	$: diffInfo = opt(leaderboard, 'diffInfo');
-	$: modifiers = songScore?.leaderboard?.difficultyBl?.modifierValues ?? null;
+	function navigateToPlayer() {
+		if (score?.playerId) navigate(`/u/${score.playerId}`);
+	}
+
+	$: leaderboard = songScore?.leaderboard ?? null;
+	$: score = songScore?.score ?? null;
+	$: player = songScore?.player ?? null;
+	$: rawPlayer = score?.player ?? null;
+	$: playerInfo = player?.playerInfo ?? null;
+	$: song = leaderboard?.song;
+	$: hash = song?.hash;
+	$: diffInfo = leaderboard?.diffInfo;
+	$: modifiers = leaderboard?.difficultyBl?.modifierValues ?? null;
+	$: type = failedScoreType(score?.type);
+	$: account = accountKind(score?.playerId);
+	$: joined = joinedInfo(rawPlayer?.createdAt);
+	$: totalPlays = rawPlayer?.scoreStats?.totalPlayCount ?? 0;
+	$: ({summary, hasMore} = errorSummary(score?.error));
+	$: detailsScore = songScore ? {...songScore, score: {...songScore.score, id: null}} : null;
 </script>
 
 {#if songScore}
 	<div
-		class={`song-score row-${idx}`}
+		class="song-score {type.tone}"
 		in:fly|global={{x: 300, delay: idx * 30, duration: 500}}
 		out:fade|global={{duration: 100}}
 		class:with-details={showDetails}>
 		<div class="icons up-to-tablet">
-			<Icons {song} {twitchUrl} {diffInfo} replayLink={score.replay} altReplay={true} />
+			<Icons {song} {diffInfo} replayLink={score.replay} altReplay={true} />
 		</div>
 
-		<div class="main" class:beat-savior={service === 'beatsavior'} class:accsaber={service === 'accsaber'}>
+		<div class="main">
 			<span class="rank">
 				<ScoreRank
-					rank={0}
+					rank={score.rank}
 					countryRank={0}
 					countryRankTotal={null}
 					country={score.country}
 					hmd={score.hmd}
-					platform={score.player.scoreStats.platform} />
+					platform={rawPlayer?.scoreStats?.platform} />
 				<div class="timeset tablet-and-up">
-					<FormattedDate date={score.timeSet} prevPrefix="vs " prevDate={prevScore ? prevScore.timeSet : null} />
+					<FormattedDate date={score.timeSet} />
 				</div>
 			</span>
 
 			<span class="timeset mobile-only">
-				<FormattedDate date={score.timeSet} prevPrefix="vs " prevDate={prevScore ? prevScore.timeSet : null} />
+				<FormattedDate date={score.timeSet} />
 			</span>
 
 			<span class="song">
@@ -72,62 +90,92 @@
 					{score}
 					rank={score.rank}
 					{hash}
-					{twitchUrl}
-					notClickable={['beatsavior'].includes(service)}
 					replayLink={score.replay}
 					category={leaderboard?.categoryDisplayName ?? null}
-					{service}
-					{playerId}
-					jumpDistance={beatSavior ? beatSavior.songJumpDistance : 0} />
+					playerId={score.playerId} />
 			</span>
 
 			<div class="score-options-section">
-				<span
-					class="beat-savior-reveal clickable"
+				<button
+					class="beat-savior-reveal"
 					class:opened={showDetails}
 					on:click={() => (showDetails = !showDetails)}
-					title="Show details">
-					<i class="fas fa-chevron-down" />
-				</span>
+					title="Show details"
+					aria-label="Show details">
+					<i class="fas fa-chevron-down"></i>
+				</button>
 			</div>
 
-			<PlayerPerformance {service} {songScore} {showDetails} {modifiers} />
+			<PlayerPerformance service="scores" {songScore} {showDetails} {modifiers} />
 		</div>
-		<PlayerNameWithFlag player={score.player} on:click={score.player ? () => navigateToPlayer(score.player.playerId) : null} />
 
-		<div class="lowerContainer">
-			Fail reason: {score.error}
-			{#if isAdmin || !score.falsePositive}
-				<div class="action-buttons">
-					<Button title="Delete failed score upload" label="Delete" noMargin={true} type="danger" on:click={store.deleteScore(score.id)} />
-					{#if score.replay.length}
-						<Button title="Retry posting score" label="Retry" noMargin={true} type="primary" on:click={store.retryScore(score.id)} />
-
-						{#if isAdmin}
-							<Button title="Retry posting score" label="Allow" noMargin={true} type="danger" on:click={store.retryScore(score.id, true)} />
-						{:else}
-							<Button
-								title="Send this score for developer review"
-								label="False positive"
-								noMargin={true}
-								type="green"
-								on:click={store.markScore(score.id, true)} />
+		<div class="failure">
+			<div class="failed-player">
+				<Avatar {player} cls="is-32x32 clickable" on:click={navigateToPlayer} />
+				<div class="player-info">
+					<PlayerNameWithFlag {player} on:click={navigateToPlayer} />
+					<div class="meta">
+						{#if account}
+							<span class="chip" title={account.title}><i class={account.icon}></i> {account.name}</span>
 						{/if}
-					{/if}
+						{#if joined}
+							<span class="chip" class:warning={joined.fresh} title="Joined {joined.date.toLocaleString()}">joined {joined.relative}</span>
+						{/if}
+						{#if playerInfo?.rank}
+							<span class="chip" title="Global rank and pp"
+								>#{formatNumber(playerInfo.rank, 0)} · {formatNumber(playerInfo.pp ?? 0, 2)}pp</span>
+						{/if}
+						<span class="chip" title="Scores on the leaderboards"
+							>{formatNumber(totalPlays, 0)} {totalPlays == 1 ? 'score' : 'scores'}</span>
+						<button
+							class="chip clickable"
+							class:warning={playerFailedCount > 1}
+							title="Show all failed scores of the player"
+							on:click={() => dispatch('search', score.playerId)}>
+							{formatNumber(playerFailedCount, 0)} failed
+						</button>
+						{#if playerInfo?.banned}
+							<span class="chip danger" title={playerInfo.banDescription ?? ''}>banned</span>
+						{/if}
+						{#if playerInfo?.bot}
+							<span class="chip">bot</span>
+						{/if}
+					</div>
 				</div>
-			{:else}
-				<span style="color: green; margin-left: 2em">Marked as false positive, please wait for devs to check.</span>
-			{/if}
+			</div>
+
+			<div class="reason">
+				<span class="type {type.tone}" title={type.title}><i class="fas {type.icon}"></i> {type.name}</span>
+				<span class="error">{summary}</span>
+				{#if hasMore}
+					<button class="more" on:click={() => (showFullError = !showFullError)}>{showFullError ? 'Hide' : 'Full error'}</button>
+				{/if}
+				{#if score.falsePositive}
+					<span class="chip">Marked false positive by the player</span>
+				{/if}
+			</div>
+
+			<div class="action-buttons">
+				<Button title="Delete the failed score" label="Delete" noMargin={true} type="danger" on:click={() => store.deleteScore(score.id)} />
+				{#if score.replay?.length}
+					<Button title="Run the checks again" label="Retry" noMargin={true} type="primary" on:click={() => store.retryScore(score.id)} />
+					<Button
+						title="Post the score without the checks"
+						label="Allow"
+						noMargin={true}
+						type="green"
+						on:click={() => store.retryScore(score.id, true)} />
+				{/if}
+			</div>
 		</div>
+
+		{#if showFullError}
+			<pre class="full-error" transition:slide|global>{score.error}</pre>
+		{/if}
 
 		{#if showDetails}
 			<div transition:slide|global>
-				<SongScoreDetails
-					{playerId}
-					{songScore}
-					{fixedBrowserTitle}
-					noSsLeaderboard={['beatsavior', 'accsaber'].includes(service)}
-					showAccSaberLeaderboard={'accsaber' === service} />
+				<SongScoreDetails playerId={score.playerId} songScore={detailsScore} />
 			</div>
 		{/if}
 	</div>
@@ -136,12 +184,20 @@
 <style>
 	.song-score {
 		border-bottom: 1px solid var(--row-separator);
-		padding: 0.5em 0;
+		border-left: 3px solid transparent;
+		padding: 0.6em 0.4em 0.6em 0.6em;
 	}
 
-	.action-buttons {
-		display: flex;
-		gap: 0.6em;
+	.song-score.review {
+		border-left-color: var(--beatleader-primary, #eb008c);
+	}
+
+	.song-score.suspicious {
+		border-left-color: #ff6b6b;
+	}
+
+	.song-score.technical {
+		border-left-color: #e8c34a;
 	}
 
 	.song-score .icons.up-to-tablet + .main {
@@ -154,10 +210,6 @@
 		align-items: center;
 		justify-content: center;
 		grid-column-gap: 0.4em;
-	}
-
-	.song-score.with-details .main {
-		border-bottom: none;
 	}
 
 	.song-score .main > *:last-child {
@@ -196,10 +248,6 @@
 		text-align: center;
 	}
 
-	.main.beat-savior .timeset {
-		width: auto;
-	}
-
 	.timeset :global(small) {
 		line-height: 1;
 	}
@@ -210,17 +258,6 @@
 		font-size: 0.8em;
 	}
 
-	.with-badge :global(.badge) {
-		height: 100%;
-	}
-
-	small {
-		display: block;
-		text-align: center;
-		white-space: nowrap;
-		font-size: 0.75em;
-	}
-
 	.score-options-section {
 		display: grid;
 		justify-items: center;
@@ -229,6 +266,10 @@
 
 	.beat-savior-reveal {
 		align-self: end;
+		padding: 0;
+		border: none;
+		background: none;
+		color: inherit;
 		cursor: pointer;
 		transition: transform 500ms;
 		transform-origin: 0.42em 0.8em;
@@ -250,18 +291,130 @@
 		margin-bottom: 0 !important;
 	}
 
-	.lowerContainer {
-		display: flex;
-		justify-content: space-between;
-		margin: 1em 0 0;
+	.failure {
+		display: grid;
+		grid-template-columns: minmax(14em, 22em) 1fr auto;
 		align-items: center;
+		gap: 0.5em 1em;
+		margin-top: 0.6em;
+	}
+
+	.failed-player {
+		display: flex;
+		align-items: center;
+		gap: 0.6em;
+		min-width: 0;
+	}
+
+	.failed-player :global(figure) {
+		flex-shrink: 0;
+	}
+
+	.player-info {
+		display: flex;
+		flex-direction: column;
+		gap: 0.25em;
+		min-width: 0;
+		font-weight: 600;
+	}
+
+	.meta {
+		display: flex;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: 0.3em;
+		font-size: 0.75em;
+		font-weight: normal;
+	}
+
+	.chip,
+	.type {
+		padding: 0.1em 0.45em;
+		border: none;
+		border-radius: 4px;
+		white-space: nowrap;
+		color: inherit;
+		font: inherit;
+		background-color: color-mix(in srgb, var(--textColor, white) 10%, transparent);
+	}
+
+	button.chip {
+		cursor: pointer;
+	}
+
+	button.chip:hover {
+		background-color: color-mix(in srgb, var(--textColor, white) 20%, transparent);
+	}
+
+	.chip.warning {
+		color: #e8c34a;
+	}
+
+	.chip.danger {
+		color: #ff6b6b;
+	}
+
+	.reason {
+		display: flex;
+		align-items: baseline;
+		flex-wrap: wrap;
+		gap: 0.4em 0.6em;
+		min-width: 0;
+		font-size: 0.9em;
+	}
+
+	.type {
+		font-size: 0.9em;
+	}
+
+	.type.review {
+		color: var(--beatleader-primary, #eb008c);
+	}
+
+	.type.suspicious {
+		color: #ff6b6b;
+	}
+
+	.type.technical {
+		color: #e8c34a;
+	}
+
+	.error {
+		min-width: 0;
+		opacity: 0.85;
+		word-break: break-word;
+	}
+
+	.more {
+		padding: 0;
+		border: none;
+		background: none;
+		color: var(--faded, #999);
+		font-size: 0.9em;
+		text-decoration: underline;
+		cursor: pointer;
+	}
+
+	.full-error {
+		max-height: 20em;
+		margin: 0.5em 0 0;
+		padding: 0.6em 0.8em;
+		overflow: auto;
+		border-radius: 6px;
+		background-color: color-mix(in srgb, var(--textColor, white) 5%, transparent);
+		color: inherit;
+		font-size: 0.75em;
+		white-space: pre-wrap;
+		word-break: break-word;
+	}
+
+	.action-buttons {
+		display: flex;
+		gap: 0.5em;
+		font-size: 0.85rem;
 	}
 
 	@media screen and (max-width: 767px) {
-		.song-score {
-			padding: 0.75em 0;
-		}
-
 		.song-score .main {
 			flex-wrap: wrap;
 		}
@@ -280,8 +433,8 @@
 			padding-bottom: 0.75em;
 		}
 
-		.icons {
-			margin-bottom: 0.5em;
+		.failure {
+			grid-template-columns: 1fr;
 		}
 	}
 </style>

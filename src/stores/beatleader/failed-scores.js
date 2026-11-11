@@ -2,6 +2,8 @@ import {writable} from 'svelte/store';
 import {BL_API_URL} from '../../network/queues/beatleader/api-queue';
 import process from '../../network/clients/beatleader/scores/utils/process';
 
+export const FAILED_SCORES_PER_PAGE = 20;
+
 let store = null;
 let storeSubCount = 0;
 export default (refreshOnCreate = true) => {
@@ -10,45 +12,88 @@ export default (refreshOnCreate = true) => {
 
 	let totalScores = {};
 	let currentPage = 1;
+	let currentFilters = {};
 
 	const get = () => totalScores;
 	const {subscribe: subscribeState, set} = writable(totalScores);
 
-	const fetchScores = async page => {
-		currentPage = page;
-		fetch(BL_API_URL + 'user/failedScores?page=' + page, {credentials: 'include'})
-			.then(response => response.json())
-			.then(data => process(data))
-			.then(data => {
-				totalScores.scores = data.data;
-				totalScores.metadata = data.metadata;
-				set(totalScores);
-			});
+	const update = changes => {
+		totalScores = {...totalScores, ...changes};
+		set(totalScores);
 	};
 
-	const deleteScore = async id => {
-		totalScores.scores = totalScores.scores.filter(s => s.score.id != id);
-		set(totalScores);
+	async function readError(response) {
+		const text = await response.text();
+		return text?.length ? text.replace(/^"|"$/g, '') : `Request failed (${response.status})`;
+	}
 
-		fetch(BL_API_URL + 'user/failedscore/remove?id=' + id, {credentials: 'include', method: 'POST'}).then(() => {
-			fetchScores(currentPage);
+	const fetchScores = async (page = currentPage, filters = currentFilters) => {
+		currentPage = page;
+		currentFilters = filters;
+
+		const params = new URLSearchParams({
+			page,
+			count: FAILED_SCORES_PER_PAGE,
+			sortBy: filters.sortBy ?? 'date',
+			order: filters.order ?? 'desc',
 		});
+		if (filters.type && filters.type != 'all') params.set('type', filters.type);
+		const search = filters.search?.trim();
+		if (search?.length) params.set('search', search);
+
+		update({loading: true, error: null});
+		try {
+			const response = await fetch(`${BL_API_URL}user/failedscores?${params}`, {credentials: 'include'});
+			if (!response.ok) throw new Error(await readError(response));
+
+			const data = await response.json();
+			if (page != currentPage || filters != currentFilters) return;
+
+			const processed = process(data);
+			update({
+				scores: processed.data,
+				metadata: processed.metadata,
+				groups: data.groups ?? [],
+				playerCounts: data.playerCounts ?? {},
+				loading: false,
+			});
+		} catch (e) {
+			update({loading: false, error: e.message});
+		}
+	};
+
+	const removeFromList = id => update({scores: (totalScores.scores ?? []).filter(s => s.score.id != id)});
+
+	const deleteScore = async id => {
+		removeFromList(id);
+
+		await fetch(BL_API_URL + 'user/failedscore/remove?id=' + id, {credentials: 'include', method: 'POST'});
+		fetchScores();
 	};
 
 	const retryScore = async (id, allow = false) => {
-		totalScores.scores = totalScores.scores.filter(s => s.score.id != id);
-		set(totalScores);
+		const score = totalScores.scores?.find(s => s.score.id == id);
+		removeFromList(id);
 
-		fetch(BL_API_URL + `user/failedscore/retry?id=${id}&allow=${allow}`, {credentials: 'include', method: 'POST'}).then(() => {
-			fetchScores(currentPage);
-		});
+		let result;
+		try {
+			const response = await fetch(BL_API_URL + `user/failedscore/retry?id=${id}&allow=${allow}`, {credentials: 'include', method: 'POST'});
+			if (response.ok) {
+				const upload = await response.json();
+				result = {ok: upload?.status == 1 || upload?.status == 2, text: upload?.description};
+			} else {
+				result = {ok: false, text: await readError(response)};
+			}
+		} catch (e) {
+			result = {ok: false, text: e.message};
+		}
+
+		const name = score?.leaderboard?.song?.name ?? 'Score';
+		update({notice: {...result, text: `${allow ? 'Allowed' : 'Retried'} ${name}${result.text ? ': ' + result.text : ''}`}});
+		fetchScores();
 	};
 
-	const markScore = async id => {
-		fetch(BL_API_URL + `user/failedscore/falsepositive?id=${id}`, {credentials: 'include', method: 'POST'}).then(() => {
-			fetchScores(currentPage);
-		});
-	};
+	const clearNotice = () => update({notice: null});
 
 	const refresh = async () => fetchScores(1);
 
@@ -66,13 +111,15 @@ export default (refreshOnCreate = true) => {
 		};
 	};
 
-	return {
+	store = {
 		subscribe,
 		get,
 		refresh,
 		deleteScore,
 		retryScore,
-		markScore,
+		clearNotice,
 		fetchScores,
 	};
+
+	return store;
 };

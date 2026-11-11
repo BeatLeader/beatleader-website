@@ -45,6 +45,7 @@
 		PlaylistPage: () => import('./pages/Playlist.svelte'),
 		FeaturedPlaylists: () => import('./pages/FeaturedPlaylists.svelte'),
 		SigninPage: () => import('./pages/SignIn.svelte'),
+		ResetPasswordPage: () => import('./pages/ResetPassword.svelte'),
 		OauthSignInPage: () => import('./pages/OauthSignIn.svelte'),
 		SupportPage: () => import('./pages/Support.svelte'),
 		StaffDashboard: () => import('./pages/StaffDashboard.svelte'),
@@ -617,6 +618,11 @@
 					</Route>
 					<Route path="/dashboard">
 						{#await pageImports.DashboardPage() then module}
+							<svelte:component this={module.default} />
+						{/await}
+					</Route>
+					<Route path="/reset-password">
+						{#await pageImports.ResetPasswordPage() then module}
 							<svelte:component this={module.default} />
 						{/await}
 					</Route>

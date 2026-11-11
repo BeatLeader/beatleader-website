@@ -99,7 +99,7 @@
 						</div>
 						<Button iconFa="fas fa-arrow-right-to-bracket" label="Log In" on:click={() => account.logIn(login, password)} />
 					</form>
-					<a href="https://discord.com/channels/921820046345523311/951919251227295844">forgot password?</a>
+					<a href="/reset-password" on:click|preventDefault={() => navigate('/reset-password')}>forgot password?</a>
 				</div>
 			</div>
 
