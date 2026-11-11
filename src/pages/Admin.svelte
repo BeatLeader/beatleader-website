@@ -9,6 +9,7 @@
 	import AliasRequests from '../components/Admin/AliasRequests.svelte';
 	import FailedScores from '../components/Admin/FailedScores.svelte';
 	import ReeSabersFiles from '../components/Admin/ReeSabersFiles.svelte';
+	import ProfileReviews from '../components/Admin/ProfileReviews.svelte';
 
 	export let location;
 	export let initialType;
@@ -27,6 +28,7 @@
 		{id: 'aliasRequests', label: 'Alias requests', title: 'Sort by accuracy clans with 3 players or more', iconFa: 'fa fa-user'},
 		{id: 'countryRequests', label: 'Country requests', title: 'Sort by maps captured', iconFa: 'fa fa-flag'},
 		{id: 'reeSabers', label: 'ReeSabers files', title: 'Manage ReeSabers release and beta builds', iconFa: 'fas fa-file-zipper'},
+		{id: 'profileReviews', label: 'Profile reviews', title: 'Name, avatar and cover changes reviewed by Claude', iconFa: 'fas fa-user-shield'},
 	];
 	let sortValues = sortValues1;
 	let sortValue = sortValues[0];
@@ -49,6 +51,8 @@
 				<AliasRequests />
 			{:else if type == 'reeSabers'}
 				<ReeSabersFiles />
+			{:else if type == 'profileReviews'}
+				<ProfileReviews />
 			{/if}
 		</ContentBox>
 	</article>
