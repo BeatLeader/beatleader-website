@@ -1459,6 +1459,8 @@ export function describeProfilePart(part) {
 			return 'Friends mini ranking';
 		case 'devInfo':
 			return 'Dev info';
+		case 'clanEffects':
+			return 'Clan effects';
 	}
 
 	return 'Undefined';

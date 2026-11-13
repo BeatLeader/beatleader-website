@@ -233,6 +233,7 @@ export const DEFAULT_CONFIG = {
 		countryMiniRanking: true,
 		friendsMiniRanking: false,
 		devInfo: false,
+		clanEffects: true,
 	},
 	visibleScoreIcons: {
 		pin: true,

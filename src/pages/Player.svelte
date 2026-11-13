@@ -45,6 +45,7 @@
 	export let initialPlayerId = null;
 	export let initialParams = null;
 	export let location = null;
+	export let clanEffects = true;
 
 	let service = null;
 	let serviceParams = null;
@@ -373,6 +374,7 @@
 	$: playerPage && toggleRandomImageOnHover(playerPage, playerInfo?.clans?.filter(cl => cl.tag == 'SABA').length);
 	$: showGamifiedVivifyCongratulation(isMain, ssBadges, $configStore.preferences.gamifiedVivifyShown);
 	$: showBeatTheHeatCongratulation(isMain, achievements, ssBadges, $configStore.preferences.beatTheHeat2026Shown);
+	$: clanEffects = $configStore.profileParts.clanEffects
 </script>
 
 <svelte:head>
@@ -381,7 +383,7 @@
 
 <svelte:window bind:innerWidth bind:innerHeight />
 
-{#if playerInfo?.clans?.filter(cl => cl.tag == 'SOUP').length}
+{#if playerInfo?.clans?.filter(cl => cl.tag == 'SOUP').length && clanEffects}
 	<RandomRain />
 {/if}
 
@@ -400,7 +402,9 @@
 				on:player-data-updated={onPlayerDataUpdated}
 				{avatarHash}
 				fixedBrowserTitle={browserTitle}
-				startEditing={editing} />
+				startEditing={editing}
+				{clanEffects}
+			/>
 
 			<BioCarousel
 				{playerId}
