@@ -1,5 +1,5 @@
 <script>
-	import {createEventDispatcher} from 'svelte';
+	import {createEventDispatcher, onDestroy} from 'svelte';
 	import createAccountStore from '../../stores/beatleader/account';
 	import {configStore} from '../../stores/config';
 
@@ -10,6 +10,7 @@
 	import ClanBadges from './ClanBadges.svelte';
 	import BanForm from './BanForm.svelte';
 	import ProfileChange from './ProfileChange.svelte';
+	import NameHistoryRemovalDialog from './NameHistoryRemovalDialog.svelte';
 	import {BL_API_URL} from '../../network/queues/beatleader/api-queue';
 	import Dialog from '../Common/Dialog.svelte';
 	import {SsrHttpResponseError} from '../../network/errors';
@@ -72,7 +73,54 @@
 	let showBanForm = false;
 	let showChanges = false;
 
-	$: changes = playerInfo?.changes;
+	let removals = {};
+	let removalsFor = null;
+	let removalChange = null;
+	let removalPolls = 0;
+	let removalPollTimer = null;
+
+	async function fetchRemovals() {
+		try {
+			const response = await fetch(`${BL_API_URL}user/namehistory/removals`, {credentials: 'include'});
+			if (response.ok) {
+				const list = await response.json();
+				removals = list.reduce((byChange, r) => (byChange[r.changeId] ? byChange : {...byChange, [r.changeId]: r}), {});
+			}
+		} catch (e) {}
+		schedulePoll();
+	}
+
+	function schedulePoll() {
+		clearTimeout(removalPollTimer);
+		if (showChanges && removalPolls < 12 && Object.values(removals).some(r => r.status === 'pending')) {
+			removalPolls++;
+			removalPollTimer = setTimeout(fetchRemovals, 10000);
+		}
+	}
+
+	function onRemovalRequested(e) {
+		removals = {...removals, [e.detail.changeId]: e.detail};
+		removalChange = null;
+		removalPolls = 0;
+		schedulePoll();
+	}
+
+	function loadRemovals(showChanges, isMain, playerId) {
+		if (!showChanges || !isMain) {
+			clearTimeout(removalPollTimer);
+			return;
+		}
+		if (removalsFor !== playerId) {
+			removalsFor = playerId;
+			removals = {};
+			removalPolls = 0;
+		}
+		fetchRemovals();
+	}
+
+	onDestroy(() => clearTimeout(removalPollTimer));
+
+	$: changes = playerInfo?.changes?.filter(c => removals[c.id]?.status !== 'removed');
 	$: loggedInPlayer = $account?.id;
 	$: isMain = playerId && $account?.id === playerId;
 	$: isAdmin = $account?.player?.role?.includes('admin');
@@ -155,7 +203,12 @@
 		isUserFounderOfTheClan && !isPlayerClanMember && !!$account?.clan?.pendingInvites?.find(pId => pId === playerId);
 	$: fetchAliasRequest($account);
 	$: updateZIndex(invitationConfirmationType || showBanForm);
+	$: loadRemovals(showChanges, isMain, playerId);
 </script>
+
+{#if removalChange}
+	<NameHistoryRemovalDialog change={removalChange} on:cancel={() => (removalChange = null)} on:requested={onRemovalRequested} />
+{/if}
 
 {#if showBanForm}
 	<BanForm {playerId} accountStore={account} on:finished={() => (showBanForm = false)} />
@@ -214,8 +267,12 @@
 
 		{#if showChanges}
 			<ContentBox>
-				{#each changes as change, idx}
-					<ProfileChange {change} />
+				{#each changes as change}
+					<ProfileChange
+						{change}
+						removal={removals[change.id]}
+						canRequestRemoval={isMain}
+						on:request-removal={e => (removalChange = e.detail)} />
 				{/each}
 			</ContentBox>
 		{/if}

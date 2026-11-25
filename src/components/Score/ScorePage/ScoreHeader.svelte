@@ -158,7 +158,7 @@
 				</div>
 			{/if}
 			<div class="replay-icons-container">
-				<Icons icons={['replay', 'analyzer', 'altReplay', 'download']} score={score?.score} />
+				<Icons icons={['replay', 'analyzer', 'altReplay', 'download', 'delete']} score={score?.score} />
 			</div>
 		</div>
 	</div>

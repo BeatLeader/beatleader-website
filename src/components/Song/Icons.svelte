@@ -9,13 +9,16 @@
 	import Button from '../Common/Button.svelte';
 	import Preview from '../Common/Preview.svelte';
 	import {capitalize, decapitalizeFirstLetter} from '../../utils/js';
-	import {BL_ANALYZER_URL, BL_API_URL, BL_REPLAYS_URL} from '../../network/queues/beatleader/api-queue';
+	import {BL_ANALYZER_URL, BL_REPLAYS_URL} from '../../network/queues/beatleader/api-queue';
 	import PinIcon from '../Player/PinIcon.svelte';
 	import ScoreActionButtonsLayout from './ScoreActionButtonsLayout.svelte';
 	import {getNotificationsContext} from 'svelte-notifications';
 	import {isPatron} from '../Player/Overlay/overlay';
 	import Spinner from '../Common/Spinner.svelte';
 	import PlaylistButton from '../Playlists/PlaylistButton.svelte';
+	import ScoreDeletionDialog from '../Admin/ScoreDeletionDialog.svelte';
+	import ScoreSimulationDialog from '../Admin/ScoreSimulationDialog.svelte';
+	import {markedScores, reasonLabel} from '../../stores/beatleader/score-deletions';
 
 	export let layoutType = 'flat';
 	export let song;
@@ -33,7 +36,7 @@
 	export let battleRoyaleDraft = false;
 	export let batleRoyale = false;
 
-	const {open} = getContext('simple-modal');
+	const {open, close} = getContext('simple-modal');
 	const showPreview = (e, previewLink) => {
 		if (e.ctrlKey || e.metaKey || window.event.ctrlKey ) {
 			openInBackground(previewLink);
@@ -208,6 +211,7 @@
 	$: ocdifficulties = ocplaylistSong?.difficulties?.map(el => capitalize(el.name) + el.characteristic);
 
 	$: isAdmin = $account.player && $account.player.playerInfo.role && $account.player.playerInfo.role.includes('admin');
+	$: markedReason = score?.id ? $markedScores.get(score.id) : null;
 	$: replayUrl = webPlayerLink(replayLink, score?.id, !shownIcons.includes('altReplay') && $configStore.preferences.webPlayer, attempt);
 	$: altReplayUrl = webPlayerLink(replayLink, score?.id, 'arcviewer', attempt);
 	$: analyzerUrl = analyzerLink(replayLink, score?.id);
@@ -220,18 +224,22 @@
 
 <ScoreActionButtonsLayout type={layoutType}>
 	<span slot="special_buttons">
-		{#if shownIcons.includes('delete') && isAdmin && score?.id}
+		{#if shownIcons.includes('delete') && isAdmin && score?.id && !attempt}
 			<Button
-				iconFa="fas fa-trash-alt"
-				title="Delete score"
+				iconFa={markedReason ? 'fas fa-hourglass-half' : 'fas fa-trash-alt'}
+				title={markedReason ? `Marked for deletion: ${reasonLabel(markedReason)}` : 'Mark for deletion'}
 				noMargin={true}
 				type="danger"
+				bgColor={markedReason ? '#c27a0e' : null}
 				animated={true}
-				on:click={() =>
-					fetch(BL_API_URL + `score/${score?.id}`, {
-						method: 'DELETE',
-						credentials: 'include',
-					})} />
+				on:click={() => open(ScoreDeletionDialog, {scoreId: score.id, close: () => close()})} />
+			<Button
+				iconFa="fas fa-robot"
+				title="Check with the simulator"
+				noMargin={true}
+				type="purple"
+				animated={true}
+				on:click={() => open(ScoreSimulationDialog, {scoreId: score.id, close: () => close()})} />
 		{/if}
 		{#if !noPin && shownIcons.includes('pin')}
 			<PinIcon scoreId={score?.id} {attempt} on:score-pinned />

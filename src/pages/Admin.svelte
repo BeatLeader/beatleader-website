@@ -12,6 +12,8 @@
 	import ProfileReviews from '../components/Admin/ProfileReviews.svelte';
 	import ProfileFlags from '../components/Admin/ProfileFlags.svelte';
 	import PasswordResets from '../components/Admin/PasswordResets.svelte';
+	import ScoreDeletions from '../components/Admin/ScoreDeletions.svelte';
+	import NameHistoryRemovals from '../components/Admin/NameHistoryRemovals.svelte';
 
 	export let location;
 	export let initialType;
@@ -30,9 +32,31 @@
 		{id: 'aliasRequests', label: 'Alias requests', title: 'Sort by accuracy clans with 3 players or more', iconFa: 'fa fa-user'},
 		{id: 'countryRequests', label: 'Country requests', title: 'Sort by maps captured', iconFa: 'fa fa-flag'},
 		{id: 'reeSabers', label: 'ReeSabers files', title: 'Manage ReeSabers release and beta builds', iconFa: 'fas fa-file-zipper'},
-		{id: 'profileReviews', label: 'Profile reviews', title: 'Name, avatar and cover changes reviewed by Claude', iconFa: 'fas fa-user-shield'},
+		{
+			id: 'profileReviews',
+			label: 'Profile reviews',
+			title: 'Name, avatar and cover changes reviewed by Claude',
+			iconFa: 'fas fa-user-shield',
+		},
 		{id: 'profileFlags', label: 'Profile flags', title: 'Proxy sign-ups, sign-up bursts and shared IPs', iconFa: 'fas fa-user-secret'},
-		{id: 'passwordResets', label: 'Password resets', title: 'Requests to the staff from the password reset and the log of resets', iconFa: 'fas fa-key'},
+		{
+			id: 'passwordResets',
+			label: 'Password resets',
+			title: 'Requests to the staff from the password reset and the log of resets',
+			iconFa: 'fas fa-key',
+		},
+		{
+			id: 'scoreDeletions',
+			label: 'Score deletions',
+			title: 'Scores marked for deletion and the deleted ones',
+			iconFa: 'fas fa-trash-alt',
+		},
+		{
+			id: 'nameHistoryRemovals',
+			label: 'Name history removals',
+			title: 'Player requests to remove a change from their name history, reviewed by Claude',
+			iconFa: 'fas fa-eraser',
+		},
 	];
 	let sortValues = sortValues1;
 	let sortValue = sortValues[0];
@@ -61,6 +85,10 @@
 				<ProfileFlags />
 			{:else if type == 'passwordResets'}
 				<PasswordResets />
+			{:else if type == 'scoreDeletions'}
+				<ScoreDeletions />
+			{:else if type == 'nameHistoryRemovals'}
+				<NameHistoryRemovals />
 			{/if}
 		</ContentBox>
 	</article>
