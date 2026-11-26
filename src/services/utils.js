@@ -13,6 +13,15 @@ export const getServicePlayerGain = (playerHistory, dateTruncFunc, dateKey, days
 		.find(h => h?.[dateKey] <= compareToDate && h?.[dateKey] >= maxServiceDate);
 };
 
+export const parseStarsFilter = stars => {
+	if (typeof stars === 'string') {
+		const [from, to] = stars.split(',').map(v => parseFloat(v));
+		stars = {from: Number.isFinite(from) ? from : undefined, to: Number.isFinite(to) ? to : undefined};
+	}
+
+	return stars?.from != null || stars?.to != null ? stars : null;
+};
+
 export const serviceFilterFunc = serviceParams => s => {
 	// accept score if there is no non-empty filter
 	if (!Object.entries(serviceParams?.filters ?? {})?.filter(([key, val]) => val)?.length) return true;

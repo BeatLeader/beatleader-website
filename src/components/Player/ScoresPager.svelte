@@ -7,6 +7,7 @@
 	import createScoresService from '../../services/beatleader/scores';
 	import createScoreAttemptsService from '../../services/beatleader/score-attempts';
 	import createAccSaberService from '../../services/accsaber';
+	import {parseStarsFilter} from '../../services/utils';
 	import ChartBrowser from '../Common/ChartBrowser.svelte';
 	import Pager from '../Common/Pager.svelte';
 	import {debounce} from '../../utils/debounce';
@@ -132,9 +133,15 @@
 
 		try {
 			const params = JSON.parse(JSON.stringify(serviceParams));
-			if (!params.filters) params.filters = {};
-			params.filters.batch = playerScoresHistogram.bucketSizeServerConvert(playerScoresHistogramBucketSize);
-			params.filters.count = itemsPerPage;
+			const {stars, ...restFilters} = params.filters ?? {};
+			const starsRange = parseStarsFilter(stars);
+			params.filters = {
+				...restFilters,
+				starsFrom: starsRange?.from,
+				starsTo: starsRange?.to,
+				batch: playerScoresHistogram.bucketSizeServerConvert(playerScoresHistogramBucketSize),
+				count: itemsPerPage,
+			};
 
 			const histogram = await blApiScoresHistogramClient.getProcessed({playerId, params});
 			if (!histogram) throw 'Data error';

@@ -4,6 +4,7 @@ import {configStore} from './config';
 import createAccountStore from './beatleader/account';
 import {BL_API_URL} from '../network/queues/beatleader/api-queue';
 import {substituteVarsUrl} from '../utils/format';
+import {parseStarsFilter} from '../services/utils';
 import eventBus from '../utils/broadcast-channel-pubsub';
 import {uuid} from '../utils/uuid';
 
@@ -975,6 +976,8 @@ export default () => {
 			filters.order = 'desc';
 		}
 
+		const starsRange = parseStarsFilter(filters.filters?.stars);
+
 		let url = substituteVarsUrl(
 			BL_API_URL +
 				'playlist/scores/generate?playerId=${playerId}&leaderboardContext=${leaderboardContext}&page=${page}&sortBy=${sortBy}&order=${order}&thenSortBy=${thenSort}&thenOrder=${thenOrder}&search=${search}&noSearchSort=${noSearchSort}&diff=${diff}&mode=${mode}&requirements=${requirements}&type=${songType}&hmd=${hmd}&modifiers=${modifiers}&stars_from=${starsFrom}&stars_to=${starsTo}&eventId=${eventId}&count=${count}&duplicate_diffs=${duplicateDiffs}',
@@ -984,8 +987,8 @@ export default () => {
 				order: filters.order,
 				sortBy: filters.sort,
 				duplicateDiffs: filters.duplicateDiffs,
-				starsTo: filters.filters.stars?.to,
-				starsFrom: filters.filters.stars?.from,
+				starsTo: starsRange?.to,
+				starsFrom: starsRange?.from,
 				...filters.filters,
 			},
 			true,

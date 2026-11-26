@@ -1,7 +1,7 @@
 import createScoresService from '../../../../services/beatleader/scores';
 import createScoreAttemptsService from '../../../../services/beatleader/score-attempts';
 import createAccSaberService from '../../../../services/accsaber';
-import {capitalize} from '../../../../utils/js';
+import {parseStarsFilter} from '../../../../services/utils';
 import {BL_API_URL, SPECIAL_PLAYER_ID, ALL_SCORES_PLAYER_ID} from '../../../../network/queues/beatleader/api-queue';
 import {processScore} from '../../../../network/clients/beatleader/scores/utils/processScore';
 import {fetchJson} from '../../../../network/fetch';
@@ -27,19 +27,14 @@ export default () => {
 	const processServiceParamsFilters = serviceParams => {
 		if (!serviceParams) return serviceParams;
 
-		const {filters: {stars = {}, ...restFilters} = {}, ...restParams} = serviceParams;
+		const {filters: {stars, ...restFilters} = {}, ...restParams} = serviceParams;
+		const starsRange = parseStarsFilter(stars);
 
 		return {
 			...restParams,
 			filters: {
 				...restFilters,
-				...Object.entries(stars ?? {}).reduce(
-					(starFilter, [key, value]) => ({
-						...starFilter,
-						[`stars${capitalize(key)}`]: value,
-					}),
-					{}
-				),
+				...(starsRange ? {starsFrom: starsRange.from, starsTo: starsRange.to} : {}),
 			},
 		};
 	};

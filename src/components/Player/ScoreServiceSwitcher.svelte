@@ -18,6 +18,7 @@
 	import Switcher from '../Common/Switcher.svelte';
 	import Button from '../Common/Button.svelte';
 	import editModel from '../../stores/beatleader/profile-edit-model';
+	import {parseStarsFilter} from '../../services/utils';
 
 	export let playerId = null;
 	export let playerAlias = null;
@@ -467,15 +468,6 @@
 		});
 	}
 
-	function processStars(stars) {
-		if (stars.from !== undefined) {
-			return stars;
-		} else {
-			const list = stars.split(',').map(s => parseFloat(s));
-			return {from: list[0], to: list[1]};
-		}
-	}
-
 	function updateAvailableServices(
 		availableServiceNames,
 		service,
@@ -661,7 +653,7 @@
 											iconFa: 'fa fa-star',
 											title: 'Filter by map stars',
 											open: !!serviceParams?.filters?.stars,
-											defaultValue: serviceParams?.filters?.stars ? processStars(serviceParams.filters.stars) : null,
+											defaultValue: parseStarsFilter(serviceParams?.filters?.stars),
 											minValue: 0,
 											maxValue: 30,
 											step: 0.1,
