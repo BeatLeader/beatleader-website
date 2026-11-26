@@ -15,6 +15,7 @@
 	import Spinner from '../Common/Spinner.svelte';
 	import ContentBox from '../Common/ContentBox.svelte';
 	import LeaderboardHeader from '../Leaderboard/LeaderboardHeader.svelte';
+	import ShownBotsPicker from './ShownBotsPicker.svelte';
 
 	export let animationSign = 1;
 
@@ -252,6 +253,7 @@
 	let isUpdating = false;
 
 	let showBots = false;
+	let shownBots = null;
 	let showAllRatings = false;
 	let anySupporter = false;
 	let showExplicitCovers = false;
@@ -301,6 +303,8 @@
 	function updateProfileSettings(account) {
 		if (account?.player?.profileSettings) {
 			showBots = account.player.profileSettings.showBots;
+			const storedShownBots = account.player.profileSettings.shownBots;
+			shownBots = storedShownBots == null ? null : storedShownBots.split(',').filter(id => id.length);
 			showAllRatings = account.player.profileSettings.showAllRatings;
 			showExplicitCovers = account.player.profileSettings.showExplicitCovers;
 		}
@@ -385,6 +389,9 @@
 				<div class="single" title="Display scores from AI on leaderboards">
 					<Switch disabled={isUpdating} value={showBots} label="Show bots" fontSize={12} design="slider" on:click={() => toggleBots()} />
 				</div>
+				{#if showBots}
+					<ShownBotsPicker {account} savedShownBots={shownBots} />
+				{/if}
 				{#if !anySupporter}
 					<span><br />To enable this feature please support us on <a href="https://patreon.com/beatleader">Patreon</a></span>
 				{/if}

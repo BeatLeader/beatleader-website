@@ -18,6 +18,8 @@ export default () => {
 		signal = null,
 		force = false,
 	} = {}) => {
+		if (type !== 'bots') filters = {...filters, botCategory: ''};
+
 		switch (type) {
 			case 'global':
 			case 'clans':

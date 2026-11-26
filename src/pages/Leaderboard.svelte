@@ -73,6 +73,7 @@
 	import LeaderboardDevMenu from '../components/Leaderboard/LeaderboardDevMenu.svelte';
 	import {GLOBAL_LEADERBOARD_TYPE} from '../utils/format';
 	import LeaderboardDetails from '../components/Leaderboard/Details/LeaderboardDetails.svelte';
+	import {BOT_CATEGORIES, DEFAULT_BOT_CATEGORY} from '../utils/beatleader/bots';
 
 	export let leaderboardId;
 	export let type = 'global';
@@ -134,6 +135,11 @@
 			key: 'hmds',
 			default: [],
 			process: processStringArrayFilter,
+		},
+		{
+			key: 'botCategory',
+			default: DEFAULT_BOT_CATEGORY,
+			process: processStringFilter,
 		},
 	];
 
@@ -308,7 +314,10 @@
 		if (newCurrentTypeOption) currentTypeOption = newCurrentTypeOption;
 
 		if (setUrl) {
-			const query = buildSearchFromFiltersWithDefaults(currentFilters, params);
+			const query = buildSearchFromFiltersWithDefaults(
+				currentType === 'bots' ? currentFilters : {...currentFilters, botCategory: DEFAULT_BOT_CATEGORY},
+				params
+			);
 			const url = `/leaderboard/${currentType}/${currentLeaderboardId}/${currentPage}${query.length ? '?' + query : ''}`;
 			if (replace) {
 				window.history.replaceState({}, '', url);
@@ -669,6 +678,14 @@
 		changeParams(currentLeaderboardId, currentType, 1, currentFilters, !dontNavigate, true);
 	}
 
+	const botCategoryOptions = BOT_CATEGORIES.map(c => ({id: c.value, label: c.label, iconFa: c.iconFa, title: c.description}));
+
+	function onBotCategoryChanged(event) {
+		currentFilters.botCategory = event?.detail?.id ?? DEFAULT_BOT_CATEGORY;
+
+		changeParams(currentLeaderboardId, currentType, 1, currentFilters, !dontNavigate, true);
+	}
+
 	let battleRoyaleDraft = false;
 	let battleRoyaleDraftList = [];
 
@@ -932,6 +949,13 @@
 
 				{#if currentType == 'clans'}
 					<Switcher values={clanOptions} value={selectedClan} on:change={onClanTagChanged} />
+				{/if}
+
+				{#if currentType == 'bots'}
+					<Switcher
+						values={botCategoryOptions}
+						value={botCategoryOptions.find(o => o.id === currentFilters.botCategory) ?? botCategoryOptions[0]}
+						on:change={onBotCategoryChanged} />
 				{/if}
 
 				{#if leaderboardShowSorting && currentType != 'clanranking'}

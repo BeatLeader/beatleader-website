@@ -15,6 +15,8 @@
 	import {BL_API_URL} from '../../network/queues/beatleader/api-queue';
 	import {dateFromUnix, formatDate} from '../../utils/date';
 	import {getNotificationsContext} from 'svelte-notifications';
+	import RadioGroup from '../Common/RadioGroup.svelte';
+	import {BOT_CATEGORIES, DEFAULT_BOT_CATEGORY, botCategoryById} from '../../utils/beatleader/bots';
 
 	export let bot = null;
 	export let enableCreateMode = false;
@@ -22,12 +24,20 @@
 	const dispatch = createEventDispatcher();
 	const {addNotification} = getNotificationsContext();
 
+	const categoryOptions = BOT_CATEGORIES.map(c => ({value: c.value, label: c.label, iconFa: c.iconFa, title: c.description}));
+
 	let pendingText = null;
 	let error = null;
 
 	let name = '';
 	let login = '';
 	let password = '';
+	let category = DEFAULT_BOT_CATEGORY;
+
+	let changingCategory = false;
+	let newCategory = null;
+
+	$: botCategory = bot ? botCategoryById(bot.category ?? 0) : null;
 
 	let oneTimePassword = null;
 	let createdBot = null;
@@ -94,8 +104,8 @@
 		pendingText = 'Creating a bot account...';
 		await executeOperation(async () => {
 			const url = substituteVarsUrl(
-				BL_API_URL + 'developer/bot?name=${name}&login=${login}&password=${password}',
-				{name, login, password},
+				BL_API_URL + 'developer/bot?name=${name}&login=${login}&password=${password}&category=${category}',
+				{name, login, password, category},
 				true,
 				true
 			);
@@ -123,6 +133,23 @@
 		pendingText = 'Suspending the bot...';
 		await executeOperation(async () => {
 			await apiFetch(BL_API_URL + `developer/bot/${bot.playerId}/suspend`, {method: 'POST'});
+			await waitForBotsRefresh();
+			dispatch('changed');
+		});
+	}
+
+	function startCategoryChange() {
+		newCategory = botCategory?.value ?? DEFAULT_BOT_CATEGORY;
+		changingCategory = true;
+	}
+
+	async function onChangeCategory() {
+		changingCategory = false;
+		if (newCategory === botCategory?.value) return;
+
+		pendingText = 'Changing the category...';
+		await executeOperation(async () => {
+			await apiFetch(BL_API_URL + `developer/bot/${bot.playerId}/category?category=${newCategory}`, {method: 'POST'});
 			await waitForBotsRefresh();
 			dispatch('changed');
 		});
@@ -169,6 +196,11 @@
 				<input type="text" placeholder="Bot name" bind:value={name} disabled={!!pendingText} />
 				<input type="text" placeholder="Login" bind:value={login} disabled={!!pendingText} />
 				<input type="text" placeholder="Password (leave empty to generate)" bind:value={password} disabled={!!pendingText} />
+				<div class="category-picker">
+					<span>Category:</span>
+					<RadioGroup options={categoryOptions} value={category} label="Bot category" on:change={e => (category = e.detail)} />
+					<span class="category-description">{BOT_CATEGORIES.find(c => c.value === category)?.description ?? ''}</span>
+				</div>
 
 				{#if pendingText}
 					<Spinner />
@@ -194,6 +226,20 @@
 				<a href={`/u/${bot.playerId}`} class="bot-name">{bot.name}</a>
 				<span class="bot-login">Login: {bot.login}</span>
 				<span class="bot-created">Created: {formatDate(dateFromUnix(bot.createdAt), 'short', null)}</span>
+				{#if botCategory}
+					<span class="bot-category" style="color: {botCategory.color}" title={botCategory.description}>
+						<i class={botCategory.iconFa}></i>
+						{botCategory.label}
+					</span>
+				{/if}
+				{#if bot.verified}
+					<span class="bot-verified">
+						<i class="fas fa-circle-check"></i>
+						Verified{bot.verifiedAt ? ' ' + formatDate(dateFromUnix(bot.verifiedAt), 'short', null) : ''}{bot.verificationComment
+							? ': ' + bot.verificationComment
+							: ''}
+					</span>
+				{/if}
 				{#if bot.suspendedAt}
 					<span class="bot-status suspended">
 						Suspended, will be deleted {formatDate(dateFromUnix(bot.deletionDate), 'short', null)} if not activated
@@ -232,11 +278,24 @@
 				<Button iconFa="fas fa-key" label="Confirm password reset" type="danger" on:click={onResetPassword} />
 				<Button label="Cancel" on:click={() => (confirmingReset = false)} />
 			</div>
+		{:else if changingCategory}
+			<div class="category-picker">
+				<RadioGroup options={categoryOptions} value={newCategory} label="Bot category" on:change={e => (newCategory = e.detail)} />
+				<span class="category-description">{BOT_CATEGORIES.find(c => c.value === newCategory)?.description ?? ''}</span>
+				{#if bot.verified && newCategory !== botCategory?.value}
+					<span class="category-warning">Changing the category removes the Verified status.</span>
+				{/if}
+				<div class="buttons">
+					<Button iconFa="fas fa-check" label="Save category" type="primary" on:click={onChangeCategory} />
+					<Button label="Cancel" on:click={() => (changingCategory = false)} />
+				</div>
+			</div>
 		{:else}
 			<div class="buttons">
 				{#if bot.suspendedAt}
 					<Button iconFa="fas fa-play" label="Activate" type="primary" on:click={onActivate} />
 				{:else}
+					<Button iconFa="fas fa-tags" label="Change category" on:click={startCategoryChange} />
 					<Button iconFa="fas fa-key" label="Reset password" on:click={() => (confirmingReset = true)} />
 					<Button iconFa="fas fa-pause" label="Suspend" type="danger" on:click={() => (confirmingSuspend = true)} />
 				{/if}
@@ -285,6 +344,33 @@
 
 	.bot-status.suspended {
 		color: #ff6666;
+	}
+
+	.bot-category,
+	.bot-verified {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.3em;
+	}
+
+	.bot-verified {
+		color: #4caf50;
+	}
+
+	.category-picker {
+		display: flex;
+		flex-direction: column;
+		gap: 0.4em;
+	}
+
+	.category-description {
+		color: var(--faded);
+		font-size: 0.85em;
+	}
+
+	.category-warning {
+		color: #ff6666;
+		font-size: 0.85em;
 	}
 
 	.form {

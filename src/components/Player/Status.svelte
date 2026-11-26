@@ -1,7 +1,16 @@
 <script>
 	import {dateFromUnix, DAYSECONDS, formatDate} from '../../utils/date';
+	import {botCategoryById} from '../../utils/beatleader/bots';
 
 	export let playerInfo;
+
+	$: botCategory = playerInfo.bot ? botCategoryById(playerInfo.botInfo?.category ?? 0) : null;
+	$: botVerified = playerInfo.bot && playerInfo.botInfo?.verified;
+	$: verifiedTitle = botVerified
+		? `Verified by BeatLeader admins${
+				playerInfo.botInfo.verifiedAt ? ' on ' + formatDate(dateFromUnix(playerInfo.botInfo.verifiedAt), 'short', null) : ''
+			}${playerInfo.botInfo.verificationComment ? ': ' + playerInfo.botInfo.verificationComment : ''}`
+		: null;
 
 	$: banDescription = playerInfo.banned && playerInfo.banDescription;
 	$: title = banDescription
@@ -14,6 +23,18 @@
 {#if playerInfo.banned}
 	{#if playerInfo.bot}
 		<span class="status bot" {title}>BOT</span>
+		{#if botCategory}
+			<span class="status bot-category" style="color: {botCategory.color}" title={botCategory.description}>
+				<i class={botCategory.iconFa}></i>
+				{botCategory.label}
+			</span>
+		{/if}
+		{#if botVerified}
+			<span class="status bot-verified" title={verifiedTitle}>
+				<i class="fas fa-circle-check"></i>
+				Verified
+			</span>
+		{/if}
 	{:else if banDescription && banDescription.playerId == banDescription.bannedBy}
 		<span
 			class="status self-banned"
@@ -61,6 +82,18 @@
 
 	.bot {
 		color: blue;
+	}
+
+	.bot-category,
+	.bot-verified {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.3em;
+	}
+
+	.bot-verified {
+		color: #4caf50;
+		cursor: help;
 	}
 
 	.created-by {

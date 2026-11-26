@@ -15,6 +15,7 @@
 	import {fetchJson} from '../network/fetch';
 	import {BL_API_URL, CURRENT_URL} from '../network/queues/beatleader/api-queue';
 	import beatSaverSvg from '../resources/beatsaver.svg';
+	import {BOT_CATEGORIES} from '../utils/beatleader/bots';
 
 	export let page = 1;
 	export let location;
@@ -221,11 +222,19 @@
 			</h1>
 
 			<p class="bots-description">
-				A bot account is useful if you are working on algorithm for passing maps. They compete on the separate bots leaderboard and
-				ranking. Only the best bot score is shown on the main leaderboards for players who enabled "Show bots". <br /> <br />
+				A bot account is useful if you are working on algorithm for passing maps. Bots compete on the separate bots leaderboards and
+				ranking, split by category. Players who enabled "Show bots" pick which bots they see on the main leaderboards. <br /> <br />
+				{#each BOT_CATEGORIES as category}
+					<span style="color: {category.color}"><i class={category.iconFa}></i> <b>{category.label}</b></span>: {category.description}.
+					<br />
+				{/each}
+				<br />
+				Every bot replay is replayed by the game simulator on upload: the note events and the score come from the sabers' movements
+				on the map, not from what the bot wrote, and the replay is saved that way. OST maps can't be simulated, so bots can't post
+				on them. <br /> <br />
 				<b>
-					Please do not create bots for deterministic 100% or near 100% accuracy, these bots will be deleted, and your account
-					won't be able to host bots. Bot movements in the replay MUST be realistic.</b>
+					Pick the category honestly: a Human-like bot MUST have realistic movements in the replay. Bots in the wrong category will
+					be moved or deleted. Admins can mark bots they checked as Verified, changing the category removes it.</b>
 			</p>
 
 			{#if bots}

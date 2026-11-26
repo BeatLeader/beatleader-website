@@ -18,6 +18,8 @@
 	import PlaylistButton from '../Playlists/PlaylistButton.svelte';
 	import createAccountStore from '../../stores/beatleader/account';
 	import createPlaylistStore, {activePlaylistOf} from '../../stores/playlists';
+	import botsStore from '../../stores/beatleader/bots';
+	import {botCategoryById} from '../../utils/beatleader/bots';
 
 	export let leaderboardId = null;
 	export let score = null;
@@ -89,6 +91,26 @@
 	$: isBot = score?.player?.playerInfo?.bot;
 	$: isTemporary = score?.player?.playerInfo?.temporary;
 
+	let botEntry = null;
+	function updateBotEntry(isBot, playerId) {
+		botEntry = null;
+		if (!isBot || !playerId) return;
+
+		botsStore
+			.fetch()
+			.then(data => {
+				if (score?.player?.playerId === playerId) botEntry = data?.byId?.[playerId] ?? null;
+			})
+			.catch(() => {});
+	}
+	$: updateBotEntry(isBot, score?.player?.playerId);
+	$: botCategory = isBot ? botCategoryById(botEntry?.category ?? 0) : null;
+	$: botTitle = botCategory
+		? `${botCategory.label} bot: ${botCategory.description}${
+				botEntry?.verified ? `\nVerified${botEntry.verificationComment ? ': ' + botEntry.verificationComment : ''}` : ''
+			}`
+		: null;
+
 	$: headset = getHeadsetForHMD(score?.score?.hmd);
 	$: controllerDescription =
 		getControllerForEnum(score?.score?.controller).length > 0 ? ' with ' + getControllerForEnum(score?.score?.controller) : '';
@@ -135,8 +157,11 @@
 							onlyLabel={true}
 							fluid={true}
 							color="white"
-							bgColor="blue"
-							title="0100100100100111011011010010000001101110011011110111010000100000011010000111010101101101011000010110111000100000011100000110110001100001011110010110010101110010" />
+							bgColor={botEntry ? botCategory.color : 'blue'}
+							title={botTitle} />
+						{#if botEntry?.verified}
+							<i class="fas fa-circle-check bot-verified" title={botTitle}></i>
+						{/if}
 					</div>
 				{/if}
 				{#if isTemporary}
@@ -463,6 +488,17 @@
 		margin: 0 !important;
 		height: 1.2em;
 		font-size: 0.9em !important;
+	}
+
+	.bot-badge {
+		display: flex;
+		align-items: center;
+		gap: 0.2em;
+	}
+
+	.bot-verified {
+		color: #4caf50;
+		font-size: 0.85em;
 	}
 
 	:global(.temporary-badge .badge) {

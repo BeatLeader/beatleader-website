@@ -9,6 +9,7 @@
 	import CountryPicker from '../Common/CountryPickerSingle.svelte';
 	import ClanBadges from './ClanBadges.svelte';
 	import BanForm from './BanForm.svelte';
+	import BotStatusForm from './BotStatusForm.svelte';
 	import ProfileChange from './ProfileChange.svelte';
 	import NameHistoryRemovalDialog from './NameHistoryRemovalDialog.svelte';
 	import {BL_API_URL} from '../../network/queues/beatleader/api-queue';
@@ -71,7 +72,15 @@
 	}
 
 	let showBanForm = false;
+	let showBotStatusForm = false;
 	let showChanges = false;
+
+	function onBotStatusFinished(e) {
+		showBotStatusForm = false;
+		if (e?.detail?.botInfo) {
+			playerInfo.botInfo = e.detail.botInfo;
+		}
+	}
 
 	let removals = {};
 	let removalsFor = null;
@@ -202,7 +211,7 @@
 	$: hasPlayerPendingInvitation =
 		isUserFounderOfTheClan && !isPlayerClanMember && !!$account?.clan?.pendingInvites?.find(pId => pId === playerId);
 	$: fetchAliasRequest($account);
-	$: updateZIndex(invitationConfirmationType || showBanForm);
+	$: updateZIndex(invitationConfirmationType || showBanForm || showBotStatusForm);
 	$: loadRemovals(showChanges, isMain, playerId);
 </script>
 
@@ -212,6 +221,9 @@
 
 {#if showBanForm}
 	<BanForm {playerId} accountStore={account} on:finished={() => (showBanForm = false)} />
+{/if}
+{#if showBotStatusForm}
+	<BotStatusForm {playerId} botInfo={playerInfo?.botInfo} on:finished={onBotStatusFinished} />
 {/if}
 {#if invitationConfirmationType}
 	<Dialog
@@ -323,6 +335,14 @@
 			</div>
 
 			{#if isAdmin && loggedInPlayer != playerId}
+				{#if playerInfo?.bot}
+					<Button
+						cls="banButton"
+						title="Change the bot category or verify it"
+						label="Bot status"
+						iconFa="fas fa-robot"
+						on:click={() => (showBotStatusForm = !showBotStatusForm)} />
+				{/if}
 				{#if playerInfo?.banned}
 					<Button
 						cls="banButton"

@@ -35,6 +35,7 @@
 	import EventBanner from '../components/Event/EventBanner.svelte';
 	import RankingSorters from '../components/Ranking/RankingSorters.svelte';
 	import RadioGroup from '../components/Common/RadioGroup.svelte';
+	import {BOT_CATEGORIES, DEFAULT_BOT_CATEGORY} from '../utils/beatleader/bots';
 
 	export let page = 1;
 	export let location;
@@ -64,6 +65,7 @@
 		{value: 'only', label: 'Bots only'},
 		{value: 'include', label: 'Include bots'},
 	];
+	const botCategoryOptions = BOT_CATEGORIES.map(c => ({value: c.value, label: c.label}));
 
 	const tabOptions = [
 		{value: 'ranking', label: 'Ranking', iconFa: 'fas fa-hashtag', url: '/ranking/1', cls: 'ranking-tab-button'},
@@ -84,6 +86,7 @@
 		{key: 'hmdMode', default: '', process: processStringFilter},
 		{key: 'role', default: '', process: processStringFilter},
 		{key: 'bots', default: '', process: processStringFilter},
+		{key: 'botCategory', default: DEFAULT_BOT_CATEGORY, process: processStringFilter},
 		{key: 'pp_range', default: '', process: processStringFilter},
 		{key: 'score_range', default: '', process: processStringFilter},
 		{key: 'ranked_score_range', default: '', process: processStringFilter},
@@ -474,6 +477,22 @@
 										}
 									}} />
 							</section>
+							{#if currentFilters.bots === 'only'}
+								<section class="filter">
+									<RadioGroup
+										options={botCategoryOptions}
+										value={currentFilters.botCategory?.length ? currentFilters.botCategory : DEFAULT_BOT_CATEGORY}
+										label="Bot category"
+										on:change={e => {
+											const newValue = e?.detail ?? DEFAULT_BOT_CATEGORY;
+											if (currentFilters.botCategory != newValue) {
+												currentFilters.botCategory = newValue;
+												currentPage = 1;
+												navigateToCurrentPageAndFilters();
+											}
+										}} />
+								</section>
+							{/if}
 						</div>
 					{/if}
 				</section>
