@@ -28,6 +28,7 @@ export default response => {
 				level,
 				prestige,
 				experience,
+				bot,
 			} = player;
 			const difference = lastWeekRank > 0 ? lastWeekRank - rank : null;
 			const countryDifference = lastWeekCountryRank > 0 ? lastWeekCountryRank - countryRank : null;
@@ -55,6 +56,7 @@ export default response => {
 					level,
 					prestige,
 					experience,
+					bot: !!bot,
 				},
 				others: {
 					difference,

@@ -35,7 +35,8 @@
 	import EventBanner from '../components/Event/EventBanner.svelte';
 	import RankingSorters from '../components/Ranking/RankingSorters.svelte';
 	import RadioGroup from '../components/Common/RadioGroup.svelte';
-	import {BOT_CATEGORIES, DEFAULT_BOT_CATEGORY} from '../utils/beatleader/bots';
+	import CheckboxGroup from '../components/Common/CheckboxGroup.svelte';
+	import {BOT_CATEGORIES, parseBotCategories, stringifyBotCategories} from '../utils/beatleader/bots';
 
 	export let page = 1;
 	export let location;
@@ -65,7 +66,7 @@
 		{value: 'only', label: 'Bots only'},
 		{value: 'include', label: 'Include bots'},
 	];
-	const botCategoryOptions = BOT_CATEGORIES.map(c => ({value: c.value, label: c.label}));
+	const botCategoryOptions = BOT_CATEGORIES.map(c => ({value: c.value, label: c.label, iconFa: c.iconFa, title: c.description}));
 
 	const tabOptions = [
 		{value: 'ranking', label: 'Ranking', iconFa: 'fas fa-hashtag', url: '/ranking/1', cls: 'ranking-tab-button'},
@@ -86,7 +87,7 @@
 		{key: 'hmdMode', default: '', process: processStringFilter},
 		{key: 'role', default: '', process: processStringFilter},
 		{key: 'bots', default: '', process: processStringFilter},
-		{key: 'botCategory', default: DEFAULT_BOT_CATEGORY, process: processStringFilter},
+		{key: 'botCategories', default: '', process: processStringFilter},
 		{key: 'pp_range', default: '', process: processStringFilter},
 		{key: 'score_range', default: '', process: processStringFilter},
 		{key: 'ranked_score_range', default: '', process: processStringFilter},
@@ -472,21 +473,23 @@
 										const newValue = e?.detail === 'hide' ? '' : (e?.detail ?? '');
 										if (currentFilters.bots != newValue) {
 											currentFilters.bots = newValue;
+											if (!newValue.length) currentFilters.botCategories = '';
 											currentPage = 1;
 											navigateToCurrentPageAndFilters();
 										}
 									}} />
 							</section>
-							{#if currentFilters.bots === 'only'}
+							{#if currentFilters.bots === 'only' || currentFilters.bots === 'include'}
 								<section class="filter">
-									<RadioGroup
+									<CheckboxGroup
 										options={botCategoryOptions}
-										value={currentFilters.botCategory?.length ? currentFilters.botCategory : DEFAULT_BOT_CATEGORY}
-										label="Bot category"
+										value={parseBotCategories(currentFilters.botCategories)}
+										label="Bot categories"
+										required={true}
 										on:change={e => {
-											const newValue = e?.detail ?? DEFAULT_BOT_CATEGORY;
-											if (currentFilters.botCategory != newValue) {
-												currentFilters.botCategory = newValue;
+											const newValue = stringifyBotCategories(e?.detail);
+											if ((currentFilters.botCategories ?? '') != newValue) {
+												currentFilters.botCategories = newValue;
 												currentPage = 1;
 												navigateToCurrentPageAndFilters();
 											}

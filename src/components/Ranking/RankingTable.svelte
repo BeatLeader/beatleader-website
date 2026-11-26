@@ -10,6 +10,8 @@
 	import RankingMeta from './RankingMeta.svelte';
 	import {configStore} from '../../stores/config';
 	import Spinner from '../Common/Spinner.svelte';
+	import botsStore from '../../stores/beatleader/bots';
+	import {botCategoryById, parseBotCategories} from '../../utils/beatleader/bots';
 
 	export let type = 'global';
 	export let page = 1;
@@ -42,6 +44,22 @@
 		currentFilters = newFilters;
 	}
 
+	let botsById = null;
+	function loadBotCategories(needed) {
+		if (!needed || botsById) return;
+
+		botsStore
+			.fetch()
+			.then(data => (botsById = data?.byId ?? {}))
+			.catch(() => {});
+	}
+
+	function botCategoryOf(player, show, botsById) {
+		if (!show || !botsById || !player?.playerInfo?.bot) return null;
+
+		return botCategoryById(botsById[player.playerId]?.category ?? 0);
+	}
+
 	onMount(() => {
 		dispatch('loading', true);
 	});
@@ -61,6 +79,9 @@
 	$: maxCountryRank = $rankingStore?.data ? Math.max(...$rankingStore.data.map(p => p.playerInfo?.country.rank)) : 0;
 
 	$: updateCurrentFilters(filters);
+
+	$: showBotCategories = (filters?.bots === 'only' || filters?.bots === 'include') && parseBotCategories(filters?.botCategories).length > 1;
+	$: loadBotCategories(showBotCategories);
 </script>
 
 {#if $rankingStore?.data?.length}
@@ -77,7 +98,8 @@
 					{currentFilters}
 					{maxNumRank}
 					{maxRank}
-					{maxCountryRank} />
+					{maxCountryRank}
+					botCategory={botCategoryOf(player, showBotCategories, botsById)} />
 				{#if !noIcons && $configStore.rankingList.showFriendsButton}
 					<AddFriendButton playerId={player.playerId} />
 				{/if}

@@ -9,6 +9,7 @@
 	export let clan = null;
 	export let editModel = null;
 	export let highlightMain = false;
+	export let tag = null;
 
 	var clans = null;
 
@@ -77,6 +78,19 @@
 				color={invertColor(clan.color ?? '#000000')}
 				bgColor={clan?.color ?? 'var(--dimmed)'}
 				title="Set a score on this map to help capture it for your clan!" />
+		</a>
+	</span>
+{:else if tag}
+	<span class="clan-badges">
+		<!-- main-clan: themes fade the other clans of a player -->
+		<a class="clan-tag main-clan" href={tag.url} on:click|stopPropagation|preventDefault={() => navigate(tag.url)}>
+			<Badge
+				label={tag.label}
+				onlyLabel={true}
+				fluid={true}
+				color={tag.color ?? invertColor(tag.bgColor ?? '#000000')}
+				bgColor={tag.bgColor ?? 'var(--dimmed)'}
+				title={tag.title} />
 		</a>
 	</span>
 {/if}

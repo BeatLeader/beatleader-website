@@ -30,3 +30,19 @@ export const DEFAULT_BOT_CATEGORY = 'humanlike';
 export const botCategoryById = id => BOT_CATEGORIES.find(c => c.id === id) ?? BOT_CATEGORIES[2];
 export const botCategoryByValue = value => BOT_CATEGORIES.find(c => c.value === value) ?? null;
 
+export const parseBotCategories = param => {
+	const values = (param ?? '')
+		.split(',')
+		.map(v => v.trim().toLowerCase())
+		.filter(v => BOT_CATEGORIES.some(c => c.value === v));
+
+	return values.length ? BOT_CATEGORIES.filter(c => values.includes(c.value)).map(c => c.value) : BOT_CATEGORIES.map(c => c.value);
+};
+
+export const stringifyBotCategories = values =>
+	!values?.length || BOT_CATEGORIES.every(c => values.includes(c.value))
+		? ''
+		: BOT_CATEGORIES.filter(c => values.includes(c.value))
+				.map(c => c.value)
+				.join(',');
+

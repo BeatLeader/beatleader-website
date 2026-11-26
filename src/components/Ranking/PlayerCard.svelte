@@ -35,6 +35,7 @@
 	export let opacity = '1.0';
 	export let noImprovements = false;
 	export let valuePropsOverride = null;
+	export let botCategory = null;
 
 	const dispatch = createEventDispatcher();
 
@@ -181,6 +182,16 @@
 		!noImprovements && $configStore.rankingList.showCountryDifference && showingGeneral
 	);
 
+	$: botCategoryTag = botCategory
+		? {
+				label: botCategory.label,
+				color: 'white',
+				bgColor: botCategory.color,
+				title: `${botCategory.label} bot: ${botCategory.description}. The rank is between ${botCategory.label.toLowerCase()} bots. Click to show only them`,
+				url: `/ranking/1?${buildSearchFromFilters({...currentFilters, botCategories: botCategory.value})}`,
+			}
+		: null;
+
 	$: value = PlayerValue(player, currentFilters);
 	$: valueProps = valuePropsOverride ?? RANKING_SORT_BY_PROPS[currentFilters.sortBy];
 	$: updateRanks(numRank, showingGeneral);
@@ -258,6 +269,10 @@
 	</div>
 	<div class="player-name-and-rank" style={returning ? 'view-transition-name: player-stats' : ''}>
 		<PlayerNameWithFlag {player} {playerClickFilter} hideFlag={true} {withCrown} disablePopover={true} />
+
+		{#if botCategory}
+			<ClanBadges tag={botCategoryTag} />
+		{/if}
 
 		{#if $configStore.rankingList.showClans}
 			<ClanBadges {player} />

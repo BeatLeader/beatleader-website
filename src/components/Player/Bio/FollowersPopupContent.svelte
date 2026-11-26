@@ -26,7 +26,7 @@
 			.then(r => r.json())
 			.then(result => {
 				loading = false;
-				list = result;
+				list = Array.isArray(result) ? result : result?.data ?? [];
 			});
 	}
 
